@@ -11,7 +11,7 @@
 
 ## 💡 Why "Salgadin"?
 
-The name *Salgadin* comes from the Portuguese word for "savory snack" (*salgadinho*). It’s a playful nod to those small, everyday purchases that quickly add up—helping users become more mindful of their spending habits.
+The name *"Salgadin"* comes from the Portuguese word for “savory snack” (salgadinho), like pastel or coxinha. It’s a playful nod to those small, everyday purchases that seem harmless, but quickly eat away at your budget.
 
 ## ⚙️ Tech Stack
 
