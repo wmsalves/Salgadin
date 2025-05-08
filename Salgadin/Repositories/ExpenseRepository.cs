@@ -1,0 +1,43 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Salgadin.Data;
+using Salgadin.Models;
+
+namespace Salgadin.Repositories
+{
+    public class ExpenseRepository : IExpenseRepository
+    {
+        private readonly SalgadinContext _context;
+
+        public ExpenseRepository(SalgadinContext context)
+        {
+            _context = context;
+        }
+
+        public async Task<IEnumerable<Expense>> GetAllAsync()
+        {
+            return await _context.Expenses.ToListAsync();
+        }
+
+        public async Task<Expense?> GetByIdAsync(int id)
+        {
+            return await _context.Expenses.FindAsync(id);
+        }
+
+        public async Task AddAsync(Expense expense)
+        {
+            await _context.Expenses.AddAsync(expense);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var expense = await _context.Expenses.FindAsync(id);
+            if (expense != null)
+                _context.Expenses.Remove(expense);
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+    }
+}
