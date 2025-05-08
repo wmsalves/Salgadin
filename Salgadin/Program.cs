@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 using Salgadin.Data;
 using Salgadin.Repositories;
+using Salgadin.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,9 +12,10 @@ builder.Services.AddDbContext<SalgadinContext>(options =>
     options.UseInMemoryDatabase("SalgadinDB"));
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
 
 var app = builder.Build();
 
