@@ -16,9 +16,10 @@ namespace Salgadin.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Expense>> GetAllExpensesAsync()
+        public async Task<IEnumerable<ExpenseDto>> GetAllExpensesAsync()
         {
-            return await _repository.GetAllAsync();
+            var expenses = await _repository.GetAllAsync();
+            return _mapper.Map<IEnumerable<ExpenseDto>>(expenses);
         }
 
         public async Task<Expense?> GetExpenseByIdAsync(int id)

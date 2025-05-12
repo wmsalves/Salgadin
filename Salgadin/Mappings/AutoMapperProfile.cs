@@ -9,6 +9,7 @@ namespace Salgadin.Mappings
         public AutoMapperProfile()
         {
             CreateMap<CreateExpenseDto, Expense>();
+            CreateMap<ExpenseDto, Expense>().ReverseMap();
         }
     }
 }
