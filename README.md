@@ -21,6 +21,11 @@ The name *"Salgadin"* comes from the Portuguese word for “savory snack” (sal
 - **Authentication**: ASP.NET Identity or JWT (to be defined)
 - **Visualization**: Chart.js or Recharts for graphical representation
 - **Hosting**: Azure (planned)
+  
+## 🔗 Prototype
+
+You can explore the current design prototype here: [View Prototype](https://www.figma.com/proto/ltKDM5Wae13UCjR0x0EO0w/Salgadin?node-id=3-2&t=oBDb4l0VhiWuVYUk-1)  
+> 💡 *Note: This is a design mockup and may differ from the final implementation.*
 
 ## 📌 Project Status
 
