@@ -4,7 +4,9 @@ using Salgadin.Services;
 
 namespace Salgadin.Controllers
 {
-    public class ExpenseController : Controller
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ExpenseController : ControllerBase
     {
         private readonly IExpenseService _service;
 
