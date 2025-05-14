@@ -17,9 +17,9 @@ namespace Salgadin.Controllers
 
         // GET: Expense
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] string? category)
         {
-            var expenses = await _service.GetAllExpensesAsync();
+            var expenses = await _service.GetFilteredExpensesAsync(startDate, endDate, category);
             return Ok(expenses);
         }
 

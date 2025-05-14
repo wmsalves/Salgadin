@@ -39,5 +39,17 @@ namespace Salgadin.Services
             await _repository.DeleteAsync(id);
             await _repository.SaveChangesAsync();
         }
+        public async Task<IEnumerable<ExpenseDto>> GetFilteredExpensesAsync(DateTime? startDate, DateTime? endDate, string? category)
+        {
+            var allExpenses = await _repository.GetAllAsync();
+
+            var filtered = allExpenses.Where(e =>
+                (!startDate.HasValue || e.Date >= startDate.Value) &&
+                (!endDate.HasValue || e.Date <= endDate.Value) &&
+                (string.IsNullOrWhiteSpace(category) || e.Category.Equals(category, StringComparison.OrdinalIgnoreCase))
+            );
+
+            return _mapper.Map<IEnumerable<ExpenseDto>>(filtered);
+        }
     }
 }
