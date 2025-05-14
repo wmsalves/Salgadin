@@ -51,5 +51,13 @@ namespace Salgadin.Services
 
             return _mapper.Map<IEnumerable<ExpenseDto>>(filtered);
         }
+        public async Task UpdateExpenseAsync(int id, UpdateExpenseDto dto)
+        {
+            var existing = await _repository.GetByIdAsync(id);
+            if (existing == null) throw new Exception("Expense not found");
+
+            _mapper.Map(dto, existing); // aplica atualizações no objeto existente
+            await _repository.SaveChangesAsync();
+        }
     }
 }

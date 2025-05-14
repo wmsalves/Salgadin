@@ -10,5 +10,6 @@ namespace Salgadin.Services
         Task<Expense?> GetExpenseByIdAsync(int id);
         Task AddExpenseAsync(CreateExpenseDto dto);
         Task DeleteExpenseAsync(int id);
+        Task UpdateExpenseAsync(int id, UpdateExpenseDto dto);
     }
 }

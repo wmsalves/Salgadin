@@ -38,5 +38,20 @@ namespace Salgadin.Controllers
             await _service.DeleteExpenseAsync(id);
             return NoContent();
         }
+
+        // PUT: Expense/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateExpenseDto dto)
+        {
+            try
+            {
+                await _service.UpdateExpenseAsync(id, dto);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
     }
 }
