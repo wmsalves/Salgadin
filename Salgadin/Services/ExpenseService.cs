@@ -59,5 +59,26 @@ namespace Salgadin.Services
             _mapper.Map(dto, existing); // aplica atualizações no objeto existente
             await _repository.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<DailySummaryDto>> GetDailySummaryAsync(DateTime? startDate, DateTime? endDate)
+        {
+            var expenses = await _repository.GetAllAsync();
+
+            var filtered = expenses
+                .Where(e =>
+                    (!startDate.HasValue || e.Date >= startDate.Value) &&
+                    (!endDate.HasValue || e.Date <= endDate.Value))
+                .GroupBy(e => e.Date.Date)
+                .Select(group => new DailySummaryDto
+                {
+                    Date = group.Key,
+                    Total = group.Sum(x => x.Amount),
+                    TotalByCategory = group
+                        .GroupBy(x => x.Category)
+                        .ToDictionary(g => g.Key, g => g.Sum(x => x.Amount))
+                });
+
+            return filtered.OrderByDescending(r => r.Date);
+        }
     }
 }

@@ -53,5 +53,13 @@ namespace Salgadin.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+
+        // GET:
+        [HttpGet("summary")]
+        public async Task<IActionResult> GetDailySummary([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
+        {
+            var summary = await _service.GetDailySummaryAsync(startDate, endDate);
+            return Ok(summary);
+        }
     }
 }

@@ -11,5 +11,6 @@ namespace Salgadin.Services
         Task AddExpenseAsync(CreateExpenseDto dto);
         Task DeleteExpenseAsync(int id);
         Task UpdateExpenseAsync(int id, UpdateExpenseDto dto);
+        Task<IEnumerable<DailySummaryDto>> GetDailySummaryAsync(DateTime? startDate, DateTime? endDate);
     }
 }
