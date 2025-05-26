@@ -11,6 +11,8 @@ namespace Salgadin.Mappings
             CreateMap<CreateExpenseDto, Expense>();
             CreateMap<ExpenseDto, Expense>().ReverseMap();
             CreateMap<UpdateExpenseDto, Expense>();
+            CreateMap<CreateCategoryDto, Category>();
+            CreateMap<Category, CategoryDto>();
         }
     }
 }
