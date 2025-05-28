@@ -9,7 +9,7 @@ namespace Salgadin.Mappings
         public AutoMapperProfile()
         {
             CreateMap<CreateExpenseDto, Expense>();
-            CreateMap<ExpenseDto, Expense>().ReverseMap();
+            CreateMap<Expense, ExpenseDto>().ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : ""));
             CreateMap<UpdateExpenseDto, Expense>();
             CreateMap<CreateCategoryDto, Category>();
             CreateMap<Category, CategoryDto>();

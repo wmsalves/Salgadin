@@ -15,7 +15,7 @@ namespace Salgadin.Repositories
 
         public async Task<IEnumerable<Expense>> GetAllAsync()
         {
-            return await _context.Expenses.ToListAsync();
+            return await _context.Expenses.Include(e => e.Category).ToListAsync();
         }
 
         public async Task<Expense?> GetByIdAsync(int id)
