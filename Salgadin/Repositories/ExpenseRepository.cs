@@ -20,7 +20,7 @@ namespace Salgadin.Repositories
 
         public async Task<Expense?> GetByIdAsync(int id)
         {
-            return await _context.Expenses.FindAsync(id);
+            return await _context.Expenses.Include(e => e.Category).FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public async Task AddAsync(Expense expense)
