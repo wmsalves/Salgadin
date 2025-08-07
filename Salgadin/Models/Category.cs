@@ -1,14 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Salgadin.Models;
+using System.ComponentModel.DataAnnotations;
 
-namespace Salgadin.Models
+public class Category
 {
-    public class Category
-    {
-        [Required(ErrorMessage = "O campo CategoryId é obrigatório.")]
-        public int CategoryId { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public ICollection<Expense>? Expenses { get; set; }
-        public int UserId { get; set; }
-        public User? User { get; set; }
-    }
+    public int Id { get; set; }
+
+    [Required(ErrorMessage = "O nome é obrigatório.")]
+    public string Name { get; set; } = string.Empty;
+
+    public ICollection<Expense>? Expenses { get; set; }
+
+    public int UserId { get; set; }
+    public User? User { get; set; }
 }
