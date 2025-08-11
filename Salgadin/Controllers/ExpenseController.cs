@@ -30,7 +30,7 @@ namespace Salgadin.Controllers
         public async Task<IActionResult> Create([FromBody] CreateExpenseDto dto)
         {
             await _service.AddExpenseAsync(dto);
-            return CreatedAtAction(nameof(GetAll), null);
+            return StatusCode(StatusCodes.Status201Created);
         }
 
         // DELETE: Expense/{id}
@@ -56,6 +56,15 @@ namespace Salgadin.Controllers
             }
         }
 
+        // GET: Expense/{id}
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var expense = await _service.GetExpenseByIdAsync(id);
+            if (expense is null) return NotFound();
+            return Ok(expense);
+        }
+
         // GET:
         [HttpGet("summary")]
         public async Task<IActionResult> GetDailySummary([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
@@ -63,5 +72,16 @@ namespace Salgadin.Controllers
             var summary = await _service.GetDailySummaryAsync(startDate, endDate);
             return Ok(summary);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1,[FromQuery] DateTime? startDate = null,[FromQuery] int pageSize = 20,[FromQuery] DateTime? endDate = null,[FromQuery] string? category = null)
+        {
+            if (page <= 0) page = 1;
+            if (pageSize <= 0 || pageSize > 100) pageSize = 20;
+
+            var result = await _service.GetPagedAsync(page, pageSize, startDate, endDate, category);
+            return Ok(result);
+        }
+
     }
 }
