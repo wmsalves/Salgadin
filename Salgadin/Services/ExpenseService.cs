@@ -99,5 +99,35 @@ namespace Salgadin.Services
 
             return filtered.OrderByDescending(r => r.Date);
         }
+
+        public async Task<PagedResult<ExpenseDto>> GetPagedAsync(int page, int pageSize, DateTime? startDate, DateTime? endDate, string? category)
+        {
+            var userId = _userContext.GetUserId();
+            var all = await _repository.GetAllAsync();
+
+            var query = all
+                .Where(e => e.UserId == userId)
+                .Where(e => !startDate.HasValue || e.Date >= startDate.Value)
+                .Where(e => !endDate.HasValue || e.Date <= endDate.Value);
+
+            if (!string.IsNullOrWhiteSpace(category))
+                query = query.Where(e => e.Category != null &&
+                                         e.Category.Name.Equals(category, StringComparison.OrdinalIgnoreCase));
+
+            var total = query.Count();
+            var items = query
+                .OrderByDescending(e => e.Date)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return new PagedResult<ExpenseDto>
+            {
+                Items = _mapper.Map<IEnumerable<ExpenseDto>>(items),
+                Page = page,
+                PageSize = pageSize,
+                TotalCount = total
+            };
+        }
     }
 }
