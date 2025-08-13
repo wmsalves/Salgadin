@@ -64,6 +64,18 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+var corsPolicy = "_salgadinCors";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(corsPolicy, policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173", "http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 
 if (app.Environment.IsDevelopment())
 {
