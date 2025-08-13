@@ -29,8 +29,8 @@ namespace Salgadin.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateExpenseDto dto)
         {
-            await _service.AddExpenseAsync(dto);
-            return StatusCode(StatusCodes.Status201Created);
+            var created = await _service.AddExpenseAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
         // DELETE: Expense/{id}
