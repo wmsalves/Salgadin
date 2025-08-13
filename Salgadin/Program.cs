@@ -77,6 +77,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+app.UseMiddleware<ErrorHandlingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
