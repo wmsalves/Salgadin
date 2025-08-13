@@ -26,20 +26,26 @@ namespace Salgadin.Services
             return _mapper.Map<IEnumerable<ExpenseDto>>(filtered);
         }
 
-        public async Task<Expense?> GetExpenseByIdAsync(int id)
+        public async Task<ExpenseDto?> GetExpenseByIdAsync(int id)
         {
             var userId = _userContext.GetUserId();
             var expense = await _repository.GetByIdAsync(id);
-            return (expense != null && expense.UserId == userId) ? expense : null;
+            if (expense == null || expense.UserId != userId)
+                return null;
+
+            return _mapper.Map<ExpenseDto>(expense);
         }
 
-        public async Task AddExpenseAsync(CreateExpenseDto dto)
+        public async Task<ExpenseDto> AddExpenseAsync(CreateExpenseDto dto)
         {
             var userId = _userContext.GetUserId();
             var expense = _mapper.Map<Expense>(dto);
             expense.UserId = userId;
+
             await _repository.AddAsync(expense);
             await _repository.SaveChangesAsync();
+
+            return _mapper.Map<ExpenseDto>(expense);
         }
 
         public async Task DeleteExpenseAsync(int id)
