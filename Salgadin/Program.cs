@@ -10,33 +10,56 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// ----- Services -----
 
+// DbContext (SQL Server)
 builder.Services.AddDbContext<SalgadinContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
-builder.Services.AddControllers();
+// AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+
+// DI
 builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+// Auth (JWT)
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        var key = builder.Configuration["Jwt:Key"];
+        var key = builder.Configuration["Jwt:Key"]
+            ?? throw new InvalidOperationException("Jwt:Key not configured");
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key!)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
             ValidateIssuer = false,
             ValidateAudience = false
         };
     });
+
+// CORS
+var corsPolicy = "_salgadinCors";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(corsPolicy, policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:5173", "http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
+// Swagger + JWT
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Salgadin API", Version = "v1" });
@@ -48,7 +71,7 @@ builder.Services.AddSwaggerGen(c =>
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
-        Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
+        Description = "Put **ONLY** your JWT Bearer token below",
         Reference = new OpenApiReference
         {
             Id = JwtBearerDefaults.AuthenticationScheme,
@@ -64,19 +87,10 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
-var corsPolicy = "_salgadinCors";
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(corsPolicy, policy =>
-    {
-        policy
-            .WithOrigins("http://localhost:5173", "http://localhost:3000")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-    });
-});
 
+// ----- Middleware pipeline -----
+
+// Handler global de erros
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
@@ -86,9 +100,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// CORS
+app.UseCors(corsPolicy);
+
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
 
+app.MapControllers();
 
 app.Run();
