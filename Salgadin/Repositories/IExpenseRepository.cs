@@ -9,5 +9,7 @@ namespace Salgadin.Repositories
         Task AddAsync(Expense expense);
         Task DeleteAsync(int id);
         Task SaveChangesAsync();
+        IQueryable<Expense> Query();
+        Task<Expense?> GetByIdWithCategoryAsync(int id);
     }
 }

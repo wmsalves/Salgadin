@@ -39,5 +39,16 @@ namespace Salgadin.Repositories
         {
             await _context.SaveChangesAsync();
         }
+        public IQueryable<Expense> Query()
+        {
+            return _context.Expenses.Include(e => e.Category).AsQueryable();
+        }
+
+        public async Task<Expense?> GetByIdWithCategoryAsync(int id)
+        {
+            return await _context.Expenses.Include(e => e.Category)
+                                          .FirstOrDefaultAsync(e => e.Id == id);
+        }
+
     }
 }
