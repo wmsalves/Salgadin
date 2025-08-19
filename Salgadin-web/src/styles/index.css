@@ -3,5 +3,6 @@
 html,
 body,
 #root {
+  scroll-padding-top: 100px;
   height: 100%;
 }
