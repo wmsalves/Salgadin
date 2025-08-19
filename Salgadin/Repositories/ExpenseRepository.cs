@@ -14,19 +14,20 @@ namespace Salgadin.Repositories
         }
 
         public async Task<IEnumerable<Expense>> GetAllAsync()
-        {
-            return await _context.Expenses.Include(e => e.Category).ToListAsync();
-        }
+            => await _context.Expenses.Include(e => e.Category).ToListAsync();
 
         public async Task<Expense?> GetByIdAsync(int id)
-        {
-            return await _context.Expenses.Include(e => e.Category).FirstOrDefaultAsync(e => e.Id == id);
-        }
+            => await _context.Expenses.FindAsync(id);
+
+        public async Task<Expense?> GetByIdWithCategoryAsync(int id)
+            => await _context.Expenses.Include(e => e.Category)
+                                      .FirstOrDefaultAsync(e => e.Id == id);
+
+        public IQueryable<Expense> Query()
+            => _context.Expenses.Include(e => e.Category).AsQueryable();
 
         public async Task AddAsync(Expense expense)
-        {
-            await _context.Expenses.AddAsync(expense);
-        }
+            => await _context.Expenses.AddAsync(expense);
 
         public async Task DeleteAsync(int id)
         {
@@ -36,19 +37,6 @@ namespace Salgadin.Repositories
         }
 
         public async Task SaveChangesAsync()
-        {
-            await _context.SaveChangesAsync();
-        }
-        public IQueryable<Expense> Query()
-        {
-            return _context.Expenses.Include(e => e.Category).AsQueryable();
-        }
-
-        public async Task<Expense?> GetByIdWithCategoryAsync(int id)
-        {
-            return await _context.Expenses.Include(e => e.Category)
-                                          .FirstOrDefaultAsync(e => e.Id == id);
-        }
-
+            => await _context.SaveChangesAsync();
     }
 }

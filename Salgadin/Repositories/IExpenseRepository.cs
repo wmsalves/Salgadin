@@ -6,10 +6,10 @@ namespace Salgadin.Repositories
     {
         Task<IEnumerable<Expense>> GetAllAsync();
         Task<Expense?> GetByIdAsync(int id);
+        Task<Expense?> GetByIdWithCategoryAsync(int id);
+        IQueryable<Expense> Query();
         Task AddAsync(Expense expense);
         Task DeleteAsync(int id);
         Task SaveChangesAsync();
-        IQueryable<Expense> Query();
-        Task<Expense?> GetByIdWithCategoryAsync(int id);
     }
 }
