@@ -69,7 +69,6 @@ export default function SignupPage() {
                     id="name"
                     name="name"
                     required
-                    defaultValue="John Doe"
                     className="w-full rounded-xl border px-4 py-3 pr-10 bg-[#faf7df] outline-none focus:ring-2 focus:ring-emerald-500"
                     placeholder="Seu nome"
                     autoComplete="name"

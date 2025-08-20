@@ -1,6 +1,8 @@
 import { Mail, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import LogoSalgadin from "../assets/Logo_Salgadin.svg";
+import GoogleLogo from "../assets/google-icon-logo.svg";
+import FacebookLogo from "../assets/facebook-icon-logo.svg";
 
 export default function LoginPage() {
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -106,7 +108,7 @@ export default function LoginPage() {
               title="Entrar com Google"
             >
               {/* bolinha Google simples */}
-              <span className="inline-block h-5 w-5 rounded-full border" />
+              <img src={GoogleLogo} alt="GoogleLogo" className="h-6 w-6" />
               <span className="font-medium">Google</span>
             </button>
             <button
@@ -114,7 +116,7 @@ export default function LoginPage() {
               className="rounded-xl border px-4 py-2.5 hover:bg-black/5 transition flex items-center justify-center gap-2"
               title="Entrar com Facebook"
             >
-              <span className="inline-block h-5 w-5 rounded-full border" />
+              <img src={FacebookLogo} alt="FacebookLogo" className="h-7 w-7" />
               <span className="font-medium">Facebook</span>
             </button>
           </div>
