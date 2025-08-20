@@ -41,7 +41,6 @@ export default function LoginPage() {
                 name="email"
                 type="email"
                 required
-                defaultValue="teste@teste.com"
                 className="w-full rounded-xl border px-4 py-3 pr-10 bg-[#faf7df] outline-none focus:ring-2 focus:ring-emerald-500"
                 placeholder="seu@email.com"
                 autoComplete="email"
@@ -72,7 +71,6 @@ export default function LoginPage() {
                 name="password"
                 type="password"
                 required
-                defaultValue="************"
                 className="w-full rounded-xl border px-4 py-3 pr-10 bg-[#faf7df] outline-none focus:ring-2 focus:ring-emerald-500"
                 placeholder="••••••••"
                 autoComplete="current-password"
