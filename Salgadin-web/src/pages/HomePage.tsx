@@ -262,7 +262,7 @@ export default function HomePage() {
                   da sua saúde financeira. Veja seus gastos, receitas, economias
                   e metas em um único painel intuitivo.
                 </p>
-                <ul className="space-y-2 text-gray-700">
+                <ul className="space-y-4 text-gray-700">
                   <li>✓ Resumo financeiro atualizado em tempo real</li>
                   <li>✓ Gráficos interativos para análise rápida</li>
                   <li>✓ Alertas personalizados sobre gastos excessivos</li>
