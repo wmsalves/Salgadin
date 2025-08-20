@@ -10,6 +10,8 @@ import LogoSalgadin from "../assets/Logo_Salgadin.svg";
 
 export default function HomePage() {
   const [isOpen, setIsOpen] = useState(false);
+  type TabKey = "Dashboard" | "Despesas" | "Metas";
+  const [activeTab, setActiveTab] = useState<TabKey>("Dashboard");
 
   return (
     <div className="min-h-screen bg-[#fff8e6] text-slate-800">
@@ -207,7 +209,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Como funciona */}
+      {/* Como funciona (com abas) */}
       <section id="how" className="mx-auto max-w-6xl px-4 py-12">
         <h2 className="text-center text-2xl sm:text-3xl font-extrabold">
           Como o <span className="text-amber-600">Salgad</span>
@@ -218,37 +220,111 @@ export default function HomePage() {
           intuitiva e fácil de usar.
         </p>
 
-        <div className="mt-6 flex justify-center gap-4 text-sm">
-          {["Dashboard", "Despesas", "Metas"].map((t, i) => (
-            <button
-              key={t}
-              className={`rounded-full border px-4 py-1.5 hover:bg-black/5 ${
-                i === 0 ? "bg-black/5" : ""
-              }`}
-            >
-              {t}
-            </button>
-          ))}
+        {/* Abas */}
+        <div
+          role="tablist"
+          aria-label="Como funciona - abas"
+          className="mt-6 flex justify-center gap-2 sm:gap-4 text-sm"
+        >
+          {(["Dashboard", "Despesas", "Metas"] as TabKey[]).map((t) => {
+            const selected = activeTab === t;
+            return (
+              <button
+                key={t}
+                role="tab"
+                aria-selected={selected}
+                aria-controls={`panel-${t}`}
+                onClick={() => setActiveTab(t)}
+                className={[
+                  "rounded-full border px-4 py-1.5 transition",
+                  selected
+                    ? "bg-black/5 ring-1 ring-black/10"
+                    : "hover:bg-black/5",
+                ].join(" ")}
+              >
+                {t}
+              </button>
+            );
+          })}
         </div>
 
+        {/* Conteúdo */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+          {/* Lado esquerdo: textos */}
           <div className="space-y-3 text-sm sm:text-base">
-            <h3 className="text-lg font-semibold">
-              Visualize tudo em um só lugar
-            </h3>
-            <p className="text-gray-600">
-              O dashboard principal do Salgadin oferece uma visão completa da
-              sua saúde financeira. Veja seus gastos, receitas, economias e
-              metas em um único painel intuitivo.
-            </p>
-            <ul className="space-y-2 text-gray-700">
-              <li>✓ Resumo financeiro atualizado em tempo real</li>
-              <li>✓ Gráficos interativos para análise rápida</li>
-              <li>✓ Alertas personalizados sobre gastos excessivos</li>
-            </ul>
+            {activeTab === "Dashboard" && (
+              <>
+                <h3 className="text-2xl font-extrabold">
+                  Visualize tudo em um só lugar
+                </h3>
+                <p className="text-gray-600">
+                  O dashboard principal do Salgadin oferece uma visão completa
+                  da sua saúde financeira. Veja seus gastos, receitas, economias
+                  e metas em um único painel intuitivo.
+                </p>
+                <ul className="space-y-2 text-gray-700">
+                  <li>✓ Resumo financeiro atualizado em tempo real</li>
+                  <li>✓ Gráficos interativos para análise rápida</li>
+                  <li>✓ Alertas personalizados sobre gastos excessivos</li>
+                </ul>
+              </>
+            )}
+
+            {activeTab === "Despesas" && (
+              <>
+                <h3 className="text-2xl font-extrabold">
+                  Controle total das suas despesas
+                </h3>
+                <p className="text-gray-600">
+                  Registre e categorize seus gastos&nbsp;facilmente. O Salgadin
+                  organiza automaticamente suas despesas e mostra exatamente
+                  para onde seu dinheiro está indo.
+                </p>
+                <ul className="space-y-4 text-gray-700">
+                  <li>✓ Categorização automática de despesas</li>
+                  <li>✓ Comparação de gastos mês a mês</li>
+                  <li>✓ Filtros avançados para análise detalhada</li>
+                </ul>
+              </>
+            )}
+
+            {activeTab === "Metas" && (
+              <>
+                <h3 className="text-2xl font-extrabold">
+                  Alcance seus objetivos financeiros
+                </h3>
+                <p className="text-gray-600">
+                  Defina metas claras e acompanhe seu&nbsp;progresso. O Salgadin
+                  ajuda você a economizar para o que realmente importa, seja uma
+                  viagem, um carro novo ou a sua independência financeira.
+                </p>
+                <ul className="space-y-4 text-gray-700">
+                  <li>✓ Criação de metas personalizadas</li>
+                  <li>✓ Acompanhamento visual do progresso</li>
+                  <li>
+                    ✓ Sugestões de economia para atingir metas mais rápido
+                  </li>
+                </ul>
+              </>
+            )}
           </div>
-          <div className="h-[260px] rounded-2xl border border-black/10 bg-white shadow-inner grid place-items-center text-gray-400">
-            (Painel)
+
+          {/* Lado direito: mock box */}
+          <div
+            id={`panel-${activeTab}`}
+            role="tabpanel"
+            aria-labelledby={activeTab}
+            className="h-[360px] md:h-[420px] rounded-2xl border border-black/20 bg-gray-200 shadow-inner p-4 grid place-items-center text-gray-500"
+          >
+            {activeTab === "Dashboard" && (
+              <span className="text-sm">(Painel)</span>
+            )}
+
+            {activeTab === "Despesas" && (
+              <span className="text-sm">(Painel)</span>
+            )}
+
+            {activeTab === "Metas" && <span className="text-sm">(Painel)</span>}
           </div>
         </div>
       </section>
