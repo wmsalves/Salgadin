@@ -17,8 +17,8 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#fff8e6] text-slate-800">
       {/* Topbar */}
       <header className="sticky top-0 z-50 bg-[#fff8e6]/80 backdrop-blur border-b border-black/5">
-        <div className="mx-auto max-w-6xl px-4 py-3 flex items-center gap-4">
-          {/* Logo */}
+        <div className="relative mx-auto max-w-6xl px-4 py-3 flex items-center gap-4">
+          {/* Logo (esquerda) */}
           <a href="/" className="flex items-center gap-2">
             <span className="inline-grid place-items-center h-12 w-12 rounded-full">
               <img
@@ -33,8 +33,8 @@ export default function HomePage() {
             </span>
           </a>
 
-          {/* Menu Desktop */}
-          <nav className="ml-auto hidden md:flex items-center gap-6 text-sm">
+          {/* Menu Desktop (CENTRALIZADO de verdade) */}
+          <nav className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-6 text-sm">
             <a href="#features" className="hover:text-emerald-700">
               Recursos
             </a>
@@ -49,8 +49,8 @@ export default function HomePage() {
             </a>
           </nav>
 
-          {/* Botões Desktop */}
-          <div className="ml-2 hidden sm:flex items-center gap-2">
+          {/* Botões Desktop (direita) */}
+          <div className="ml-auto hidden sm:flex items-center gap-2">
             <a
               href="/login"
               className="rounded-full px-4 py-2 text-sm border border-black/10 hover:bg-black/5 transition"
@@ -65,10 +65,11 @@ export default function HomePage() {
             </a>
           </div>
 
-          {/* Botão Mobile */}
+          {/* Botão Mobile (direita) */}
           <button
             className="ml-auto md:hidden p-2 rounded-md hover:bg-black/5 transition"
             onClick={() => setIsOpen(!isOpen)}
+            aria-label="Abrir menu"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
