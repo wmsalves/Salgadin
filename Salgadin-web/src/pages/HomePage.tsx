@@ -1,109 +1,23 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
 
-// Importando os SVGs
+// SVGs usados nesta página
 import WalletIcon from "../assets/solar_wallet-outline.svg";
 import ControllerIcon from "../assets/vaadin_controller.svg";
 import ReportIcon from "../assets/Vector.svg";
 import GoalIcon from "../assets/octicon_goal-16.svg";
-import LogoSalgadin from "../assets/Logo_Salgadin.svg";
+
+// Componentes
+import { Header } from "../components/Header";
+import { Footer } from "../components/Footer";
 
 export default function HomePage() {
-  const [isOpen, setIsOpen] = useState(false);
   type TabKey = "Dashboard" | "Despesas" | "Metas";
   const [activeTab, setActiveTab] = useState<TabKey>("Dashboard");
 
   return (
     <div className="min-h-screen bg-[#fff8e6] text-slate-800">
       {/* Topbar */}
-      <header className="sticky top-0 z-50 bg-[#fff8e6]/80 backdrop-blur border-b border-black/5">
-        <div className="mx-auto max-w-6xl px-4 py-3 flex items-center gap-4">
-          {/* Logo */}
-          <a href="/" className="flex items-center gap-2">
-            <span className="inline-grid place-items-center h-12 w-12 rounded-full">
-              <img
-                src={LogoSalgadin}
-                alt="Logo Salgadin"
-                className="h-10 w-10"
-              />
-            </span>
-            <span className="text-xl font-extrabold tracking-tight">
-              <span className="text-amber-600">Salga</span>
-              <span className="text-emerald-600">din</span>
-            </span>
-          </a>
-
-          {/* Menu Desktop */}
-          <nav className="ml-auto hidden md:flex items-center gap-6 text-sm">
-            <a href="#features" className="hover:text-emerald-700">
-              Recursos
-            </a>
-            <a href="#how" className="hover:text-emerald-700">
-              Como funciona
-            </a>
-            <a href="#pricing" className="hover:text-emerald-700">
-              Preços
-            </a>
-            <a href="#faq" className="hover:text-emerald-700">
-              FAQ
-            </a>
-          </nav>
-
-          {/* Botões Desktop */}
-          <div className="ml-2 hidden md:flex items-center gap-2">
-            <a
-              href="/login"
-              className="rounded-full px-4 py-2 text-sm border border-black/10 hover:bg-black/5 transition"
-            >
-              Entrar
-            </a>
-            <a
-              href="/signup"
-              className="rounded-full px-4 py-2 text-sm text-white bg-emerald-500 hover:bg-emerald-600 shadow"
-            >
-              Começar grátis
-            </a>
-          </div>
-
-          {/* Botão Mobile */}
-          <button
-            className="ml-auto md:hidden p-2 rounded-md hover:bg-black/5 transition"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-
-        {/* Menu Mobile */}
-        {isOpen && (
-          <div className="md:hidden absolute top-16 left-0 w-full bg-white shadow-md flex flex-col items-center gap-4 py-6 z-50">
-            <a href="#features" className="hover:text-emerald-700">
-              Recursos
-            </a>
-            <a href="#how" className="hover:text-emerald-700">
-              Como funciona
-            </a>
-            <a href="#pricing" className="hover:text-emerald-700">
-              Preços
-            </a>
-            <a href="#faq" className="hover:text-emerald-700">
-              FAQ
-            </a>
-            <a
-              href="/login"
-              className="w-11/12 text-center rounded-full px-4 py-2 text-sm border border-black/10 hover:bg-black/5 transition"
-            >
-              Entrar
-            </a>
-            <a
-              href="/signup"
-              className="w-11/12 text-center rounded-full px-4 py-2 text-sm text-white bg-emerald-500 hover:bg-emerald-600 shadow"
-            >
-              Começar grátis
-            </a>
-          </div>
-        )}
-      </header>
+      <Header />
 
       {/* Hero */}
       <section className="mx-auto max-w-6xl px-4 pt-12 pb-10">
@@ -226,7 +140,7 @@ export default function HomePage() {
           aria-label="Como funciona - abas"
           className="mt-6 flex justify-center gap-2 sm:gap-4 text-sm"
         >
-          {(["Dashboard", "Despesas", "Metas"] as TabKey[]).map((t) => {
+          {(["Dashboard", "Despesas", "Metas"] as const).map((t) => {
             const selected = activeTab === t;
             return (
               <button
@@ -319,11 +233,9 @@ export default function HomePage() {
             {activeTab === "Dashboard" && (
               <span className="text-sm">(Painel)</span>
             )}
-
             {activeTab === "Despesas" && (
               <span className="text-sm">(Painel)</span>
             )}
-
             {activeTab === "Metas" && <span className="text-sm">(Painel)</span>}
           </div>
         </div>
@@ -395,9 +307,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer className="py-8 text-center text-xs text-gray-500">
-        © {new Date().getFullYear()} Salgadin. Todos os direitos reservados.
-      </footer>
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
