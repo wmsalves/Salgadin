@@ -7,7 +7,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-[#fff8e6]/80 backdrop-blur border-b border-black/5 relative">
-      <div className="mx-auto max-w-6xl px-4 py-3 flex items-center gap-4 relative">
+      <div className="mx-auto max-w-6xl px-4 py-2 flex items-center gap-4 relative">
         {/* Logo */}
         <a href="/" className="flex items-center gap-2">
           <img src={LogoSalgadin} alt="Logo" className="h-10 w-10" />
