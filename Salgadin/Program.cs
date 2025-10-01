@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -6,6 +8,7 @@ using Salgadin.Data;
 using Salgadin.Mappings;
 using Salgadin.Repositories;
 using Salgadin.Services;
+using Salgadin.Validators;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,10 +36,10 @@ builder.Services.AddScoped<IUserContextService, UserContextService>();
 // Adiciona o IHttpContextAccessor para permitir o acesso ao HttpContext nos serviços (ex: UserContextService).
 builder.Services.AddHttpContextAccessor();
 
-// --- Fim da Correção ---
+// Registra todos os validadores do assembly especificado na injeção de dependência.
+builder.Services.AddValidatorsFromAssemblyContaining<UserRegisterDtoValidator>();
+builder.Services.AddFluentValidationAutoValidation();
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
 
 // Configura a autenticação via JWT Bearer Token.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
