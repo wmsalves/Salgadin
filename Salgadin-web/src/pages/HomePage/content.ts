@@ -1,29 +1,29 @@
-// src/pages/HomePage/content.ts
-import WalletIcon from "../../assets/solar_wallet-outline.svg";
-import ControllerIcon from "../../assets/vaadin_controller.svg";
-import ReportIcon from "../../assets/Vector.svg";
-import GoalIcon from "../../assets/octicon_goal-16.svg";
+import { Wallet, SlidersHorizontal, BarChart3, Target } from "lucide-react";
 
 export const features = [
   {
     title: "Controle de Despesas",
     desc: "Acompanhe todos os seus gastos em um só lugar, com categorização automática e análise detalhada.",
-    icon: WalletIcon,
+    icon: Wallet, // O componente Wallet
+    colorTheme: "emerald",
   },
   {
     title: "Orçamento Inteligente",
     desc: "Crie orçamentos personalizados e receba alertas quando estiver próximo de atingir seus limites.",
-    icon: ControllerIcon,
+    icon: SlidersHorizontal, // O componente SlidersHorizontal
+    colorTheme: "amber",
   },
   {
     title: "Relatórios Detalhados",
     desc: "Visualize sua saúde financeira com gráficos e relatórios personalizados e fáceis de entender.",
-    icon: ReportIcon,
+    icon: BarChart3, // O componente BarChart3
+    colorTheme: "emerald",
   },
   {
     title: "Metas Financeiras",
     desc: "Estabeleça metas de economia e acompanhe seu progresso com visualizações claras e motivadoras.",
-    icon: GoalIcon,
+    icon: Target, // O componente Target
+    colorTheme: "amber",
   },
 ];
 
@@ -46,7 +46,6 @@ export const faqItems = [
   },
 ];
 
-// O conteúdo das abas também é movido para cá
 export const tabsContent = {
   Dashboard: {
     title: "Visualize tudo em um só lugar",

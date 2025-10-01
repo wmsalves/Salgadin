@@ -1,103 +1,137 @@
-import { Lock, User } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 
-// Components & Schemas
+// Assets, Components & Schemas
+import LogoSalgadin from "../assets/Logo_Salgadin.svg";
 import { Header } from "../components/Header";
 import { Input } from "../components/ui/Input";
+import { Button } from "../components/ui/Button";
+import { PasswordStrength } from "../components/ui/PasswordStrength";
 import { signupSchema, type SignupFormValues } from "../lib/schemas";
 
 export default function SignupPage() {
-  // 1. Configuração do React Hook Form com o schema de cadastro.
+  // 1. Hooks para navegação e feedback de erro da API.
+  const navigate = useNavigate();
+  const [apiError, setApiError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
+    mode: "onBlur",
   });
 
-  // 2. Função para lidar com a submissão do formulário de cadastro.
+  // 2. Observa o campo de senha em tempo real para o indicador de força.
+  const passwordValue = useWatch({ control, name: "password" });
+
   async function onSubmit(data: SignupFormValues) {
-    // A validação, incluindo a confirmação de senha, já foi feita.
-    console.log("Dados de cadastro válidos:", data);
+    setApiError(null);
+    try {
+      console.log("Enviando para a API:", data);
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    // Simula o tempo de uma chamada de API.
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    // TODO: Integrar com o serviço da API de registro.
-    alert("Cadastro efetuado com sucesso! (simulação)");
+      alert("Cadastro efetuado! Redirecionando...");
+      navigate("/dashboard");
+    } catch (error) {
+      setApiError("Este nome de usuário já está em uso. Tente outro.");
+    }
   }
 
   return (
     <div className="min-h-screen bg-[#fff8e6] flex flex-col">
       <Header />
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
-        <div className="w-full max-w-xl rounded-2xl border border-black/10 bg-white/80 backdrop-blur shadow p-6 sm:p-8">
-          <header className="text-center">
-            <h1 className="text-3xl sm:text-4xl font-extrabold">
-              Crie sua conta
+      <main className="flex-1">
+        <div className="mx-auto max-w-6xl min-h-[calc(100svh-80px)] grid gap-12 md:grid-cols-2 items-center px-4 py-8">
+          {/* Coluna Esquerda: Branding */}
+          <section className="hidden md:flex flex-col items-start text-left">
+            <h1 className="text-4xl lg:text-5xl font-extrabold leading-tight">
+              <span className="text-emerald-700">Transforme suas</span>
+              <br />
+              <span className="text-amber-600">finanças com estilo</span>
             </h1>
-            <p className="mt-1 text-gray-600">
-              Comece a organizar suas finanças hoje mesmo.
+            <p className="mt-4 max-w-md text-gray-700">
+              Gerencie despesas, acompanhe investimentos e alcance seus
+              objetivos financeiros com nossa plataforma intuitiva.
             </p>
-          </header>
+          </section>
 
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="mt-8 space-y-5"
-            noValidate
-          >
-            <Input
-              label="Nome de Usuário"
-              id="username"
-              placeholder="Ex: seu_usuario"
-              autoComplete="username"
-              icon={<User />}
-              error={errors.username}
-              {...register("username")}
-            />
+          {/* Coluna Direita: Formulário */}
+          <section className="flex justify-center md:justify-end">
+            <div className="w-full max-w-md rounded-2xl border border-black/10 bg-white/80 backdrop-blur shadow p-6 sm:p-8">
+              <header className="text-center md:text-left">
+                <h2 className="text-3xl sm:text-4xl font-extrabold">
+                  Crie sua Conta
+                </h2>
+                <p className="text-gray-600">Preencha os dados para começar.</p>
+              </header>
 
-            <Input
-              label="Senha"
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              autoComplete="new-password"
-              icon={<Lock />}
-              error={errors.password}
-              {...register("password")}
-            />
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="mt-6 space-y-4"
+                noValidate
+              >
+                <Input
+                  label="Nome de Usuário"
+                  id="username"
+                  placeholder="Ex: seu_usuario"
+                  icon={<User />}
+                  error={errors.username}
+                  {...register("username")}
+                />
 
-            <Input
-              label="Confirme sua Senha"
-              id="confirmPassword"
-              type="password"
-              placeholder="••••••••"
-              autoComplete="new-password"
-              icon={<Lock />}
-              error={errors.confirmPassword}
-              {...register("confirmPassword")}
-            />
+                <div>
+                  <Input
+                    label="Senha"
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    error={errors.password}
+                    {...register("password")}
+                  />
+                  {/* 5. Componente de força da senha integrado. */}
+                  <PasswordStrength password={passwordValue} />
+                </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full rounded-xl px-4 py-3 font-semibold text-white shadow
-                         bg-gradient-to-r from-amber-400 to-emerald-400 hover:opacity-95
-                         transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSubmitting ? "Criando conta..." : "Criar Conta"}
-            </button>
-          </form>
+                <Input
+                  label="Confirme sua Senha"
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="••••••••"
+                  error={errors.confirmPassword}
+                  {...register("confirmPassword")}
+                />
 
-          <p className="mt-6 text-center text-sm">
-            Já possui conta?{" "}
-            <Link to="/login" className="text-amber-600 hover:underline">
-              Faça login
-            </Link>
-          </p>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full"
+                >
+                  {isSubmitting ? "Criando conta..." : "Criar Conta"}
+                </Button>
+
+                {/* 6. Exibição da mensagem de erro da API. */}
+                {apiError && (
+                  <p className="text-sm text-red-600 text-center pt-2">
+                    {apiError}
+                  </p>
+                )}
+              </form>
+
+              <p className="mt-6 text-center text-sm">
+                Já tem uma conta?{" "}
+                <Link to="/login" className="text-amber-600 hover:underline">
+                  Faça o login!
+                </Link>
+              </p>
+            </div>
+          </section>
         </div>
       </main>
     </div>

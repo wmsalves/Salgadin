@@ -1,4 +1,5 @@
 import { features } from "./content";
+import clsx from "clsx";
 
 export function FeaturesSection() {
   return (
@@ -13,19 +14,32 @@ export function FeaturesSection() {
         financeiros.
       </p>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2">
-        {features.map((f) => (
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {features.map((feature) => (
           <div
-            key={f.title}
-            className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm"
+            key={feature.title}
+            className="rounded-2xl border border-black/10 bg-white p-5 shadow-sm transition-all hover:shadow-lg hover:-translate-y-1"
           >
-            <div className="flex items-start gap-3">
-              <div className="h-9 w-9 grid place-items-center rounded-full">
-                <img src={f.icon} alt={f.title} className="h-5 w-5" />
+            <div className="flex items-start gap-4">
+              <div
+                className={clsx(
+                  "h-10 w-10 grid place-items-center rounded-full flex-shrink-0",
+                  feature.colorTheme === "emerald" && "bg-emerald-100",
+                  feature.colorTheme === "amber" && "bg-amber-100"
+                )}
+              >
+                <feature.icon
+                  className={clsx(
+                    "h-5 w-5",
+                    feature.colorTheme === "emerald" && "text-emerald-600",
+                    feature.colorTheme === "amber" && "text-amber-600"
+                  )}
+                  aria-hidden="true"
+                />
               </div>
               <div>
-                <h3 className="font-semibold">{f.title}</h3>
-                <p className="mt-1 text-sm text-gray-600">{f.desc}</p>
+                <h3 className="font-semibold">{feature.title}</h3>
+                <p className="mt-1 text-sm text-gray-600">{feature.desc}</p>
               </div>
             </div>
           </div>
