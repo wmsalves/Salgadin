@@ -1,13 +1,20 @@
-// src/pages/HomePage/HowItWorksSection.tsx
 import { useState } from "react";
 import { tabsContent } from "./content";
-import clsx from "clsx"; // Biblioteca para classes condicionais
+import clsx from "clsx";
+import { CheckCircle2 } from "lucide-react";
+import { DashboardMockup, ExpensesMockup, GoalsMockup } from "./mockups";
 
 type TabKey = keyof typeof tabsContent;
 
 export function HowItWorksSection() {
   const [activeTab, setActiveTab] = useState<TabKey>("Dashboard");
   const TABS = Object.keys(tabsContent) as TabKey[];
+
+  const ActiveMockup = {
+    Dashboard: <DashboardMockup />,
+    Despesas: <ExpensesMockup />,
+    Metas: <GoalsMockup />,
+  }[activeTab];
 
   return (
     <section id="how" className="mx-auto max-w-6xl px-4 py-12">
@@ -24,20 +31,19 @@ export function HowItWorksSection() {
       <div
         role="tablist"
         aria-label="Como funciona - abas"
-        className="mt-6 flex justify-center gap-2 sm:gap-4 text-sm"
+        className="mt-8 flex justify-center gap-2 sm:gap-4 text-sm"
       >
         {TABS.map((t) => (
           <button
             key={t}
             role="tab"
             aria-selected={activeTab === t}
-            aria-controls={`panel-${t}`}
             onClick={() => setActiveTab(t)}
             className={clsx(
-              "rounded-full border px-4 py-1.5 transition",
+              "rounded-full border px-4 py-1.5 font-medium transition-colors",
               activeTab === t
-                ? "bg-black/5 ring-1 ring-black/10"
-                : "hover:bg-black/5"
+                ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20"
+                : "text-gray-600 hover:bg-black/5"
             )}
           >
             {t}
@@ -45,26 +51,38 @@ export function HowItWorksSection() {
         ))}
       </div>
 
-      {/* Conteúdo */}
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-        <div className="space-y-3 text-sm sm:text-base">
+      {/* Conteúdo com animação */}
+      <div
+        className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center animate-fade-in"
+        key={activeTab}
+      >
+        {/* Lado Esquerdo: Textos */}
+        <div className="space-y-4">
           <h3 className="text-2xl font-extrabold">
             {tabsContent[activeTab].title}
           </h3>
           <p className="text-gray-600">{tabsContent[activeTab].description}</p>
-          <ul className="space-y-4 text-gray-700">
+          <ul className="space-y-3 text-gray-700">
             {tabsContent[activeTab].items.map((item) => (
-              <li key={item}>✓ {item}</li>
+              <li key={item} className="flex items-center gap-2">
+                <CheckCircle2
+                  size={16}
+                  className="text-emerald-500 flex-shrink-0"
+                />
+                <span>{item}</span>
+              </li>
             ))}
           </ul>
         </div>
+
+        {/* Lado Direito: Mockups Visuais */}
         <div
           id={`panel-${activeTab}`}
           role="tabpanel"
           aria-labelledby={activeTab}
-          className="h-[360px] md:h-[420px] rounded-2xl border border-black/20 bg-gray-200 shadow-inner p-4 grid place-items-center text-gray-500"
+          className="h-[340px] md:h-[380px] rounded-2xl"
         >
-          <span className="text-sm">(Painel para {activeTab})</span>
+          {ActiveMockup}
         </div>
       </div>
     </section>
