@@ -34,11 +34,10 @@ export function HowItWorksSection() {
         intuitiva e fácil de usar.
       </p>
 
-      {/* Abas */}
       <div
         role="tablist"
         aria-label="Como funciona - abas"
-        className="mt-8 flex justify-center gap-2 sm:gap-4 text-sm"
+        className="mt-8 flex justify-center gap-2 sm:gap-4 text-sm relative"
       >
         {TABS.map((t) => (
           <button
@@ -47,12 +46,19 @@ export function HowItWorksSection() {
             aria-selected={activeTab === t}
             onClick={() => setActiveTab(t)}
             className={clsx(
-              "rounded-full border px-4 py-1.5 font-medium transition-colors",
+              "rounded-full px-4 py-2 font-medium transition-colors relative z-10",
               activeTab === t
-                ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20"
-                : "text-gray-600 hover:bg-black/5"
+                ? "text-emerald-700"
+                : "text-gray-600 hover:text-black"
             )}
           >
+            {activeTab === t && (
+              <motion.div
+                layoutId="active-tab-indicator"
+                className="absolute inset-0 rounded-full bg-emerald-500/10 -z-10"
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              />
+            )}
             {t}
           </button>
         ))}
