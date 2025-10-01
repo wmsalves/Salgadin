@@ -3,8 +3,15 @@ import { tabsContent } from "./content";
 import clsx from "clsx";
 import { CheckCircle2 } from "lucide-react";
 import { DashboardMockup, ExpensesMockup, GoalsMockup } from "./mockups";
+import { motion, AnimatePresence } from "framer-motion";
 
 type TabKey = keyof typeof tabsContent;
+
+const tabContentVariants = {
+  initial: { opacity: 0, y: 10 },
+  enter: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+  exit: { opacity: 0, y: -10, transition: { duration: 0.2 } },
+};
 
 export function HowItWorksSection() {
   const [activeTab, setActiveTab] = useState<TabKey>("Dashboard");
@@ -51,40 +58,46 @@ export function HowItWorksSection() {
         ))}
       </div>
 
-      {/* Conteúdo com animação */}
-      <div
-        className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center animate-fade-in"
-        key={activeTab}
-      >
-        {/* Lado Esquerdo: Textos */}
-        <div className="space-y-4">
-          <h3 className="text-2xl font-extrabold">
-            {tabsContent[activeTab].title}
-          </h3>
-          <p className="text-gray-600">{tabsContent[activeTab].description}</p>
-          <ul className="space-y-3 text-gray-700">
-            {tabsContent[activeTab].items.map((item) => (
-              <li key={item} className="flex items-center gap-2">
-                <CheckCircle2
-                  size={16}
-                  className="text-emerald-500 flex-shrink-0"
-                />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Lado Direito: Mockups Visuais */}
-        <div
-          id={`panel-${activeTab}`}
-          role="tabpanel"
-          aria-labelledby={activeTab}
-          className="h-[340px] md:h-[380px] rounded-2xl"
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          variants={tabContentVariants}
+          initial="initial"
+          animate="enter"
+          exit="exit"
+          className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8 items-center"
         >
-          {ActiveMockup}
-        </div>
-      </div>
+          {/* Lado Esquerdo: Textos */}
+          <div className="space-y-4">
+            <h3 className="text-2xl font-extrabold">
+              {tabsContent[activeTab].title}
+            </h3>
+            <p className="text-gray-600">
+              {tabsContent[activeTab].description}
+            </p>
+            <ul className="space-y-3 text-gray-700">
+              {tabsContent[activeTab].items.map((item) => (
+                <li key={item} className="flex items-center gap-2">
+                  <CheckCircle2
+                    size={16}
+                    className="text-emerald-500 flex-shrink-0"
+                  />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Lado Direito: Mockups Visuais */}
+          <div
+            id={`panel-${activeTab}`}
+            role="tabpanel"
+            className="h-[340px] md:h-[380px] rounded-2xl"
+          >
+            {ActiveMockup}
+          </div>
+        </motion.div>
+      </AnimatePresence>
     </section>
   );
 }
