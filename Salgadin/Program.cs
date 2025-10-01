@@ -12,25 +12,33 @@ var builder = WebApplication.CreateBuilder(args);
 
 // ----- Services -----
 
-// DbContext (SQL Server)
+// Configura o Entity Framework Core para usar o SQL Server.
+// A string de conexão é lida do arquivo de configuração (appsettings.json).
 builder.Services.AddDbContext<SalgadinContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// AutoMapper
+// Registra os perfis de mapeamento do AutoMapper.
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
-// DI
-builder.Services.AddScoped<IExpenseRepository, UnitOfWork>();
+// Registra a Unit of Work com um tempo de vida "scoped".
+// Uma instância será criada por requisição HTTP.
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>(); // CORRIGIDO
+
+// Registra os serviços da aplicação, que agora dependem da IUnitOfWork.
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
+
+// Adiciona o IHttpContextAccessor para permitir o acesso ao HttpContext nos serviços (ex: UserContextService).
 builder.Services.AddHttpContextAccessor();
+
+// --- Fim da Correção ---
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// Auth (JWT)
+// Configura a autenticação via JWT Bearer Token.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -45,7 +53,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// CORS
+// Define uma política de CORS para permitir requisições do frontend em desenvolvimento.
 var corsPolicy = "_salgadinCors";
 builder.Services.AddCors(options =>
 {
@@ -59,7 +67,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Swagger + JWT
+// Configura o Swagger para documentação da API e adiciona suporte para autenticação JWT na UI.
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Salgadin API", Version = "v1" });
@@ -71,7 +79,7 @@ builder.Services.AddSwaggerGen(c =>
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
-        Description = "Put **ONLY** your JWT Bearer token below",
+        Description = "Insira **APENAS** o seu token JWT Bearer abaixo",
         Reference = new OpenApiReference
         {
             Id = JwtBearerDefaults.AuthenticationScheme,
@@ -90,7 +98,7 @@ var app = builder.Build();
 
 // ----- Middleware pipeline -----
 
-// Handler global de erros
+// Adiciona o middleware global para tratamento de erros.
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
@@ -101,7 +109,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// CORS
+// CAplica a política de CORS definida anteriormente.
 app.UseCors(corsPolicy);
 
 app.UseAuthentication();
