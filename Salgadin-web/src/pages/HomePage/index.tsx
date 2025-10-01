@@ -6,6 +6,7 @@ import { FeaturesSection } from "./FeaturesSection";
 import { HowItWorksSection } from "./HowItWorksSection";
 import { FaqSection } from "./FaqSection";
 import { CtaSection } from "./CtaSection";
+import { PricingSection } from "./PricingSection";
 
 export default function HomePage() {
   return (
@@ -15,6 +16,7 @@ export default function HomePage() {
         <HeroSection />
         <FeaturesSection />
         <HowItWorksSection />
+        <PricingSection />
         <FaqSection />
         <CtaSection />
       </main>
