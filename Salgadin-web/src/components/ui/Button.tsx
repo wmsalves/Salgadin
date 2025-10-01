@@ -27,11 +27,19 @@ interface ButtonProps
   extends ComponentProps<"button">,
     VariantProps<typeof buttonVariants> {}
 
-export function Button({ className, variant, size, ...props }: ButtonProps) {
+export function Button({
+  children,
+  className,
+  variant,
+  size,
+  ...props
+}: ButtonProps) {
   return (
     <button
       className={clsx(buttonVariants({ variant, size, className }))}
       {...props}
-    />
+    >
+      {children}
+    </button>
   );
 }
