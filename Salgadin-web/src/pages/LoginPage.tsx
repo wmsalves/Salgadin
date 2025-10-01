@@ -1,27 +1,44 @@
 import { Mail, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 // Assets
 import LogoSalgadin from "../assets/Logo_Salgadin.svg";
 import GoogleLogo from "../assets/google-icon-logo.svg";
 import FacebookLogo from "../assets/facebook-icon-logo.svg";
 
-// Components
+// Components & Schemas
 import { Header } from "../components/Header";
+import { Input } from "../components/ui/Input";
+import { loginSchema, type LoginFormValues } from "../lib/schemas";
 
 export default function LoginPage() {
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    // TODO: integrar com API
+  // 1. Configuração do React Hook Form com o schema de validação do Zod.
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  // 2. Função assíncrona para lidar com a submissão do formulário.
+  async function onSubmit(data: LoginFormValues) {
+    // A validação já foi feita automaticamente pelo handleSubmit.
+    console.log("Dados de login válidos:", data);
+
+    // Simula o tempo de uma chamada de API.
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    // TODO: Integrar com o serviço da API de login.
+    alert("Login efetuado com sucesso! (simulação)");
   }
 
   return (
     <div className="min-h-screen bg-[#fff8e6] flex flex-col">
-      {/* Header */}
       <Header />
-
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
-        {/* Logo */}
         <div className="flex items-center gap-3 -mt-6 mb-6">
           <img src={LogoSalgadin} alt="Salgadin" className="h-28 w-28" />
           <span className="text-4xl font-extrabold tracking-tight">
@@ -30,7 +47,6 @@ export default function LoginPage() {
           </span>
         </div>
 
-        {/* Card */}
         <div className="w-full max-w-xl rounded-2xl border border-black/10 bg-white/80 backdrop-blur shadow p-6 sm:p-8">
           <header className="text-center">
             <h1 className="text-3xl sm:text-4xl font-extrabold">
@@ -41,35 +57,27 @@ export default function LoginPage() {
             </p>
           </header>
 
-          <form onSubmit={onSubmit} className="mt-8 space-y-5" noValidate>
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium">
-                Email
-              </label>
-              <div className="relative mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  className="w-full rounded-xl border px-4 py-3 pr-10 bg-[#faf7df] outline-none focus:ring-2 focus:ring-emerald-500"
-                  placeholder="seu@email.com"
-                  autoComplete="email"
-                />
-                <Mail
-                  aria-hidden
-                  className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500"
-                />
-              </div>
-            </div>
+          {/* 3. O formulário agora usa handleSubmit para envolver nossa função onSubmit. */}
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="mt-8 space-y-5"
+            noValidate
+          >
+            {/* 4. O componente reutilizável 'Input'. */}
+            <Input
+              label="Email"
+              id="username"
+              type="email"
+              placeholder="seu@email.com"
+              autoComplete="email"
+              icon={<Mail />}
+              error={errors.username}
+              {...register("username")}
+            />
 
-            {/* Senha + esqueceu */}
             <div>
               <div className="flex items-baseline justify-between">
-                <label htmlFor="password" className="text-sm font-medium">
-                  Senha
-                </label>
+                <span className="text-sm font-medium">Senha</span>
                 <Link
                   to="/forgot"
                   className="text-sm text-amber-600 hover:underline"
@@ -77,40 +85,34 @@ export default function LoginPage() {
                   Esqueceu a senha?
                 </Link>
               </div>
-              <div className="relative mt-1">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  className="w-full rounded-xl border px-4 py-3 pr-10 bg-[#faf7df] outline-none focus:ring-2 focus:ring-emerald-500"
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                />
-                <Lock
-                  aria-hidden
-                  className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500"
-                />
-              </div>
+              <Input
+                label=""
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                autoComplete="current-password"
+                icon={<Lock />}
+                error={errors.password}
+                {...register("password")}
+              />
             </div>
 
-            {/* Entrar */}
             <button
               type="submit"
+              disabled={isSubmitting} // 5. O botão é desabilitado durante o envio.
               className="w-full rounded-xl px-4 py-3 font-semibold text-white shadow
-                         bg-gradient-to-r from-amber-400 to-emerald-400 hover:opacity-95 transition"
+                         bg-gradient-to-r from-amber-400 to-emerald-400 hover:opacity-95
+                         transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Entrar
+              {isSubmitting ? "Entrando..." : "Entrar"}
             </button>
 
-            {/* Divider */}
             <div className="flex items-center gap-3">
               <div className="h-px flex-1 bg-black/10" />
               <span className="text-xs text-gray-600">ou continue com:</span>
               <div className="h-px flex-1 bg-black/10" />
             </div>
 
-            {/* Social buttons */}
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
