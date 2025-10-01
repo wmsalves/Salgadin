@@ -1,11 +1,20 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging; // Adicionado
+using Salgadin.Exceptions;
 using System.Net;
 using System.Text.Json;
 
 public class ErrorHandlingMiddleware
 {
     private readonly RequestDelegate _next;
-    public ErrorHandlingMiddleware(RequestDelegate next) => _next = next;
+    private readonly ILogger<ErrorHandlingMiddleware> _logger; // Adicionado
+
+    // Injeta o serviço de logging ILogger via construtor.
+    public ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandlingMiddleware> logger)
+    {
+        _next = next;
+        _logger = logger;
+    }
 
     public async Task Invoke(HttpContext context)
     {
@@ -17,13 +26,21 @@ public class ErrorHandlingMiddleware
         {
             await WriteProblem(context, (int)HttpStatusCode.Unauthorized, ex.Message);
         }
-        catch (KeyNotFoundException ex)
+        catch (NotFoundException ex)
         {
             await WriteProblem(context, (int)HttpStatusCode.NotFound, ex.Message);
         }
+        catch (BadInputException ex)
+        {
+            await WriteProblem(context, (int)HttpStatusCode.BadRequest, ex.Message);
+        }
         catch (Exception ex)
         {
-            await WriteProblem(context, (int)HttpStatusCode.InternalServerError, ex.Message);
+            // Loga a exceção completa com nível de erro 'Error'.
+            // O Serilog irá enriquecer este log com todos os detalhes da requisição (TraceId, etc.).
+            _logger.LogError(ex, "Um erro não tratado ocorreu. TraceId: {TraceId}", context.TraceIdentifier);
+
+            await WriteProblem(context, (int)HttpStatusCode.InternalServerError, "Ocorreu um erro inesperado.");
         }
     }
 
@@ -34,11 +51,9 @@ public class ErrorHandlingMiddleware
 
         var problem = new
         {
-            type = "about:blank",
             title = ReasonPhrases.GetReasonPhrase(status),
             status,
             detail,
-            traceId = ctx.TraceIdentifier
         };
 
         await ctx.Response.WriteAsync(JsonSerializer.Serialize(problem));

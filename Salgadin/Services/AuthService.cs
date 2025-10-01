@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Salgadin.Data;
 using Salgadin.DTOs;
+using Salgadin.Exceptions;
 using Salgadin.Models;
+using Salgadin.Repositories;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -12,19 +13,28 @@ namespace Salgadin.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly SalgadinContext _context;
+        // Injeta a Unit of Work para centralizar o acesso a dados.
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
 
-        public AuthService(SalgadinContext context, IConfiguration configuration)
+        public AuthService(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
             _configuration = configuration;
         }
 
         public async Task<string> RegisterAsync(UserRegisterDto dto)
         {
-            if (await _context.Users.AnyAsync(u => u.Username == dto.Username))
-                throw new Exception("Usuário já existe");
+            // Usa o repositório genérico para criar uma consulta otimizada no banco.
+            var userExists = await _unitOfWork.Users
+                .GetQueryable()
+                .AnyAsync(u => u.Username == dto.Username);
+
+            if (userExists)
+            {
+                // Lança uma exceção específica para ser tratada pelo middleware de erros.
+                throw new BadInputException("O nome de usuário já está em uso.");
+            }
 
             CreatePasswordHash(dto.Password, out byte[] hash, out byte[] salt);
 
@@ -35,21 +45,30 @@ namespace Salgadin.Services
                 PasswordSalt = salt
             };
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            // Adiciona o novo usuário e salva as alterações através da Unit of Work.
+            await _unitOfWork.Users.AddAsync(user);
+            await _unitOfWork.CompleteAsync();
 
             return GenerateToken(user);
         }
 
         public async Task<string> LoginAsync(UserLoginDto dto)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == dto.Username);
+            var user = await _unitOfWork.Users
+                .GetQueryable()
+                .FirstOrDefaultAsync(u => u.Username == dto.Username);
+
             if (user == null || !VerifyPassword(dto.Password, user.PasswordHash, user.PasswordSalt))
-                throw new Exception("Credenciais inválidas");
+            {
+                // Lança a exceção padrão do .NET para falhas de autenticação.
+                // O middleware irá capturá-la e retornar o status 401 Unauthorized.
+                throw new UnauthorizedAccessException("Usuário ou senha inválidos.");
+            }
 
             return GenerateToken(user);
         }
 
+        // Gera o hash e o salt para uma senha usando HMAC-SHA512 para armazenamento seguro.
         private void CreatePasswordHash(string password, out byte[] hash, out byte[] salt)
         {
             using var hmac = new HMACSHA512();
@@ -57,34 +76,42 @@ namespace Salgadin.Services
             hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
         }
 
+        // Verifica se a senha fornecida corresponde ao hash armazenado, usando o mesmo salt.
         private bool VerifyPassword(string password, byte[] hash, byte[] salt)
         {
             using var hmac = new HMACSHA512(salt);
-            var computed = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return computed.SequenceEqual(hash);
+            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            return computedHash.SequenceEqual(hash);
         }
 
+        // Cria um JSON Web Token (JWT) para o usuário autenticado.
         private string GenerateToken(User user)
         {
+            // Define as 'claims' (informações) que serão incluídas no token.
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                _configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key not found")
-            ));
+            // Obtém a chave de segurança do appsettings.json para assinar o token.
+            var keyString = _configuration["Jwt:Key"] ?? throw new InvalidOperationException("A chave JWT 'Jwt:Key' não está configurada.");
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
 
+            // Cria as credenciais de assinatura usando o algoritmo HmacSha512.
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-            var token = new JwtSecurityToken(
-                claims: claims,
-                expires: DateTime.UtcNow.AddDays(7),
-                signingCredentials: creds
-            );
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = creds
+            };
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            return tokenHandler.WriteToken(token);
         }
     }
 }

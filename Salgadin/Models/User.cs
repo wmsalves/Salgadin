@@ -1,6 +1,6 @@
 ﻿namespace Salgadin.Models
 {
-    public class User
+    public class User : IEntity
     {
         public int Id { get; set; }
 

@@ -1,6 +1,6 @@
 ﻿namespace Salgadin.Models
 {
-    public class Expense
+    public class Expense : IEntity
     {
         public int Id { get; set; }
         public string Description { get; set; } = string.Empty;
