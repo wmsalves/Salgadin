@@ -40,7 +40,7 @@ Instructions on how to set up and run the project locally.
 
 1.  Clone the repository:
     ```bash
-    git clone [https://github.com/your-username/salgadin.git](https://github.com/your-username/salgadin.git)
+    git clone [https://github.com/wmsalves/salgadin.git](https://github.com/wmsalves/salgadin.git)
     ```
 2.  Navigate to the backend folder:
     ```bash
