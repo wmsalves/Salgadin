@@ -20,7 +20,7 @@ builder.Services.AddDbContext<SalgadinContext>(options =>
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 // DI
-builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+builder.Services.AddScoped<IExpenseRepository, UnitOfWork>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
