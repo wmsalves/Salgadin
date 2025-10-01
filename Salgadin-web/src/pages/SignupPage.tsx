@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 
 // Assets, Components & Schemas
-import LogoSalgadin from "../assets/Logo_Salgadin.svg";
 import { Header } from "../components/Header";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";

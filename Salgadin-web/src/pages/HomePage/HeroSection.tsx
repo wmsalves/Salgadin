@@ -81,7 +81,7 @@ export function HeroSection() {
                 }}
               />
               <Bar dataKey="gasto" radius={[8, 8, 0, 0]}>
-                {chartData.map((entry, index) => (
+                {chartData.map((_entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={colors[index % colors.length]}

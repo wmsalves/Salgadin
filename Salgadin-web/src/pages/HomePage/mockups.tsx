@@ -68,7 +68,7 @@ export const DashboardMockup = () => (
               innerRadius={30}
               outerRadius={40}
             >
-              {pieData.map((entry, index) => (
+              {pieData.map((_entry, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={PIE_COLORS[index % PIE_COLORS.length]}
