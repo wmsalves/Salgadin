@@ -30,19 +30,19 @@ export const features = [
 export const faqItems = [
   {
     q: "Como o Salgadin protege meus dados financeiros?",
-    a: "Usamos criptografia de ponta a ponta, padrões rigorosos de segurança e servidores confiáveis. Nunca compartilhamos informações sem permissão.",
+    a: "A sua segurança é nossa prioridade máxima. Utilizamos criptografia de nível bancário para proteger todos os seus dados, tanto em trânsito quanto em repouso. Seguimos os mais rigorosos padrões de segurança e privacidade, alinhados com a Lei Geral de Proteção de Dados (LGPD). Suas informações são suas, e nunca as compartilharemos com terceiros sem a sua permissão explícita.",
   },
   {
     q: "Preciso ter conhecimentos financeiros para usar?",
-    a: "Não. A experiência é simples e guiada, com recursos educativos para ajudar a melhorar sua educação financeira.",
+    a: "De forma alguma! O Salgadin foi desenhado exatamente para quem busca simplicidade. Se você sabe o que é uma despesa, já sabe usar 90% da plataforma. Recursos como a categorização automática e os relatórios visuais fazem o trabalho pesado por você, transformando dados complexos em informações claras e acionáveis para o seu dia a dia.",
   },
   {
-    q: "Funciona em todos os dispositivos?",
-    a: "Sim. Web, iOS e Android (em breve). Acesse de qualquer dispositivo e tenha seus dados sempre sincronizados.",
+    q: "Funciona em todos os meus dispositivos?",
+    a: "Sim! O Salgadin é uma plataforma web totalmente responsiva, funcionando perfeitamente no seu computador, tablet ou celular. Seus dados são sincronizados em tempo real em todos os dispositivos, garantindo que você tenha acesso às suas finanças onde quer que esteja. Nossos aplicativos nativos para iOS e Android estão em desenvolvimento para oferecer uma experiência ainda mais integrada em breve.",
   },
   {
     q: "Posso usar para gerenciar finanças da minha empresa?",
-    a: "O foco é pessoa física, mas há recursos para autônomos e pequenos negócios (relatórios e separação por categorias).",
+    a: "O Salgadin foi projetado com foco total nas finanças pessoais. No entanto, muitos autônomos e freelancers o utilizam com sucesso para ter um controle simplificado de suas receitas e despesas. Você pode criar categorias específicas para o seu negócio e gerar relatórios que ajudam a ter uma visão clara do fluxo de caixa e a separar os gastos pessoais dos profissionais.",
   },
 ];
 
