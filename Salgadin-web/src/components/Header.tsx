@@ -99,10 +99,6 @@ export function Header() {
                 </a>
               ))}
 
-              <div className="w-full px-8 pt-2">
-                <div className="h-px bg-black/10" />
-              </div>
-
               <div className="w-full px-4 flex flex-col gap-3 pt-2">
                 <Link
                   to="/login"
