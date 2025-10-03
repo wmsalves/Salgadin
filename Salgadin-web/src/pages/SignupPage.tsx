@@ -89,7 +89,7 @@ export default function SignupPage() {
                     id="password"
                     type="password"
                     placeholder="••••••••"
-                    icon={<Lock />} // CORREÇÃO: Ícone adicionado
+                    icon={<Lock />}
                     error={errors.password}
                     {...register("password")}
                   />
@@ -101,7 +101,7 @@ export default function SignupPage() {
                   id="confirmPassword"
                   type="password"
                   placeholder="••••••••"
-                  icon={<Lock />} // CORREÇÃO: Ícone adicionado
+                  icon={<Lock />}
                   error={errors.confirmPassword}
                   {...register("confirmPassword")}
                 />

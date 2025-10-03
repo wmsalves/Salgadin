@@ -9,7 +9,7 @@ import GoogleLogo from "../assets/google-icon-logo.svg";
 import FacebookLogo from "../assets/facebook-icon-logo.svg";
 import { Header } from "../components/Header";
 import { Input } from "../components/ui/Input";
-import { Button } from "../components/ui/Button"; // Importar o novo botão
+import { Button } from "../components/ui/Button";
 import { loginSchema, type LoginFormValues } from "../lib/schemas";
 
 export default function LoginPage() {
