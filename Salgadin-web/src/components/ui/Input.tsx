@@ -3,6 +3,9 @@ import {
   forwardRef,
   type ReactNode,
   useState,
+  isValidElement,
+  cloneElement,
+  type ReactElement,
 } from "react";
 import type { FieldError } from "react-hook-form";
 import clsx from "clsx";
@@ -16,10 +19,7 @@ interface InputProps extends ComponentProps<"input"> {
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, icon, error, name, type, ...props }, ref) => {
-    // 1. Estado para controlar a visibilidade da senha
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-
-    // 2. Determina o tipo do input (se é senha, permite alternar)
     const inputType = type === "password" && isPasswordVisible ? "text" : type;
 
     return (
@@ -28,6 +28,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           {label}
         </label>
         <div className="relative mt-1">
+          {icon && (
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              {isValidElement(icon) &&
+                cloneElement(icon as ReactElement<{ className: string }>, {
+                  className: "h-5 w-5 text-gray-500",
+                })}
+            </div>
+          )}
+
           <input
             id={name}
             name={name}
@@ -35,17 +44,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             className={clsx(
               "w-full rounded-xl border px-4 py-3 bg-[#faf7df] outline-none focus:ring-2 focus:ring-emerald-500",
-              // Adiciona padding extra à direita se for um campo de senha para dar espaço ao ícone
-              type === "password" ? "pr-12" : "pr-10"
+              icon && "pl-10",
+              type === "password" && "pr-10"
             )}
             {...props}
           />
-          {/* 3. Renderiza o ícone principal ou o alternador de visibilidade */}
-          <div
-            aria-hidden
-            className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center"
-          >
-            {type === "password" ? (
+
+          {type === "password" && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
               <button
                 type="button"
                 onClick={() => setIsPasswordVisible(!isPasswordVisible)}
@@ -54,12 +60,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                   isPasswordVisible ? "Esconder senha" : "Mostrar senha"
                 }
               >
-                {isPasswordVisible ? <EyeOff size={16} /> : <Eye size={16} />}
+                {isPasswordVisible ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
-            ) : (
-              icon && <span className="h-4 w-4 text-gray-500">{icon}</span>
-            )}
-          </div>
+            </div>
+          )}
         </div>
         {error && <p className="mt-1 text-xs text-red-600">{error.message}</p>}
       </div>

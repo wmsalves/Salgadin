@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { User } from "lucide-react";
+import { Mail, Lock } from "lucide-react"; // Make sure Lock is imported
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,7 +13,6 @@ import { PasswordStrength } from "../components/ui/PasswordStrength";
 import { signupSchema, type SignupFormValues } from "../lib/schemas";
 
 export default function SignupPage() {
-  // 1. Hooks para navegação e feedback de erro da API.
   const navigate = useNavigate();
   const [apiError, setApiError] = useState<string | null>(null);
 
@@ -27,7 +26,6 @@ export default function SignupPage() {
     mode: "onBlur",
   });
 
-  // 2. Observa o campo de senha em tempo real para o indicador de força.
   const passwordValue = useWatch({ control, name: "password" });
 
   async function onSubmit(data: SignupFormValues) {
@@ -35,7 +33,6 @@ export default function SignupPage() {
     try {
       console.log("Enviando para a API:", data);
       await new Promise((resolve) => setTimeout(resolve, 1500));
-
       alert("Cadastro efetuado! Redirecionando...");
       navigate("/dashboard");
     } catch (error) {
@@ -48,7 +45,7 @@ export default function SignupPage() {
       <Header />
       <main className="flex-1">
         <div className="mx-auto max-w-6xl min-h-[calc(100svh-80px)] grid gap-12 md:grid-cols-2 items-center px-4 py-8">
-          {/* Coluna Esquerda: Branding */}
+          {/* Branding Column */}
           <section className="hidden md:flex flex-col items-start text-left">
             <h1 className="text-4xl lg:text-5xl font-extrabold leading-tight">
               <span className="text-emerald-700">Transforme suas</span>
@@ -61,7 +58,7 @@ export default function SignupPage() {
             </p>
           </section>
 
-          {/* Coluna Direita: Formulário */}
+          {/* Form Column */}
           <section className="flex justify-center md:justify-end">
             <div className="w-full max-w-md rounded-2xl border border-black/10 bg-white/80 backdrop-blur shadow p-6 sm:p-8">
               <header className="text-center md:text-left">
@@ -77,10 +74,11 @@ export default function SignupPage() {
                 noValidate
               >
                 <Input
-                  label="Nome de Usuário"
+                  label="Email"
                   id="username"
-                  placeholder="Ex: seu_usuario"
-                  icon={<User />}
+                  type="email"
+                  placeholder="seu@email.com"
+                  icon={<Mail />}
                   error={errors.username}
                   {...register("username")}
                 />
@@ -91,10 +89,10 @@ export default function SignupPage() {
                     id="password"
                     type="password"
                     placeholder="••••••••"
+                    icon={<Lock />} // CORREÇÃO: Ícone adicionado
                     error={errors.password}
                     {...register("password")}
                   />
-                  {/* 5. Componente de força da senha integrado. */}
                   <PasswordStrength password={passwordValue} />
                 </div>
 
@@ -103,6 +101,7 @@ export default function SignupPage() {
                   id="confirmPassword"
                   type="password"
                   placeholder="••••••••"
+                  icon={<Lock />} // CORREÇÃO: Ícone adicionado
                   error={errors.confirmPassword}
                   {...register("confirmPassword")}
                 />
@@ -115,7 +114,6 @@ export default function SignupPage() {
                   {isSubmitting ? "Criando conta..." : "Criar Conta"}
                 </Button>
 
-                {/* 6. Exibição da mensagem de erro da API. */}
                 {apiError && (
                   <p className="text-sm text-red-600 text-center pt-2">
                     {apiError}
