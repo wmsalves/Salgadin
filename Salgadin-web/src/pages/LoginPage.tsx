@@ -1,5 +1,5 @@
 import { Mail, Lock } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -11,8 +11,13 @@ import { Header } from "../components/Header";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { loginSchema, type LoginFormValues } from "../lib/schemas";
+import { loginUser } from "../services/authService";
+import { useState } from "react";
 
 export default function LoginPage() {
+  const [apiError, setApiError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -22,9 +27,18 @@ export default function LoginPage() {
   });
 
   async function onSubmit(data: LoginFormValues) {
-    console.log("Dados de login válidos:", data);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    alert("Login efetuado com sucesso! (simulação)");
+    setApiError(null);
+    try {
+      const response = await loginUser(data);
+      console.log("Login bem-sucedido, token:", response.token);
+
+      alert("Login efetuado com sucesso!");
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Falha no login:", error);
+      setApiError("Email ou senha inválidos. Tente novamente.");
+    }
   }
 
   return (
@@ -88,6 +102,10 @@ export default function LoginPage() {
             <Button type="submit" disabled={isSubmitting} className="w-full">
               {isSubmitting ? "Entrando..." : "Entrar"}
             </Button>
+
+            {apiError && (
+              <p className="text-sm text-red-600 text-center">{apiError}</p>
+            )}
 
             <div className="flex items-center gap-3">
               <div className="h-px flex-1 bg-black/10" />
