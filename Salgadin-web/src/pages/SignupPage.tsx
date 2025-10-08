@@ -11,6 +11,8 @@ import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { PasswordStrength } from "../components/ui/PasswordStrength";
 import { signupSchema, type SignupFormValues } from "../lib/schemas";
+import { registerUser } from "../services/authService"; // Importar o serviço de registro
+import { AxiosError } from "axios"; // Importar para checar o erro da API
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -31,12 +33,23 @@ export default function SignupPage() {
   async function onSubmit(data: SignupFormValues) {
     setApiError(null);
     try {
-      console.log("Enviando para a API:", data);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      alert("Cadastro efetuado! Redirecionando...");
-      navigate("/dashboard");
+      const { confirmPassword, ...payload } = data;
+
+      await registerUser(payload);
+
+      alert(
+        "Cadastro realizado com sucesso! Você será redirecionado para o login."
+      );
+
+      navigate("/login");
     } catch (error) {
-      setApiError("Este nome de usuário já está em uso. Tente outro.");
+      console.error("Falha no cadastro:", error);
+
+      if (error instanceof AxiosError && error.response?.status === 400) {
+        setApiError("Este email já está em uso. Tente outro ou faça login.");
+      } else {
+        setApiError("Ocorreu um erro inesperado. Tente novamente mais tarde.");
+      }
     }
   }
 
