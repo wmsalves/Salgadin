@@ -2,6 +2,7 @@ import { Mail, Lock } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 
 // Assets, Components & Schemas
 import LogoSalgadin from "../assets/Logo_Salgadin.svg";
@@ -12,11 +13,12 @@ import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { loginSchema, type LoginFormValues } from "../lib/schemas";
 import { loginUser } from "../services/authService";
-import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 
 export default function LoginPage() {
   const [apiError, setApiError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const {
     register,
@@ -30,13 +32,10 @@ export default function LoginPage() {
     setApiError(null);
     try {
       const response = await loginUser(data);
-      console.log("Login bem-sucedido, token:", response.token);
-
-      alert("Login efetuado com sucesso!");
-
+      login(response.token);
       navigate("/dashboard");
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      console.error("Falha no login:", error);
       setApiError("Email ou senha inválidos. Tente novamente.");
     }
   }
