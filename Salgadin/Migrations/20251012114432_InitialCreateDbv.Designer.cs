@@ -12,8 +12,8 @@ using Salgadin.Data;
 namespace Salgadin.Migrations
 {
     [DbContext(typeof(SalgadinContext))]
-    [Migration("20250809155709_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251012114432_InitialCreateDbv")]
+    partial class InitialCreateDbv
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,14 +35,16 @@ namespace Salgadin.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "Name")
+                        .IsUnique();
 
                     b.ToTable("Categories");
                 });
@@ -66,7 +68,8 @@ namespace Salgadin.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -98,9 +101,13 @@ namespace Salgadin.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -121,13 +128,13 @@ namespace Salgadin.Migrations
                     b.HasOne("Category", "Category")
                         .WithMany("Expenses")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Salgadin.Models.User", "User")
                         .WithMany("Expenses")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Category");

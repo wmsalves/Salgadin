@@ -26,7 +26,7 @@ namespace Salgadin.Data.Configurations
             builder.HasOne(e => e.User)
                 .WithMany(u => u.Expenses) // Um Usuário tem muitas Despesas.
                 .HasForeignKey(e => e.UserId) // A chave estrangeira é UserId.
-                .OnDelete(DeleteBehavior.Cascade); // Se um usuário for deletado, suas despesas também serão.
+                .OnDelete(DeleteBehavior.Restrict); // Se um usuário for deletado, suas despesas também serão.
 
             // Configura o relacionamento "uma Despesa pertence a uma Categoria".
             builder.HasOne(e => e.Category)

@@ -12,18 +12,18 @@ using Salgadin.Validators;
 using Serilog;
 using System.Text;
 
-// Configura um logger inicial para capturar erros durante a inicialização.
+// Configura um logger inicial para capturar erros durante a inicializaï¿½ï¿½o.
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
 
 try
 {
-    Log.Information("Iniciando a aplicação Salgadin.");
+    Log.Information("Iniciando a aplicaï¿½ï¿½o Salgadin.");
 
     var builder = WebApplication.CreateBuilder(args);
 
-    // Configura o Serilog para ser o provedor de logging principal da aplicação.
+    // Configura o Serilog para ser o provedor de logging principal da aplicaï¿½ï¿½o.
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
@@ -41,25 +41,30 @@ try
     // Registra a Unit of Work com um tempo de vida "scoped".
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-    // Registra os serviços da aplicação.
+    // Registra os serviï¿½os da aplicaï¿½ï¿½o.
     builder.Services.AddScoped<IExpenseService, ExpenseService>();
     builder.Services.AddScoped<ICategoryService, CategoryService>();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<IUserContextService, UserContextService>();
 
-    // Permite o acesso ao HttpContext nos serviços.
+    // Permite o acesso ao HttpContext nos serviï¿½os.
     builder.Services.AddHttpContextAccessor();
 
     // Registra os validadores do FluentValidation.
     builder.Services.AddValidatorsFromAssemblyContaining<UserRegisterDtoValidator>();
-    // Habilita a validação automática via FluentValidation.
+    // Habilita a validaï¿½ï¿½o automï¿½tica via FluentValidation.
     builder.Services.AddFluentValidationAutoValidation();
 
-    // Adiciona os serviços dos controllers da API.
-    builder.Services.AddControllers();
+    // Adiciona os serviï¿½os dos controllers da API.
+    builder.Services.AddControllers()
+        .AddJsonOptions(options =>
+        {
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+        });
+        
     builder.Services.AddEndpointsApiExplorer();
 
-    // Configura a autenticação via JWT Bearer Token.
+    // Configura a autenticaï¿½ï¿½o via JWT Bearer Token.
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
@@ -74,21 +79,21 @@ try
             };
         });
 
-    // Define uma política de CORS para permitir requisições do frontend.
-    var corsPolicy = "_salgadinCors";
-    builder.Services.AddCors(options =>
+    // Define uma polï¿½tica de CORS para permitir requisiï¿½ï¿½es do frontend.
+var corsPolicy = "_salgadinCors";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(corsPolicy, policy =>
     {
-        options.AddPolicy(corsPolicy, policy =>
-        {
-            policy
-                .WithOrigins("http://localhost:5173", "http://localhost:3000")
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
-        });
+        policy
+            .WithOrigins("http://localhost:5173", "http://localhost:3000") 
+            .AllowAnyMethod() 
+            .AllowAnyHeader() 
+            .AllowCredentials(); 
     });
+});
 
-    // Configura o Swagger para documentação da API.
+    // Configura o Swagger para documentaï¿½ï¿½o da API.
     builder.Services.AddSwaggerGen(c =>
     {
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "Salgadin API", Version = "v1" });
@@ -119,7 +124,7 @@ try
 
     // ----- Middleware pipeline -----
 
-    // Adiciona o middleware do Serilog para logar informações de cada requisição.
+    // Adiciona o middleware do Serilog para logar informaï¿½ï¿½es de cada requisiï¿½ï¿½o.
     app.UseSerilogRequestLogging();
 
     // Adiciona o middleware global para tratamento de erros.
@@ -133,7 +138,9 @@ try
 
     app.UseHttpsRedirection();
 
-    // Aplica a política de CORS.
+    app.UseRouting(); 
+    
+    // Aplica a polï¿½tica de CORS.
     app.UseCors(corsPolicy);
 
     app.UseAuthentication();
@@ -145,11 +152,11 @@ try
 }
 catch (Exception ex)
 {
-    // Captura e loga qualquer erro fatal durante a inicialização.
-    Log.Fatal(ex, "A aplicação falhou ao iniciar.");
+    // Captura e loga qualquer erro fatal durante a inicializaï¿½ï¿½o.
+    Log.Fatal(ex, "A aplicaï¿½ï¿½o falhou ao iniciar.");
 }
 finally
 {
-    // Garante que todos os logs sejam gravados antes de a aplicação fechar.
+    // Garante que todos os logs sejam gravados antes de a aplicaï¿½ï¿½o fechar.
     Log.CloseAndFlush();
 }
