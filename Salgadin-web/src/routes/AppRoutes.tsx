@@ -2,18 +2,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "../pages/HomePage";
 import SignupPage from "../pages/SignupPage";
 import LoginPage from "../pages/LoginPage";
-import { ProtectedRoute } from "./ProtectedRoute";
-import { useAuth } from "../hooks/useAuth";
+import DashboardPage from "../pages/DashboardPage";
 
-const DashboardPage = () => {
-  const { user, logout } = useAuth();
-  return (
-    <div>
-      <h1>Bem-vindo ao seu Dashboard, {user?.name}!</h1>
-      <button onClick={logout}>Sair</button>
-    </div>
-  );
-};
+import { ProtectedRoute } from "./ProtectedRoute";
 
 export default function AppRoutes() {
   return (
