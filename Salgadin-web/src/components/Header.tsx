@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import LogoSalgadin from "../assets/Logo_Salgadin.svg";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "../hooks/useAuth";
 
 const navLinks = [
   { href: "/#features", label: "Recursos" },
@@ -13,6 +14,7 @@ const navLinks = [
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
 
   const handleLinkClick = () => {
     setIsOpen(false);
@@ -34,8 +36,6 @@ export function Header() {
           </span>
         </Link>
 
-        {/* --- CÓDIGO RESTAURADO ABAIXO --- */}
-
         {/* Menu Desktop */}
         <nav className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-6 text-sm">
           {navLinks.map((link) => (
@@ -50,22 +50,35 @@ export function Header() {
         </nav>
 
         {/* Botões Desktop */}
-        <div className="ml-auto hidden md:flex items-center gap-2">
-          <Link
-            to="/login"
-            className="rounded-full px-4 py-2 text-sm border hover:bg-black/5 transition"
-          >
-            Entrar
-          </Link>
-          <Link
-            to="/signup"
-            className="rounded-full px-4 py-2 text-sm text-white bg-emerald-500 hover:bg-emerald-600 shadow"
-          >
-            Começar grátis
-          </Link>
+        <div className="ml-auto hidden md:flex items-center gap-4">
+          {isAuthenticated ? (
+            <>
+              <span className="text-sm text-gray-600">Olá, {user?.name}</span>
+              <button
+                onClick={logout}
+                className="rounded-full p-2 text-sm border hover:bg-black/5 transition"
+                title="Sair"
+              >
+                <LogOut size={16} />
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="rounded-full px-4 py-2 text-sm border hover:bg-black/5 transition"
+              >
+                Entrar
+              </Link>
+              <Link
+                to="/signup"
+                className="rounded-full px-4 py-2 text-sm text-white bg-emerald-500 hover:bg-emerald-600 shadow"
+              >
+                Começar grátis
+              </Link>
+            </>
+          )}
         </div>
-
-        {/* --- FIM DO CÓDIGO RESTAURADO --- */}
 
         {/* Botão Mobile */}
         <button
@@ -99,21 +112,39 @@ export function Header() {
                 </a>
               ))}
 
+              <div className="w-full px-8 pt-2">
+                <div className="h-px bg-black/10" />
+              </div>
+
               <div className="w-full px-4 flex flex-col gap-3 pt-2">
-                <Link
-                  to="/login"
-                  onClick={handleLinkClick}
-                  className="w-full text-center rounded-full px-4 py-2 text-sm border hover:bg-black/5"
-                >
-                  Entrar
-                </Link>
-                <Link
-                  to="/signup"
-                  onClick={handleLinkClick}
-                  className="w-full text-center rounded-full px-4 py-2 text-sm text-white bg-emerald-500 hover:bg-emerald-600 shadow"
-                >
-                  Começar grátis
-                </Link>
+                {isAuthenticated ? (
+                  <button
+                    onClick={() => {
+                      logout();
+                      handleLinkClick();
+                    }}
+                    className="w-full text-center rounded-full px-4 py-2 text-sm border hover:bg-black/5"
+                  >
+                    Sair
+                  </button>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      onClick={handleLinkClick}
+                      className="w-full text-center rounded-full px-4 py-2 text-sm border hover:bg-black/5"
+                    >
+                      Entrar
+                    </Link>
+                    <Link
+                      to="/signup"
+                      onClick={handleLinkClick}
+                      className="w-full text-center rounded-full px-4 py-2 text-sm text-white bg-emerald-500 hover:bg-emerald-600 shadow"
+                    >
+                      Começar grátis
+                    </Link>
+                  </>
+                )}
               </div>
             </nav>
           </motion.div>
