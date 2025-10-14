@@ -169,7 +169,7 @@ export default function DashboardPage() {
                   ]}
                 />
                 <Bar dataKey="total" name="Total Gasto" radius={[4, 4, 0, 0]}>
-                  {summary.map((entry, index) => (
+                  {summary.map((_entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={index % 2 === 0 ? "#10b981" : "#f59e0b"}
