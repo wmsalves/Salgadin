@@ -47,6 +47,21 @@ namespace Salgadin.Services
 
             // Adiciona o novo usuário e salva as alterações através da Unit of Work.
             await _unitOfWork.Users.AddAsync(user);
+
+                        var defaultCategories = new List<Category>
+            {
+                new Category { Name = "Alimentação", User = user },
+                new Category { Name = "Transporte", User = user },
+                new Category { Name = "Moradia", User = user },
+                new Category { Name = "Lazer", User = user },
+                new Category { Name = "Outros", User = user }
+            };
+
+            foreach (var category in defaultCategories)
+            {
+                await _unitOfWork.Categories.AddAsync(category);
+            }
+
             await _unitOfWork.CompleteAsync();
 
             return GenerateToken(user);
