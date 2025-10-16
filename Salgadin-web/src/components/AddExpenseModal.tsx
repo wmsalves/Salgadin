@@ -56,8 +56,6 @@ export function AddExpenseModal({
   async function onSubmit(data: ExpenseFormValues) {
     setApiError(null);
     try {
-      // 2. CORREÇÃO: Convertemos as strings para números AQUI, no momento do envio.
-      // Isso é explícito, claro e o TypeScript entende perfeitamente.
       const payload = {
         ...data,
         amount: parseFloat(data.amount.replace(",", ".")),
@@ -105,7 +103,6 @@ export function AddExpenseModal({
               </button>
             </div>
             <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
-              {/* O JSX do formulário não precisa de nenhuma mudança */}
               <div>
                 <label
                   htmlFor="description"

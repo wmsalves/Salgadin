@@ -39,12 +39,9 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = useState(false);
-
-  // 1. Centralizamos a lógica de busca de dados em uma única função.
-  // Usamos useCallback para que a função não seja recriada a cada renderização, otimizando a performance.
   const fetchData = useCallback(async () => {
     try {
-      setError(null); // Limpa erros anteriores antes de uma nova busca
+      setError(null);
       const [expensesData, summaryData] = await Promise.all([
         getExpenses(),
         getDailySummary(),
@@ -59,17 +56,14 @@ export default function DashboardPage() {
     }
   }, []);
 
-  // 2. O useEffect agora apenas chama a função fetchData na montagem inicial.
   useEffect(() => {
     setIsLoading(true);
     fetchData().finally(() => setIsLoading(false));
   }, [fetchData]);
 
-  // 3. A função 'handleExpenseAdded' foi removida, pois não é mais necessária.
-
-  // Os cálculos permanecem os mesmos e serão re-executados sempre que o 'summary' for atualizado.
+  // Cálculos para os cards de resumo
   const totalExpenses = summary.reduce((acc, day) => acc + day.total, 0);
-  const totalRevenue = 3500.0; // Placeholder
+  const totalRevenue = 3500.0;
   const balance = totalRevenue - totalExpenses;
 
   if (isLoading) {
@@ -89,6 +83,7 @@ export default function DashboardPage() {
               Meu Dashboard
             </h1>
             <div className="flex items-center gap-4">
+              {/* 3. Botão para abrir o modal */}
               <button
                 onClick={() => setIsAddExpenseModalOpen(true)}
                 className="flex items-center gap-2 bg-emerald-500 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-emerald-600 transition"
