@@ -5,6 +5,7 @@ import LoginPage from "../pages/LoginPage";
 import DashboardPage from "../pages/DashboardPage";
 
 import { ProtectedRoute } from "./ProtectedRoute";
+import CategoriesPage from "../pages/CategoriesPage";
 
 export default function AppRoutes() {
   return (
@@ -18,6 +19,7 @@ export default function AppRoutes() {
         {/* Rotas Protegidas */}
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/categorias" element={<CategoriesPage />} />
         </Route>
 
         <Route path="*" element={<HomePage />} />
