@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Salgadin.DTOs;
 using Salgadin.Services;
+using System;
+using System.Threading.Tasks;
 
 namespace Salgadin.Controllers
 {
@@ -24,7 +26,7 @@ namespace Salgadin.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetCategoryById")]
         public async Task<IActionResult> GetById(int id)
         {
             var category = await _service.GetByIdAsync(id);
@@ -35,14 +37,35 @@ namespace Salgadin.Controllers
         public async Task<IActionResult> Create([FromBody] CreateCategoryDto dto)
         {
             var created = await _service.CreateAsync(dto);
+            // Usa o nome da rota para garantir que o link gerado esteja sempre correto.
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateCategoryDto dto)
+        {
+            var updatedCategory = await _service.UpdateAsync(id, dto);
+
+            if (updatedCategory == null)
+            {
+                return NotFound(new { message = "Categoria não encontrada." });
+            }
+
+            return Ok(updatedCategory);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _service.DeleteAsync(id);
-            return NoContent();
+            try
+            {
+                await _service.DeleteAsync(id);
+                return NoContent();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }
