@@ -21,28 +21,29 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-[#fff8e6]/80 backdrop-blur border-b border-black/5">
-      <div className="mx-auto max-w-6xl px-4 py-2 flex items-center gap-4 relative">
+    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
+      <div className="mx-auto max-w-7xl px-4 py-3 flex items-center gap-4 relative">
         {/* Logo */}
         <Link
           to="/"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           onClick={handleLinkClick}
         >
           <img src={LogoSalgadin} alt="Logo" className="h-10 w-10" />
-          <span className="text-xl font-extrabold tracking-tight">
-            <span className="text-amber-600">Salga</span>
-            <span className="text-emerald-600">din</span>
+          <span className="text-xl font-extrabold tracking-tight hidden sm:inline">
+            <span className="bg-gradient-to-r from-amber-500 to-emerald-500 bg-clip-text text-transparent">
+              Salgadin
+            </span>
           </span>
         </Link>
 
         {/* Menu Desktop */}
-        <nav className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-6 text-sm">
+        <nav className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-8 text-sm font-medium">
           {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
-              className="hover:text-emerald-700"
+              className="text-slate-700 hover:text-emerald-600 transition-colors"
             >
               {link.label}
             </a>
@@ -50,13 +51,15 @@ export function Header() {
         </nav>
 
         {/* Botões Desktop */}
-        <div className="ml-auto hidden md:flex items-center gap-4">
+        <div className="ml-auto hidden md:flex items-center gap-3">
           {isAuthenticated ? (
             <>
-              <span className="text-sm text-gray-600">Olá, {user?.name}</span>
+              <span className="text-sm text-slate-600 font-medium">
+                Olá, {user?.name}
+              </span>
               <button
                 onClick={logout}
-                className="rounded-full p-2 text-sm border hover:bg-black/5 transition"
+                className="rounded-lg p-2 text-sm border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all"
                 title="Sair"
               >
                 <LogOut size={16} />
@@ -64,18 +67,18 @@ export function Header() {
             </>
           ) : (
             <>
-              <Link
-                to="/login"
-                className="rounded-full px-4 py-2 text-sm border hover:bg-black/5 transition"
+              <a
+                href="/login"
+                className="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 border border-slate-200 hover:bg-slate-50 transition-all"
               >
                 Entrar
-              </Link>
-              <Link
-                to="/signup"
-                className="rounded-full px-4 py-2 text-sm text-white bg-emerald-500 hover:bg-emerald-600 shadow"
+              </a>
+              <a
+                href="/signup"
+                className="rounded-lg px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-amber-500 to-emerald-500 hover:shadow-lg transition-all"
               >
                 Começar grátis
-              </Link>
+              </a>
             </>
           )}
         </div>
@@ -98,51 +101,51 @@ export function Header() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="md:hidden absolute left-0 right-0 bg-white shadow-lg overflow-hidden z-50"
+            className="md:hidden bg-slate-50 border-t border-slate-200 overflow-hidden"
           >
-            <nav className="flex flex-col items-center gap-5 py-6">
+            <nav className="flex flex-col items-center gap-4 py-6 px-4">
               {navLinks.map((link) => (
                 <a
                   key={link.href}
                   href={link.href}
                   onClick={handleLinkClick}
-                  className="hover:text-emerald-700"
+                  className="text-slate-700 hover:text-emerald-600 font-medium transition-colors"
                 >
                   {link.label}
                 </a>
               ))}
 
-              <div className="w-full px-8 pt-2">
-                <div className="h-px bg-black/10" />
+              <div className="w-full px-2 py-2">
+                <div className="h-px bg-slate-300" />
               </div>
 
-              <div className="w-full px-4 flex flex-col gap-3 pt-2">
+              <div className="w-full flex flex-col gap-2 px-2">
                 {isAuthenticated ? (
                   <button
                     onClick={() => {
                       logout();
                       handleLinkClick();
                     }}
-                    className="w-full text-center rounded-full px-4 py-2 text-sm border hover:bg-black/5"
+                    className="w-full text-center rounded-lg px-4 py-2 text-sm font-medium border border-slate-200 text-slate-700 hover:bg-slate-100 transition-all"
                   >
                     Sair
                   </button>
                 ) : (
                   <>
-                    <Link
-                      to="/login"
+                    <a
+                      href="/login"
                       onClick={handleLinkClick}
-                      className="w-full text-center rounded-full px-4 py-2 text-sm border hover:bg-black/5"
+                      className="w-full text-center rounded-lg px-4 py-2 text-sm font-medium border border-slate-200 text-slate-700 hover:bg-slate-100 transition-all"
                     >
                       Entrar
-                    </Link>
-                    <Link
-                      to="/signup"
+                    </a>
+                    <a
+                      href="/signup"
                       onClick={handleLinkClick}
-                      className="w-full text-center rounded-full px-4 py-2 text-sm text-white bg-emerald-500 hover:bg-emerald-600 shadow"
+                      className="w-full text-center rounded-lg px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-amber-500 to-emerald-500 hover:shadow-lg transition-all"
                     >
                       Começar grátis
-                    </Link>
+                    </a>
                   </>
                 )}
               </div>

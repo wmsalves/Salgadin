@@ -84,41 +84,43 @@ export function AddExpenseModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/60 z-50 flex justify-center items-center p-4"
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4"
         >
           <motion.div
-            initial={{ scale: 0.95, y: 20 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.95, y: 20 }}
+            initial={{ scale: 0.95, y: 20, opacity: 0 }}
+            animate={{ scale: 1, y: 0, opacity: 1 }}
+            exit={{ scale: 0.95, y: 20, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="bg-white rounded-lg shadow-xl w-full max-w-md"
+            className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
           >
-            <div className="p-4 border-b flex justify-between items-center">
-              <h2 className="text-lg font-semibold">Adicionar Nova Despesa</h2>
+            <div className="bg-gradient-to-r from-amber-500 to-emerald-500 px-6 py-4 flex justify-between items-center">
+              <h2 className="text-lg font-bold text-white">
+                Adicionar Nova Despesa
+              </h2>
               <button
                 onClick={handleClose}
-                className="p-1 rounded-full text-gray-500 hover:bg-slate-100 hover:text-gray-800"
+                className="p-1 rounded-full text-white hover:bg-white/20 transition-colors"
               >
                 <X size={20} />
               </button>
             </div>
-            <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
               <div>
                 <label
                   htmlFor="description"
-                  className="block text-sm font-medium text-slate-700"
+                  className="block text-sm font-semibold text-slate-700 mb-2"
                 >
-                  Descrição
+                  Descrição <span className="text-red-500">*</span>
                 </label>
                 <input
                   {...register("description")}
                   id="description"
                   type="text"
-                  className="mt-1 w-full rounded-xl border px-4 py-3 bg-[#faf7df] outline-none focus:ring-2 focus:ring-emerald-500"
-                  placeholder="Ex: Almoço"
+                  className="w-full rounded-lg border border-slate-200 px-4 py-3 bg-white outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100 placeholder:text-slate-400"
+                  placeholder="Ex: Almoço no restaurante"
                 />
                 {errors.description && (
-                  <p className="text-xs text-red-600 mt-1">
+                  <p className="mt-2 text-sm text-red-600 font-medium">
                     {errors.description.message}
                   </p>
                 )}
@@ -128,20 +130,20 @@ export function AddExpenseModal({
                 <div>
                   <label
                     htmlFor="amount"
-                    className="block text-sm font-medium text-slate-700"
+                    className="block text-sm font-semibold text-slate-700 mb-2"
                   >
-                    Valor (R$)
+                    Valor (R$) <span className="text-red-500">*</span>
                   </label>
                   <input
                     {...register("amount")}
                     id="amount"
                     type="text"
                     inputMode="decimal"
-                    className="mt-1 w-full rounded-xl border px-4 py-3 bg-[#faf7df] outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-3 bg-white outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100 placeholder:text-slate-400"
                     placeholder="25,50"
                   />
                   {errors.amount && (
-                    <p className="text-xs text-red-600 mt-1">
+                    <p className="mt-2 text-sm text-red-600 font-medium">
                       {errors.amount.message}
                     </p>
                   )}
@@ -149,18 +151,18 @@ export function AddExpenseModal({
                 <div>
                   <label
                     htmlFor="date"
-                    className="block text-sm font-medium text-slate-700"
+                    className="block text-sm font-semibold text-slate-700 mb-2"
                   >
-                    Data
+                    Data <span className="text-red-500">*</span>
                   </label>
                   <input
                     {...register("date")}
                     id="date"
                     type="date"
-                    className="mt-1 w-full rounded-xl border px-4 py-3 bg-[#faf7df] outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full rounded-lg border border-slate-200 px-4 py-3 bg-white outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100"
                   />
                   {errors.date && (
-                    <p className="text-xs text-red-600 mt-1">
+                    <p className="mt-2 text-sm text-red-600 font-medium">
                       {errors.date.message}
                     </p>
                   )}
@@ -170,14 +172,14 @@ export function AddExpenseModal({
               <div>
                 <label
                   htmlFor="categoryId"
-                  className="block text-sm font-medium text-slate-700"
+                  className="block text-sm font-semibold text-slate-700 mb-2"
                 >
-                  Categoria
+                  Categoria <span className="text-red-500">*</span>
                 </label>
                 <select
                   {...register("categoryId")}
                   id="categoryId"
-                  className="mt-1 w-full rounded-xl border px-4 py-3 bg-[#faf7df] outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full rounded-lg border border-slate-200 px-4 py-3 bg-white outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100"
                 >
                   <option value="">Selecione uma categoria</option>
                   {categories.map((cat) => (
@@ -187,21 +189,23 @@ export function AddExpenseModal({
                   ))}
                 </select>
                 {errors.categoryId && (
-                  <p className="text-xs text-red-600 mt-1">
+                  <p className="mt-2 text-sm text-red-600 font-medium">
                     {errors.categoryId.message}
                   </p>
                 )}
               </div>
 
               {apiError && (
-                <p className="text-sm text-red-600 text-center">{apiError}</p>
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+                  <p className="text-sm text-red-700 font-medium">{apiError}</p>
+                </div>
               )}
 
               <div className="pt-2 flex justify-end gap-3">
                 <Button type="button" variant="secondary" onClick={handleClose}>
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" isLoading={isSubmitting}>
                   {isSubmitting ? "Salvando..." : "Salvar Despesa"}
                 </Button>
               </div>

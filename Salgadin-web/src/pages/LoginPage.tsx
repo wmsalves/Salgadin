@@ -4,8 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 
-// Assets, Components & Schemas
-import LogoSalgadin from "../assets/Logo_Salgadin.svg";
 import GoogleLogo from "../assets/google-icon-logo.svg";
 import FacebookLogo from "../assets/facebook-icon-logo.svg";
 import { Header } from "../components/Header";
@@ -34,30 +32,21 @@ export default function LoginPage() {
       const response = await loginUser(data);
       login(response.token);
       navigate("/dashboard");
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
+    } catch {
       setApiError("Email ou senha inválidos. Tente novamente.");
     }
   }
 
   return (
-    <div className="min-h-screen bg-[#fff8e6] flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 flex flex-col overflow-y-scroll">
       <Header />
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-10">
-        <div className="flex items-center gap-3 mb-6">
-          <img src={LogoSalgadin} alt="Salgadin" className="h-28 w-28" />
-          <span className="text-4xl font-extrabold tracking-tight">
-            <span className="text-amber-600">Salgad</span>
-            <span className="text-emerald-600">in</span>
-          </span>
-        </div>
-
-        <div className="w-full max-w-xl rounded-2xl border border-black/10 bg-white/80 backdrop-blur shadow p-6 sm:p-8">
-          <header className="text-center">
-            <h1 className="text-3xl sm:text-4xl font-extrabold">
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
+        <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-xl p-6 sm:p-8">
+          <header className="text-center mb-6">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
               Bem vindo de volta!
             </h1>
-            <p className="mt-1 text-gray-600">
+            <p className="mt-1 text-sm text-slate-600">
               Acesse sua conta para continuar
             </p>
           </header>
@@ -69,7 +58,6 @@ export default function LoginPage() {
           >
             <Input
               label="Email"
-              id="username"
               type="email"
               placeholder="seu@email.com"
               icon={<Mail />}
@@ -78,18 +66,19 @@ export default function LoginPage() {
             />
 
             <div>
-              <div className="flex items-baseline justify-between">
-                <span className="text-sm font-medium">Senha</span>
+              <div className="flex items-baseline justify-between mb-2">
+                <label className="text-sm font-semibold text-slate-700">
+                  Senha
+                </label>
                 <Link
                   to="/forgot"
-                  className="text-sm text-amber-600 hover:underline"
+                  className="text-sm text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
                 >
                   Esqueceu a senha?
                 </Link>
               </div>
               <Input
                 label=""
-                id="password"
                 type="password"
                 placeholder="••••••••"
                 icon={<Lock />}
@@ -98,53 +87,66 @@ export default function LoginPage() {
               />
             </div>
 
-            <Button type="submit" disabled={isSubmitting} className="w-full">
+            <Button
+              type="submit"
+              isLoading={isSubmitting}
+              className="w-full mt-4"
+            >
               {isSubmitting ? "Entrando..." : "Entrar"}
             </Button>
 
             {apiError && (
-              <p className="text-sm text-red-600 text-center">{apiError}</p>
+              <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+                <p className="text-sm text-red-700 font-medium text-center">
+                  {apiError}
+                </p>
+              </div>
             )}
 
-            <div className="flex items-center gap-3">
-              <div className="h-px flex-1 bg-black/10" />
-              <span className="text-xs text-gray-600">ou continue com:</span>
-              <div className="h-px flex-1 bg-black/10" />
+            <div className="flex items-center gap-3 pt-1">
+              <div className="h-px flex-1 bg-slate-300" />
+              <span className="text-xs text-slate-600 font-medium">
+                ou continue com:
+              </span>
+              <div className="h-px flex-1 bg-slate-300" />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               <Button
                 type="button"
                 variant="secondary"
-                size="social"
+                size="sm"
                 title="Entrar com Google"
               >
                 <img
                   src={GoogleLogo}
                   alt="GoogleLogo"
-                  className="h-6 w-6 mr-2"
+                  className="h-4 w-4 mr-1"
                 />
-                <span className="font-medium">Google</span>
+                <span className="text-xs">Google</span>
               </Button>
               <Button
                 type="button"
                 variant="secondary"
-                size="social"
+                size="sm"
                 title="Entrar com Facebook"
               >
                 <img
                   src={FacebookLogo}
                   alt="FacebookLogo"
-                  className="h-7 w-7 mr-2"
+                  className="h-4 w-4 mr-1"
                 />
-                <span className="font-medium">Facebook</span>
+                <span className="text-xs">Facebook</span>
               </Button>
             </div>
           </form>
 
-          <p className="mt-6 text-center text-sm">
+          <p className="mt-4 text-center text-xs text-slate-600">
             Não possui conta?{" "}
-            <Link to="/signup" className="text-amber-600 hover:underline">
+            <Link
+              to="/signup"
+              className="font-medium text-emerald-600 hover:text-emerald-700 transition-colors"
+            >
               Registre-se agora!
             </Link>
           </p>

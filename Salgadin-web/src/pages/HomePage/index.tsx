@@ -1,4 +1,3 @@
-// src/pages/HomePage/index.tsx
 import { Header } from "../../components/Header";
 import { Footer } from "../../components/Footer";
 import { HeroSection } from "./HeroSection";
@@ -10,7 +9,7 @@ import { PricingSection } from "./PricingSection";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#fff8e6] text-slate-800">
+    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-white text-slate-800">
       <Header />
       <main>
         <HeroSection />

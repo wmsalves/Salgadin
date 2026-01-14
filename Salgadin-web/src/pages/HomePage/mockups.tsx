@@ -23,7 +23,6 @@ const pieData = [
 ];
 const PIE_COLORS = ["#10b981", "#f59e0b", "#8b5cf6", "#3b82f6"];
 
-// --- Mockup do Dashboard ---
 export const DashboardMockup = () => (
   <div className="w-full h-full bg-slate-100 p-3 rounded-lg shadow-inner overflow-hidden flex flex-col gap-2">
     <div className="grid grid-cols-2 gap-2">
@@ -49,7 +48,6 @@ export const DashboardMockup = () => (
       <div className="w-full flex-1 -mx-2">
         <ResponsiveContainer>
           <PieChart>
-            {/* 1. Adicionado Tooltip para interatividade no gráfico */}
             <Tooltip
               cursor={{ fill: "rgba(0,0,0,0.05)" }}
               contentStyle={{
@@ -78,7 +76,7 @@ export const DashboardMockup = () => (
           </PieChart>
         </ResponsiveContainer>
       </div>
-      {/* 2. Legenda para o gráfico */}
+
       <div className="flex justify-center gap-2 flex-wrap">
         {pieData.map((entry, index) => (
           <div
@@ -146,14 +144,12 @@ const mockExpenses = [
   },
 ];
 
-// --- Mockup de Despesas ---
 export const ExpensesMockup = () => (
   <div className="w-full h-full bg-slate-100 p-3 rounded-lg flex flex-col shadow-inner">
     <div className="flex items-center justify-between mb-2">
       <h3 className="font-bold text-slate-700">Despesas de Setembro</h3>
       <MoreHorizontal size={16} className="text-slate-500" />
     </div>
-    {/* 3. Garantia de que a rolagem funcione corretamente com flex-1 e min-h-0 */}
     <div className="space-y-2 overflow-y-auto flex-1 min-h-0 pr-1">
       {mockExpenses.map((item) => (
         <div
@@ -161,7 +157,6 @@ export const ExpensesMockup = () => (
           className="bg-white p-2 rounded-lg shadow-sm flex items-center gap-3 transition-colors hover:bg-slate-50"
         >
           <div
-            // 4. Uso de clsx para consistência de código
             className={clsx(
               "h-8 w-8 rounded-full grid place-items-center flex-shrink-0",
               item.bgColor
@@ -226,7 +221,6 @@ const mockGoals = [
   },
 ];
 
-// --- Mockup de Metas ---
 export const GoalsMockup = () => (
   <div className="w-full h-full bg-slate-100 p-3 rounded-lg flex flex-col gap-2 shadow-inner">
     <h3 className="font-bold text-slate-700">Minhas Metas</h3>
@@ -241,7 +235,6 @@ export const GoalsMockup = () => (
         </div>
         <div className="w-full bg-slate-200 rounded-full h-2 mt-2">
           <div
-            // 4. Uso de clsx para consistência
             className={clsx("h-2 rounded-full", goal.barColor)}
             style={{ width: goal.progress }}
           />

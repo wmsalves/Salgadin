@@ -61,46 +61,64 @@ export default function DashboardPage() {
     fetchData().finally(() => setIsLoading(false));
   }, [fetchData]);
 
-  // Cálculos para os cards de resumo
   const totalExpenses = summary.reduce((acc, day) => acc + day.total, 0);
   const totalRevenue = 3500.0;
   const balance = totalRevenue - totalExpenses;
 
   if (isLoading) {
-    return <div className="p-8 text-center">Carregando seu dashboard...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block mb-4">
+            <div className="animate-spin">
+              <div className="h-12 w-12 border-4 border-emerald-200 border-t-emerald-500 rounded-full"></div>
+            </div>
+          </div>
+          <p className="text-slate-600 font-medium">
+            Carregando seu dashboard...
+          </p>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="p-8 text-center text-red-600">{error}</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="p-8 rounded-xl bg-red-50 border border-red-200 max-w-md">
+          <p className="text-red-700 font-medium text-center">{error}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <>
-      <div className="min-h-screen bg-slate-100">
-        <header className="bg-white shadow-sm">
-          <div className="mx-auto max-w-7xl px-4 py-3 flex justify-between items-center">
-            <h1 className="text-xl font-bold text-emerald-600">
+      <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 overflow-y-scroll">
+        <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
+          <div className="mx-auto max-w-7xl px-4 py-4 flex justify-between items-center">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-500 to-emerald-500 bg-clip-text text-transparent">
               Meu Dashboard
             </h1>
             <div className="flex items-center gap-4">
-              {/* 3. Botão para abrir o modal */}
+              {/* Botão para abrir o modal */}
               <button
                 onClick={() => setIsAddExpenseModalOpen(true)}
-                className="flex items-center gap-2 bg-emerald-500 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-emerald-600 transition"
+                className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:shadow-lg transition-all active:scale-95"
               >
                 <Plus size={16} />
                 <span className="hidden sm:inline">Adicionar Despesa</span>
               </button>
-              <div className="flex items-center gap-2">
-                <span className="text-sm hidden sm:inline">
-                  Olá, {user?.name}
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-slate-700 hidden sm:inline">
+                  {user?.name}
                 </span>
                 <button
                   onClick={logout}
-                  className="p-2 rounded-full hover:bg-red-50"
+                  className="p-2 rounded-lg text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors"
                   title="Sair"
                 >
-                  <LogOut size={18} className="text-red-500" />
+                  <LogOut size={18} />
                 </button>
               </div>
             </div>
@@ -110,35 +128,37 @@ export default function DashboardPage() {
         <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
           {/* Cards de Resumo */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white p-4 rounded-lg shadow-sm">
-              <div className="flex items-center text-sm text-slate-500">
-                <ArrowUpRight size={14} className="mr-1 text-emerald-500" />
+            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center text-sm font-semibold text-emerald-600 mb-2">
+                <ArrowUpRight size={16} className="mr-2" />
                 Receita do Mês
               </div>
-              <p className="font-bold text-2xl text-emerald-600 mt-1">
+              <p className="font-bold text-3xl text-emerald-600">
                 {totalRevenue.toLocaleString("pt-BR", {
                   style: "currency",
                   currency: "BRL",
                 })}
               </p>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm">
-              <div className="flex items-center text-sm text-slate-500">
-                <ArrowDownLeft size={14} className="mr-1 text-red-500" />
+            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center text-sm font-semibold text-red-600 mb-2">
+                <ArrowDownLeft size={16} className="mr-2" />
                 Despesas do Mês
               </div>
-              <p className="font-bold text-2xl text-red-500 mt-1">
+              <p className="font-bold text-3xl text-red-600">
                 {totalExpenses.toLocaleString("pt-BR", {
                   style: "currency",
                   currency: "BRL",
                 })}
               </p>
             </div>
-            <div className="bg-white p-4 rounded-lg shadow-sm">
-              <p className="text-sm text-slate-500">Balanço</p>
+            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow">
+              <p className="text-sm font-semibold text-slate-600 mb-2">
+                Balanço
+              </p>
               <p
-                className={`font-bold text-2xl mt-1 ${
-                  balance >= 0 ? "text-slate-700" : "text-amber-600"
+                className={`font-bold text-3xl ${
+                  balance >= 0 ? "text-emerald-600" : "text-amber-600"
                 }`}
               >
                 {balance.toLocaleString("pt-BR", {
@@ -152,11 +172,11 @@ export default function DashboardPage() {
           {/* Gráfico e Últimas Despesas */}
           <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Gráfico de Barras */}
-            <div className="lg:col-span-2 bg-white p-4 rounded-lg shadow-sm h-96">
-              <h3 className="font-semibold text-slate-700 mb-4">
+            <div className="lg:col-span-2 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h3 className="font-bold text-lg text-slate-800 mb-4">
                 Gastos Diários
               </h3>
-              <ResponsiveContainer width="100%" height="90%">
+              <ResponsiveContainer width="100%" height={350}>
                 <BarChart data={summary}>
                   <XAxis
                     dataKey="date"
@@ -168,6 +188,7 @@ export default function DashboardPage() {
                     tickLine={false}
                     axisLine={false}
                     fontSize={12}
+                    tick={{ fill: "#64748b" }}
                   />
                   <YAxis
                     tickFormatter={(value) => `R$${value}`}
@@ -175,10 +196,14 @@ export default function DashboardPage() {
                     axisLine={false}
                     width={50}
                     fontSize={12}
+                    tick={{ fill: "#64748b" }}
                   />
                   <Tooltip
                     cursor={{ fill: "rgba(0,0,0,0.05)" }}
-                    contentStyle={{ borderRadius: "8px" }}
+                    contentStyle={{
+                      borderRadius: "8px",
+                      border: "1px solid #e2e8f0",
+                    }}
                     formatter={(value: number) => [
                       value.toLocaleString("pt-BR", {
                         style: "currency",
@@ -187,7 +212,7 @@ export default function DashboardPage() {
                       "Total",
                     ]}
                   />
-                  <Bar dataKey="total" name="Total Gasto" radius={[4, 4, 0, 0]}>
+                  <Bar dataKey="total" name="Total Gasto" radius={[8, 8, 0, 0]}>
                     {summary.map((_entry, index) => (
                       <Cell
                         key={`cell-${index}`}
@@ -200,8 +225,8 @@ export default function DashboardPage() {
             </div>
 
             {/* Últimas Despesas */}
-            <div className="bg-white p-4 rounded-lg shadow-sm">
-              <h3 className="font-semibold text-slate-700 mb-4">
+            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h3 className="font-bold text-lg text-slate-800 mb-4">
                 Últimas Despesas
               </h3>
               <div className="space-y-3">
@@ -209,19 +234,22 @@ export default function DashboardPage() {
                   expenses.slice(0, 5).map((exp) => {
                     const Icon = categoryIcons[exp.category] || PiggyBank;
                     return (
-                      <div key={exp.id} className="flex items-center gap-3">
-                        <div className="h-8 w-8 bg-slate-100 rounded-full grid place-items-center flex-shrink-0">
-                          <Icon size={16} className="text-slate-500" />
+                      <div
+                        key={exp.id}
+                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors"
+                      >
+                        <div className="h-10 w-10 bg-gradient-to-br from-amber-100 to-emerald-100 rounded-lg grid place-items-center flex-shrink-0">
+                          <Icon size={18} className="text-emerald-600" />
                         </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-slate-800 truncate">
                             {exp.description}
                           </p>
                           <p className="text-xs text-slate-500">
                             {exp.category}
                           </p>
                         </div>
-                        <p className="font-bold text-sm">
+                        <p className="font-bold text-sm text-emerald-600 whitespace-nowrap">
                           {exp.amount.toLocaleString("pt-BR", {
                             style: "currency",
                             currency: "BRL",

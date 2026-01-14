@@ -24,8 +24,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
     return (
       <div>
-        <label htmlFor={name} className="block text-sm font-medium">
+        <label
+          htmlFor={name}
+          className="block text-sm font-semibold text-slate-700 mb-2"
+        >
           {label}
+          {error && <span className="text-red-500 ml-1">*</span>}
         </label>
         <div className="relative mt-1">
           {icon && (
@@ -43,9 +47,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             type={inputType}
             ref={ref}
             className={clsx(
-              "w-full rounded-xl border px-4 py-3 bg-[#faf7df] outline-none focus:ring-2 focus:ring-emerald-500",
+              "w-full rounded-lg border border-slate-200 px-4 py-3 bg-white outline-none transition-all duration-200",
+              "focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100",
+              "placeholder:text-slate-400",
               icon && "pl-10",
-              type === "password" && "pr-10"
+              type === "password" && "pr-10",
+              error && "border-red-300 focus:ring-red-500 focus:shadow-red-100"
             )}
             {...props}
           />
@@ -65,7 +72,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             </div>
           )}
         </div>
-        {error && <p className="mt-1 text-xs text-red-600">{error.message}</p>}
+        {error && (
+          <p className="mt-2 text-sm text-red-600 font-medium">
+            {error.message}
+          </p>
+        )}
       </div>
     );
   }

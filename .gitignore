@@ -201,3 +201,5 @@ pnpm-debug.log*
 # System
 .DS_Store
 Thumbs.db
+Salgadin-web/.github/copilot-instructions.md
+Salgadin-web/CLEANUP_REPORT.md

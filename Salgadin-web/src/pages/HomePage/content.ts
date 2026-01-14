@@ -4,25 +4,25 @@ export const features = [
   {
     title: "Controle de Despesas",
     desc: "Acompanhe todos os seus gastos em um só lugar, com categorização automática e análise detalhada.",
-    icon: Wallet, // O componente Wallet
+    icon: Wallet,
     colorTheme: "emerald",
   },
   {
     title: "Orçamento Inteligente",
     desc: "Crie orçamentos personalizados e receba alertas quando estiver próximo de atingir seus limites.",
-    icon: SlidersHorizontal, // O componente SlidersHorizontal
+    icon: SlidersHorizontal,
     colorTheme: "amber",
   },
   {
     title: "Relatórios Detalhados",
     desc: "Visualize sua saúde financeira com gráficos e relatórios personalizados e fáceis de entender.",
-    icon: BarChart3, // O componente BarChart3
+    icon: BarChart3,
     colorTheme: "emerald",
   },
   {
     title: "Metas Financeiras",
     desc: "Estabeleça metas de economia e acompanhe seu progresso com visualizações claras e motivadoras.",
-    icon: Target, // O componente Target
+    icon: Target,
     colorTheme: "amber",
   },
 ];

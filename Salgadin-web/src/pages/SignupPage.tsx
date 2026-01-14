@@ -1,18 +1,16 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { Mail, Lock } from "lucide-react"; // Make sure Lock is imported
+import { Mail, Lock } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 
-// Assets, Components & Schemas
 import { Header } from "../components/Header";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { PasswordStrength } from "../components/ui/PasswordStrength";
 import { signupSchema, type SignupFormValues } from "../lib/schemas";
-import { registerUser } from "../services/authService"; // Importar o serviço de registro
-import { AxiosError } from "axios"; // Importar para checar o erro da API
+import { registerUser } from "../services/authService";
+import { AxiosError } from "axios";
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -33,7 +31,7 @@ export default function SignupPage() {
   async function onSubmit(data: SignupFormValues) {
     setApiError(null);
     try {
-      const { confirmPassword, ...payload } = data;
+      const { ...payload } = data;
 
       await registerUser(payload);
 
@@ -54,41 +52,46 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fff8e6] flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 flex flex-col overflow-y-scroll">
       <Header />
       <main className="flex-1">
-        <div className="mx-auto max-w-6xl min-h-[calc(100svh-80px)] grid gap-12 md:grid-cols-2 items-center px-4 py-8">
-          {/* Branding Column */}
-          <section className="hidden md:flex flex-col items-start text-left">
-            <h1 className="text-4xl lg:text-5xl font-extrabold leading-tight">
-              <span className="text-emerald-700">Transforme suas</span>
-              <br />
-              <span className="text-amber-600">finanças com estilo</span>
-            </h1>
-            <p className="mt-4 max-w-md text-gray-700">
-              Gerencie despesas, acompanhe investimentos e alcance seus
-              objetivos financeiros com nossa plataforma intuitiva.
-            </p>
+        <div className="mx-auto max-w-7xl min-h-[calc(100svh-80px)] grid gap-6 md:gap-8 md:grid-cols-2 items-center px-4 py-6 md:py-4">
+          {/* Branding Column - Hidden on smaller resolutions */}
+          <section className="hidden lg:flex flex-col items-start text-left">
+            <div className="space-y-4">
+              <h1 className="text-4xl lg:text-5xl font-extrabold leading-tight">
+                <span className="bg-gradient-to-r from-amber-600 to-emerald-600 bg-clip-text text-transparent">
+                  Transforme suas
+                </span>
+                <br />
+                <span className="text-slate-800">finanças</span>
+              </h1>
+              <p className="max-w-sm text-base text-slate-600 leading-relaxed">
+                Gerencie despesas, acompanhe investimentos e alcance seus
+                objetivos financeiros.
+              </p>
+            </div>
           </section>
 
           {/* Form Column */}
           <section className="flex justify-center md:justify-end">
-            <div className="w-full max-w-md rounded-2xl border border-black/10 bg-white/80 backdrop-blur shadow p-6 sm:p-8">
-              <header className="text-center md:text-left">
-                <h2 className="text-3xl sm:text-4xl font-extrabold">
+            <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-xl p-6 sm:p-8">
+              <header className="text-center md:text-left mb-6">
+                <h2 className="text-2xl sm:text-3xl font-bold text-slate-800">
                   Crie sua Conta
                 </h2>
-                <p className="text-gray-600">Preencha os dados para começar.</p>
+                <p className="mt-1 text-sm text-slate-600">
+                  Preencha os dados para começar.
+                </p>
               </header>
 
               <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="mt-6 space-y-4"
+                className="space-y-4"
                 noValidate
               >
                 <Input
                   label="Email"
-                  id="username"
                   type="email"
                   placeholder="seu@email.com"
                   icon={<Mail />}
@@ -99,7 +102,6 @@ export default function SignupPage() {
                 <div>
                   <Input
                     label="Senha"
-                    id="password"
                     type="password"
                     placeholder="••••••••"
                     icon={<Lock />}
@@ -111,7 +113,6 @@ export default function SignupPage() {
 
                 <Input
                   label="Confirme sua Senha"
-                  id="confirmPassword"
                   type="password"
                   placeholder="••••••••"
                   icon={<Lock />}
@@ -121,22 +122,27 @@ export default function SignupPage() {
 
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="w-full"
+                  isLoading={isSubmitting}
+                  className="w-full mt-4"
                 >
                   {isSubmitting ? "Criando conta..." : "Criar Conta"}
                 </Button>
 
                 {apiError && (
-                  <p className="text-sm text-red-600 text-center pt-2">
-                    {apiError}
-                  </p>
+                  <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+                    <p className="text-sm text-red-700 font-medium text-center">
+                      {apiError}
+                    </p>
+                  </div>
                 )}
               </form>
 
-              <p className="mt-6 text-center text-sm">
+              <p className="mt-4 text-center text-xs text-slate-600">
                 Já tem uma conta?{" "}
-                <Link to="/login" className="text-amber-600 hover:underline">
+                <Link
+                  to="/login"
+                  className="font-medium text-emerald-600 hover:text-emerald-700 transition-colors"
+                >
                   Faça o login!
                 </Link>
               </p>

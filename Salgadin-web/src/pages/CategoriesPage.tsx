@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useCallback } from "react";
 import {
   getCategories,
@@ -37,27 +36,47 @@ export default function CategoriesPage() {
       try {
         await deleteCategory(id);
         fetchData();
-      } catch (err: any) {
-        alert(err.response?.data?.message || "Falha ao excluir a categoria.");
+      } catch (err) {
+        const message =
+          (err as any).response?.data?.message ||
+          "Falha ao excluir a categoria.";
+        alert(message);
       }
     }
   };
 
   if (isLoading) {
-    return <div className="p-8 text-center">Carregando categorias...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block mb-4">
+            <div className="animate-spin">
+              <div className="h-12 w-12 border-4 border-emerald-200 border-t-emerald-500 rounded-full"></div>
+            </div>
+          </div>
+          <p className="text-slate-600 font-medium">Carregando categorias...</p>
+        </div>
+      </div>
+    );
   }
   if (error) {
-    return <div className="p-8 text-center text-red-600">{error}</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="p-8 rounded-xl bg-red-50 border border-red-200 max-w-md">
+          <p className="text-red-700 font-medium text-center">{error}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-slate-100">
-      <header className="bg-white shadow-sm">
-        <div className="mx-auto max-w-7xl px-4 py-3 flex justify-between items-center">
-          <h1 className="text-xl font-bold text-emerald-600">
+    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 overflow-y-scroll">
+      <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
+        <div className="mx-auto max-w-7xl px-4 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-500 to-emerald-500 bg-clip-text text-transparent">
             Minhas Categorias
           </h1>
-          <button className="flex items-center gap-2 bg-emerald-500 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-emerald-600 transition">
+          <button className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:shadow-lg transition-all active:scale-95">
             <Plus size={16} />
             <span className="hidden sm:inline">Nova Categoria</span>
           </button>
@@ -65,34 +84,36 @@ export default function CategoriesPage() {
       </header>
 
       <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm">
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
           <ul className="divide-y divide-slate-200">
             {categories.length > 0 ? (
               categories.map((cat) => (
                 <li
                   key={cat.id}
-                  className="py-3 flex items-center justify-between"
+                  className="py-4 flex items-center justify-between hover:bg-slate-50 transition-colors rounded-lg px-2"
                 >
-                  <span className="font-medium">{cat.name}</span>
-                  <div className="flex items-center gap-4">
+                  <span className="font-semibold text-slate-800">
+                    {cat.name}
+                  </span>
+                  <div className="flex items-center gap-2">
                     <button
-                      className="text-slate-500 hover:text-blue-600"
+                      className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                       title="Editar"
                     >
-                      <Edit size={16} />
+                      <Edit size={18} />
                     </button>
                     <button
                       onClick={() => handleDelete(cat.id)}
-                      className="text-slate-500 hover:text-red-600"
+                      className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                       title="Excluir"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={18} />
                     </button>
                   </div>
                 </li>
               ))
             ) : (
-              <p className="text-center text-slate-500 py-8">
+              <p className="text-center text-slate-500 py-12 font-medium">
                 Você ainda não tem nenhuma categoria personalizada.
               </p>
             )}

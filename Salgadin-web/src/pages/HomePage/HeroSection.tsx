@@ -9,7 +9,6 @@ import {
   Cell,
 } from "recharts";
 
-// Dados de exemplo para o gráfico
 const chartData = [
   { name: "Seg", gasto: 15.5 },
   { name: "Ter", gasto: 27.0 },
@@ -29,28 +28,29 @@ const colors = [
   "#f59e0b",
 ];
 
-// Estilos consistentes para os botões
 const buttonStyles = {
   primary:
-    "rounded-full bg-gradient-to-r from-amber-400 to-emerald-400 px-5 py-2.5 text-sm font-semibold text-white shadow hover:opacity-95 transition-opacity",
+    "rounded-lg bg-gradient-to-r from-amber-500 to-emerald-500 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all hover:scale-105",
   secondary:
-    "rounded-full border border-black/10 px-5 py-2.5 text-sm font-semibold hover:bg-black/5 transition-colors",
+    "rounded-lg border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all",
 };
 
 export function HeroSection() {
   return (
-    <section className="mx-auto max-w-6xl px-4 pt-12 pb-16">
+    <section className="mx-auto max-w-7xl px-4 pt-16 pb-20">
       <h1 className="text-center text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">
-        <span className="text-emerald-600">Entenda seus gastos,</span>
+        <span className="bg-gradient-to-r from-amber-600 to-emerald-600 bg-clip-text text-transparent">
+          Entenda seus gastos,
+        </span>
         <br className="hidden sm:block" />
-        <span className="text-amber-600">sem complicação.</span>
+        <span className="text-slate-800">sem complicação.</span>
       </h1>
-      <p className="mt-4 text-center max-w-2xl mx-auto text-gray-600">
+      <p className="mt-6 text-center max-w-2xl mx-auto text-slate-600 text-lg">
         O Salgadin transforma seus "pequenos gastos" diários em gráficos simples
         e inteligentes. Assuma o controle financeiro de forma visual e
         intuitiva.
       </p>
-      <div className="mt-8 flex justify-center gap-4">
+      <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
         <Link to="/signup" className={buttonStyles.primary}>
           Começar Gratuitamente
         </Link>
@@ -59,9 +59,9 @@ export function HeroSection() {
         </a>
       </div>
 
-      <div className="relative mt-12">
+      <div className="relative mt-16">
         {/* Gráfico real com Recharts */}
-        <div className="mx-auto h-[360px] w-full max-w-5xl rounded-2xl border border-black/10 bg-white p-4 shadow-inner">
+        <div className="mx-auto h-[360px] w-full max-w-5xl rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
