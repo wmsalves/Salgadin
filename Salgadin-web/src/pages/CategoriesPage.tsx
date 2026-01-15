@@ -47,31 +47,35 @@ export default function CategoriesPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block mb-4">
             <div className="animate-spin">
               <div className="h-12 w-12 border-4 border-emerald-200 border-t-emerald-500 rounded-full"></div>
             </div>
           </div>
-          <p className="text-slate-600 font-medium">Carregando categorias...</p>
+          <p className="text-slate-600 dark:text-slate-400 font-medium">
+            Carregando categorias...
+          </p>
         </div>
       </div>
     );
   }
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 flex items-center justify-center">
-        <div className="p-8 rounded-xl bg-red-50 border border-red-200 max-w-md">
-          <p className="text-red-700 font-medium text-center">{error}</p>
+      <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900 flex items-center justify-center">
+        <div className="p-8 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 max-w-md">
+          <p className="text-red-700 dark:text-red-400 font-medium text-center">
+            {error}
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 overflow-y-scroll">
-      <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
+    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900 overflow-y-scroll">
+      <header className="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 shadow-sm">
         <div className="mx-auto max-w-7xl px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-500 to-emerald-500 bg-clip-text text-transparent">
             Minhas Categorias
@@ -84,27 +88,27 @@ export default function CategoriesPage() {
       </header>
 
       <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
           <ul className="divide-y divide-slate-200">
             {categories.length > 0 ? (
               categories.map((cat) => (
                 <li
                   key={cat.id}
-                  className="py-4 flex items-center justify-between hover:bg-slate-50 transition-colors rounded-lg px-2"
+                  className="py-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors rounded-lg px-2"
                 >
-                  <span className="font-semibold text-slate-800">
+                  <span className="font-semibold text-slate-800 dark:text-white">
                     {cat.name}
                   </span>
                   <div className="flex items-center gap-2">
                     <button
-                      className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="p-2 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
                       title="Editar"
                     >
                       <Edit size={18} />
                     </button>
                     <button
                       onClick={() => handleDelete(cat.id)}
-                      className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      className="p-2 text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                       title="Excluir"
                     >
                       <Trash2 size={18} />
@@ -113,7 +117,7 @@ export default function CategoriesPage() {
                 </li>
               ))
             ) : (
-              <p className="text-center text-slate-500 py-12 font-medium">
+              <p className="text-center text-slate-500 dark:text-slate-400 py-12 font-medium">
                 Você ainda não tem nenhuma categoria personalizada.
               </p>
             )}

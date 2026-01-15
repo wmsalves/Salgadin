@@ -4,11 +4,11 @@ import clsx from "clsx";
 export function FeaturesSection() {
   return (
     <section id="features" className="mx-auto max-w-7xl px-4 py-16">
-      <h2 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-800">
+      <h2 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-800 dark:text-white">
         Tudo o que você precisa para gerenciar
         <br className="hidden sm:block" /> suas finanças
       </h2>
-      <p className="mt-4 text-center max-w-3xl mx-auto text-slate-600 text-base">
+      <p className="mt-4 text-center max-w-3xl mx-auto text-slate-600 dark:text-slate-300 text-base">
         O Salgadin oferece ferramentas poderosas e intuitivas para ajudar você a
         controlar seus gastos, economizar dinheiro e alcançar seus objetivos
         financeiros.
@@ -18,7 +18,7 @@ export function FeaturesSection() {
         {features.map((feature) => (
           <div
             key={feature.title}
-            className="group rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-lg hover:border-emerald-200 hover:-translate-y-1"
+            className="group rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm dark:shadow-slate-950/30 transition-all hover:shadow-lg hover:border-emerald-200 dark:hover:border-emerald-800 hover:-translate-y-1"
           >
             <div className="flex items-start gap-4">
               <div
@@ -40,10 +40,12 @@ export function FeaturesSection() {
                 />
               </div>
               <div>
-                <h3 className="font-semibold text-slate-800">
+                <h3 className="font-semibold text-slate-800 dark:text-white">
                   {feature.title}
                 </h3>
-                <p className="mt-2 text-sm text-slate-600">{feature.desc}</p>
+                <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                  {feature.desc}
+                </p>
               </div>
             </div>
           </div>

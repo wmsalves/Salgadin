@@ -24,12 +24,15 @@ export function HowItWorksSection() {
   }[activeTab];
 
   return (
-    <section id="how" className="mx-auto max-w-6xl px-4 py-12">
-      <h2 className="text-center text-2xl sm:text-3xl font-extrabold">
+    <section
+      id="how"
+      className="mx-auto max-w-6xl px-4 py-12 dark:bg-slate-900/30"
+    >
+      <h2 className="text-center text-2xl sm:text-3xl font-extrabold dark:text-white">
         Como o <span className="text-amber-600">Salgad</span>
         <span className="text-emerald-600">in</span> funciona?
       </h2>
-      <p className="mt-2 text-center text-gray-600 text-sm sm:text-base">
+      <p className="mt-2 text-center text-gray-600 dark:text-slate-400 text-sm sm:text-base">
         Comece a organizar suas finanças em minutos com nossa plataforma
         intuitiva e fácil de usar.
       </p>
@@ -48,8 +51,8 @@ export function HowItWorksSection() {
             className={clsx(
               "rounded-full px-4 py-2 font-medium transition-colors relative z-10",
               activeTab === t
-                ? "text-emerald-700"
-                : "text-gray-600 hover:text-black"
+                ? "text-emerald-700 dark:text-emerald-400"
+                : "text-gray-600 dark:text-slate-400 hover:text-black dark:hover:text-white"
             )}
           >
             {activeTab === t && (
@@ -75,13 +78,13 @@ export function HowItWorksSection() {
         >
           {/* Lado Esquerdo: Textos */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-extrabold">
+            <h3 className="text-2xl font-extrabold dark:text-white">
               {tabsContent[activeTab].title}
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-slate-400">
               {tabsContent[activeTab].description}
             </p>
-            <ul className="space-y-3 text-gray-700">
+            <ul className="space-y-3 text-gray-700 dark:text-slate-300">
               {tabsContent[activeTab].items.map((item) => (
                 <li key={item} className="flex items-center gap-2">
                   <CheckCircle2

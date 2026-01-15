@@ -10,9 +10,11 @@ const buttonVariants = cva(
         primary:
           "bg-gradient-to-r from-amber-500 to-emerald-500 text-white shadow-lg hover:shadow-xl hover:from-amber-600 hover:to-emerald-600",
         secondary:
-          "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-400",
-        ghost: "text-slate-700 hover:bg-slate-100",
-        danger: "bg-red-500 text-white hover:bg-red-600 shadow-lg",
+          "border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500",
+        ghost:
+          "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800",
+        danger:
+          "bg-red-500 text-white hover:bg-red-600 shadow-lg dark:bg-red-600 dark:hover:bg-red-700",
       },
       size: {
         default: "px-6 py-3 rounded-lg text-base",

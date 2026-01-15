@@ -38,12 +38,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 flex flex-col overflow-y-scroll">
+    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900 flex flex-col overflow-y-scroll">
       <Header />
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-xl p-6 sm:p-8">
+        <div className="w-full max-w-md rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl p-6 sm:p-8">
           <header className="text-center mb-6">
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white">
               Bem vindo de volta!
             </h1>
             <p className="mt-1 text-sm text-slate-600">

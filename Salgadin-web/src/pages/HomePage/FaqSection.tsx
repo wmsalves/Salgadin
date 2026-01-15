@@ -12,10 +12,10 @@ export function FaqSection() {
 
   return (
     <section id="faq" className="mx-auto max-w-3xl px-4 py-12">
-      <h2 className="text-center text-2xl sm:text-3xl font-extrabold">
+      <h2 className="text-center text-2xl sm:text-3xl font-extrabold dark:text-white">
         Perguntas Frequentes
       </h2>
-      <p className="mt-2 text-center text-gray-600 text-sm sm:text-base">
+      <p className="mt-2 text-center text-gray-600 dark:text-slate-400 text-sm sm:text-base">
         Encontre respostas para as dúvidas mais comuns sobre o Salgadin.
       </p>
       <div className="mt-8 space-y-4">
@@ -25,11 +25,11 @@ export function FaqSection() {
           return (
             <div
               key={item.q}
-              className="rounded-2xl border border-black/10 bg-white shadow-sm overflow-hidden"
+              className="rounded-2xl border border-black/10 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm dark:shadow-slate-950/30 overflow-hidden"
             >
               <button
                 onClick={() => toggleItem(item.q)}
-                className="w-full flex justify-between items-center text-left p-5 font-medium"
+                className="w-full flex justify-between items-center text-left p-5 font-medium dark:text-white"
                 aria-expanded={isOpen}
               >
                 <span>{item.q}</span>
@@ -50,7 +50,9 @@ export function FaqSection() {
                 )}
               >
                 <div className="overflow-hidden">
-                  <p className="px-5 pb-5 text-sm text-gray-600">{item.a}</p>
+                  <p className="px-5 pb-5 text-sm text-gray-600 dark:text-slate-400">
+                    {item.a}
+                  </p>
                 </div>
               </div>
             </div>

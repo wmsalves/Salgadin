@@ -91,7 +91,7 @@ export function AddExpenseModal({
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.95, y: 20, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
+            className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden dark:bg-slate-900"
           >
             <div className="bg-gradient-to-r from-amber-500 to-emerald-500 px-6 py-4 flex justify-between items-center">
               <h2 className="text-lg font-bold text-white">
@@ -108,7 +108,7 @@ export function AddExpenseModal({
               <div>
                 <label
                   htmlFor="description"
-                  className="block text-sm font-semibold text-slate-700 mb-2"
+                  className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
                 >
                   Descrição <span className="text-red-500">*</span>
                 </label>
@@ -116,7 +116,7 @@ export function AddExpenseModal({
                   {...register("description")}
                   id="description"
                   type="text"
-                  className="w-full rounded-lg border border-slate-200 px-4 py-3 bg-white outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100 placeholder:text-slate-400"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-3 bg-white dark:bg-slate-800 dark:text-white outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100 dark:focus:shadow-emerald-900/30 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                   placeholder="Ex: Almoço no restaurante"
                 />
                 {errors.description && (
@@ -130,7 +130,7 @@ export function AddExpenseModal({
                 <div>
                   <label
                     htmlFor="amount"
-                    className="block text-sm font-semibold text-slate-700 mb-2"
+                    className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
                   >
                     Valor (R$) <span className="text-red-500">*</span>
                   </label>
@@ -139,7 +139,7 @@ export function AddExpenseModal({
                     id="amount"
                     type="text"
                     inputMode="decimal"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-3 bg-white outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100 placeholder:text-slate-400"
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-3 bg-white dark:bg-slate-800 dark:text-white outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100 dark:focus:shadow-emerald-900/30 placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     placeholder="25,50"
                   />
                   {errors.amount && (
@@ -151,7 +151,7 @@ export function AddExpenseModal({
                 <div>
                   <label
                     htmlFor="date"
-                    className="block text-sm font-semibold text-slate-700 mb-2"
+                    className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
                   >
                     Data <span className="text-red-500">*</span>
                   </label>
@@ -159,7 +159,7 @@ export function AddExpenseModal({
                     {...register("date")}
                     id="date"
                     type="date"
-                    className="w-full rounded-lg border border-slate-200 px-4 py-3 bg-white outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100"
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-3 bg-white dark:bg-slate-800 dark:text-white outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100 dark:focus:shadow-emerald-900/30"
                   />
                   {errors.date && (
                     <p className="mt-2 text-sm text-red-600 font-medium">
@@ -172,14 +172,14 @@ export function AddExpenseModal({
               <div>
                 <label
                   htmlFor="categoryId"
-                  className="block text-sm font-semibold text-slate-700 mb-2"
+                  className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
                 >
                   Categoria <span className="text-red-500">*</span>
                 </label>
                 <select
                   {...register("categoryId")}
                   id="categoryId"
-                  className="w-full rounded-lg border border-slate-200 px-4 py-3 bg-white outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-3 bg-white dark:bg-slate-800 dark:text-white outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100 dark:focus:shadow-emerald-900/30"
                 >
                   <option value="">Selecione uma categoria</option>
                   {categories.map((cat) => (
@@ -196,8 +196,10 @@ export function AddExpenseModal({
               </div>
 
               {apiError && (
-                <div className="p-3 rounded-lg bg-red-50 border border-red-200">
-                  <p className="text-sm text-red-700 font-medium">{apiError}</p>
+                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800">
+                  <p className="text-sm text-red-700 dark:text-red-400 font-medium">
+                    {apiError}
+                  </p>
                 </div>
               )}
 

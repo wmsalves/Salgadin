@@ -26,7 +26,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       <div>
         <label
           htmlFor={name}
-          className="block text-sm font-semibold text-slate-700 mb-2"
+          className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
         >
           {label}
           {error && <span className="text-red-500 ml-1">*</span>}
@@ -36,7 +36,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
               {isValidElement(icon) &&
                 cloneElement(icon as ReactElement<{ className: string }>, {
-                  className: "h-5 w-5 text-gray-500",
+                  className: "h-5 w-5 text-slate-500 dark:text-slate-400",
                 })}
             </div>
           )}
@@ -47,12 +47,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             type={inputType}
             ref={ref}
             className={clsx(
-              "w-full rounded-lg border border-slate-200 px-4 py-3 bg-white outline-none transition-all duration-200",
-              "focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100",
-              "placeholder:text-slate-400",
+              "w-full rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-3 bg-white dark:bg-slate-800 dark:text-white outline-none transition-all duration-200",
+              "focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100 dark:focus:shadow-emerald-900/30",
+              "placeholder:text-slate-400 dark:placeholder:text-slate-500",
               icon && "pl-10",
               type === "password" && "pr-10",
-              error && "border-red-300 focus:ring-red-500 focus:shadow-red-100"
+              error &&
+                "border-red-300 dark:border-red-600 focus:ring-red-500 focus:shadow-red-100 dark:focus:shadow-red-900/30"
             )}
             {...props}
           />
@@ -62,7 +63,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               <button
                 type="button"
                 onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
                 aria-label={
                   isPasswordVisible ? "Esconder senha" : "Mostrar senha"
                 }
@@ -73,7 +74,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           )}
         </div>
         {error && (
-          <p className="mt-2 text-sm text-red-600 font-medium">
+          <p className="mt-2 text-sm text-red-600 dark:text-red-400 font-medium">
             {error.message}
           </p>
         )}

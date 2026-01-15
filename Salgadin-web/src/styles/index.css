@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@config "../../tailwind.config.js";
+@variant dark (&:where(.dark, .dark *));
 
 html,
 body,
@@ -6,4 +8,12 @@ body,
   scroll-behavior: smooth;
   scroll-padding-top: 100px;
   height: 100%;
+}
+
+:where(html, body, #root, :root) *,
+:where(html, body, #root, :root) *::before,
+:where(html, body, #root, :root) *::after {
+  transition: background-color 220ms ease, color 220ms ease,
+    border-color 220ms ease, box-shadow 220ms ease, fill 220ms ease,
+    stroke 220ms ease;
 }
