@@ -2,12 +2,72 @@
 @config "../../tailwind.config.js";
 @variant dark (&:where(.dark, .dark *));
 
+:root {
+  color-scheme: light;
+  --color-bg: #f7f7fb;
+  --color-surface: #ffffff;
+  --color-surface-2: #f1f3f9;
+  --color-surface-3: #e2e6f0;
+  --color-border: #e2e6f0;
+  --color-text: #0b1220;
+  --color-text-muted: #3d4a5e;
+  --color-text-subtle: #6a768a;
+  --color-primary: #0ea5e9;
+  --color-primary-strong: #0284c7;
+  --color-accent: #f97316;
+  --color-accent-strong: #ea580c;
+  --color-danger: #ef4444;
+  --color-danger-strong: #dc2626;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --brand-from: #f97316;
+  --brand-to: #0ea5e9;
+  --brand-from-strong: #ea580c;
+  --brand-to-strong: #0284c7;
+  --bg-from: #f7f7fb;
+  --bg-via: #f1f3f9;
+  --bg-to: #e2e6f0;
+  --chart-muted: #94a3b8;
+  --shadow-color: 15 23 42;
+}
+
+.dark {
+  color-scheme: dark;
+  --color-bg: #0b0f1a;
+  --color-surface: #101828;
+  --color-surface-2: #151f32;
+  --color-surface-3: #1f2a44;
+  --color-border: #1f2a44;
+  --color-text: #e6ecf6;
+  --color-text-muted: #b2becf;
+  --color-text-subtle: #7f8ca3;
+  --color-primary: #38bdf8;
+  --color-primary-strong: #0ea5e9;
+  --color-accent: #fb923c;
+  --color-accent-strong: #f97316;
+  --color-danger: #f87171;
+  --color-danger-strong: #ef4444;
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --brand-from: #fb923c;
+  --brand-to: #38bdf8;
+  --brand-from-strong: #f97316;
+  --brand-to-strong: #0ea5e9;
+  --bg-from: #0b0f1a;
+  --bg-via: #101828;
+  --bg-to: #0b0f1a;
+  --chart-muted: #94a3b8;
+  --shadow-color: 15 23 42;
+}
+
 html,
 body,
 #root {
   scroll-behavior: smooth;
   scroll-padding-top: 100px;
   height: 100%;
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 :where(html, body, #root, :root) *,

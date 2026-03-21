@@ -9,7 +9,7 @@ import { PricingSection } from "./PricingSection";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-800 dark:text-slate-100">
+    <div className="min-h-screen bg-gradient-to-b from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] text-foreground">
       <Header />
       <main>
         <HeroSection />
@@ -23,3 +23,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+

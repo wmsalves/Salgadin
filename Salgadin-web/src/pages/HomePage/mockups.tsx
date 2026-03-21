@@ -40,19 +40,19 @@ export const DashboardMockup = () => {
   const { theme } = useTheme();
 
   return (
-    <div className="w-full h-full bg-slate-100 dark:bg-slate-900 p-3 rounded-lg overflow-hidden flex flex-col gap-2">
-      <div className="w-full h-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg p-4">
+    <div className="w-full h-full bg-surface-2  p-3 rounded-lg overflow-hidden flex flex-col gap-2">
+      <div className="w-full h-full bg-surface  border border-border  rounded-xl shadow-lg p-4">
         {/* Cards de Totais */}
         <div className="grid grid-cols-2 gap-2">
-          <div className="bg-white dark:bg-slate-900 p-2 rounded-lg shadow-sm">
-            <div className="flex items-center text-xs text-slate-500 dark:text-slate-400">
-              <ArrowUpRight size={12} className="mr-1 text-emerald-500" />
+          <div className="bg-surface  p-2 rounded-lg shadow-sm">
+            <div className="flex items-center text-xs text-foreground-subtle ">
+              <ArrowUpRight size={12} className="mr-1 text-success" />
               Receita Total
             </div>
-            <p className="font-bold text-base text-emerald-600">R$ 3.500,00</p>
+            <p className="font-bold text-base text-primary">R$ 3.500,00</p>
           </div>
-          <div className="bg-white dark:bg-slate-900 p-2 rounded-lg shadow-sm">
-            <div className="flex items-center text-xs text-slate-500 dark:text-slate-400">
+          <div className="bg-surface  p-2 rounded-lg shadow-sm">
+            <div className="flex items-center text-xs text-foreground-subtle ">
               <ArrowDownLeft size={12} className="mr-1 text-red-500" />
               Despesa Total
             </div>
@@ -61,8 +61,8 @@ export const DashboardMockup = () => {
         </div>
 
         {/* Gráfico */}
-        <div className="bg-white dark:bg-slate-900 p-2 rounded-lg shadow-sm flex-1 flex flex-col">
-          <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+        <div className="bg-surface  p-2 rounded-lg shadow-sm flex-1 flex flex-col">
+          <p className="text-xs font-semibold text-foreground-muted ">
             Gastos por Categoria
           </p>
           <div className="w-full flex-1 -mx-2 min-h-[120px]">
@@ -101,7 +101,7 @@ export const DashboardMockup = () => {
             {pieData.map((entry, index) => (
               <div
                 key={entry.name}
-                className="flex items-center gap-1 text-[10px] text-slate-500 dark:text-slate-400"
+                className="flex items-center gap-1 text-[10px] text-foreground-subtle "
               >
                 <div
                   className="w-2 h-2 rounded-full"
@@ -172,22 +172,22 @@ const mockExpenses = [
 ];
 
 export const ExpensesMockup = () => (
-  <div className="w-full h-full bg-slate-100 dark:bg-slate-900 p-3 rounded-lg flex flex-col">
-    <div className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg p-4">
+  <div className="w-full h-full bg-surface-2  p-3 rounded-lg flex flex-col">
+    <div className="w-full bg-surface  border border-border  rounded-xl shadow-lg p-4">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="font-bold text-slate-700 dark:text-slate-100">
+        <h3 className="font-bold text-foreground ">
           Despesas de Setembro
         </h3>
         <MoreHorizontal
           size={16}
-          className="text-slate-500 dark:text-slate-400"
+          className="text-foreground-subtle "
         />
       </div>
       <div className="space-y-2 overflow-y-auto flex-1 min-h-0 pr-1">
         {mockExpenses.map((item) => (
           <div
             key={item.title}
-            className="bg-white dark:bg-slate-900 p-2 rounded-lg shadow-sm flex items-center gap-3 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800"
+            className="bg-surface  p-2 rounded-lg shadow-sm flex items-center gap-3 transition-colors hover:bg-surface-2 "
           >
             <div
               className={clsx(
@@ -198,25 +198,25 @@ export const ExpensesMockup = () => (
               <item.icon size={16} className={item.iconColor} />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium dark:text-slate-100">
+              <p className="text-sm font-medium ">
                 {item.title}
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-foreground-subtle ">
                 {item.category}
               </p>
             </div>
             <div className="text-right">
-              <p className="font-bold text-sm dark:text-slate-100">
+              <p className="font-bold text-sm ">
                 {item.amount}
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-foreground-subtle ">
                 {item.date}
               </p>
             </div>
           </div>
         ))}
       </div>
-      <button className="text-center text-sm font-semibold text-emerald-600 dark:text-emerald-400 mt-auto pt-2 hover:underline">
+      <button className="text-center text-sm font-semibold text-primary  mt-auto pt-2 hover:underline">
         Ver mais
       </button>
     </div>
@@ -227,21 +227,21 @@ export const ExpensesMockup = () => (
 const mockGoals = [
   {
     icon: Target,
-    iconColor: "text-amber-600",
+    iconColor: "text-accent",
     title: "Viagem para a Praia",
     progress: "75%",
     current: "R$ 1.500",
     total: "R$ 2.000",
-    barColor: "bg-amber-500",
+    barColor: "bg-accent",
   },
   {
     icon: Laptop,
-    iconColor: "text-emerald-600",
+    iconColor: "text-primary",
     title: "Notebook Novo",
     progress: "40%",
     current: "R$ 2.000",
     total: "R$ 5.000",
-    barColor: "bg-emerald-500",
+    barColor: "bg-primary",
   },
   {
     icon: PiggyBank,
@@ -264,27 +264,27 @@ const mockGoals = [
 ];
 
 export const GoalsMockup = () => (
-  <div className="w-full h-full bg-slate-100 dark:bg-slate-900 p-3 rounded-lg flex flex-col gap-2">
-    <div className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg p-4">
-      <h3 className="font-bold text-slate-700 dark:text-slate-100">
+  <div className="w-full h-full bg-surface-2  p-3 rounded-lg flex flex-col gap-2">
+    <div className="w-full bg-surface  border border-border  rounded-xl shadow-lg p-4">
+      <h3 className="font-bold text-foreground ">
         Minhas Metas
       </h3>
       {mockGoals.map((goal) => (
         <div
           key={goal.title}
-          className="bg-white dark:bg-slate-800 p-3 rounded-lg shadow-sm transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 mt-3"
+          className="bg-surface  p-3 rounded-lg shadow-sm transition-colors hover:bg-surface-2  mt-3"
         >
           <div className="flex items-center gap-2 text-sm font-semibold">
             <goal.icon size={16} className={goal.iconColor} />
             <span>{goal.title}</span>
           </div>
-          <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mt-2">
+          <div className="w-full bg-surface-3 rounded-full h-2 mt-2">
             <div
               className={clsx("h-2 rounded-full", goal.barColor)}
               style={{ width: goal.progress }}
             />
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 text-right">
+          <p className="text-xs text-foreground-subtle  mt-1 text-right">
             {goal.current} / {goal.total}
           </p>
         </div>
@@ -292,3 +292,6 @@ export const GoalsMockup = () => (
     </div>
   </div>
 );
+
+
+

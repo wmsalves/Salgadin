@@ -42,7 +42,7 @@ export function PasswordStrength({ password = "" }: PasswordStrengthProps) {
           key={rule.id}
           className={clsx(
             "flex items-center transition-colors",
-            rule.isValid ? "text-emerald-600" : "text-gray-500"
+            rule.isValid ? "text-success" : "text-foreground-subtle"
           )}
         >
           {rule.isValid ? (

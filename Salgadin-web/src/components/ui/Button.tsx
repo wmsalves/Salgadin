@@ -8,13 +8,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-gradient-to-r from-amber-500 to-emerald-500 text-white shadow-lg hover:shadow-xl hover:from-amber-600 hover:to-emerald-600",
+          "bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-white shadow-lg hover:shadow-xl hover:from-[var(--brand-from-strong)] hover:to-[var(--brand-to-strong)]",
         secondary:
-          "border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500",
+          "border border-border bg-surface text-foreground hover:bg-surface-2 hover:border-surface-3",
         ghost:
-          "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800",
+          "text-foreground-muted hover:text-foreground hover:bg-surface-2",
         danger:
-          "bg-red-500 text-white hover:bg-red-600 shadow-lg dark:bg-red-600 dark:hover:bg-red-700",
+          "bg-danger text-white hover:bg-danger-strong shadow-lg",
       },
       size: {
         default: "px-6 py-3 rounded-lg text-base",

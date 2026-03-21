@@ -38,15 +38,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-slate-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900 flex flex-col overflow-y-scroll">
+    <div className="min-h-screen bg-gradient-to-br from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] flex flex-col overflow-y-scroll">
       <Header />
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-xl p-6 sm:p-8">
+        <div className="w-full max-w-md rounded-2xl border border-border bg-surface shadow-xl p-6 sm:p-8">
           <header className="text-center mb-6">
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white">
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
               Bem vindo de volta!
             </h1>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="mt-1 text-sm text-foreground-muted">
               Acesse sua conta para continuar
             </p>
           </header>
@@ -67,12 +67,12 @@ export default function LoginPage() {
 
             <div>
               <div className="flex items-baseline justify-between mb-2">
-                <label className="text-sm font-semibold text-slate-700">
+                <label className="text-sm font-semibold text-foreground-muted">
                   Senha
                 </label>
                 <Link
                   to="/forgot"
-                  className="text-sm text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+                  className="text-sm text-primary hover:text-primary-strong font-medium transition-colors"
                 >
                   Esqueceu a senha?
                 </Link>
@@ -96,19 +96,19 @@ export default function LoginPage() {
             </Button>
 
             {apiError && (
-              <div className="p-3 rounded-lg bg-red-50 border border-red-200">
-                <p className="text-sm text-red-700 font-medium text-center">
+              <div className="p-3 rounded-lg bg-surface-2 border border-danger/30">
+                <p className="text-sm text-danger font-medium text-center">
                   {apiError}
                 </p>
               </div>
             )}
 
             <div className="flex items-center gap-3 pt-1">
-              <div className="h-px flex-1 bg-slate-300" />
-              <span className="text-xs text-slate-600 font-medium">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-xs text-foreground-muted font-medium">
                 ou continue com:
               </span>
-              <div className="h-px flex-1 bg-slate-300" />
+              <div className="h-px flex-1 bg-border" />
             </div>
 
             <div className="grid grid-cols-2 gap-2">
@@ -141,11 +141,11 @@ export default function LoginPage() {
             </div>
           </form>
 
-          <p className="mt-4 text-center text-xs text-slate-600">
+          <p className="mt-4 text-center text-xs text-foreground-muted">
             Não possui conta?{" "}
             <Link
               to="/signup"
-              className="font-medium text-emerald-600 hover:text-emerald-700 transition-colors"
+              className="font-medium text-primary hover:text-primary-strong transition-colors"
             >
               Registre-se agora!
             </Link>
@@ -155,3 +155,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

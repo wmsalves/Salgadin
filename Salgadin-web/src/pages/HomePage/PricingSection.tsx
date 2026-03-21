@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Check } from "lucide-react";
 import clsx from "clsx";
 import { Link } from "react-router-dom";
@@ -10,27 +10,27 @@ export function PricingSection() {
 
   const plans = {
     free: {
-      name: "Grátis",
+      name: "Gratis",
       price: "R$ 0",
-      description: "Para quem está começando a organizar os gastos diários.",
+      description: "Para quem esta comecando a organizar os gastos diarios.",
       features: [
         "Cadastro de despesas ilimitado",
-        "Até 5 categorias personalizadas",
-        "Criação de 1 meta financeira",
+        "Ate 5 categorias personalizadas",
+        "Criacao de 1 meta financeira",
         "Acesso ao dashboard mensal",
       ],
     },
     pro: {
       name: "Pro",
       price: billingCycle === "monthly" ? "R$ 9,90" : "R$ 99",
-      priceSuffix: billingCycle === "monthly" ? "/mês" : "/ano",
+      priceSuffix: billingCycle === "monthly" ? "/mes" : "/ano",
       description: "Para quem busca controle total e insights inteligentes.",
       features: [
-        "Tudo do plano Grátis, sem limites",
-        "Orçamentos com alertas",
-        "Relatórios avançados e exportação",
-        "Histórico de despesas completo",
-        "Suporte prioritário",
+        "Tudo do plano Gratis, sem limites",
+        "Orcamentos com alertas",
+        "Relatorios avancados e exportacao",
+        "Historico de despesas completo",
+        "Suporte prioritario",
       ],
     },
   };
@@ -38,22 +38,21 @@ export function PricingSection() {
   return (
     <section id="pricing" className="mx-auto max-w-6xl px-4 py-12">
       <div className="text-center">
-        <h2 className="text-3xl sm:text-4xl font-extrabold dark:text-white">
+        <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground">
           Um plano para cada etapa da sua jornada
         </h2>
-        <p className="mt-3 text-gray-600 dark:text-slate-400 max-w-xl mx-auto">
-          Comece de graça e evolua quando estiver pronto. Sem pegadinhas.
+        <p className="mt-3 text-foreground-muted max-w-xl mx-auto">
+          Comece de graca e evolua quando estiver pronto. Sem pegadinhas.
         </p>
       </div>
 
-      {/* Toggle Mensal/Anual */}
       <div className="mt-8 flex justify-center items-center gap-4">
         <span
           className={clsx(
             "font-medium",
             billingCycle === "monthly"
-              ? "text-emerald-600"
-              : "text-gray-500 dark:text-slate-500"
+              ? "text-primary"
+              : "text-foreground-subtle"
           )}
         >
           Mensal
@@ -67,69 +66,63 @@ export function PricingSection() {
               setBillingCycle(billingCycle === "monthly" ? "yearly" : "monthly")
             }
           />
-          <div className="w-11 h-6 bg-gray-200 dark:bg-slate-700 rounded-full peer peer-checked:bg-emerald-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+          <div className="w-11 h-6 bg-surface-3 rounded-full peer peer-checked:bg-primary peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
         </label>
         <span
           className={clsx(
             "font-medium",
             billingCycle === "yearly"
-              ? "text-emerald-600"
-              : "text-gray-500 dark:text-slate-500"
+              ? "text-primary"
+              : "text-foreground-subtle"
           )}
         >
-          Anual{" "}
-          <span className="text-xs text-amber-600 dark:text-amber-400">
-            (2 meses grátis)
-          </span>
+          Anual <span className="text-xs text-accent">(2 meses gratis)</span>
         </span>
       </div>
 
-      {/* Cards de Preço */}
       <div className="mt-8 grid gap-8 md:grid-cols-2 max-w-4xl mx-auto">
-        {/* Card Grátis */}
-        <div className="rounded-2xl border border-black/10 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 flex flex-col">
-          <h3 className="text-xl font-semibold dark:text-white">
+        <div className="rounded-2xl border border-border bg-surface p-6 flex flex-col">
+          <h3 className="text-xl font-semibold text-foreground">
             {plans.free.name}
           </h3>
-          <p className="mt-1 text-gray-500 dark:text-slate-400 text-sm">
+          <p className="mt-1 text-foreground-subtle text-sm">
             {plans.free.description}
           </p>
-          <p className="mt-4 text-4xl font-bold dark:text-white">
+          <p className="mt-4 text-4xl font-bold text-foreground">
             {plans.free.price}
           </p>
           <ul className="mt-6 space-y-3 text-sm flex-1">
             {plans.free.features.map((feature) => (
               <li
                 key={feature}
-                className="flex items-center gap-2 text-gray-600 dark:text-slate-300"
+                className="flex items-center gap-2 text-foreground-muted"
               >
-                <Check size={16} className="text-emerald-500" />
+                <Check size={16} className="text-success" />
                 <span>{feature}</span>
               </li>
             ))}
           </ul>
           <Link
             to="/signup"
-            className="mt-6 text-center w-full rounded-full border border-black/10 dark:border-slate-600 px-5 py-2.5 font-semibold text-slate-700 dark:text-slate-300 hover:bg-black/5 dark:hover:bg-slate-800 transition-colors"
+            className="mt-6 text-center w-full rounded-full border border-border px-5 py-2.5 font-semibold text-foreground-muted hover:bg-surface-2 transition-colors"
           >
             Comece agora
           </Link>
         </div>
 
-        {/* Card Pro */}
-        <div className="rounded-2xl border-2 border-emerald-500 dark:border-emerald-600 bg-white dark:bg-slate-900 p-6 relative flex flex-col">
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 dark:bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full">
+        <div className="rounded-2xl border-2 border-primary bg-surface p-6 relative flex flex-col">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full">
             MAIS POPULAR
           </div>
-          <h3 className="text-xl font-semibold dark:text-white">
+          <h3 className="text-xl font-semibold text-foreground">
             {plans.pro.name}
           </h3>
-          <p className="mt-1 text-gray-500 dark:text-slate-400 text-sm">
+          <p className="mt-1 text-foreground-subtle text-sm">
             {plans.pro.description}
           </p>
-          <p className="mt-4 text-4xl font-bold dark:text-white">
+          <p className="mt-4 text-4xl font-bold text-foreground">
             {plans.pro.price}{" "}
-            <span className="text-base font-medium text-gray-500 dark:text-slate-400">
+            <span className="text-base font-medium text-foreground-subtle">
               {plans.pro.priceSuffix}
             </span>
           </p>
@@ -137,16 +130,16 @@ export function PricingSection() {
             {plans.pro.features.map((feature) => (
               <li
                 key={feature}
-                className="flex items-center gap-2 text-gray-600 dark:text-slate-300"
+                className="flex items-center gap-2 text-foreground-muted"
               >
-                <Check size={16} className="text-emerald-500" />
+                <Check size={16} className="text-success" />
                 <span>{feature}</span>
               </li>
             ))}
           </ul>
           <Link
             to="/signup"
-            className="mt-6 text-center w-full rounded-full bg-emerald-500 text-white px-5 py-2.5 font-semibold hover:bg-emerald-600 transition-colors shadow-sm"
+            className="mt-6 text-center w-full rounded-full bg-primary text-white px-5 py-2.5 font-semibold hover:bg-primary-strong transition-colors shadow-sm"
           >
             Assine o Pro
           </Link>

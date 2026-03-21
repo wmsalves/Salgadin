@@ -43,9 +43,9 @@ const colors = [
 
 const buttonStyles = {
   primary:
-    "rounded-lg bg-gradient-to-r from-amber-500 to-emerald-500 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all hover:scale-105",
+    "rounded-lg bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-6 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all hover:scale-105",
   secondary:
-    "rounded-lg border border-slate-300 dark:border-slate-600 px-6 py-3 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all",
+    "rounded-lg border border-border px-6 py-3 text-sm font-semibold text-foreground-muted hover:bg-surface-2 transition-all",
 };
 
 export function HeroSection() {
@@ -53,13 +53,13 @@ export function HeroSection() {
   return (
     <section className="mx-auto max-w-7xl px-4 pt-16 pb-20">
       <h1 className="text-center text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">
-        <span className="bg-gradient-to-r from-amber-600 to-emerald-600 bg-clip-text text-transparent">
+        <span className="bg-gradient-to-r from-[var(--brand-from-strong)] to-[var(--brand-to-strong)] bg-clip-text text-transparent">
           Entenda seus gastos,
         </span>
         <br className="hidden sm:block" />
-        <span className="text-slate-800 dark:text-white">sem complicação.</span>
+        <span className="text-foreground">sem complicação.</span>
       </h1>
-      <p className="mt-6 text-center max-w-2xl mx-auto text-slate-600 dark:text-slate-300 text-lg">
+      <p className="mt-6 text-center max-w-2xl mx-auto text-foreground-muted text-lg">
         O Salgadin transforma seus "pequenos gastos" diários em gráficos simples
         e inteligentes. Assuma o controle financeiro de forma visual e
         intuitiva.
@@ -75,7 +75,7 @@ export function HeroSection() {
 
       <div className="relative mt-16">
         {/* Gráfico real com Recharts */}
-        <div className="mx-auto h-[360px] w-full max-w-5xl rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-xl dark:shadow-slate-950/50">
+        <div className="mx-auto h-[360px] w-full max-w-5xl rounded-2xl border border-border bg-surface p-6 shadow-xl ">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
@@ -85,13 +85,13 @@ export function HeroSection() {
                 dataKey="name"
                 tickLine={false}
                 axisLine={false}
-                tick={{ fill: "#94a3b8" }}
+                tick={{ fill: "var(--chart-muted)" }}
               />
               <YAxis
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(value) => `R$${value}`}
-                tick={{ fill: "#94a3b8" }}
+                tick={{ fill: "var(--chart-muted)" }}
               />
               <Tooltip
                 cursor={{
@@ -129,21 +129,21 @@ export function HeroSection() {
 
         {/* Badges animados */}
         <div className="absolute -right-2 -top-4 animate-float">
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg dark:shadow-slate-950/50 px-3 py-1.5 text-xs">
-            <div className="font-semibold text-emerald-600 dark:text-emerald-400">
+          <div className="rounded-xl border border-border bg-surface shadow-lg px-3 py-1.5 text-xs">
+            <div className="font-semibold text-success">
               Economia do mês
             </div>
-            <div className="font-bold text-slate-900 dark:text-white">
+            <div className="font-bold text-foreground">
               R$ 1.250,00
             </div>
           </div>
         </div>
         <div className="absolute -left-2 -bottom-5 animate-float [animation-delay:-1.5s]">
-          <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg dark:shadow-slate-950/50 px-3 py-1.5 text-xs">
-            <div className="font-semibold text-amber-600 dark:text-amber-400">
+          <div className="rounded-xl border border-border bg-surface shadow-lg px-3 py-1.5 text-xs">
+            <div className="font-semibold text-accent">
               Metas do mês
             </div>
-            <div className="font-bold text-slate-900 dark:text-white">
+            <div className="font-bold text-foreground">
               3 de 5
             </div>
           </div>
@@ -152,3 +152,5 @@ export function HeroSection() {
     </section>
   );
 }
+
+

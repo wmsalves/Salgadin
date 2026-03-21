@@ -91,9 +91,9 @@ export function AddExpenseModal({
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.95, y: 20, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden dark:bg-slate-900"
+            className="bg-surface rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
           >
-            <div className="bg-gradient-to-r from-amber-500 to-emerald-500 px-6 py-4 flex justify-between items-center">
+            <div className="bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-6 py-4 flex justify-between items-center">
               <h2 className="text-lg font-bold text-white">
                 Adicionar Nova Despesa
               </h2>
@@ -108,19 +108,19 @@ export function AddExpenseModal({
               <div>
                 <label
                   htmlFor="description"
-                  className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
+                  className="block text-sm font-semibold text-foreground-muted mb-2"
                 >
-                  Descrição <span className="text-red-500">*</span>
+                  Descrição <span className="text-danger">*</span>
                 </label>
                 <input
                   {...register("description")}
                   id="description"
                   type="text"
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-3 bg-white dark:bg-slate-800 dark:text-white outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100 dark:focus:shadow-emerald-900/30 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                  className="w-full rounded-lg border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.15)] placeholder:text-foreground-subtle"
                   placeholder="Ex: Almoço no restaurante"
                 />
                 {errors.description && (
-                  <p className="mt-2 text-sm text-red-600 font-medium">
+                  <p className="mt-2 text-sm text-danger font-medium">
                     {errors.description.message}
                   </p>
                 )}
@@ -130,20 +130,20 @@ export function AddExpenseModal({
                 <div>
                   <label
                     htmlFor="amount"
-                    className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
+                    className="block text-sm font-semibold text-foreground-muted mb-2"
                   >
-                    Valor (R$) <span className="text-red-500">*</span>
+                    Valor (R$) <span className="text-danger">*</span>
                   </label>
                   <input
                     {...register("amount")}
                     id="amount"
                     type="text"
                     inputMode="decimal"
-                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-3 bg-white dark:bg-slate-800 dark:text-white outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100 dark:focus:shadow-emerald-900/30 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                    className="w-full rounded-lg border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.15)] placeholder:text-foreground-subtle"
                     placeholder="25,50"
                   />
                   {errors.amount && (
-                    <p className="mt-2 text-sm text-red-600 font-medium">
+                    <p className="mt-2 text-sm text-danger font-medium">
                       {errors.amount.message}
                     </p>
                   )}
@@ -151,18 +151,18 @@ export function AddExpenseModal({
                 <div>
                   <label
                     htmlFor="date"
-                    className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
+                    className="block text-sm font-semibold text-foreground-muted mb-2"
                   >
-                    Data <span className="text-red-500">*</span>
+                    Data <span className="text-danger">*</span>
                   </label>
                   <input
                     {...register("date")}
                     id="date"
                     type="date"
-                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-3 bg-white dark:bg-slate-800 dark:text-white outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100 dark:focus:shadow-emerald-900/30"
+                    className="w-full rounded-lg border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.15)]"
                   />
                   {errors.date && (
-                    <p className="mt-2 text-sm text-red-600 font-medium">
+                    <p className="mt-2 text-sm text-danger font-medium">
                       {errors.date.message}
                     </p>
                   )}
@@ -172,14 +172,14 @@ export function AddExpenseModal({
               <div>
                 <label
                   htmlFor="categoryId"
-                  className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"
+                  className="block text-sm font-semibold text-foreground-muted mb-2"
                 >
-                  Categoria <span className="text-red-500">*</span>
+                  Categoria <span className="text-danger">*</span>
                 </label>
                 <select
                   {...register("categoryId")}
                   id="categoryId"
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 px-4 py-3 bg-white dark:bg-slate-800 dark:text-white outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-300 focus:shadow-lg focus:shadow-emerald-100 dark:focus:shadow-emerald-900/30"
+                  className="w-full rounded-lg border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.15)]"
                 >
                   <option value="">Selecione uma categoria</option>
                   {categories.map((cat) => (
@@ -189,15 +189,15 @@ export function AddExpenseModal({
                   ))}
                 </select>
                 {errors.categoryId && (
-                  <p className="mt-2 text-sm text-red-600 font-medium">
+                  <p className="mt-2 text-sm text-danger font-medium">
                     {errors.categoryId.message}
                   </p>
                 )}
               </div>
 
               {apiError && (
-                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800">
-                  <p className="text-sm text-red-700 dark:text-red-400 font-medium">
+                <div className="p-3 rounded-lg bg-surface-2 border border-danger/30">
+                  <p className="text-sm text-danger font-medium">
                     {apiError}
                   </p>
                 </div>
@@ -218,3 +218,4 @@ export function AddExpenseModal({
     </AnimatePresence>
   );
 }
+
