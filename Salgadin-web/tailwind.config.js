@@ -3,6 +3,9 @@ export default {
   darkMode: "class",
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["Nunito", "ui-sans-serif", "system-ui", "sans-serif"],
+      },
       colors: {
         background: "var(--color-bg)",
         surface: "var(--color-surface)",
@@ -20,6 +23,11 @@ export default {
         "danger-strong": "var(--color-danger-strong)",
         success: "var(--color-success)",
         warning: "var(--color-warning)",
+        coral: {
+          300: "#fda4af",
+          400: "#fb7185",
+          500: "#f43f5e",
+        },
       },
       animation: {
         float: "float 3s ease-in-out infinite",

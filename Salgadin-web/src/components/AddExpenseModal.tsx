@@ -116,7 +116,7 @@ export function AddExpenseModal({
                   {...register("description")}
                   id="description"
                   type="text"
-                  className="w-full rounded-lg border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.15)] placeholder:text-foreground-subtle"
+                  className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)] placeholder:text-foreground-subtle"
                   placeholder="Ex: Almoço no restaurante"
                 />
                 {errors.description && (
@@ -139,7 +139,7 @@ export function AddExpenseModal({
                     id="amount"
                     type="text"
                     inputMode="decimal"
-                    className="w-full rounded-lg border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.15)] placeholder:text-foreground-subtle"
+                    className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)] placeholder:text-foreground-subtle"
                     placeholder="25,50"
                   />
                   {errors.amount && (
@@ -159,7 +159,7 @@ export function AddExpenseModal({
                     {...register("date")}
                     id="date"
                     type="date"
-                    className="w-full rounded-lg border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.15)]"
+                    className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)]"
                   />
                   {errors.date && (
                     <p className="mt-2 text-sm text-danger font-medium">
@@ -179,7 +179,7 @@ export function AddExpenseModal({
                 <select
                   {...register("categoryId")}
                   id="categoryId"
-                  className="w-full rounded-lg border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.15)]"
+                  className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)]"
                 >
                   <option value="">Selecione uma categoria</option>
                   {categories.map((cat) => (
@@ -196,7 +196,7 @@ export function AddExpenseModal({
               </div>
 
               {apiError && (
-                <div className="p-3 rounded-lg bg-surface-2 border border-danger/30">
+                <div className="p-3 rounded-xl bg-surface-2 border border-danger/30">
                   <p className="text-sm text-danger font-medium">
                     {apiError}
                   </p>
@@ -218,4 +218,5 @@ export function AddExpenseModal({
     </AnimatePresence>
   );
 }
+
 

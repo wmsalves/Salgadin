@@ -1,4 +1,4 @@
-import {
+﻿import {
   Pizza,
   Bus,
   ShoppingCart,
@@ -11,18 +11,37 @@ import {
   Fuel,
   House,
 } from "lucide-react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  BarChart,
+  Bar,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
 import { useTheme } from "../../hooks/useTheme";
 import clsx from "clsx";
 
-// --- Dados para o Gráfico de Pizza ---
-const pieData = [
-  { name: "Alimentação", value: 450 },
-  { name: "Transporte", value: 220 },
+const cashflowData = [
+  { name: "Seg", value: 220 },
+  { name: "Ter", value: 340 },
+  { name: "Qua", value: 260 },
+  { name: "Qui", value: 420 },
+  { name: "Sex", value: 310 },
+  { name: "Sab", value: 480 },
+  { name: "Dom", value: 360 },
+];
+
+const categoryData = [
+  { name: "Alim.", value: 450 },
+  { name: "Transp.", value: 220 },
   { name: "Compras", value: 180 },
   { name: "Outros", value: 130 },
 ];
-const PIE_COLORS = ["#10b981", "#f59e0b", "#8b5cf6", "#3b82f6"];
+const BAR_COLORS = ["#f28b5b", "#f5b36b", "#f2c96d", "#5bbe9d"];
 
 function adjustHex(hex: string, amount: number) {
   const h = hex.replace("#", "");
@@ -40,81 +59,72 @@ export const DashboardMockup = () => {
   const { theme } = useTheme();
 
   return (
-    <div className="w-full h-full bg-surface-2  p-3 rounded-lg overflow-hidden flex flex-col gap-2">
-      <div className="w-full h-full bg-surface  border border-border  rounded-xl shadow-lg p-4">
-        {/* Cards de Totais */}
+    <div className="w-full h-full bg-surface-2 p-3 rounded-2xl overflow-hidden flex flex-col gap-2">
+      <div className="w-full h-full bg-surface border border-border rounded-2xl shadow-[0_16px_40px_rgba(60,42,32,0.18)] p-4">
         <div className="grid grid-cols-2 gap-2">
-          <div className="bg-surface  p-2 rounded-lg shadow-sm">
-            <div className="flex items-center text-xs text-foreground-subtle ">
+          <div className="bg-surface p-2 rounded-xl shadow-sm">
+            <div className="flex items-center text-xs text-foreground-subtle">
               <ArrowUpRight size={12} className="mr-1 text-success" />
               Receita Total
             </div>
             <p className="font-bold text-base text-primary">R$ 3.500,00</p>
           </div>
-          <div className="bg-surface  p-2 rounded-lg shadow-sm">
-            <div className="flex items-center text-xs text-foreground-subtle ">
-              <ArrowDownLeft size={12} className="mr-1 text-red-500" />
+          <div className="bg-surface p-2 rounded-xl shadow-sm">
+            <div className="flex items-center text-xs text-foreground-subtle">
+              <ArrowDownLeft size={12} className="mr-1 text-danger" />
               Despesa Total
             </div>
-            <p className="font-bold text-base text-red-500">- R$ 980,00</p>
+            <p className="font-bold text-base text-danger">- R$ 980,00</p>
           </div>
         </div>
 
-        {/* Gráfico */}
-        <div className="bg-surface  p-2 rounded-lg shadow-sm flex-1 flex flex-col">
-          <p className="text-xs font-semibold text-foreground-muted ">
-            Gastos por Categoria
-          </p>
-          <div className="w-full flex-1 -mx-2 min-h-[120px]">
-            <ResponsiveContainer>
-              <PieChart>
+        <div className="bg-gradient-to-b from-[var(--bg-via)] to-[var(--bg-to)]/60 p-3 rounded-2xl shadow-sm flex-1 flex flex-col mt-3 border border-border/70">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold text-foreground-muted">
+              Fluxo de caixa
+            </p>
+            <span className="text-[10px] text-foreground-subtle bg-surface-2 px-2 py-0.5 rounded-full">7 dias</span>
+          </div>
+          <div className="w-full h-[170px] -mx-2 mt-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={cashflowData} margin={{ left: -10, right: 10 }}>
                 <Tooltip
-                  cursor={{ fill: "rgba(0,0,0,0.05)" }}
                   contentStyle={{
-                    borderRadius: "8px",
-                    border: "1px solid rgba(0,0,0,0.1)",
+                    borderRadius: "12px",
+                    border: "1px solid var(--color-border)",
                     fontSize: "12px",
                     padding: "4px 8px",
+                    backgroundColor: "var(--color-surface)",
+                    color: "var(--color-text)",
                   }}
                 />
-                <Pie
-                  data={pieData}
+                <XAxis
+                  dataKey="name"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fill: "var(--chart-muted)", fontSize: 10 }}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fill: "var(--chart-muted)", fontSize: 10 }}
+                />
+                <defs>
+                  <linearGradient id="mock-gradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.4} />
+                    <stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area
+                  type="monotone"
                   dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={30}
-                  outerRadius={40}
-                >
-                  {pieData.map((_entry, index) => {
-                    const base = PIE_COLORS[index % PIE_COLORS.length];
-                    const fill = theme === "dark" ? adjustHex(base, 20) : base;
-                    return <Cell key={`cell-${index}`} fill={fill} />;
-                  })}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Legenda do Gráfico - Corrigida */}
-          <div className="flex flex-wrap justify-center gap-2 mt-2">
-            {pieData.map((entry, index) => (
-              <div
-                key={entry.name}
-                className="flex items-center gap-1 text-[10px] text-foreground-subtle "
-              >
-                <div
-                  className="w-2 h-2 rounded-full"
-                  style={{
-                    backgroundColor:
-                      theme === "dark"
-                        ? adjustHex(PIE_COLORS[index % PIE_COLORS.length], 20)
-                        : PIE_COLORS[index % PIE_COLORS.length],
-                  }}
+                  stroke="var(--color-primary)"
+                  strokeWidth={2.5}
+                  dot={false}
+                  fill="url(#mock-gradient)"
                 />
-                <span>{entry.name}</span>
-              </div>
-            ))}
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
@@ -122,21 +132,20 @@ export const DashboardMockup = () => {
   );
 };
 
-// --- Dados para o Mockup de Despesas ---
 const mockExpenses = [
   {
     icon: Pizza,
-    iconColor: "text-red-500",
-    bgColor: "bg-red-100",
+    iconColor: "text-danger",
+    bgColor: "bg-surface-2",
     title: "iFood",
-    category: "Alimentação",
+    category: "Alimentacao",
     date: "29 Set",
     amount: "- R$ 45,90",
   },
   {
     icon: ShoppingCart,
-    iconColor: "text-purple-500",
-    bgColor: "bg-purple-100",
+    iconColor: "text-primary",
+    bgColor: "bg-surface-2",
     title: "Supermercado",
     category: "Compras",
     date: "28 Set",
@@ -144,8 +153,8 @@ const mockExpenses = [
   },
   {
     icon: Bus,
-    iconColor: "text-blue-500",
-    bgColor: "bg-blue-100",
+    iconColor: "text-accent",
+    bgColor: "bg-surface-2",
     title: "Uber",
     category: "Transporte",
     date: "28 Set",
@@ -153,17 +162,17 @@ const mockExpenses = [
   },
   {
     icon: Laptop,
-    iconColor: "text-green-500",
-    bgColor: "bg-green-100",
+    iconColor: "text-success",
+    bgColor: "bg-surface-2",
     title: "Curso de React",
-    category: "Educação",
+    category: "Educacao",
     date: "27 Set",
     amount: "- R$ 79,90",
   },
   {
     icon: Fuel,
-    iconColor: "text-blue-500",
-    bgColor: "bg-blue-100",
+    iconColor: "text-accent",
+    bgColor: "bg-surface-2",
     title: "Gasolina",
     category: "Transporte",
     date: "28 Set",
@@ -171,23 +180,78 @@ const mockExpenses = [
   },
 ];
 
+const expensesTrendData = [
+  { name: "Seg", value: 120 },
+  { name: "Ter", value: 180 },
+  { name: "Qua", value: 90 },
+  { name: "Qui", value: 240 },
+  { name: "Sex", value: 200 },
+];
+
 export const ExpensesMockup = () => (
-  <div className="w-full h-full bg-surface-2  p-3 rounded-lg flex flex-col">
-    <div className="w-full bg-surface  border border-border  rounded-xl shadow-lg p-4">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="font-bold text-foreground ">
-          Despesas de Setembro
-        </h3>
-        <MoreHorizontal
-          size={16}
-          className="text-foreground-subtle "
-        />
+  <div className="w-full h-full bg-surface-2 p-3 rounded-2xl flex flex-col">
+    <div className="w-full bg-surface border border-border rounded-2xl shadow-lg p-4 flex flex-col gap-3">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="font-bold text-foreground">Despesas do Mes</h3>
+          <p className="text-xs text-foreground-subtle">
+            Controle rapido das saidas
+          </p>
+        </div>
+        <MoreHorizontal size={16} className="text-foreground-subtle" />
       </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <div className="bg-surface-2 rounded-xl p-2 border border-border/60">
+          <p className="text-[11px] text-foreground-subtle">Total</p>
+          <p className="text-sm font-semibold text-danger">- R$ 1.980,00</p>
+        </div>
+        <div className="bg-surface-2 rounded-xl p-2 border border-border/60">
+          <p className="text-[11px] text-foreground-subtle">Maior categoria</p>
+          <p className="text-sm font-semibold text-primary">Alimentacao</p>
+        </div>
+      </div>
+
+      <div className="bg-gradient-to-b from-[var(--bg-via)] to-[var(--bg-to)]/60 rounded-2xl border border-border/70 p-3">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-semibold text-foreground-muted">
+            Tendencia semanal
+          </p>
+          <span className="text-[10px] text-foreground-subtle bg-surface-2 px-2 py-0.5 rounded-full">
+            Ultimos 5 dias
+          </span>
+        </div>
+        <div className="h-[90px] -mx-2 mt-2">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={expensesTrendData} barSize={10}>
+              <XAxis
+                dataKey="name"
+                tickLine={false}
+                axisLine={false}
+                tick={{ fill: "var(--chart-muted)", fontSize: 10 }}
+              />
+              <YAxis hide />
+              <Tooltip
+                contentStyle={{
+                  borderRadius: "12px",
+                  border: "1px solid var(--color-border)",
+                  fontSize: "12px",
+                  padding: "4px 8px",
+                  backgroundColor: "var(--color-surface)",
+                  color: "var(--color-text)",
+                }}
+              />
+              <Bar dataKey="value" radius={[6, 6, 0, 0]} fill="var(--color-danger)" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
       <div className="space-y-2 overflow-y-auto flex-1 min-h-0 pr-1">
         {mockExpenses.map((item) => (
           <div
             key={item.title}
-            className="bg-surface  p-2 rounded-lg shadow-sm flex items-center gap-3 transition-colors hover:bg-surface-2 "
+            className="bg-surface p-2 rounded-xl shadow-sm flex items-center gap-3 transition-colors hover:bg-surface-2"
           >
             <div
               className={clsx(
@@ -198,32 +262,26 @@ export const ExpensesMockup = () => (
               <item.icon size={16} className={item.iconColor} />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium ">
-                {item.title}
-              </p>
-              <p className="text-xs text-foreground-subtle ">
-                {item.category}
-              </p>
+              <p className="text-sm font-medium">{item.title}</p>
+              <div className="flex items-center gap-2 text-xs text-foreground-subtle">
+                <span>{item.category}</span>
+                <span className="h-1 w-1 rounded-full bg-border" />
+                <span>{item.date}</span>
+              </div>
             </div>
             <div className="text-right">
-              <p className="font-bold text-sm ">
-                {item.amount}
-              </p>
-              <p className="text-xs text-foreground-subtle ">
-                {item.date}
-              </p>
+              <p className="font-bold text-sm text-danger">{item.amount}</p>
             </div>
           </div>
         ))}
       </div>
-      <button className="text-center text-sm font-semibold text-primary  mt-auto pt-2 hover:underline">
-        Ver mais
+      <button className="text-center text-sm font-semibold text-primary mt-auto pt-2 hover:underline">
+        Ver todas
       </button>
     </div>
   </div>
 );
 
-// --- Dados para o Mockup de Metas ---
 const mockGoals = [
   {
     icon: Target,
@@ -245,53 +303,94 @@ const mockGoals = [
   },
   {
     icon: PiggyBank,
-    iconColor: "text-blue-600",
-    title: "Reserva de Emergência",
+    iconColor: "text-success",
+    title: "Reserva de Emergencia",
     progress: "20%",
     current: "R$ 1.200",
     total: "R$ 6.000",
-    barColor: "bg-blue-500",
+    barColor: "bg-success",
   },
   {
     icon: House,
-    iconColor: "text-red-600",
-    title: "Móveis para Casa",
+    iconColor: "text-danger",
+    title: "Moveis para Casa",
     progress: "60%",
     current: "R$ 7.200",
     total: "R$ 12.000",
-    barColor: "bg-red-500",
+    barColor: "bg-danger",
   },
 ];
 
-export const GoalsMockup = () => (
-  <div className="w-full h-full bg-surface-2  p-3 rounded-lg flex flex-col gap-2">
-    <div className="w-full bg-surface  border border-border  rounded-xl shadow-lg p-4">
-      <h3 className="font-bold text-foreground ">
-        Minhas Metas
-      </h3>
-      {mockGoals.map((goal) => (
-        <div
-          key={goal.title}
-          className="bg-surface  p-3 rounded-lg shadow-sm transition-colors hover:bg-surface-2  mt-3"
-        >
-          <div className="flex items-center gap-2 text-sm font-semibold">
-            <goal.icon size={16} className={goal.iconColor} />
-            <span>{goal.title}</span>
-          </div>
-          <div className="w-full bg-surface-3 rounded-full h-2 mt-2">
-            <div
-              className={clsx("h-2 rounded-full", goal.barColor)}
-              style={{ width: goal.progress }}
-            />
-          </div>
-          <p className="text-xs text-foreground-subtle  mt-1 text-right">
-            {goal.current} / {goal.total}
-          </p>
+const goalsBarData = [
+  { name: "Praia", value: 75 },
+  { name: "Notebook", value: 40 },
+  { name: "Reserva", value: 20 },
+  { name: "Casa", value: 60 },
+];
+
+export const GoalsMockup = () => {
+  const { theme } = useTheme();
+
+  return (
+    <div className="w-full h-full bg-surface-2 p-3 rounded-lg flex flex-col gap-2">
+      <div className="w-full bg-surface border border-border rounded-xl shadow-lg p-4">
+        <h3 className="font-bold text-foreground">Minhas Metas</h3>
+        <div className="mt-3 h-[120px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={goalsBarData}>
+              <Tooltip
+                contentStyle={{
+                  borderRadius: "8px",
+                  border: "1px solid var(--color-border)",
+                  fontSize: "12px",
+                  padding: "4px 8px",
+                  backgroundColor: "var(--color-surface)",
+                  color: "var(--color-text)",
+                }}
+              />
+              <XAxis
+                dataKey="name"
+                tickLine={false}
+                axisLine={false}
+                tick={{ fill: "var(--chart-muted)", fontSize: 10 }}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tick={{ fill: "var(--chart-muted)", fontSize: 10 }}
+              />
+              <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+                {goalsBarData.map((_entry, index) => {
+                  const base = BAR_COLORS[index % BAR_COLORS.length];
+                  const fill = theme === "dark" ? adjustHex(base, 20) : base;
+                  return <Cell key={`cell-${index}`} fill={fill} />;
+                })}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
-      ))}
+
+        {mockGoals.map((goal) => (
+          <div
+            key={goal.title}
+            className="bg-surface p-3 rounded-lg shadow-sm transition-colors hover:bg-surface-2 mt-3"
+          >
+            <div className="flex items-center gap-2 text-sm font-semibold">
+              <goal.icon size={16} className={goal.iconColor} />
+              <span>{goal.title}</span>
+            </div>
+            <div className="w-full bg-surface-3 rounded-full h-2 mt-2">
+              <div
+                className={clsx("h-2 rounded-full", goal.barColor)}
+                style={{ width: goal.progress }}
+              />
+            </div>
+            <p className="text-xs text-foreground-subtle mt-1 text-right">
+              {goal.current} / {goal.total}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
-  </div>
-);
-
-
-
+  );
+};

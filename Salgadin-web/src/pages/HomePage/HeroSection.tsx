@@ -1,3 +1,4 @@
+﻿import { useAuth } from "../../hooks/useAuth";
 import { Link } from "react-router-dom";
 import {
   BarChart,
@@ -28,17 +29,17 @@ const chartData = [
   { name: "Qua", gasto: 45.8 },
   { name: "Qui", gasto: 22.3 },
   { name: "Sex", gasto: 89.1 },
-  { name: "Sáb", gasto: 60.0 },
+  { name: "Sab", gasto: 60.0 },
   { name: "Dom", gasto: 35.0 },
 ];
 const colors = [
-  "#f59e0b",
-  "#10b981",
-  "#f59e0b",
-  "#10b981",
-  "#f59e0b",
-  "#10b981",
-  "#f59e0b",
+  "#f28b5b",
+  "#f5b36b",
+  "#f28b5b",
+  "#f5b36b",
+  "#f28b5b",
+  "#f5b36b",
+  "#f28b5b",
 ];
 
 const buttonStyles = {
@@ -50,6 +51,12 @@ const buttonStyles = {
 
 export function HeroSection() {
   const { theme } = useTheme();
+  const { isAuthenticated } = useAuth();
+  const primaryHref = isAuthenticated ? "/dashboard" : "/signup";
+  const primaryLabel = isAuthenticated
+    ? "Acessar minha conta"
+    : "Comecar Gratuitamente";
+
   return (
     <section className="mx-auto max-w-7xl px-4 pt-16 pb-20">
       <h1 className="text-center text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight">
@@ -57,16 +64,16 @@ export function HeroSection() {
           Entenda seus gastos,
         </span>
         <br className="hidden sm:block" />
-        <span className="text-foreground">sem complicação.</span>
+        <span className="text-foreground">sem complicacao.</span>
       </h1>
       <p className="mt-6 text-center max-w-2xl mx-auto text-foreground-muted text-lg">
-        O Salgadin transforma seus "pequenos gastos" diários em gráficos simples
+        O Salgadin transforma seus "pequenos gastos" diarios em graficos simples
         e inteligentes. Assuma o controle financeiro de forma visual e
         intuitiva.
       </p>
       <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-        <Link to="/signup" className={buttonStyles.primary}>
-          Começar Gratuitamente
+        <Link to={primaryHref} className={buttonStyles.primary}>
+          {primaryLabel}
         </Link>
         <a href="#how" className={buttonStyles.secondary}>
           Ver como funciona
@@ -74,7 +81,6 @@ export function HeroSection() {
       </div>
 
       <div className="relative mt-16">
-        {/* Gráfico real com Recharts */}
         <div className="mx-auto h-[360px] w-full max-w-5xl rounded-2xl border border-border bg-surface p-6 shadow-xl ">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -100,21 +106,12 @@ export function HeroSection() {
                       ? "rgba(255,255,255,0.02)"
                       : "rgba(0,0,0,0.05)",
                 }}
-                contentStyle={
-                  theme === "dark"
-                    ? {
-                        borderRadius: "12px",
-                        border: "1px solid rgba(255,255,255,0.06)",
-                        backgroundColor: "#0f1720",
-                        color: "#e6eef8",
-                      }
-                    : {
-                        borderRadius: "12px",
-                        border: "1px solid rgba(0,0,0,0.1)",
-                        backgroundColor: "#ffffff",
-                        color: "#1e293b",
-                      }
-                }
+                contentStyle={{
+                  borderRadius: "12px",
+                  border: "1px solid var(--color-border)",
+                  backgroundColor: "var(--color-surface)",
+                  color: "var(--color-text)",
+                }}
               />
               <Bar dataKey="gasto" radius={[8, 8, 0, 0]}>
                 {chartData.map((_entry, index) => {
@@ -127,30 +124,19 @@ export function HeroSection() {
           </ResponsiveContainer>
         </div>
 
-        {/* Badges animados */}
         <div className="absolute -right-2 -top-4 animate-float">
           <div className="rounded-xl border border-border bg-surface shadow-lg px-3 py-1.5 text-xs">
-            <div className="font-semibold text-success">
-              Economia do mês
-            </div>
-            <div className="font-bold text-foreground">
-              R$ 1.250,00
-            </div>
+            <div className="font-semibold text-accent">Economia do mes</div>
+            <div className="font-bold text-foreground">R$ 1.250,00</div>
           </div>
         </div>
         <div className="absolute -left-2 -bottom-5 animate-float [animation-delay:-1.5s]">
           <div className="rounded-xl border border-border bg-surface shadow-lg px-3 py-1.5 text-xs">
-            <div className="font-semibold text-accent">
-              Metas do mês
-            </div>
-            <div className="font-bold text-foreground">
-              3 de 5
-            </div>
+            <div className="font-semibold text-primary">Metas do mes</div>
+            <div className="font-bold text-foreground">3 de 5</div>
           </div>
         </div>
       </div>
     </section>
   );
 }
-
-

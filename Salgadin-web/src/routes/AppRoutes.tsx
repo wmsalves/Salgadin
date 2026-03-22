@@ -9,6 +9,7 @@ import CategoriesPage from "../pages/CategoriesPage";
 import { AppShell } from "../components/AppShell";
 import ProfilePage from "../pages/ProfilePage";
 import ReportsPage from "../pages/ReportsPage";
+import GoalsPage from "../pages/GoalsPage";
 
 export default function AppRoutes() {
   return (
@@ -24,6 +25,7 @@ export default function AppRoutes() {
           <Route element={<AppShell />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/categorias" element={<CategoriesPage />} />
+            <Route path="/metas" element={<GoalsPage />} />
             <Route path="/relatorios" element={<ReportsPage />} />
             <Route path="/perfil" element={<ProfilePage />} />
           </Route>

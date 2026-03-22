@@ -110,8 +110,8 @@ export function PricingSection() {
           </Link>
         </div>
 
-        <div className="rounded-2xl border-2 border-primary bg-surface p-6 relative flex flex-col">
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full">
+        <div className="rounded-2xl border-2 border-accent bg-surface p-6 relative flex flex-col shadow-[0_0_0_1px_rgba(20,184,166,0.15)]">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-white text-xs font-bold px-3 py-1 rounded-full">
             MAIS POPULAR
           </div>
           <h3 className="text-xl font-semibold text-foreground">
@@ -139,7 +139,7 @@ export function PricingSection() {
           </ul>
           <Link
             to="/signup"
-            className="mt-6 text-center w-full rounded-full bg-primary text-white px-5 py-2.5 font-semibold hover:bg-primary-strong transition-colors shadow-sm"
+            className="mt-6 text-center w-full rounded-full bg-accent text-white px-5 py-2.5 font-semibold hover:bg-accent-strong transition-colors shadow-sm"
           >
             Assine o Pro
           </Link>

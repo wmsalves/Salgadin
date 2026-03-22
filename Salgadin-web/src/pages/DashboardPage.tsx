@@ -1,42 +1,30 @@
-﻿import { useEffect, useState, useCallback } from "react";
-import { getExpenses, getDailySummary } from "../services/expenseService";
-import { type Expense, type DailySummary } from "../lib/types";
+﻿import { useEffect, useState, useCallback, useMemo } from "react";
 import {
-  BarChart,
-  Bar,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
+  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell,
 } from "recharts";
-import { useTheme } from "../hooks/useTheme";
 import {
-  ArrowUpRight,
-  ArrowDownLeft,
+  Wallet,
+  Target,
+  TrendingDown,
+  Plus,
+  PiggyBank,
   Pizza,
   Bus,
   ShoppingCart,
   Laptop,
-  PiggyBank,
-  Plus,
-  type LucideProps,
 } from "lucide-react";
+import clsx from "clsx";
+import { getExpenses, getDailySummary } from "../services/expenseService";
+import { type Expense, type DailySummary } from "../lib/types";
 import { AddExpenseModal } from "../components/AddExpenseModal";
 
-function adjustHex(hex: string, amount: number) {
-  const h = hex.replace("#", "");
-  const num = parseInt(h, 16);
-  let r = (num >> 16) + amount;
-  let g = ((num >> 8) & 0x00ff) + amount;
-  let b = (num & 0x0000ff) + amount;
-  r = Math.max(Math.min(255, r), 0);
-  g = Math.max(Math.min(255, g), 0);
-  b = Math.max(Math.min(255, b), 0);
-  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
-}
-
-const categoryIcons: Record<string, React.ComponentType<LucideProps>> = {
+const categoryIcons: Record<string, React.ComponentType<{ size?: number }>> = {
   Alimentacao: Pizza,
   "AlimentaÃ§Ã£o": Pizza,
   Transporte: Bus,
@@ -46,7 +34,6 @@ const categoryIcons: Record<string, React.ComponentType<LucideProps>> = {
 };
 
 export default function DashboardPage() {
-  const { theme } = useTheme();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [summary, setSummary] = useState<DailySummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -65,7 +52,7 @@ export default function DashboardPage() {
     } catch (err) {
       console.error("Falha ao buscar dados do dashboard:", err);
       setError(
-        "Nao foi possivel carregar seus dados financeiros. Tente novamente mais tarde."
+        "Nao foi possivel carregar seus dados financeiros. Tente novamente mais tarde.",
       );
     }
   }, []);
@@ -78,6 +65,61 @@ export default function DashboardPage() {
   const totalExpenses = summary.reduce((acc, day) => acc + day.total, 0);
   const totalRevenue = 3500.0;
   const balance = totalRevenue - totalExpenses;
+
+  const chartGradient = useMemo(
+    () => ({ id: "cashflow", from: "var(--color-primary)", to: "rgba(242,139,91,0)" }),
+    [],
+  );
+
+  const cashflowData = useMemo(
+    () =>
+      summary
+        .slice()
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        .map((item) => ({
+          day: new Date(item.date).toLocaleDateString("pt-BR", {
+            weekday: "short",
+          }),
+          value: item.total,
+        })),
+    [summary],
+  );
+
+  const summaryCards = useMemo(
+    () => [
+      {
+        title: "Saldo Atual",
+        helper: "Disponivel hoje",
+        value: balance.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }),
+        trend: balance >= 0 ? "+12%" : "-4%",
+        icon: Wallet,
+        tone: balance >= 0 ? "success" : "danger",
+      },
+      {
+        title: "Metas Ativas",
+        helper: "Economia em progresso",
+        value: "3 metas",
+        trend: "68%",
+        icon: Target,
+        tone: "info",
+      },
+      {
+        title: "Gastos do Mes",
+        helper: "Comparado ao mes anterior",
+        value: totalExpenses.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }),
+        trend: "-8%",
+        icon: TrendingDown,
+        tone: "danger",
+      },
+    ],
+    [balance, totalExpenses],
+  );
 
   if (isLoading) {
     return (
@@ -107,181 +149,274 @@ export default function DashboardPage() {
   }
 
   return (
-    <>
-      <div className="space-y-6">
-        <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="space-y-6">
+      <header className="flex flex-col gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Meu Dashboard</h1>
-            <p className="text-sm text-foreground-muted">
-              Uma visao rapida das suas financas.
-            </p>
+            <p className="text-sm text-foreground-muted">Bem-vindo de volta</p>
+            <h1 className="text-3xl font-semibold text-foreground">
+              Seu painel financeiro
+            </h1>
           </div>
           <button
             onClick={() => setIsAddExpenseModalOpen(true)}
-            className="flex items-center gap-2 bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:shadow-lg transition-all active:scale-95"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 px-4 py-2 text-sm font-semibold text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
           >
             <Plus size={16} />
-            <span className="hidden sm:inline">Adicionar Despesa</span>
+            Nova despesa
           </button>
-        </header>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="rounded-xl border border-border bg-surface p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center text-sm font-semibold text-success mb-2">
-              <ArrowUpRight size={16} className="mr-2" />
-              Receita do Mes
-            </div>
-            <p className="font-bold text-3xl text-success">
-              {totalRevenue.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })}
-            </p>
-          </div>
-          <div className="rounded-xl border border-border bg-surface p-6 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center text-sm font-semibold text-danger mb-2">
-              <ArrowDownLeft size={16} className="mr-2" />
-              Despesas do Mes
-            </div>
-            <p className="font-bold text-3xl text-danger">
-              {totalExpenses.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })}
-            </p>
-          </div>
-          <div className="rounded-xl border border-border bg-surface p-6 shadow-sm hover:shadow-md transition-shadow">
-            <p className="text-sm font-semibold text-foreground-muted mb-2">
-              Balanco
-            </p>
-            <p
-              className={`font-bold text-3xl ${
-                balance >= 0 ? "text-success" : "text-warning"
-              }`}
-            >
-              {balance.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })}
-            </p>
-          </div>
         </div>
+      </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 rounded-xl border border-border bg-surface p-6 shadow-sm">
-            <h3 className="font-bold text-lg text-foreground mb-4">
-              Gastos Diarios
-            </h3>
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={summary}>
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {summaryCards.map((card) => {
+          const Icon = card.icon;
+          const toneClass =
+            card.tone === "success"
+              ? "text-success"
+              : card.tone === "danger"
+                ? "text-danger"
+                : "text-primary";
+
+          return (
+            <div
+              key={card.title}
+              className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-5 shadow-[0_18px_40px_rgba(60,42,32,0.12)] animate-fade-in"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm text-foreground-subtle">
+                    {card.title}
+                  </div>
+                  <div className="text-[11px] text-foreground-muted">
+                    {card.helper}
+                  </div>
+                </div>
+                <div
+                  className={clsx(
+                    "h-10 w-10 rounded-full bg-surface-2 grid place-items-center shadow-sm",
+                    toneClass,
+                  )}
+                >
+                  <Icon size={18} />
+                </div>
+              </div>
+              <div className="mt-4 text-2xl font-semibold text-foreground">
+                {card.value}
+              </div>
+              <div className={clsx("mt-2 text-xs", toneClass)}>
+                {card.trend}
+              </div>
+            </div>
+          );
+        })}
+      </section>
+
+      <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className="xl:col-span-2 rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">
+                Fluxo de Caixa
+              </h2>
+              <p className="text-xs text-foreground-subtle">
+                Receitas e despesas ao longo da semana
+              </p>
+            </div>
+            <div className="flex items-center gap-2 text-[11px] text-foreground-subtle">
+              <span className="rounded-full bg-surface-2 px-2 py-0.5">
+                Receita: {totalRevenue.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+              </span>
+              <span className="rounded-full bg-surface-2 px-2 py-0.5">
+                Despesa: {totalExpenses.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+              </span>
+            </div>
+          </div>
+          <div className="h-[280px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={cashflowData}>
+                <defs>
+                  <linearGradient
+                    id={chartGradient.id}
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="0%"
+                      stopColor={chartGradient.from}
+                      stopOpacity={0.35}
+                    />
+                    <stop
+                      offset="100%"
+                      stopColor={chartGradient.to}
+                      stopOpacity={0}
+                    />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid
+                  stroke="var(--color-border)"
+                  strokeDasharray="4 4"
+                  vertical={false}
+                  opacity={0.6}
+                />
                 <XAxis
-                  dataKey="date"
-                  tickFormatter={(dateStr) =>
-                    new Date(dateStr).toLocaleDateString("pt-BR", {
-                      day: "2-digit",
-                    })
-                  }
+                  dataKey="day"
                   tickLine={false}
                   axisLine={false}
-                  fontSize={12}
                   tick={{ fill: "var(--chart-muted)" }}
                 />
                 <YAxis
-                  tickFormatter={(value) => `R$${value}`}
+                  tickFormatter={(value) => `R$ ${value}`}
                   tickLine={false}
                   axisLine={false}
-                  width={50}
-                  fontSize={12}
                   tick={{ fill: "var(--chart-muted)" }}
                 />
                 <Tooltip
-                  cursor={{
-                    fill:
-                      theme === "dark"
-                        ? "rgba(255,255,255,0.02)"
-                        : "rgba(0,0,0,0.05)",
+                  contentStyle={{
+                    background: "var(--color-surface)",
+                    border: "1px solid var(--color-border)",
+                    color: "var(--color-text)",
+                    borderRadius: "16px",
                   }}
-                  contentStyle={
-                    theme === "dark"
-                      ? {
-                          borderRadius: "8px",
-                          border: "1px solid rgba(255,255,255,0.06)",
-                          backgroundColor: "#0f1720",
-                          color: "#e6eef8",
-                        }
-                      : {
-                          borderRadius: "8px",
-                          border: "1px solid #e2e8f0",
-                          backgroundColor: "#ffffff",
-                          color: "#1e293b",
-                        }
-                  }
-                  formatter={(value: number) => [
-                    value.toLocaleString("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    }),
-                    "Total",
-                  ]}
                 />
-                <Bar dataKey="total" name="Total Gasto" radius={[8, 8, 0, 0]}>
-                  {summary.map((_entry, index) => {
-                    const base = index % 2 === 0 ? "#10b981" : "#f59e0b";
-                    const fill = theme === "dark" ? adjustHex(base, 18) : base;
-                    return <Cell key={`cell-${index}`} fill={fill} />;
-                  })}
-                </Bar>
-              </BarChart>
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke="var(--color-primary)"
+                  strokeWidth={2.5}
+                  dot={false}
+                  activeDot={{ r: 4, fill: "var(--color-primary)" }}
+                  fill={`url(#${chartGradient.id})`}
+                />
+              </AreaChart>
             </ResponsiveContainer>
           </div>
+        </div>
 
-          <div className="rounded-xl border border-border bg-surface p-6 shadow-sm">
-            <h3 className="font-bold text-lg text-foreground mb-4">
-              Ultimas Despesas
-            </h3>
+        <div className="space-y-6">
+          <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
+            <h2 className="text-lg font-semibold text-foreground mb-4">
+              Resumo do Mes
+            </h2>
+            <div className="space-y-3">
+              {[
+                {
+                  label: "Receitas",
+                  value: totalRevenue,
+                  tone: "text-success",
+                },
+                {
+                  label: "Despesas",
+                  value: totalExpenses,
+                  tone: "text-danger",
+                },
+                {
+                  label: "Saldo",
+                  value: balance,
+                  tone: balance >= 0 ? "text-success" : "text-danger",
+                },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="flex items-center justify-between rounded-2xl border border-border bg-surface-2 px-4 py-3"
+                >
+                  <span className="text-sm text-foreground-subtle">
+                    {item.label}
+                  </span>
+                  <span className={clsx("text-sm font-semibold", item.tone)}>
+                    {item.value.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
+            <h2 className="text-lg font-semibold text-foreground mb-4">
+              Proximas metas
+            </h2>
+            <div className="space-y-4">
+              {["Reserva de emergencia", "Viagem", "Novo notebook"].map(
+                (goal, index) => (
+                  <div
+                    key={goal}
+                    className="rounded-2xl border border-border bg-surface-2 p-4"
+                  >
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-foreground">{goal}</span>
+                      <span className="text-primary">{60 + index * 10}%</span>
+                    </div>
+                    <div className="mt-3 h-2 rounded-full bg-surface-3">
+                      <div
+                        className="h-2 rounded-full bg-primary"
+                        style={{ width: `${60 + index * 10}%` }}
+                      />
+                    </div>
+                  </div>
+                ),
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
+            <h2 className="text-lg font-semibold text-foreground mb-4">
+              Ultimas despesas
+            </h2>
             <div className="space-y-3">
               {expenses.length > 0 ? (
                 expenses.slice(0, 5).map((exp) => {
                   const Icon = categoryIcons[exp.category] || PiggyBank;
+                  const amountValue = Math.abs(exp.amount);
+                  const amountLabel = amountValue.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  });
                   return (
                     <div
                       key={exp.id}
-                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-surface-2 transition-colors"
+                      className="flex items-center gap-3 rounded-2xl border border-border bg-surface-2 p-3"
                     >
-                      <div className="h-10 w-10 bg-surface-2 rounded-lg grid place-items-center flex-shrink-0 text-primary">
-                        <Icon size={18} />
+                      <div className="h-10 w-10 rounded-full bg-surface-3 text-primary grid place-items-center">
+                        <Icon size={16} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-foreground truncate">
                           {exp.description}
                         </p>
                         <p className="text-xs text-foreground-subtle">
-                          {exp.category}
+                          {exp.category} •{" "}
+                          {new Date(exp.date).toLocaleDateString("pt-BR", {
+                            day: "2-digit",
+                            month: "short",
+                          })}
                         </p>
                       </div>
-                      <p className="font-bold text-sm text-success whitespace-nowrap">
-                        {exp.amount.toLocaleString("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        })}
-                      </p>
+                      <div className="text-sm font-semibold text-danger">
+                        - {amountLabel}
+                      </div>
                     </div>
                   );
                 })
               ) : (
-                <p className="text-sm text-foreground-subtle text-center py-4">
+                <p className="text-sm text-foreground-subtle text-center">
                   Nenhuma despesa encontrada.
                 </p>
               )}
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
       <AddExpenseModal
         isOpen={isAddExpenseModalOpen}
         onClose={() => setIsAddExpenseModalOpen(false)}
         onSuccess={fetchData}
       />
-    </>
+    </div>
   );
 }

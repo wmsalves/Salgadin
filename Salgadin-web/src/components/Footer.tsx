@@ -1,70 +1,45 @@
-import { Twitter, Instagram } from "lucide-react";
-import LogoSalgadin from "../assets/Logo_Salgadin.svg";
+﻿import { Twitter, Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function Footer() {
   return (
-    <footer className="bg-surface-2 border-t border-border">
+    <footer className="bg-gradient-to-b from-[var(--bg-via)] to-[var(--bg-to)] border-t border-border/70">
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-3 items-center gap-6 text-center sm:text-left">
-          {/* Coluna Esquerda: Logo */}
-          <div className="flex justify-center sm:justify-start">
-            <Link to="/" className="flex items-center gap-2">
-              <img src={LogoSalgadin} alt="Logo Salgadin" className="h-8 w-8" />
-              <span className="font-bold text-lg text-foreground">
-                <span className="text-[var(--brand-from)]">Salga</span>
-                <span className="text-[var(--brand-to)]">din</span>
-              </span>
-            </Link>
-          </div>
-
-          {/* Coluna Central: Links */}
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-foreground-muted">
-            <Link
-              to="/termos"
-              className="hover:text-primary"
-            >
-              Termos
-            </Link>
-            <Link
-              to="/privacidade"
-              className="hover:text-primary"
-            >
-              Privacidade
-            </Link>
-            <Link
-              to="/contato"
-              className="hover:text-primary"
-            >
-              Contato
-            </Link>
-          </div>
-
-          {/* Coluna Direita: Redes Sociais */}
-          <div className="flex justify-center sm:justify-end items-center gap-4">
+        <div className="flex flex-col items-center gap-6 text-center">
+          <div className="flex items-center gap-3 rounded-full bg-surface-2 px-4 py-2 shadow-[0_12px_30px_rgba(60,42,32,0.08)]">
             <a
               href="#"
               aria-label="Twitter"
-              className="text-foreground-subtle hover:text-foreground"
+              className="h-9 w-9 rounded-full bg-surface text-foreground-subtle hover:text-foreground hover:bg-surface-2 grid place-items-center transition"
             >
-              <Twitter size={20} />
+              <Twitter size={18} />
             </a>
             <a
               href="#"
               aria-label="Instagram"
-              className="text-foreground-subtle hover:text-foreground"
+              className="h-9 w-9 rounded-full bg-surface text-foreground-subtle hover:text-foreground hover:bg-surface-2 grid place-items-center transition"
             >
-              <Instagram size={20} />
+              <Instagram size={18} />
             </a>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-foreground-muted">
+            <Link to="/termos" className="hover:text-primary transition-colors">
+              Termos
+            </Link>
+            <Link to="/privacidade" className="hover:text-primary transition-colors">
+              Privacidade
+            </Link>
+            <Link to="/contato" className="hover:text-primary transition-colors">
+              Contato
+            </Link>
           </div>
         </div>
 
-        {/* Linha divisória e Copyright */}
-        <div className="mt-8 border-t border-border pt-6 text-center text-xs text-foreground-subtle">
-          © {new Date().getFullYear()} Salgadin. Todos os direitos reservados.
+        <div className="mt-8 border-t border-border/70 pt-6 text-center text-xs text-foreground-subtle">
+          Â© {new Date().getFullYear()} Salgadin. Todos os direitos reservados.
         </div>
       </div>
     </footer>
   );
 }
-
