@@ -35,12 +35,12 @@ const cashflowData = [
   { name: "Dom", value: 360 },
 ];
 
-const categoryData = [
-  { name: "Alim.", value: 450 },
-  { name: "Transp.", value: 220 },
-  { name: "Compras", value: 180 },
-  { name: "Outros", value: 130 },
-];
+// const categoryData = [
+//   { name: "Alim.", value: 450 },
+//   { name: "Transp.", value: 220 },
+//   { name: "Compras", value: 180 },
+//   { name: "Outros", value: 130 },
+// ];
 const BAR_COLORS = ["#f28b5b", "#f5b36b", "#f2c96d", "#5bbe9d"];
 
 function adjustHex(hex: string, amount: number) {
@@ -56,7 +56,7 @@ function adjustHex(hex: string, amount: number) {
 }
 
 export const DashboardMockup = () => {
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
 
   return (
     <div className="w-full h-full bg-surface-2 p-3 rounded-2xl overflow-hidden flex flex-col gap-2">
@@ -83,7 +83,9 @@ export const DashboardMockup = () => {
             <p className="text-xs font-semibold text-foreground-muted">
               Fluxo de caixa
             </p>
-            <span className="text-[10px] text-foreground-subtle bg-surface-2 px-2 py-0.5 rounded-full">7 dias</span>
+            <span className="text-[10px] text-foreground-subtle bg-surface-2 px-2 py-0.5 rounded-full">
+              7 dias
+            </span>
           </div>
           <div className="w-full h-[170px] -mx-2 mt-2">
             <ResponsiveContainer width="100%" height="100%">
@@ -110,9 +112,23 @@ export const DashboardMockup = () => {
                   tick={{ fill: "var(--chart-muted)", fontSize: 10 }}
                 />
                 <defs>
-                  <linearGradient id="mock-gradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.4} />
-                    <stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0} />
+                  <linearGradient
+                    id="mock-gradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="0%"
+                      stopColor="var(--color-primary)"
+                      stopOpacity={0.4}
+                    />
+                    <stop
+                      offset="100%"
+                      stopColor="var(--color-primary)"
+                      stopOpacity={0}
+                    />
                   </linearGradient>
                 </defs>
                 <Area
@@ -241,7 +257,11 @@ export const ExpensesMockup = () => (
                   color: "var(--color-text)",
                 }}
               />
-              <Bar dataKey="value" radius={[6, 6, 0, 0]} fill="var(--color-danger)" />
+              <Bar
+                dataKey="value"
+                radius={[6, 6, 0, 0]}
+                fill="var(--color-danger)"
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -256,7 +276,7 @@ export const ExpensesMockup = () => (
             <div
               className={clsx(
                 "h-8 w-8 rounded-full grid place-items-center flex-shrink-0",
-                item.bgColor
+                item.bgColor,
               )}
             >
               <item.icon size={16} className={item.iconColor} />
