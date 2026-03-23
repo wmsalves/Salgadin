@@ -47,11 +47,16 @@ Instructions on how to set up and run the project locally.
     cd salgadin/Salgadin
     ```
 3.  Update the database connection string in `appsettings.json` if needed.
-4.  Apply EF Core migrations to create the database:
+4.  Set environment variables:
+    ```bash
+    setx ConnectionStrings__DefaultConnection "Host=...;Database=...;Username=...;Password=...;SSL Mode=Require;Trust Server Certificate=true"
+    setx Jwt__Key "YOUR_JWT_SECRET"
+    ```
+5.  Apply EF Core migrations to create the database:
     ```bash
     dotnet ef database update
     ```
-5.  Run the application:
+6.  Run the application:
     ```bash
     dotnet run
     ```
