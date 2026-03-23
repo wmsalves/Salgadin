@@ -11,10 +11,12 @@ namespace Salgadin.Controllers
     public class ExpenseController : ControllerBase
     {
         private readonly IExpenseService _service;
+        private readonly IExportService _exportService;
 
-        public ExpenseController(IExpenseService service)
+        public ExpenseController(IExpenseService service, IExportService exportService)
         {
             _service = service;
+            _exportService = exportService;
         }
 
         [HttpGet("{id:int}")]
@@ -66,6 +68,17 @@ namespace Salgadin.Controllers
         {
             var summary = await _service.GetDailySummaryAsync(startDate, endDate);
             return Ok(summary);
+        }
+
+        [HttpGet("export")]
+        public async Task<IActionResult> Export(
+            [FromQuery] string format = "csv",
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null,
+            [FromQuery] string? category = null)
+        {
+            var result = await _exportService.ExportExpensesAsync(format, startDate, endDate, category);
+            return File(result.Content, result.ContentType, result.FileName);
         }
     }
 }

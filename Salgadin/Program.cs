@@ -11,6 +11,7 @@ using Salgadin.Repositories;
 using Salgadin.Services;
 using Salgadin.Validators;
 using Serilog;
+using QuestPDF.Infrastructure;
 using System.Text;
 
 // Configura um logger inicial para capturar erros durante a inicializa��o.
@@ -32,6 +33,9 @@ try
 
     // ----- Services -----
 
+    // Configura a licença do QuestPDF (Community).
+    QuestPDF.Settings.License = LicenseType.Community;
+
     // Configura o Entity Framework Core para usar o SQL Server.
     builder.Services.AddDbContext<SalgadinContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -48,6 +52,7 @@ try
     builder.Services.AddScoped<ISubcategoryService, SubcategoryService>();
     builder.Services.AddScoped<IReportService, ReportService>();
     builder.Services.AddScoped<IGoalService, GoalService>();
+    builder.Services.AddScoped<IExportService, ExportService>();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<IUserContextService, UserContextService>();
 

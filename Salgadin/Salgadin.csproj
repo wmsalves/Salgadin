@@ -33,6 +33,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="8.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="8.1.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.11.0" />
+    <PackageReference Include="QuestPDF" Version="2024.3.1" />
   </ItemGroup>
 
 </Project>
