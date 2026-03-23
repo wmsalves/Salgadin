@@ -41,7 +41,7 @@ try
         options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
     // Registra os perfis de mapeamento do AutoMapper.
-    builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+    builder.Services.AddAutoMapper(_ => { }, typeof(AutoMapperProfile).Assembly);
 
     // Registra a Unit of Work com um tempo de vida "scoped".
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
