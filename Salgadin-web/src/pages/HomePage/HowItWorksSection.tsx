@@ -34,34 +34,36 @@ export function HowItWorksSection() {
         intuitiva e fácil de usar.
       </p>
 
-      <div
-        role="tablist"
-        aria-label="Como funciona - abas"
-        className="mt-8 flex justify-center gap-2 sm:gap-4 text-sm relative"
-      >
-        {TABS.map((t) => (
-          <button
-            key={t}
-            role="tab"
-            aria-selected={activeTab === t}
-            onClick={() => setActiveTab(t)}
-            className={clsx(
-              "rounded-full px-4 py-2 font-medium transition-colors relative z-10",
-              activeTab === t
-                ? "text-primary"
-                : "text-foreground-muted hover:text-foreground"
-            )}
-          >
-            {activeTab === t && (
-              <motion.div
-                layoutId="active-tab-indicator"
-                className="absolute inset-0 rounded-full bg-primary/10 -z-10"
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-              />
-            )}
-            {t}
-          </button>
-        ))}
+      <div className="mt-8 flex justify-center">
+        <div
+          role="tablist"
+          aria-label="Como funciona - abas"
+          className="inline-flex flex-wrap justify-center gap-2 sm:gap-4 text-sm relative rounded-full border border-border bg-surface/70 px-2 py-2 backdrop-blur-md"
+        >
+          {TABS.map((t) => (
+            <button
+              key={t}
+              role="tab"
+              aria-selected={activeTab === t}
+              onClick={() => setActiveTab(t)}
+              className={clsx(
+                "rounded-full px-4 py-2 font-medium transition-colors relative z-10 whitespace-nowrap",
+                activeTab === t
+                  ? "text-primary"
+                  : "text-foreground-muted hover:text-foreground"
+              )}
+            >
+              {activeTab === t && (
+                <motion.div
+                  layoutId="active-tab-indicator"
+                  className="absolute inset-0 rounded-full bg-primary/10 -z-10"
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              )}
+              {t}
+            </button>
+          ))}
+        </div>
       </div>
 
       <AnimatePresence mode="wait">
@@ -98,7 +100,7 @@ export function HowItWorksSection() {
           <div
             id={`panel-${activeTab}`}
             role="tabpanel"
-            className="h-[340px] md:h-[380px] rounded-2xl"
+            className="min-h-[420px] md:min-h-[440px] rounded-2xl overflow-visible"
           >
             {ActiveMockup}
           </div>

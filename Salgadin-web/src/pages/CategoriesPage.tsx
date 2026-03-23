@@ -2,6 +2,7 @@
 import {
   getCategories,
   deleteCategory,
+  createCategory,
   type Category,
 } from "../services/categoryService";
 import {
@@ -14,25 +15,67 @@ import {
   HeartPulse,
   GraduationCap,
   Home,
+  Sparkles,
+  MoreHorizontal,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import clsx from "clsx";
+import {
+  getSubcategories,
+  createSubcategory,
+  deleteSubcategory,
+} from "../services/subcategoryService";
+import type { Subcategory } from "../lib/types";
 
 const iconMap: Record<string, React.ComponentType<{ size?: number }>> = {
-  Alimentacao: Utensils,
-  "AlimentaÃ§Ã£o": Utensils,
-  Transporte: Bus,
-  Compras: ShoppingCart,
-  Saude: HeartPulse,
-  SaÃºde: HeartPulse,
-  Educacao: GraduationCap,
-  "EducaÃ§Ã£o": GraduationCap,
-  Moradia: Home,
+  alimentacao: Utensils,
+  transporte: Bus,
+  compras: ShoppingCart,
+  saude: HeartPulse,
+  educacao: GraduationCap,
+  moradia: Home,
+  lazer: Sparkles,
+  outros: MoreHorizontal,
+};
+
+const normalizeKey = (value: string) =>
+  value
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+const getErrorMessage = (error: unknown, fallback: string) => {
+  const data = (error as any)?.response?.data;
+  if (!data) return fallback;
+  if (typeof data?.message === "string") return data.message;
+  if (data?.errors && typeof data.errors === "object") {
+    const messages = Object.values(data.errors).flat();
+    if (messages.length > 0) return messages.join(" ");
+  }
+  return fallback;
 };
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [expandedCategoryId, setExpandedCategoryId] = useState<number | null>(
+    null
+  );
+  const [subcategoryMap, setSubcategoryMap] = useState<
+    Record<number, Subcategory[]>
+  >({});
+  const [subcategoryLoading, setSubcategoryLoading] = useState<
+    Record<number, boolean>
+  >({});
+  const [newSubcategoryName, setNewSubcategoryName] = useState<
+    Record<number, string>
+  >({});
 
   const fetchData = useCallback(async () => {
     try {
@@ -60,11 +103,81 @@ export default function CategoriesPage() {
         await deleteCategory(id);
         fetchData();
       } catch (error) {
-        const message =
-          (error as any).response?.data?.message ||
-          "Falha ao excluir a categoria.";
+        const message = getErrorMessage(
+          error,
+          "Falha ao excluir a categoria."
+        );
         alert(message);
       }
+    }
+  };
+
+  const handleCreateCategory = async () => {
+    const name = newCategoryName.trim();
+    if (!name) return;
+    setIsCreating(true);
+    setCreateError(null);
+    try {
+      const created = await createCategory({ name });
+      setNewCategoryName("");
+      setCategories((prev) => [...prev, created]);
+    } catch (error) {
+      const message = getErrorMessage(error, "Falha ao criar a categoria.");
+      setCreateError(message);
+      alert(message);
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const toggleSubcategories = async (categoryId: number) => {
+    setExpandedCategoryId((prev) => (prev === categoryId ? null : categoryId));
+    if (subcategoryMap[categoryId] || subcategoryLoading[categoryId]) {
+      return;
+    }
+    setSubcategoryLoading((prev) => ({ ...prev, [categoryId]: true }));
+    try {
+      const data = await getSubcategories(categoryId);
+      setSubcategoryMap((prev) => ({ ...prev, [categoryId]: data }));
+    } catch (err) {
+      console.error("Falha ao buscar subcategorias:", err);
+    } finally {
+      setSubcategoryLoading((prev) => ({ ...prev, [categoryId]: false }));
+    }
+  };
+
+  const handleAddSubcategory = async (categoryId: number) => {
+    const name = (newSubcategoryName[categoryId] || "").trim();
+    if (!name) return;
+    try {
+      const created = await createSubcategory(categoryId, name);
+      setSubcategoryMap((prev) => ({
+        ...prev,
+        [categoryId]: [...(prev[categoryId] || []), created],
+      }));
+      setNewSubcategoryName((prev) => ({ ...prev, [categoryId]: "" }));
+    } catch (err) {
+      console.error("Falha ao criar subcategoria:", err);
+      alert(getErrorMessage(err, "Nao foi possivel criar a subcategoria."));
+    }
+  };
+
+  const handleDeleteSubcategory = async (
+    categoryId: number,
+    subcategoryId: number
+  ) => {
+    if (!window.confirm("Deseja excluir esta subcategoria?")) return;
+    try {
+      await deleteSubcategory(categoryId, subcategoryId);
+      setSubcategoryMap((prev) => ({
+        ...prev,
+        [categoryId]: (prev[categoryId] || []).filter(
+          (item) => item.id !== subcategoryId
+        ),
+      }));
+    } catch (err) {
+      console.error("Falha ao excluir subcategoria:", err);
+      alert(getErrorMessage(err, "Nao foi possivel excluir a subcategoria."));
     }
   };
 
@@ -112,17 +225,41 @@ export default function CategoriesPage() {
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <header className="flex flex-col gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Categorias</h1>
           <p className="text-sm text-foreground-muted">
             Monitore seus gastos por categoria e ajuste seus limites.
           </p>
         </div>
-        <button className="flex items-center gap-2 rounded-xl border border-border bg-surface/70 px-4 py-2 text-sm font-semibold text-foreground hover:border-surface-3 hover:bg-surface-2 transition">
-          <Plus size={16} />
-          Nova categoria
-        </button>
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+          <input
+            value={newCategoryName}
+            onChange={(event) => setNewCategoryName(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                handleCreateCategory();
+              }
+            }}
+            placeholder="Nova categoria"
+            className="flex-1 rounded-xl border border-border bg-surface/70 px-4 py-2 text-sm text-foreground outline-none focus:border-primary/50"
+          />
+          <button
+            type="button"
+            onClick={handleCreateCategory}
+            disabled={isCreating}
+            className="flex items-center gap-2 rounded-xl border border-border bg-surface/70 px-4 py-2 text-sm font-semibold text-foreground hover:border-surface-3 hover:bg-surface-2 transition disabled:opacity-60"
+          >
+            <Plus size={16} />
+            {isCreating ? "Salvando..." : "Criar categoria"}
+          </button>
+        </div>
+        {createError && (
+          <div className="rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
+            {createError}
+          </div>
+        )}
       </header>
 
       {categoryCards.length === 0 ? (
@@ -132,7 +269,7 @@ export default function CategoriesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
           {categoryCards.map((cat) => {
-            const Icon = iconMap[cat.name] || LayoutFallback;
+            const Icon = iconMap[normalizeKey(cat.name)] || LayoutFallback;
             const isHigh = cat.percent >= 80;
             return (
               <div
@@ -197,6 +334,74 @@ export default function CategoriesPage() {
                 <div className="mt-3 flex items-center justify-between text-xs text-foreground-subtle">
                   <span>{cat.percent}% do limite</span>
                   <span>Limite: R$ {cat.limit.toFixed(2)}</span>
+                </div>
+
+                <div className="mt-4 border-t border-border/60 pt-4">
+                  <button
+                    onClick={() => toggleSubcategories(cat.id)}
+                    className="w-full flex items-center justify-between text-xs font-semibold text-foreground-muted hover:text-foreground transition"
+                  >
+                    <span>Subcategorias</span>
+                    {expandedCategoryId === cat.id ? (
+                      <ChevronUp size={16} />
+                    ) : (
+                      <ChevronDown size={16} />
+                    )}
+                  </button>
+
+                  {expandedCategoryId === cat.id && (
+                    <div className="mt-3 space-y-3">
+                      <div className="flex gap-2">
+                        <input
+                          value={newSubcategoryName[cat.id] || ""}
+                          onChange={(event) =>
+                            setNewSubcategoryName((prev) => ({
+                              ...prev,
+                              [cat.id]: event.target.value,
+                            }))
+                          }
+                          placeholder="Nova subcategoria"
+                          className="flex-1 rounded-lg border border-border bg-surface-2 px-3 py-2 text-xs text-foreground outline-none focus:border-primary/50"
+                        />
+                        <button
+                          onClick={() => handleAddSubcategory(cat.id)}
+                          className="rounded-lg border border-border bg-surface-2 px-3 text-xs font-semibold text-foreground hover:bg-surface-3 transition"
+                        >
+                          Adicionar
+                        </button>
+                      </div>
+
+                      {subcategoryLoading[cat.id] ? (
+                        <p className="text-xs text-foreground-subtle">
+                          Carregando subcategorias...
+                        </p>
+                      ) : (subcategoryMap[cat.id] || []).length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                          {(subcategoryMap[cat.id] || []).map((sub) => (
+                            <div
+                              key={sub.id}
+                              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-2 px-3 py-1 text-xs text-foreground"
+                            >
+                              {sub.name}
+                              <button
+                                onClick={() =>
+                                  handleDeleteSubcategory(cat.id, sub.id)
+                                }
+                                className="text-danger hover:text-danger-strong"
+                                aria-label={`Excluir ${sub.name}`}
+                              >
+                                <Trash2 size={12} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-foreground-subtle">
+                          Nenhuma subcategoria cadastrada.
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             );

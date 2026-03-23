@@ -6,6 +6,7 @@ export interface CreateExpenseData {
   amount: number;
   date: string;
   categoryId: number;
+  subcategoryId?: number | null;
 }
 
 export const getExpenses = async (): Promise<Expense[]> => {

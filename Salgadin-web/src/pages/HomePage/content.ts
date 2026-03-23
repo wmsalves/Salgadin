@@ -60,21 +60,21 @@ export const tabsContent = {
   Despesas: {
     title: "Controle total das suas despesas",
     description:
-      "Registre e categorize seus gastos facilmente. O Salgadin organiza automaticamente suas despesas e mostra exatamente para onde seu dinheiro está indo.",
+      "Registre seus gastos com categorias e subcategorias. Visualize para onde o dinheiro está indo e exporte quando precisar.",
     items: [
-      "Categorização automática de despesas",
-      "Comparação de gastos mês a mês",
-      "Filtros avançados para análise detalhada",
+      "Categorias e subcategorias para maior precisão",
+      "Filtros por período e categoria",
+      "Exportação em CSV ou PDF",
     ],
   },
   Metas: {
     title: "Alcance seus objetivos financeiros",
     description:
-      "Defina metas claras e acompanhe seu progresso. O Salgadin ajuda você a economizar para o que realmente importa, seja uma viagem, um carro novo ou a sua independência financeira.",
+      "Crie metas mensais e acompanhe alertas quando estiver perto do limite.",
     items: [
-      "Criação de metas personalizadas",
+      "Metas por categoria ou geral",
+      "Alertas inteligentes de limite",
       "Acompanhamento visual do progresso",
-      "Sugestões de economia para atingir metas mais rápido",
     ],
   },
 };

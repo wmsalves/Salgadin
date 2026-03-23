@@ -389,7 +389,8 @@ export default function DashboardPage() {
                           {exp.description}
                         </p>
                         <p className="text-xs text-foreground-subtle">
-                          {exp.category} •{" "}
+                          {exp.category}
+                          {exp.subcategory ? ` / ${exp.subcategory}` : ""} •{" "}
                           {new Date(exp.date).toLocaleDateString("pt-BR", {
                             day: "2-digit",
                             month: "short",

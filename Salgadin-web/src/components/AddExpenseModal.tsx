@@ -6,6 +6,8 @@ import { X } from "lucide-react";
 import { Button } from "./ui/Button";
 import { getCategories, type Category } from "../services/categoryService";
 import { addExpense } from "../services/expenseService";
+import { getSubcategories } from "../services/subcategoryService";
+import type { Subcategory } from "../lib/types";
 import { motion, AnimatePresence } from "framer-motion";
 
 const expenseSchema = z.object({
@@ -15,6 +17,7 @@ const expenseSchema = z.object({
   amount: z.string().min(1, "O valor é obrigatório."),
   date: z.string().nonempty("A data é obrigatória."),
   categoryId: z.string().min(1, "Selecione uma categoria."),
+  subcategoryId: z.string().optional(),
 });
 
 type ExpenseFormValues = z.infer<typeof expenseSchema>;
@@ -31,6 +34,7 @@ export function AddExpenseModal({
   onSuccess,
 }: AddExpenseModalProps) {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [apiError, setApiError] = useState<string | null>(null);
 
   const {
@@ -38,6 +42,7 @@ export function AddExpenseModal({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    watch,
   } = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
@@ -53,6 +58,22 @@ export function AddExpenseModal({
     }
   }, [isOpen]);
 
+  const selectedCategory = watch("categoryId");
+
+  useEffect(() => {
+    if (!selectedCategory) {
+      setSubcategories([]);
+      return;
+    }
+    const categoryId = parseInt(selectedCategory, 10);
+    getSubcategories(categoryId)
+      .then(setSubcategories)
+      .catch((err) => {
+        console.error("Falha ao buscar subcategorias", err);
+        setSubcategories([]);
+      });
+  }, [selectedCategory]);
+
   async function onSubmit(data: ExpenseFormValues) {
     setApiError(null);
     try {
@@ -60,6 +81,9 @@ export function AddExpenseModal({
         ...data,
         amount: parseFloat(data.amount.replace(",", ".")),
         categoryId: parseInt(data.categoryId, 10),
+        subcategoryId: data.subcategoryId
+          ? parseInt(data.subcategoryId, 10)
+          : undefined,
       };
 
       await addExpense(payload);
@@ -193,6 +217,34 @@ export function AddExpenseModal({
                     {errors.categoryId.message}
                   </p>
                 )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="subcategoryId"
+                  className="block text-sm font-semibold text-foreground-muted mb-2"
+                >
+                  Subcategoria
+                </label>
+                <select
+                  {...register("subcategoryId")}
+                  id="subcategoryId"
+                  className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)]"
+                  disabled={!selectedCategory || subcategories.length === 0}
+                >
+                  <option value="">
+                    {selectedCategory
+                      ? subcategories.length > 0
+                        ? "Selecione uma subcategoria (opcional)"
+                        : "Nenhuma subcategoria encontrada"
+                      : "Selecione uma categoria primeiro"}
+                  </option>
+                  {subcategories.map((sub) => (
+                    <option key={sub.id} value={sub.id}>
+                      {sub.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {apiError && (

@@ -1,27 +1,72 @@
-﻿import { Trophy, Sparkles, Target, ArrowUpRight } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Trophy, Sparkles, Target, ArrowUpRight } from "lucide-react";
+import { getGoals, createGoal, getGoalAlerts } from "../services/goalService";
+import { getCategories, type Category } from "../services/categoryService";
+import type { Goal, GoalAlert } from "../lib/types";
 
-const goals = [
-  {
-    name: "Reserva de emergencia",
-    current: 3200,
-    target: 5000,
-    reward: "Bronze",
-  },
-  {
-    name: "Viagem de fim de ano",
-    current: 1800,
-    target: 4000,
-    reward: "Prata",
-  },
-  {
-    name: "Novo notebook",
-    current: 900,
-    target: 3000,
-    reward: "Ouro",
-  },
-];
+const defaultAlertThreshold = 0.8;
 
 export default function GoalsPage() {
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [alerts, setAlerts] = useState<GoalAlert[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [form, setForm] = useState({
+    categoryId: "",
+    monthlyLimit: "",
+    alertThreshold: defaultAlertThreshold.toString(),
+    isActive: true,
+  });
+
+  const now = useMemo(() => new Date(), []);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const [goalsData, alertsData, categoriesData] = await Promise.all([
+        getGoals(),
+        getGoalAlerts(now.getFullYear(), now.getMonth() + 1),
+        getCategories(),
+      ]);
+      setGoals(goalsData);
+      setAlerts(alertsData);
+      setCategories(categoriesData);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const alertsByGoal = useMemo(() => {
+    return alerts.reduce<Record<number, GoalAlert>>((acc, item) => {
+      acc[item.goalId] = item;
+      return acc;
+    }, {});
+  }, [alerts]);
+
+  const handleSubmit = async () => {
+    if (!form.monthlyLimit) return;
+    const payload = {
+      categoryId: form.categoryId ? Number(form.categoryId) : null,
+      monthlyLimit: Number(form.monthlyLimit.replace(",", ".")),
+      alertThreshold: Number(form.alertThreshold.replace(",", ".")) || defaultAlertThreshold,
+      isActive: form.isActive,
+    };
+    await createGoal(payload);
+    setForm({
+      categoryId: "",
+      monthlyLimit: "",
+      alertThreshold: defaultAlertThreshold.toString(),
+      isActive: true,
+    });
+    setIsFormOpen(false);
+    fetchData();
+  };
+
   return (
     <div className="space-y-6">
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -31,100 +76,144 @@ export default function GoalsPage() {
             Transforme seus objetivos em conquistas visuais.
           </p>
         </div>
-        <button className="flex items-center gap-2 rounded-xl border border-border bg-surface/70 px-4 py-2 text-sm font-semibold text-foreground hover:border-surface-3 hover:bg-surface-2 transition">
+        <button
+          onClick={() => setIsFormOpen((prev) => !prev)}
+          className="flex items-center gap-2 rounded-xl border border-border bg-surface/70 px-4 py-2 text-sm font-semibold text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
+        >
           <Sparkles size={16} />
           Nova meta
         </button>
       </header>
 
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        {goals.map((goal) => {
-          const percent = Math.min(
-            Math.round((goal.current / goal.target) * 100),
-            100
-          );
-          return (
-            <div
-              key={goal.name}
-              className="rounded-2xl border border-border bg-surface/70 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.12)]"
-            >
-              <div className="flex items-center justify-between">
-                <div className="h-12 w-12 rounded-xl bg-primary/15 text-primary grid place-items-center">
-                  <Target size={18} />
-                </div>
-                <span className="text-xs text-foreground-subtle">
-                  {goal.reward}
-                </span>
-              </div>
-
-              <h2 className="mt-4 text-lg font-semibold text-foreground">
-                {goal.name}
-              </h2>
-              <p className="text-sm text-foreground-muted">
-                R$ {goal.current.toFixed(2)} de R$ {goal.target.toFixed(2)}
-              </p>
-
-              <div className="mt-4 h-2 rounded-full bg-surface-3">
-                <div
-                  className="h-2 rounded-full bg-primary"
-                  style={{ width: `${percent}%` }}
-                />
-              </div>
-
-              <div className="mt-3 flex items-center justify-between text-xs text-foreground-subtle">
-                <span>{percent}% concluido</span>
-                <span>Faltam R$ {(goal.target - goal.current).toFixed(2)}</span>
-              </div>
-
-              <div className="mt-5 flex items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm">
-                <div className="flex items-center gap-2 text-primary">
-                  <Trophy size={16} />
-                  Bonus: +{Math.round(percent / 10)} pts
-                </div>
-                <ArrowUpRight size={16} className="text-primary" />
-              </div>
-            </div>
-          );
-        })}
-      </section>
-
-      <section className="rounded-2xl border border-border bg-surface/70 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-foreground">
-              Caminho de conquistas
-            </h2>
-            <p className="text-sm text-foreground-muted">
-              Mantenha a consistencia para desbloquear novos niveis.
-            </p>
-          </div>
-          <span className="text-xs text-primary">Nivel 4</span>
-        </div>
-
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-          {["Ritmo semanal", "Economia constante", "Meta concluida"].map(
-            (item, index) => (
-              <div
-                key={item}
-                className="rounded-xl border border-border bg-surface-2 p-4"
+      {isFormOpen && (
+        <section className="rounded-2xl border border-border bg-surface/70 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label className="text-xs text-foreground-muted">
+                Categoria
+              </label>
+              <select
+                value={form.categoryId}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, categoryId: event.target.value }))
+                }
+                className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
               >
-                <div className="text-xs text-foreground-subtle">
-                  Medalha {index + 1}
+                <option value="">Meta geral</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs text-foreground-muted">
+                Limite mensal (R$)
+              </label>
+              <input
+                value={form.monthlyLimit}
+                onChange={(event) =>
+                  setForm((prev) => ({ ...prev, monthlyLimit: event.target.value }))
+                }
+                placeholder="2000"
+                className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-foreground-muted">
+                Limiar de alerta (0-1)
+              </label>
+              <input
+                value={form.alertThreshold}
+                onChange={(event) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    alertThreshold: event.target.value,
+                  }))
+                }
+                placeholder="0.8"
+                className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
+              />
+            </div>
+            <div className="flex items-end">
+              <button
+                onClick={handleSubmit}
+                className="w-full rounded-xl bg-primary/90 text-white px-4 py-2 text-sm font-semibold hover:bg-primary"
+              >
+                Salvar meta
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {isLoading ? (
+        <div className="rounded-2xl border border-border bg-surface/70 p-6 text-center text-foreground-subtle">
+          Carregando metas...
+        </div>
+      ) : goals.length === 0 ? (
+        <div className="rounded-2xl border border-border bg-surface/70 p-6 text-center text-foreground-subtle">
+          Nenhuma meta cadastrada.
+        </div>
+      ) : (
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          {goals.map((goal) => {
+            const alert = alertsByGoal[goal.id];
+            const spent = alert?.spent ?? 0;
+            const percent =
+              goal.monthlyLimit > 0
+                ? Math.min(Math.round((spent / goal.monthlyLimit) * 100), 100)
+                : 0;
+            const reward = percent >= 90 ? "Ouro" : percent >= 70 ? "Prata" : "Bronze";
+
+            return (
+              <div
+                key={goal.id}
+                className="rounded-2xl border border-border bg-surface/70 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.12)]"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="h-12 w-12 rounded-xl bg-primary/15 text-primary grid place-items-center">
+                    <Target size={18} />
+                  </div>
+                  <span className="text-xs text-foreground-subtle">
+                    {reward}
+                  </span>
                 </div>
-                <div className="mt-2 text-sm font-semibold text-foreground">
-                  {item}
-                </div>
-                <div className="mt-3 h-2 rounded-full bg-surface-3">
+
+                <h2 className="mt-4 text-lg font-semibold text-foreground">
+                  {goal.category || "Meta geral"}
+                </h2>
+                <p className="text-sm text-foreground-muted">
+                  R$ {spent.toFixed(2)} de R$ {goal.monthlyLimit.toFixed(2)}
+                </p>
+
+                <div className="mt-4 h-2 rounded-full bg-surface-3">
                   <div
                     className="h-2 rounded-full bg-primary"
-                    style={{ width: `${65 + index * 10}%` }}
+                    style={{ width: `${percent}%` }}
                   />
                 </div>
+
+                <div className="mt-3 flex items-center justify-between text-xs text-foreground-subtle">
+                  <span>{percent}% consumido</span>
+                  <span>
+                    Alerta em {(goal.alertThreshold * 100).toFixed(0)}%
+                  </span>
+                </div>
+
+                <div className="mt-5 flex items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm">
+                  <div className="flex items-center gap-2 text-primary">
+                    <Trophy size={16} />
+                    Status: {goal.isActive ? "Ativa" : "Pausada"}
+                  </div>
+                  <ArrowUpRight size={16} className="text-primary" />
+                </div>
               </div>
-            )
-          )}
-        </div>
-      </section>
+            );
+          })}
+        </section>
+      )}
     </div>
   );
 }
