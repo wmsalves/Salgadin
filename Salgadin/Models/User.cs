@@ -17,5 +17,7 @@
         public ICollection<Subcategory>? Subcategories { get; set; }
 
         public ICollection<BudgetGoal>? BudgetGoals { get; set; }
+
+        public NotificationPreference? NotificationPreference { get; set; }
     }
 }

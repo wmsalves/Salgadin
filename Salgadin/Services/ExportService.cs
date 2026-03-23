@@ -160,6 +160,26 @@ namespace Salgadin.Services
             return document.GeneratePdf();
         }
 
+        private static IContainer HeaderCell(IContainer container)
+        {
+            return container
+                .DefaultTextStyle(x => x.SemiBold())
+                .PaddingVertical(4)
+                .Background(Colors.Grey.Lighten3)
+                .BorderBottom(1)
+                .BorderColor(Colors.Grey.Lighten1)
+                .AlignLeft();
+        }
+
+        private static IContainer BodyCell(IContainer container)
+        {
+            return container
+                .PaddingVertical(3)
+                .BorderBottom(1)
+                .BorderColor(Colors.Grey.Lighten4)
+                .AlignLeft();
+        }
+
         private static string EscapeCsv(string value)
         {
             if (value.Contains(',') || value.Contains('"') || value.Contains('\n') || value.Contains('\r'))

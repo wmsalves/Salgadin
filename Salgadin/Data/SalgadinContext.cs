@@ -15,6 +15,7 @@ namespace Salgadin.Data
         public DbSet<Category> Categories { get; set; } = null!;
         public DbSet<Subcategory> Subcategories { get; set; } = null!;
         public DbSet<BudgetGoal> BudgetGoals { get; set; } = null!;
+        public DbSet<NotificationPreference> NotificationPreferences { get; set; } = null!;
         public DbSet<User> Users { get; set; } = null!;
 
         // Sobrescreve o método OnModelCreating para aplicar as configurações.

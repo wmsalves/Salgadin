@@ -36,9 +36,9 @@ try
     // Configura a licença do QuestPDF (Community).
     QuestPDF.Settings.License = LicenseType.Community;
 
-    // Configura o Entity Framework Core para usar o SQL Server.
+    // Configura o Entity Framework Core para usar o PostgreSQL.
     builder.Services.AddDbContext<SalgadinContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
     // Registra os perfis de mapeamento do AutoMapper.
     builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
@@ -53,6 +53,7 @@ try
     builder.Services.AddScoped<IReportService, ReportService>();
     builder.Services.AddScoped<IGoalService, GoalService>();
     builder.Services.AddScoped<IExportService, ExportService>();
+    builder.Services.AddScoped<INotificationService, NotificationService>();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<IUserContextService, UserContextService>();
 

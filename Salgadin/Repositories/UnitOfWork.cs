@@ -35,6 +35,7 @@ namespace Salgadin.Repositories
         public IRepository<Category> Categories { get; }
         public IRepository<Subcategory> Subcategories { get; }
         public IRepository<BudgetGoal> BudgetGoals { get; }
+        public IRepository<NotificationPreference> NotificationPreferences { get; }
         public IRepository<User> Users { get; }
 
         public UnitOfWork(SalgadinContext context)
@@ -44,6 +45,7 @@ namespace Salgadin.Repositories
             Categories = new Repository<Category>(_context);
             Subcategories = new Repository<Subcategory>(_context);
             BudgetGoals = new Repository<BudgetGoal>(_context);
+            NotificationPreferences = new Repository<NotificationPreference>(_context);
             Users = new Repository<User>(_context);
         }
 
