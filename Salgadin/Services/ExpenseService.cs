@@ -19,7 +19,7 @@ namespace Salgadin.Services
             _mapper = mapper;
             _userContext = userContext;
         }
-        
+
         public async Task<IEnumerable<DailySummaryDto>> GetDailySummaryAsync(DateTime? startDate, DateTime? endDate)
         {
             var userId = _userContext.GetUserId();
@@ -54,15 +54,22 @@ namespace Salgadin.Services
         public async Task<ExpenseDto> AddExpenseAsync(CreateExpenseDto dto)
         {
             var userId = _userContext.GetUserId();
-            
+
             var category = await _unitOfWork.Categories.GetByIdAsync(dto.CategoryId);
             if (category == null || category.UserId != userId)
             {
                 throw new KeyNotFoundException("Categoria não encontrada.");
             }
 
+            if (dto.SubcategoryId.HasValue)
+            {
+                await ValidateSubcategoryAsync(userId, dto.CategoryId, dto.SubcategoryId.Value);
+            }
+
             var expense = _mapper.Map<Expense>(dto);
             expense.UserId = userId;
+
+            expense.Date = DateTime.SpecifyKind(expense.Date, DateTimeKind.Utc);
 
             await _unitOfWork.Expenses.AddAsync(expense);
             await _unitOfWork.CompleteAsync();
@@ -77,6 +84,7 @@ namespace Salgadin.Services
             var userId = _userContext.GetUserId();
             var expense = await _unitOfWork.Expenses.GetQueryable()
                 .Include(e => e.Category)
+                .Include(e => e.Subcategory)
                 .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
             return _mapper.Map<ExpenseDto>(expense);
         }
@@ -100,6 +108,7 @@ namespace Salgadin.Services
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Include(e => e.Category)
+                .Include(e => e.Subcategory)
                 .ToListAsync();
 
             return new PagedResult<ExpenseDto>
@@ -120,12 +129,17 @@ namespace Salgadin.Services
 
             if (existing == null)
                 throw new KeyNotFoundException("Despesa não encontrada ou acesso negado.");
-            
-            _mapper.Map(dto, existing); 
+
+            if (dto.SubcategoryId.HasValue)
+            {
+                await ValidateSubcategoryAsync(userId, dto.CategoryId, dto.SubcategoryId.Value);
+            }
+
+            _mapper.Map(dto, existing);
             _unitOfWork.Expenses.Update(existing);
             await _unitOfWork.CompleteAsync();
         }
-        
+
         public async Task DeleteExpenseAsync(int id)
         {
             var userId = _userContext.GetUserId();
@@ -139,18 +153,19 @@ namespace Salgadin.Services
             _unitOfWork.Expenses.Delete(expense);
             await _unitOfWork.CompleteAsync();
         }
-        
+
         public async Task<IEnumerable<ExpenseDto>> GetAllExpensesAsync()
         {
             var userId = _userContext.GetUserId();
             var expenses = await _unitOfWork.Expenses.GetQueryable()
                 .Where(e => e.UserId == userId)
                 .Include(e => e.Category)
+                .Include(e => e.Subcategory)
                 .OrderByDescending(e => e.Date)
                 .ToListAsync();
             return _mapper.Map<IEnumerable<ExpenseDto>>(expenses);
         }
-        
+
         public async Task<IEnumerable<ExpenseDto>> GetFilteredExpensesAsync(DateTime? startDate, DateTime? endDate, string? category)
         {
             var userId = _userContext.GetUserId();
@@ -159,9 +174,22 @@ namespace Salgadin.Services
             // ... (lógica de filtro) ...
             var expenses = await query
                 .Include(e => e.Category)
+                .Include(e => e.Subcategory)
                 .OrderByDescending(e => e.Date)
                 .ToListAsync();
             return _mapper.Map<IEnumerable<ExpenseDto>>(expenses);
+        }
+
+        private async Task ValidateSubcategoryAsync(int userId, int categoryId, int subcategoryId)
+        {
+            var subcategory = await _unitOfWork.Subcategories
+                .GetQueryable()
+                .FirstOrDefaultAsync(sc => sc.Id == subcategoryId && sc.UserId == userId);
+
+            if (subcategory == null || subcategory.CategoryId != categoryId)
+            {
+                throw new KeyNotFoundException("Subcategoria não encontrada ou inválida para a categoria informada.");
+            }
         }
     }
 }

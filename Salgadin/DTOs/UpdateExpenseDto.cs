@@ -14,6 +14,8 @@ namespace Salgadin.DTOs
         [Required(ErrorMessage = "O ID da categoria é obrigatório.")]
         public int CategoryId { get; set; }
 
+        public int? SubcategoryId { get; set; }
+
         [Required(ErrorMessage = "A data é obrigatória.")]
         public DateTime Date { get; set; }
     }

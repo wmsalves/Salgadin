@@ -13,5 +13,9 @@
         public ICollection<Expense>? Expenses { get; set; }
 
         public ICollection<Category>? Categories { get; set; }
+
+        public ICollection<Subcategory>? Subcategories { get; set; }
+
+        public ICollection<BudgetGoal>? BudgetGoals { get; set; }
     }
 }

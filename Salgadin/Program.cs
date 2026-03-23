@@ -2,6 +2,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Salgadin.Data;
@@ -44,6 +45,9 @@ try
     // Registra os servi�os da aplica��o.
     builder.Services.AddScoped<IExpenseService, ExpenseService>();
     builder.Services.AddScoped<ICategoryService, CategoryService>();
+    builder.Services.AddScoped<ISubcategoryService, SubcategoryService>();
+    builder.Services.AddScoped<IReportService, ReportService>();
+    builder.Services.AddScoped<IGoalService, GoalService>();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<IUserContextService, UserContextService>();
 
@@ -59,9 +63,9 @@ try
     builder.Services.AddControllers()
         .AddJsonOptions(options =>
         {
-        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+            options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
         });
-        
+
     builder.Services.AddEndpointsApiExplorer();
 
     // Configura a autentica��o via JWT Bearer Token.
@@ -80,18 +84,18 @@ try
         });
 
     // Define uma pol�tica de CORS para permitir requisi��es do frontend.
-var corsPolicy = "_salgadinCors";
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(corsPolicy, policy =>
+    var corsPolicy = "_salgadinCors";
+    builder.Services.AddCors(options =>
     {
-        policy
-            .WithOrigins("http://localhost:5173", "http://localhost:3000") 
-            .AllowAnyMethod() 
-            .AllowAnyHeader() 
-            .AllowCredentials(); 
+        options.AddPolicy(corsPolicy, policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:5173", "http://localhost:3000")
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
+        });
     });
-});
 
     // Configura o Swagger para documenta��o da API.
     builder.Services.AddSwaggerGen(c =>
@@ -138,8 +142,8 @@ builder.Services.AddCors(options =>
 
     app.UseHttpsRedirection();
 
-    app.UseRouting(); 
-    
+    app.UseRouting();
+
     // Aplica a pol�tica de CORS.
     app.UseCors(corsPolicy);
 

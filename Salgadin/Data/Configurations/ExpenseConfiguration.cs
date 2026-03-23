@@ -34,6 +34,12 @@ namespace Salgadin.Data.Configurations
                 .HasForeignKey(e => e.CategoryId) // A chave estrangeira é CategoryId.
                 .OnDelete(DeleteBehavior.Restrict); // Impede que uma categoria seja deletada se houver despesas associadas a ela.
 
+            // Configura o relacionamento opcional "uma Despesa pertence a uma Subcategoria".
+            builder.HasOne(e => e.Subcategory)
+                .WithMany()
+                .HasForeignKey(e => e.SubcategoryId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             // Cria um índice na coluna UserId para otimizar consultas que filtram por usuário.
             builder.HasIndex(e => e.UserId);
         }

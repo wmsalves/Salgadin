@@ -1,11 +1,11 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Salgadin.DTOs;
 
 namespace Salgadin.Validators
 {
-    public class CreateExpenseDtoValidator : AbstractValidator<CreateExpenseDto>
+    public class UpdateExpenseDtoValidator : AbstractValidator<UpdateExpenseDto>
     {
-        public CreateExpenseDtoValidator()
+        public UpdateExpenseDtoValidator()
         {
             RuleFor(x => x.Description)
                 .NotEmpty().WithMessage("A descrição é obrigatória.")
