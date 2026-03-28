@@ -215,12 +215,13 @@ export default function CategoriesPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block mb-4">
-            <div className="animate-spin">
-              <div className="h-12 w-12 border-4 border-surface-3 border-t-primary rounded-full"></div>
-            </div>
+      <div className="min-h-[60vh] flex items-center justify-center animate-in fade-in duration-500">
+        <div className="text-center flex flex-col items-center gap-4">
+          <div className="h-10 w-10 text-primary animate-spin">
+            <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
           </div>
           <p className="text-foreground-muted font-medium">
             Carregando categorias...
@@ -240,7 +241,7 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header className="flex flex-col gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Categorias</h1>
@@ -284,13 +285,14 @@ export default function CategoriesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {categoryCards.map((cat) => {
+          {categoryCards.map((cat, index) => {
             const Icon = iconMap[normalizeKey(cat.name)] || LayoutFallback;
             const isHigh = cat.percent >= 80;
             return (
               <div
                 key={cat.id}
-                className="rounded-2xl border border-border bg-surface/70 backdrop-blur-xl p-5 shadow-[0_20px_60px_rgba(0,0,0,0.12)]"
+                style={{ animationDelay: `${index * 100}ms` }}
+                className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] hover:-translate-y-1 hover:shadow-xl transition-all duration-300 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">

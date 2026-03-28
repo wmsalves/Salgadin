@@ -74,7 +74,7 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Relatorios</h1>
@@ -132,15 +132,19 @@ export default function ReportsPage() {
 
         <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
           {mode === "monthly" ? (
-            <div>
-              <label className="text-xs text-foreground-muted">Mes</label>
-              <input
-                type="month"
-                value={monthlyValue}
-                onChange={(event) => setMonthlyValue(event.target.value)}
-                className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
-              />
-            </div>
+            <>
+              <div>
+                <label className="text-xs text-foreground-muted">Mes</label>
+                <input
+                  type="month"
+                  value={monthlyValue}
+                  onChange={(event) => setMonthlyValue(event.target.value)}
+                  className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                />
+              </div>
+              {/* Spacer para travar o Grid e nao pular layout */}
+              <div className="hidden md:block"></div>
+            </>
           ) : (
             <>
               <div>
@@ -151,7 +155,7 @@ export default function ReportsPage() {
                   type="date"
                   value={startDate}
                   onChange={(event) => setStartDate(event.target.value)}
-                  className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
+                  className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
               <div>
@@ -168,7 +172,7 @@ export default function ReportsPage() {
           <div className="flex items-end">
             <button
               onClick={fetchReport}
-              className="w-full rounded-xl border border-border bg-surface-2 px-4 py-2 text-sm font-semibold text-foreground hover:bg-surface-3"
+              className="w-full rounded-xl border border-border bg-surface-2 px-4 py-2 text-sm font-semibold text-foreground hover:bg-surface-3 transition-colors active:scale-[0.98]"
             >
               Atualizar
             </button>
@@ -176,13 +180,19 @@ export default function ReportsPage() {
         </div>
       </section>
 
-      {isLoading || !report ? (
-        <div className="rounded-2xl border border-border bg-surface/70 p-6 text-center text-foreground-subtle">
-          Carregando relatorio...
+      {!report ? (
+        <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-12 text-center text-foreground-subtle flex flex-col items-center justify-center gap-4 animate-in fade-in duration-500">
+          <div className="h-10 w-10 text-primary animate-spin">
+             <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
+          Carregando dados financeiros...
         </div>
       ) : (
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          <div className="xl:col-span-2 rounded-2xl border border-border bg-surface/70 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
+        <div className={`grid grid-cols-1 xl:grid-cols-3 gap-6 transition-all ${isLoading ? 'opacity-40 grayscale-[0.2] pointer-events-none blur-[1px]' : ''}`}>
+          <div className="xl:col-span-2 rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] animate-fade-in opacity-0 [animation-fill-mode:forwards]" style={{ animationDelay: "0ms" }}>
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-lg font-semibold text-foreground">
@@ -232,16 +242,17 @@ export default function ReportsPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-border bg-surface/70 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
+          <div className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] animate-fade-in opacity-0 [animation-fill-mode:forwards]" style={{ animationDelay: "150ms" }}>
             <h2 className="text-lg font-semibold text-foreground mb-4">
               Por categoria
             </h2>
             <div className="space-y-3">
               {report.byCategory.length > 0 ? (
-                report.byCategory.map((item) => (
+                report.byCategory.map((item, index) => (
                   <div
                     key={item.category}
-                    className="flex items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm"
+                    style={{ animationDelay: `${300 + index * 100}ms` }}
+                    className="flex items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm hover:translate-x-1 hover:bg-surface-3 transition-transform animate-fade-in opacity-0 [animation-fill-mode:forwards]"
                   >
                     <span className="text-foreground">{item.category}</span>
                     <span className="text-foreground-muted">

@@ -15,6 +15,7 @@ import { AxiosError } from "axios";
 export default function SignupPage() {
   const navigate = useNavigate();
   const [apiError, setApiError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -34,12 +35,8 @@ export default function SignupPage() {
       const { ...payload } = data;
 
       await registerUser(payload);
-
-      alert(
-        "Cadastro realizado com sucesso! Você será redirecionado para o login."
-      );
-
-      navigate("/login");
+      setSuccessMessage("Conta criada com sucesso! Redirecionando para o login...");
+      setTimeout(() => navigate("/login"), 2500);
     } catch (error) {
       console.error("Falha no cadastro:", error);
 
@@ -132,15 +129,24 @@ export default function SignupPage() {
                 <Button
                   type="submit"
                   isLoading={isSubmitting}
+                  disabled={!!successMessage}
                   className="w-full mt-4"
                 >
                   {isSubmitting ? "Criando conta..." : "Criar Conta"}
                 </Button>
 
                 {apiError && (
-                  <div className="p-3 rounded-lg bg-surface-2 border border-danger/30">
+                  <div className="p-3 rounded-xl bg-surface-2 border border-danger/30 animate-in fade-in slide-in-from-bottom-2">
                     <p className="text-sm text-danger font-medium text-center">
                       {apiError}
+                    </p>
+                  </div>
+                )}
+                
+                {successMessage && (
+                  <div className="p-3 rounded-xl bg-success/10 border border-success/30 animate-in fade-in slide-in-from-bottom-2">
+                    <p className="text-sm text-success font-semibold text-center">
+                      {successMessage}
                     </p>
                   </div>
                 )}

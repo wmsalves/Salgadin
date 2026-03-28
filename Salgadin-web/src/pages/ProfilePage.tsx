@@ -40,7 +40,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Perfil</h1>
@@ -50,13 +50,13 @@ export default function ProfilePage() {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <section className="lg:col-span-2 rounded-2xl border border-border bg-surface p-6 shadow-sm">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in zoom-in-95 duration-500 fade-in">
+        <section className="lg:col-span-2 rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
           <h2 className="text-lg font-semibold text-foreground mb-4">
             Informacoes da conta
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="rounded-xl border border-border bg-surface-2 p-4">
+            <div className="rounded-2xl border border-border bg-surface-2 p-5 animate-fade-in opacity-0 [animation-fill-mode:forwards]" style={{ animationDelay: "0ms" }}>
               <div className="flex items-center gap-2 text-sm text-foreground-muted">
                 <User size={16} />
                 Nome
@@ -65,7 +65,7 @@ export default function ProfilePage() {
                 {user?.name || "Usuario"}
               </div>
             </div>
-            <div className="rounded-xl border border-border bg-surface-2 p-4">
+            <div className="rounded-2xl border border-border bg-surface-2 p-5 animate-fade-in opacity-0 [animation-fill-mode:forwards]" style={{ animationDelay: "100ms" }}>
               <div className="flex items-center gap-2 text-sm text-foreground-muted">
                 <Mail size={16} />
                 Email
@@ -77,7 +77,7 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
+        <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
           <h2 className="text-lg font-semibold text-foreground mb-4">
             Preferencias
           </h2>
@@ -145,16 +145,17 @@ export default function ProfilePage() {
         </section>
       </div>
 
-      <section className="rounded-2xl border border-border bg-surface p-6 shadow-sm">
+      <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] animate-in zoom-in-95 duration-500 fade-in delay-150 [animation-fill-mode:backwards]">
         <h2 className="text-lg font-semibold text-foreground mb-4">
           Alertas do mes
         </h2>
         {alerts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {alerts.map((alert) => (
+            {alerts.map((alert, index) => (
               <div
                 key={alert.goalId}
-                className="rounded-xl border border-border bg-surface-2 p-4"
+                style={{ animationDelay: `${index * 100}ms` }}
+                className="rounded-2xl border border-border bg-surface-2 p-5 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
               >
                 <div className="text-sm font-semibold text-foreground">
                   {alert.category || "Meta geral"}

@@ -68,7 +68,7 @@ export default function GoalsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">Metas</h1>
@@ -149,7 +149,13 @@ export default function GoalsPage() {
       )}
 
       {isLoading ? (
-        <div className="rounded-2xl border border-border bg-surface/70 p-6 text-center text-foreground-subtle">
+        <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-12 text-center text-foreground-subtle flex flex-col items-center justify-center gap-4 animate-in fade-in duration-500">
+          <div className="h-10 w-10 text-primary animate-spin">
+            <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
           Carregando metas...
         </div>
       ) : goals.length === 0 ? (
@@ -158,7 +164,7 @@ export default function GoalsPage() {
         </div>
       ) : (
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          {goals.map((goal) => {
+          {goals.map((goal, index) => {
             const alert = alertsByGoal[goal.id];
             const spent = alert?.spent ?? 0;
             const percent =
@@ -170,7 +176,8 @@ export default function GoalsPage() {
             return (
               <div
                 key={goal.id}
-                className="rounded-2xl border border-border bg-surface/70 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.12)]"
+                style={{ animationDelay: `${index * 100}ms` }}
+                className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] hover:-translate-y-1 hover:shadow-xl transition-all duration-300 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
               >
                 <div className="flex items-center justify-between">
                   <div className="h-12 w-12 rounded-xl bg-primary/15 text-primary grid place-items-center">
