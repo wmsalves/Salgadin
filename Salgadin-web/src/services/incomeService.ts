@@ -8,8 +8,8 @@ export interface CreateIncomeData {
   isFixed: boolean;
 }
 
-export const getIncomes = async (): Promise<Income[]> => {
-  const response = await api.get("/income");
+export const getIncomes = async (startDate?: string, endDate?: string): Promise<Income[]> => {
+  const response = await api.get("/income", { params: { startDate, endDate } });
   return response.data.items;
 };
 

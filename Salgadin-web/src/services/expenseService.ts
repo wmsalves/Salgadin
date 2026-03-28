@@ -9,13 +9,13 @@ export interface CreateExpenseData {
   subcategoryId?: number | null;
 }
 
-export const getExpenses = async (): Promise<Expense[]> => {
-  const response = await api.get("/expense");
+export const getExpenses = async (startDate?: string, endDate?: string): Promise<Expense[]> => {
+  const response = await api.get("/expense", { params: { startDate, endDate } });
   return response.data.items;
 };
 
-export const getDailySummary = async (): Promise<DailySummary[]> => {
-  const response = await api.get("/expense/summary");
+export const getDailySummary = async (startDate?: string, endDate?: string): Promise<DailySummary[]> => {
+  const response = await api.get("/expense/summary", { params: { startDate, endDate } });
   return response.data;
 };
 

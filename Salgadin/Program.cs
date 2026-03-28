@@ -13,6 +13,7 @@ using Salgadin.Validators;
 using Serilog;
 using QuestPDF.Infrastructure;
 using System.Text;
+using Microsoft.AspNetCore.RateLimiting;
 
 // Configura um logger inicial para capturar erros durante a inicializa��o.
 Log.Logger = new LoggerConfiguration()
@@ -61,6 +62,18 @@ try
 
     // Permite o acesso ao HttpContext nos servi�os.
     builder.Services.AddHttpContextAccessor();
+
+    builder.Services.AddRateLimiter(options =>
+    {
+        options.AddFixedWindowLimiter("LoginPolicy", opt =>
+        {
+            opt.PermitLimit = 5;
+            opt.Window = TimeSpan.FromMinutes(1);
+            opt.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
+            opt.QueueLimit = 0;
+        });
+        options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    });
 
     // Registra os validadores do FluentValidation.
     builder.Services.AddValidatorsFromAssemblyContaining<UserRegisterDtoValidator>();
@@ -151,6 +164,9 @@ try
     app.UseHttpsRedirection();
 
     app.UseRouting();
+
+    // Ativa o RateLimiter (Deve vir apos o routing)
+    app.UseRateLimiter();
 
     // Aplica a pol�tica de CORS.
     app.UseCors(corsPolicy);

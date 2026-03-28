@@ -84,20 +84,27 @@ namespace Salgadin.Services
             return GenerateToken(user);
         }
 
-        // Gera o hash e o salt para uma senha usando HMAC-SHA512 para armazenamento seguro.
+        // Gera o hash usando BCrypt (O Salt é incorporado automaticamente na string).
         private void CreatePasswordHash(string password, out byte[] hash, out byte[] salt)
         {
-            using var hmac = new HMACSHA512();
-            salt = hmac.Key;
-            hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            var hashStr = BCrypt.Net.BCrypt.HashPassword(password);
+            hash = Encoding.UTF8.GetBytes(hashStr);
+            salt = Array.Empty<byte>(); 
         }
 
-        // Verifica se a senha fornecida corresponde ao hash armazenado, usando o mesmo salt.
+        // Verifica a senha usando BCrypt. Senhas velhas HMAC falharão graciosamente aqui.
         private bool VerifyPassword(string password, byte[] hash, byte[] salt)
         {
-            using var hmac = new HMACSHA512(salt);
-            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return computedHash.SequenceEqual(hash);
+            try
+            {
+                var hashStr = Encoding.UTF8.GetString(hash);
+                return BCrypt.Net.BCrypt.Verify(password, hashStr);
+            }
+            catch
+            {
+                // Se der erro de parsing ou nao for formato BCrypt ($2y$), falha em vez de crashar
+                return false;
+            }
         }
 
         // Cria um JSON Web Token (JWT) para o usuário autenticado.

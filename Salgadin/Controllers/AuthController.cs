@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Salgadin.DTOs;
+using Microsoft.AspNetCore.RateLimiting;
 using Salgadin.Services;
 
 namespace Salgadin.Controllers
@@ -16,6 +17,7 @@ namespace Salgadin.Controllers
         }
 
         [HttpPost("register")]
+        [EnableRateLimiting("LoginPolicy")]
         public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
         {
             // Sem try-catch. A lógica de tratamento de erro é delegada para o middleware.
@@ -24,6 +26,7 @@ namespace Salgadin.Controllers
         }
 
         [HttpPost("login")]
+        [EnableRateLimiting("LoginPolicy")]
         public async Task<IActionResult> Login([FromBody] UserLoginDto dto)
         {
             // Sem try-catch. O middleware cuidará de exceções como UnauthorizedAccessException.

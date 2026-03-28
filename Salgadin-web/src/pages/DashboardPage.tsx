@@ -16,9 +16,12 @@ import {
   PiggyBank,
   Pizza,
   Bus,
-  ShoppingCart,
   Laptop,
   Trash2,
+  ChevronLeft,
+  ChevronRight,
+  Calendar,
+  ShoppingCart,
 } from "lucide-react";
 import clsx from "clsx";
 import { getExpenses, getDailySummary, deleteExpense } from "../services/expenseService";
@@ -46,16 +49,22 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = useState(false);
   const [isAddIncomeModalOpen, setIsAddIncomeModalOpen] = useState(false);
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   const fetchData = useCallback(async () => {
     try {
       setError(null);
-      const now = new Date();
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      // Usando UTC e o dia exato para evitar conversões de timezone problemáticas no Prisma/EF
+      const startDate = new Date(year, month, 1).toISOString();
+      const endDate = new Date(year, month + 1, 0, 23, 59, 59).toISOString();
+
       const [expensesData, summaryData, incomesData, alertsData] = await Promise.all([
-        getExpenses(),
-        getDailySummary(),
-        getIncomes(),
-        getGoalAlerts(now.getFullYear(), now.getMonth() + 1),
+        getExpenses(startDate, endDate),
+        getDailySummary(startDate, endDate),
+        getIncomes(startDate, endDate),
+        getGoalAlerts(year, month + 1),
       ]);
       setExpenses(expensesData);
       setSummary(summaryData);
@@ -67,7 +76,7 @@ export default function DashboardPage() {
         "Nao foi possivel carregar seus dados financeiros. Tente novamente mais tarde.",
       );
     }
-  }, []);
+  }, [currentDate]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -85,6 +94,9 @@ export default function DashboardPage() {
       }
     }
   };
+
+  const handlePrevMonth = () => setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+  const handleNextMonth = () => setCurrentDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
 
   const totalExpenses = summary.reduce((acc, day) => acc + day.total, 0);
   const totalRevenue = incomes.reduce((acc, inc) => acc + inc.amount, 0);
@@ -182,6 +194,28 @@ export default function DashboardPage() {
               Seu painel financeiro
             </h1>
           </div>
+          
+          <div className="flex items-center gap-2 bg-surface-2 rounded-full px-4 py-2 border border-border shadow-sm">
+            <button
+              onClick={handlePrevMonth}
+              className="p-1 rounded-full hover:bg-surface-3 transition text-foreground-muted hover:text-foreground"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <div className="flex items-center gap-2 min-w-[130px] justify-center">
+              <Calendar size={16} className="text-primary" />
+              <span className="text-sm font-semibold text-foreground capitalize">
+                {currentDate.toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}
+              </span>
+            </div>
+            <button
+              onClick={handleNextMonth}
+              className="p-1 rounded-full hover:bg-surface-3 transition text-foreground-muted hover:text-foreground"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsAddIncomeModalOpen(true)}
