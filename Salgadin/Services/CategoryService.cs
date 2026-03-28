@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Salgadin.DTOs;
 using Salgadin.Models;
@@ -31,6 +31,39 @@ namespace Salgadin.Services
                 .ToListAsync();
 
             return _mapper.Map<IEnumerable<CategoryDto>>(categories);
+        }
+
+        public async Task<IEnumerable<CategorySummaryDto>> GetSummaryAsync(int year, int month)
+        {
+            var userId = _userContext.GetUserId();
+            
+            var categories = await _unitOfWork.Categories
+                .GetQueryable()
+                .Where(c => c.UserId == userId)
+                .ToListAsync();
+
+            var goals = await _unitOfWork.BudgetGoals
+                .GetQueryable()
+                .Where(g => g.UserId == userId)
+                .ToListAsync();
+
+            var start = new DateTime(year, month, 1, 0, 0, 0, DateTimeKind.Utc);
+            var endExclusive = start.AddMonths(1);
+
+            var expensesGrouped = await _unitOfWork.Expenses
+                .GetQueryable()
+                .Where(e => e.UserId == userId && e.Date >= start && e.Date < endExclusive)
+                .GroupBy(e => e.CategoryId)
+                .Select(g => new { CategoryId = g.Key, Total = g.Sum(x => x.Amount) })
+                .ToListAsync();
+
+            return categories.Select(c => new CategorySummaryDto
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Spent = expensesGrouped.FirstOrDefault(e => e.CategoryId == c.Id)?.Total ?? 0m,
+                Limit = goals.FirstOrDefault(g => g.CategoryId == c.Id)?.MonthlyLimit ?? 0m
+            });
         }
 
         public async Task<CategoryDto?> GetByIdAsync(int id)

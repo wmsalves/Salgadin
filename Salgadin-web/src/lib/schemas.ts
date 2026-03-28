@@ -10,6 +10,10 @@ export const loginSchema = z.object({
 
 export const signupSchema = z
   .object({
+    name: z
+      .string()
+      .min(2, "O nome deve ter pelo menos 2 caracteres.")
+      .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "O nome deve conter apenas letras."),
     username: z
       .string()
       .min(1, "O email é obrigatório.")

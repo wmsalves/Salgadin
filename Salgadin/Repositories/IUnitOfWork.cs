@@ -1,4 +1,4 @@
-﻿using Salgadin.Models;
+using Salgadin.Models;
 
 namespace Salgadin.Repositories
 {
@@ -10,6 +10,7 @@ namespace Salgadin.Repositories
         IRepository<BudgetGoal> BudgetGoals { get; }
         IRepository<NotificationPreference> NotificationPreferences { get; }
         IRepository<User> Users { get; }
+        IRepository<Income> Incomes { get; }
         Task<int> CompleteAsync();
     }
 }

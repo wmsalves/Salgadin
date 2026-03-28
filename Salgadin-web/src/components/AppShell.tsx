@@ -36,18 +36,18 @@ export function AppShell() {
         <aside
           className={clsx(
             "sticky top-0 h-screen border-r border-border/70 bg-surface/80 backdrop-blur-xl transition-all shadow-[10px_0_30px_rgba(60,42,32,0.06)]",
-            collapsed ? "w-20" : "w-64"
+            collapsed ? "w-20" : "w-64",
           )}
         >
           <div
             className={clsx(
               "flex items-center px-4 py-5",
-              collapsed ? "justify-center" : "justify-between"
+              collapsed ? "justify-center" : "justify-between",
             )}
           >
             {!collapsed && (
               <div className="flex items-center gap-2">
-                <div className="h-10 w-10 rounded-full bg-primary/15 text-primary grid place-items-center">
+                <div className="h-10 w-10 rounded-full text-primary grid place-items-center">
                   <img src={LogoSalgadin} alt="Logo" className="h-6 w-6" />
                 </div>
                 <div className="text-lg font-semibold text-foreground">
@@ -60,12 +60,16 @@ export function AppShell() {
                 "h-9 w-9 rounded-full border border-border bg-surface-2 text-foreground-muted shadow-sm transition",
                 "hover:text-foreground hover:border-surface-3 hover:bg-surface-3",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
-                "grid place-items-center leading-none"
+                "grid place-items-center leading-none",
               )}
               onClick={() => setCollapsed((prev) => !prev)}
               aria-label="Alternar sidebar"
             >
-              {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+              {collapsed ? (
+                <ChevronRight size={18} />
+              ) : (
+                <ChevronLeft size={18} />
+              )}
             </button>
           </div>
 
@@ -81,7 +85,7 @@ export function AppShell() {
                       "w-full flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium transition",
                       isActive
                         ? "bg-surface-2 text-primary shadow-[0_10px_20px_rgba(60,42,32,0.08)]"
-                        : "text-foreground-muted hover:text-foreground hover:bg-surface-2"
+                        : "text-foreground-muted hover:text-foreground hover:bg-surface-2",
                     )
                   }
                 >
@@ -113,7 +117,9 @@ export function AppShell() {
             <div className="px-6 lg:px-8 py-3 flex items-center gap-3">
               <div className="flex items-center gap-2 rounded-full bg-surface-2 px-3 py-1.5 text-sm text-foreground-muted">
                 <span>Bem-vindo</span>
-                <span className="font-semibold text-foreground">{user?.name}</span>
+                <span className="font-semibold text-foreground">
+                  {user?.name}
+                </span>
               </div>
               <div className="ml-auto flex items-center gap-2">
                 <button

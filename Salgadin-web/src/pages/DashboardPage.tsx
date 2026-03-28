@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import {
   AreaChart,
   Area,
@@ -18,11 +18,15 @@ import {
   Bus,
   ShoppingCart,
   Laptop,
+  Trash2,
 } from "lucide-react";
 import clsx from "clsx";
-import { getExpenses, getDailySummary } from "../services/expenseService";
-import { type Expense, type DailySummary } from "../lib/types";
+import { getExpenses, getDailySummary, deleteExpense } from "../services/expenseService";
+import { getIncomes } from "../services/incomeService";
+import { getGoalAlerts } from "../services/goalService";
+import { type Expense, type DailySummary, type Income, type GoalAlert } from "../lib/types";
 import { AddExpenseModal } from "../components/AddExpenseModal";
+import { AddIncomeModal } from "../components/AddIncomeModal";
 
 const categoryIcons: Record<string, React.ComponentType<{ size?: number }>> = {
   Alimentacao: Pizza,
@@ -35,20 +39,28 @@ const categoryIcons: Record<string, React.ComponentType<{ size?: number }>> = {
 
 export default function DashboardPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [incomes, setIncomes] = useState<Income[]>([]);
   const [summary, setSummary] = useState<DailySummary[]>([]);
+  const [alerts, setAlerts] = useState<GoalAlert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = useState(false);
+  const [isAddIncomeModalOpen, setIsAddIncomeModalOpen] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
       setError(null);
-      const [expensesData, summaryData] = await Promise.all([
+      const now = new Date();
+      const [expensesData, summaryData, incomesData, alertsData] = await Promise.all([
         getExpenses(),
         getDailySummary(),
+        getIncomes(),
+        getGoalAlerts(now.getFullYear(), now.getMonth() + 1),
       ]);
       setExpenses(expensesData);
       setSummary(summaryData);
+      setIncomes(incomesData);
+      setAlerts(alertsData);
     } catch (err) {
       console.error("Falha ao buscar dados do dashboard:", err);
       setError(
@@ -62,8 +74,20 @@ export default function DashboardPage() {
     fetchData().finally(() => setIsLoading(false));
   }, [fetchData]);
 
+  const handleDeleteExpense = async (id: number) => {
+    if (window.confirm("Deseja apagar esta despesa permanentemente?")) {
+      try {
+        await deleteExpense(id);
+        fetchData();
+      } catch (err) {
+        console.error("Falha ao remover despesa:", err);
+        alert("Não foi possível excluir a despesa.");
+      }
+    }
+  };
+
   const totalExpenses = summary.reduce((acc, day) => acc + day.total, 0);
-  const totalRevenue = 3500.0;
+  const totalRevenue = incomes.reduce((acc, inc) => acc + inc.amount, 0);
   const balance = totalRevenue - totalExpenses;
 
   const chartGradient = useMemo(
@@ -94,7 +118,7 @@ export default function DashboardPage() {
           style: "currency",
           currency: "BRL",
         }),
-        trend: balance >= 0 ? "+12%" : "-4%",
+        trend: balance >= 0 ? "Positivo" : "Negativo",
         icon: Wallet,
         tone: balance >= 0 ? "success" : "danger",
       },
@@ -108,12 +132,12 @@ export default function DashboardPage() {
       },
       {
         title: "Gastos do Mes",
-        helper: "Comparado ao mes anterior",
+        helper: "Despesas totais",
         value: totalExpenses.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
-        trend: "-8%",
+        trend: "Monitorando",
         icon: TrendingDown,
         tone: "danger",
       },
@@ -158,13 +182,22 @@ export default function DashboardPage() {
               Seu painel financeiro
             </h1>
           </div>
-          <button
-            onClick={() => setIsAddExpenseModalOpen(true)}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 px-4 py-2 text-sm font-semibold text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
-          >
-            <Plus size={16} />
-            Nova despesa
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsAddIncomeModalOpen(true)}
+              className="inline-flex items-center gap-2 rounded-full border border-success/40 bg-success/10 px-4 py-2 text-sm font-semibold text-success hover:bg-success hover:text-white transition"
+            >
+              <Plus size={16} />
+              Nova receita
+            </button>
+            <button
+              onClick={() => setIsAddExpenseModalOpen(true)}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 px-4 py-2 text-sm font-semibold text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
+            >
+              <Plus size={16} />
+              Nova despesa
+            </button>
+          </div>
         </div>
       </header>
 
@@ -217,17 +250,17 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-lg font-semibold text-foreground">
-                Fluxo de Caixa
+                Fluxo de Caixa Mensal
               </h2>
               <p className="text-xs text-foreground-subtle">
-                Receitas e despesas ao longo da semana
+                Evolução diária de gastos
               </p>
             </div>
             <div className="flex items-center gap-2 text-[11px] text-foreground-subtle">
-              <span className="rounded-full bg-surface-2 px-2 py-0.5">
+              <span className="rounded-full bg-success/10 text-success px-2 py-0.5">
                 Receita: {totalRevenue.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
               </span>
-              <span className="rounded-full bg-surface-2 px-2 py-0.5">
+              <span className="rounded-full bg-danger/10 text-danger px-2 py-0.5">
                 Despesa: {totalExpenses.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
               </span>
             </div>
@@ -297,6 +330,49 @@ export default function DashboardPage() {
 
         <div className="space-y-6">
           <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
+            <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+               <Target size={20} className="text-info" />
+               Alertas de Metas
+            </h2>
+            <div className="space-y-4">
+              {alerts.length > 0 ? (
+                alerts.slice(0, 3).map((alert, index) => {
+                  const percent = Math.min((alert.spent / alert.monthlyLimit) * 100, 100);
+                  const isCritical = alert.thresholdReached || percent >= 90;
+                  return (
+                    <div
+                      key={alert.goalId || index}
+                      className="rounded-2xl border border-border bg-surface-2 p-4"
+                    >
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-foreground font-medium">
+                          {alert.category || "Geral"}
+                        </span>
+                        <span className={isCritical ? "text-danger font-bold" : "text-primary"}>
+                          {percent.toFixed(0)}%
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-xs text-foreground-subtle mt-1 mb-2">
+                        <span>Gasto: R$ {alert.spent}</span>
+                        <span>Limite: R$ {alert.monthlyLimit}</span>
+                      </div>
+                      <div className="h-2 rounded-full bg-surface-3">
+                        <div
+                          className={clsx("h-2 rounded-full", isCritical ? "bg-danger" : "bg-primary")}
+                          style={{ width: `${percent}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="text-sm text-foreground-subtle text-center">
+                  Nenhuma meta sob alerta agora. Tudo sob controle!
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
             <h2 className="text-lg font-semibold text-foreground mb-4">
               Resumo do Mes
             </h2>
@@ -338,27 +414,46 @@ export default function DashboardPage() {
 
           <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
             <h2 className="text-lg font-semibold text-foreground mb-4">
-              Proximas metas
+              Últimas receitas
             </h2>
-            <div className="space-y-4">
-              {["Reserva de emergencia", "Viagem", "Novo notebook"].map(
-                (goal, index) => (
-                  <div
-                    key={goal}
-                    className="rounded-2xl border border-border bg-surface-2 p-4"
-                  >
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-foreground">{goal}</span>
-                      <span className="text-primary">{60 + index * 10}%</span>
+            <div className="space-y-3">
+              {incomes.length > 0 ? (
+                incomes.slice(0, 5).map((inc) => {
+                  const amountValue = inc.amount;
+                  const amountLabel = amountValue.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  });
+                  return (
+                    <div
+                      key={inc.id}
+                      className="flex items-center gap-3 rounded-2xl border border-border bg-surface-2 p-3"
+                    >
+                      <div className="h-10 w-10 rounded-full bg-success/10 text-success grid place-items-center">
+                        <Wallet size={16} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-foreground truncate">
+                          {inc.description}
+                        </p>
+                        <p className="text-xs text-foreground-subtle">
+                          {inc.isFixed ? "Renda Fixa" : "Renda Extra"} •{" "}
+                          {new Date(inc.date).toLocaleDateString("pt-BR", {
+                            day: "2-digit",
+                            month: "short",
+                          })}
+                        </p>
+                      </div>
+                      <div className="text-sm font-semibold text-success">
+                        + {amountLabel}
+                      </div>
                     </div>
-                    <div className="mt-3 h-2 rounded-full bg-surface-3">
-                      <div
-                        className="h-2 rounded-full bg-primary"
-                        style={{ width: `${60 + index * 10}%` }}
-                      />
-                    </div>
-                  </div>
-                ),
+                  );
+                })
+              ) : (
+                <p className="text-sm text-foreground-subtle text-center">
+                  Nenhuma receita encontrada.
+                </p>
               )}
             </div>
           </div>
@@ -397,8 +492,17 @@ export default function DashboardPage() {
                           })}
                         </p>
                       </div>
-                      <div className="text-sm font-semibold text-danger">
-                        - {amountLabel}
+                      <div className="flex items-center gap-3">
+                        <div className="text-sm font-semibold text-danger">
+                          - {amountLabel}
+                        </div>
+                        <button
+                          onClick={() => handleDeleteExpense(exp.id)}
+                          className="p-1.5 rounded-lg text-foreground-muted hover:text-danger hover:bg-danger/10 transition-colors"
+                          title="Excluir despesa"
+                        >
+                          <Trash2 size={15} />
+                        </button>
                       </div>
                     </div>
                   );
@@ -416,6 +520,11 @@ export default function DashboardPage() {
       <AddExpenseModal
         isOpen={isAddExpenseModalOpen}
         onClose={() => setIsAddExpenseModalOpen(false)}
+        onSuccess={fetchData}
+      />
+      <AddIncomeModal
+        isOpen={isAddIncomeModalOpen}
+        onClose={() => setIsAddIncomeModalOpen(false)}
         onSuccess={fetchData}
       />
     </div>

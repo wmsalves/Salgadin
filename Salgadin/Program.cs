@@ -40,14 +40,16 @@ try
     builder.Services.AddDbContext<SalgadinContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
     // Registra os perfis de mapeamento do AutoMapper.
     builder.Services.AddAutoMapper(_ => { }, typeof(AutoMapperProfile).Assembly);
 
     // Registra a Unit of Work com um tempo de vida "scoped".
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-    // Registra os servi�os da aplica��o.
+    // Registra os servios da aplicao.
     builder.Services.AddScoped<IExpenseService, ExpenseService>();
+    builder.Services.AddScoped<IIncomeService, IncomeService>();
     builder.Services.AddScoped<ICategoryService, CategoryService>();
     builder.Services.AddScoped<ISubcategoryService, SubcategoryService>();
     builder.Services.AddScoped<IReportService, ReportService>();

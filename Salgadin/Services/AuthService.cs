@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Salgadin.DTOs;
 using Salgadin.Exceptions;
@@ -40,6 +40,7 @@ namespace Salgadin.Services
 
             var user = new User
             {
+                Name = dto.Name,
                 Username = dto.Username,
                 PasswordHash = hash,
                 PasswordSalt = salt
@@ -106,7 +107,8 @@ namespace Salgadin.Services
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.Name, string.IsNullOrWhiteSpace(user.Name) ? user.Username : user.Name),
+                new Claim(ClaimTypes.Email, user.Username)
             };
 
             // Obtém a chave de segurança do appsettings.json para assinar o token.

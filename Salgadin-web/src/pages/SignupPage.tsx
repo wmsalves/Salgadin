@@ -1,4 +1,4 @@
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -90,6 +90,15 @@ export default function SignupPage() {
                 className="space-y-4"
                 noValidate
               >
+                <Input
+                  label="Nome Completo"
+                  type="text"
+                  placeholder="Seu nome"
+                  icon={<User />}
+                  error={errors.name}
+                  {...register("name")}
+                />
+
                 <Input
                   label="Email"
                   type="email"

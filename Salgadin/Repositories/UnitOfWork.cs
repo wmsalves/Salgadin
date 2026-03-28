@@ -1,4 +1,4 @@
-﻿using Salgadin.Data;
+using Salgadin.Data;
 using Salgadin.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,6 +37,7 @@ namespace Salgadin.Repositories
         public IRepository<BudgetGoal> BudgetGoals { get; }
         public IRepository<NotificationPreference> NotificationPreferences { get; }
         public IRepository<User> Users { get; }
+        public IRepository<Income> Incomes { get; }
 
         public UnitOfWork(SalgadinContext context)
         {
@@ -47,6 +48,7 @@ namespace Salgadin.Repositories
             BudgetGoals = new Repository<BudgetGoal>(_context);
             NotificationPreferences = new Repository<NotificationPreference>(_context);
             Users = new Repository<User>(_context);
+            Incomes = new Repository<Income>(_context);
         }
 
         public async Task<int> CompleteAsync() => await _context.SaveChangesAsync();

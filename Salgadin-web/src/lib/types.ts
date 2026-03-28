@@ -62,3 +62,11 @@ export interface Subcategory {
   name: string;
   categoryId: number;
 }
+
+export interface Income {
+  id: number;
+  description: string;
+  amount: number;
+  date: string;
+  isFixed: boolean;
+}

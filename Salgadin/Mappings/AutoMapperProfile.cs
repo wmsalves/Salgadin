@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Salgadin.DTOs;
 using Salgadin.Models;
 
@@ -31,6 +31,18 @@ namespace Salgadin.Mappings
             CreateMap<Category, CategoryDto>();
             CreateMap<CreateSubcategoryDto, Subcategory>();
             CreateMap<Subcategory, SubcategoryDto>();
+
+            CreateMap<CreateIncomeDto, Income>()
+                .ForMember(dest => dest.Date, opt =>
+                    opt.MapFrom(src => DateTime.SpecifyKind(src.Date, DateTimeKind.Utc))
+                );
+            CreateMap<UpdateIncomeDto, Income>()
+                .ForMember(dest => dest.Date, opt =>
+                    opt.MapFrom(src => DateTime.SpecifyKind(src.Date, DateTimeKind.Utc))
+                );
+            CreateMap<Income, IncomeDto>()
+                .ForMember(dest => dest.Date,
+                    opt => opt.MapFrom(src => DateTime.SpecifyKind(src.Date, DateTimeKind.Utc)));
         }
     }
 }

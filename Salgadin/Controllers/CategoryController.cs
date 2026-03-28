@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Salgadin.DTOs;
 using Salgadin.Services;
@@ -23,6 +23,18 @@ namespace Salgadin.Controllers
         public async Task<IActionResult> GetAll()
         {
             var result = await _service.GetAllAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("summary")]
+        public async Task<IActionResult> GetSummary([FromQuery] int year, [FromQuery] int month)
+        {
+            if (year <= 0 || month < 1 || month > 12)
+            {
+                return BadRequest(new { message = "Ano ou mês inválido." });
+            }
+
+            var result = await _service.GetSummaryAsync(year, month);
             return Ok(result);
         }
 

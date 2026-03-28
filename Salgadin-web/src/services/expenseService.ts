@@ -25,3 +25,6 @@ export const addExpense = async (
   const response = await api.post("/expense", expenseData);
   return response.data;
 };
+export const deleteExpense = async (id: number): Promise<void> => {
+  await api.delete(`/expense/${id}`);
+};

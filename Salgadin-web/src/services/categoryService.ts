@@ -4,9 +4,22 @@ export interface Category {
   id: number;
   name: string;
 }
+
 export interface CategoryData {
   name: string;
 }
+
+export interface CategorySummary {
+  id: number;
+  name: string;
+  spent: number;
+  limit: number;
+}
+
+export const getCategorySummary = async (year: number, month: number): Promise<CategorySummary[]> => {
+  const response = await api.get("/category/summary", { params: { year, month } });
+  return response.data;
+};
 
 export const getCategories = async (): Promise<Category[]> => {
   const response = await api.get("/category");

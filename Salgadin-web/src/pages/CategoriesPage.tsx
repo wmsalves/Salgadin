@@ -1,10 +1,12 @@
-﻿import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
+import { DeleteCategoryModal } from "../components/DeleteCategoryModal";
 import {
-  getCategories,
+  getCategorySummary,
   deleteCategory,
   createCategory,
-  type Category,
+  type CategorySummary,
 } from "../services/categoryService";
+import { EditCategoryModal } from "../components/EditCategoryModal";
 import {
   Plus,
   Trash2,
@@ -47,6 +49,7 @@ const normalizeKey = (value: string) =>
     .toLowerCase();
 
 const getErrorMessage = (error: unknown, fallback: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const data = (error as any)?.response?.data;
   if (!data) return fallback;
   if (typeof data?.message === "string") return data.message;
@@ -58,7 +61,7 @@ const getErrorMessage = (error: unknown, fallback: string) => {
 };
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<CategorySummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -76,11 +79,20 @@ export default function CategoriesPage() {
   const [newSubcategoryName, setNewSubcategoryName] = useState<
     Record<number, string>
   >({});
+  
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<{ id: number; name: string } | null>(null);
+  const [isDeletingCategory, setIsDeletingCategory] = useState(false);
+  const [deleteCategoryError, setDeleteCategoryError] = useState<string | null>(null);
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [categoryToEdit, setCategoryToEdit] = useState<{ id: number; name: string } | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
       setError(null);
-      const data = await getCategories();
+      const now = new Date();
+      const data = await getCategorySummary(now.getFullYear(), now.getMonth() + 1);
       setCategories(data);
     } catch (err) {
       console.error("Falha ao buscar categorias:", err);
@@ -93,22 +105,31 @@ export default function CategoriesPage() {
     fetchData().finally(() => setIsLoading(false));
   }, [fetchData]);
 
-  const handleDelete = async (id: number) => {
-    if (
-      window.confirm(
-        "Tem certeza que deseja excluir esta categoria? Esta acao nao pode ser desfeita."
-      )
-    ) {
-      try {
-        await deleteCategory(id);
-        fetchData();
-      } catch (error) {
-        const message = getErrorMessage(
-          error,
-          "Falha ao excluir a categoria."
-        );
-        alert(message);
-      }
+  const handleOpenDeleteModal = (id: number, name: string) => {
+    setCategoryToDelete({ id, name });
+    setDeleteCategoryError(null);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleOpenEditModal = (id: number, name: string) => {
+    setCategoryToEdit({ id, name });
+    setIsEditModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!categoryToDelete) return;
+    setIsDeletingCategory(true);
+    setDeleteCategoryError(null);
+    try {
+      await deleteCategory(categoryToDelete.id);
+      fetchData();
+      setIsDeleteModalOpen(false);
+    } catch (error) {
+      setDeleteCategoryError(
+        getErrorMessage(error, "Não foi possível excluir a categoria.")
+      );
+    } finally {
+      setIsDeletingCategory(false);
     }
   };
 
@@ -120,7 +141,7 @@ export default function CategoriesPage() {
     try {
       const created = await createCategory({ name });
       setNewCategoryName("");
-      setCategories((prev) => [...prev, created]);
+      setCategories((prev) => [...prev, { ...created, spent: 0, limit: 0 }]);
     } catch (error) {
       const message = getErrorMessage(error, "Falha ao criar a categoria.");
       setCreateError(message);
@@ -183,15 +204,10 @@ export default function CategoriesPage() {
 
   const categoryCards = useMemo(() => {
     if (categories.length === 0) return [];
-    return categories.map((cat, index) => {
-      const baseSpent = 120 + index * 45;
-      const limit = 600 + (index % 3) * 200;
-      const spent = Math.min(baseSpent, limit);
-      const percent = Math.min(Math.round((spent / limit) * 100), 100);
+    return categories.map((cat) => {
+      const percent = cat.limit > 0 ? Math.min(Math.round((cat.spent / cat.limit) * 100), 100) : 0;
       return {
         ...cat,
-        spent,
-        limit,
         percent,
       };
     });
@@ -292,6 +308,7 @@ export default function CategoriesPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <button
+                      onClick={() => handleOpenEditModal(cat.id, cat.name)}
                       className="h-9 w-9 rounded-full border border-border bg-surface-2 text-foreground hover:text-primary hover:border-primary/40 hover:bg-surface-3 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 grid place-items-center leading-none"
                       title="Editar"
                       aria-label={`Editar ${cat.name}`}
@@ -299,7 +316,7 @@ export default function CategoriesPage() {
                       <Edit size={16} />
                     </button>
                     <button
-                      onClick={() => handleDelete(cat.id)}
+                      onClick={() => handleOpenDeleteModal(cat.id, cat.name)}
                       className="h-9 w-9 rounded-full border border-border bg-surface-2 text-danger hover:border-danger/40 hover:bg-danger/10 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger/40 grid place-items-center leading-none"
                       title="Excluir"
                       aria-label={`Excluir ${cat.name}`}
@@ -321,20 +338,28 @@ export default function CategoriesPage() {
                   </span>
                 </div>
 
-                <div className="mt-2 h-2 rounded-full bg-surface-3">
-                  <div
-                    className={clsx(
-                      "h-2 rounded-full",
-                      isHigh ? "bg-danger" : "bg-primary"
-                    )}
-                    style={{ width: `${cat.percent}%` }}
-                  />
-                </div>
+                {cat.limit > 0 ? (
+                  <>
+                    <div className="mt-2 h-2 rounded-full bg-surface-3">
+                      <div
+                        className={clsx(
+                          "h-2 rounded-full",
+                          isHigh ? "bg-danger" : "bg-primary"
+                        )}
+                        style={{ width: `${cat.percent}%` }}
+                      />
+                    </div>
 
-                <div className="mt-3 flex items-center justify-between text-xs text-foreground-subtle">
-                  <span>{cat.percent}% do limite</span>
-                  <span>Limite: R$ {cat.limit.toFixed(2)}</span>
-                </div>
+                    <div className="mt-3 flex items-center justify-between text-xs text-foreground-subtle">
+                      <span>{cat.percent}% do limite</span>
+                      <span>Limite: R$ {cat.limit.toFixed(2)}</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="mt-4 flex items-center justify-between text-xs text-foreground-muted">
+                    <span>Nenhum limite de gastos definido.</span>
+                  </div>
+                )}
 
                 <div className="mt-4 border-t border-border/60 pt-4">
                   <button
@@ -408,6 +433,22 @@ export default function CategoriesPage() {
           })}
         </div>
       )}
+
+      <DeleteCategoryModal
+        isOpen={isDeleteModalOpen}
+        categoryName={categoryToDelete?.name || ""}
+        isDeleting={isDeletingCategory}
+        errorStr={deleteCategoryError}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
+
+      <EditCategoryModal
+        isOpen={isEditModalOpen}
+        initialData={categoryToEdit}
+        onClose={() => setIsEditModalOpen(false)}
+        onSuccess={fetchData}
+      />
     </div>
   );
 }
