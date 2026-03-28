@@ -1,4 +1,4 @@
-﻿import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import {
   LayoutGrid,
   Tags,
@@ -82,10 +82,10 @@ export function AppShell() {
                   to={item.to}
                   className={({ isActive }) =>
                     clsx(
-                      "w-full flex items-center gap-3 rounded-full px-3 py-2 text-sm font-medium transition",
+                      "w-full flex items-center gap-3 rounded-2xl px-3 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98]",
                       isActive
-                        ? "bg-surface-2 text-primary shadow-[0_10px_20px_rgba(60,42,32,0.08)]"
-                        : "text-foreground-muted hover:text-foreground hover:bg-surface-2",
+                        ? "bg-surface-2 text-primary shadow-[0_10px_20px_rgba(60,42,32,0.08)] translate-x-1"
+                        : "text-foreground-muted hover:text-foreground hover:bg-surface-2 hover:translate-x-1",
                     )
                   }
                 >
