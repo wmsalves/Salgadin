@@ -64,7 +64,7 @@ export function HeroSection() {
           Entenda seus gastos,
         </span>
         <br className="hidden sm:block" />
-        <span className="text-foreground">sem complicacao.</span>
+        <span className="text-foreground"> sem complicacao.</span>
       </h1>
       <p className="mt-6 text-center max-w-2xl mx-auto text-foreground-muted text-lg">
         O Salgadin transforma seus "pequenos gastos" diarios em graficos simples

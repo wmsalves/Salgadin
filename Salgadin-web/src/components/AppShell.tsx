@@ -36,7 +36,7 @@ export function AppShell() {
         <motion.aside
           animate={{ width: collapsed ? 80 : 256 }}
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          className="sticky top-0 h-screen border-r border-border/70 bg-surface/80 backdrop-blur-xl shadow-[10px_0_30px_rgba(60,42,32,0.06)]"
+          className="sticky top-0 h-screen border-r border-border/70 bg-surface/80 backdrop-blur-xl shadow-[10px_0_30px_rgba(60,42,32,0.06)] hidden md:flex md:flex-col"
         >
           <div className="relative flex items-center justify-center px-4 py-5">
             {!collapsed && (
@@ -144,11 +144,44 @@ export function AppShell() {
             </div>
           </header>
 
-          <section className="p-6 lg:p-8">
+          <section className="p-6 lg:p-8 pb-24 md:pb-8">
             <Outlet />
           </section>
         </main>
       </div>
+
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/70 bg-surface/95 backdrop-blur-xl shadow-[0_-10px_30px_rgba(60,42,32,0.12)] md:hidden">
+        <div className="mx-auto max-w-6xl px-4 py-2 flex items-center justify-between">
+          {[
+            { to: "/dashboard", label: "Dashboard", icon: LayoutGrid },
+            { to: "/categorias", label: "Categorias", icon: Tags },
+            { to: "/metas", label: "Metas", icon: Target },
+            { to: "/relatorios", label: "Relatorios", icon: BarChart3 },
+            { to: "/perfil", label: "Perfil", icon: User },
+          ].map((item) => {
+            const Icon = item.icon;
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  clsx(
+                    "flex flex-col items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-xl transition",
+                    isActive
+                      ? "text-primary"
+                      : "text-foreground-muted hover:text-foreground"
+                  )
+                }
+              >
+                <span className="h-9 w-9 rounded-full bg-surface-2 grid place-items-center">
+                  <Icon size={18} />
+                </span>
+                {item.label}
+              </NavLink>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }
