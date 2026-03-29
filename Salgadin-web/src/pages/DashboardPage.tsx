@@ -250,7 +250,7 @@ export default function DashboardPage() {
             <div
               key={card.title}
               style={{ animationDelay: `${index * 100}ms` }}
-              className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-5 shadow-[0_18px_40px_rgba(60,42,32,0.12)] hover:-translate-y-1 hover:shadow-xl transition-all duration-300 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+              className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-5 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -282,7 +282,7 @@ export default function DashboardPage() {
       </section>
 
       <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div className="xl:col-span-2 rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
+        <div className="xl:col-span-2 rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-lg font-semibold text-foreground">
@@ -365,7 +365,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
+          <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover">
             <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                <Target size={20} className="text-info" />
                Alertas de Metas
@@ -378,7 +378,7 @@ export default function DashboardPage() {
                   return (
                     <div
                       key={alert.goalId || index}
-                      className="rounded-2xl border border-border bg-surface-2 p-4"
+                      className="rounded-2xl border border-border bg-surface-2 p-4 soft-hover-sm hover:bg-surface-3/60"
                     >
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-foreground font-medium">
@@ -408,7 +408,7 @@ export default function DashboardPage() {
               )}
             </div>
           </div>
-          <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
+          <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover">
             <h2 className="text-lg font-semibold text-foreground mb-4">
               Resumo do Mes
             </h2>
@@ -432,7 +432,7 @@ export default function DashboardPage() {
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="flex items-center justify-between rounded-2xl border border-border bg-surface-2 px-4 py-3"
+                  className="flex items-center justify-between rounded-2xl border border-border bg-surface-2 px-4 py-3 soft-hover-sm hover:bg-surface-3/60"
                 >
                   <span className="text-sm text-foreground-subtle">
                     {item.label}
@@ -448,7 +448,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
+          <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover">
             <h2 className="text-lg font-semibold text-foreground mb-4">
               Últimas receitas
             </h2>
@@ -494,7 +494,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
+          <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover">
             <h2 className="text-lg font-semibold text-foreground mb-4">
               Ultimas despesas
             </h2>
@@ -510,7 +510,7 @@ export default function DashboardPage() {
                   return (
                     <div
                       key={exp.id}
-                      className="flex items-center gap-3 rounded-2xl border border-border bg-surface-2 p-3"
+                      className="flex items-center gap-3 rounded-2xl border border-border bg-surface-2 p-3 soft-hover-sm hover:bg-surface-3/60"
                     >
                       <div className="h-10 w-10 rounded-full bg-surface-3 text-primary grid place-items-center">
                         <Icon size={16} />

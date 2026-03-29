@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 
 const buttonStyles = {
   primary:
-    "rounded-full bg-primary hover:bg-primary-strong text-white px-5 py-2.5 shadow font-semibold transition-colors",
+    "rounded-full bg-primary hover:bg-primary-strong text-white px-5 py-2.5 shadow font-semibold transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] soft-press ui-pressable",
   secondary:
-    "rounded-full border border-border px-5 py-2.5 hover:bg-surface-2 font-semibold transition-colors text-foreground-muted",
+    "rounded-full border border-border px-5 py-2.5 hover:bg-surface-2 font-semibold transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] text-foreground-muted soft-press ui-pressable",
 };
 
 export function CtaSection() {

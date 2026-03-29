@@ -11,7 +11,7 @@ export function FaqSection() {
   };
 
   return (
-    <section id="faq" className="mx-auto max-w-3xl px-4 py-12">
+    <section id="faq" className="mx-auto max-w-3xl px-4 py-12 scroll-mt-24">
       <h2 className="text-center text-2xl sm:text-3xl font-extrabold text-foreground">
         Perguntas Frequentes
       </h2>
@@ -25,31 +25,43 @@ export function FaqSection() {
           return (
             <div
               key={item.q}
-              className="rounded-2xl border border-border bg-surface shadow-sm  overflow-hidden"
+              className={clsx(
+                "rounded-2xl border border-border bg-surface shadow-sm overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                isOpen &&
+                  "border-primary/30",
+              )}
             >
               <button
                 onClick={() => toggleItem(item.q)}
-                className="w-full flex justify-between items-center text-left p-5 font-medium "
+                className={clsx(
+                  "w-full flex justify-between items-center text-left p-5 font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                )}
                 aria-expanded={isOpen}
               >
                 <span>{item.q}</span>
                 <ChevronDown
                   className={clsx(
-                    "h-5 w-5 transition-transform duration-300",
-                    isOpen && "rotate-180"
+                    "h-5 w-5 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                    isOpen && "rotate-180",
                   )}
                 />
               </button>
 
               <div
                 className={clsx(
-                  "transition-all duration-300 ease-in-out grid",
+                  "transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] grid",
                   isOpen
                     ? "grid-rows-[1fr] opacity-100"
-                    : "grid-rows-[0fr] opacity-0"
+                    : "grid-rows-[0fr] opacity-0",
                 )}
               >
-                <div className="overflow-hidden">
+                <div
+                  className={clsx(
+                    "overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                    isOpen ? "opacity-100" : "opacity-0",
+                  )}
+                >
                   <p className="px-5 pb-5 text-sm text-foreground-muted">
                     {item.a}
                   </p>
@@ -62,5 +74,3 @@ export function FaqSection() {
     </section>
   );
 }
-
-

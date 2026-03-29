@@ -50,31 +50,31 @@ export const tabsContent = {
   Dashboard: {
     title: "Visualize tudo em um só lugar",
     description:
-      "O dashboard principal do Salgadin oferece uma visão completa da sua saúde financeira. Veja seus gastos, receitas, economias e metas em um único painel intuitivo.",
+      "O dashboard principal do Salgadin oferece uma visão completa da sua saúde financeira. Acompanhe receitas, despesas, metas e economias em um único painel, com insights claros e decisões mais rápidas no dia a dia.",
     items: [
-      "Resumo financeiro atualizado em tempo real",
-      "Gráficos interativos para análise rápida",
-      "Alertas personalizados sobre gastos excessivos",
+      "Resumo financeiro atualizado em tempo real para decisões mais seguras",
+      "Gráficos interativos com leitura rápida e foco no essencial",
+      "Alertas personalizados quando um gasto foge do planejado",
     ],
   },
   Despesas: {
     title: "Controle total das suas despesas",
     description:
-      "Registre seus gastos com categorias e subcategorias. Visualize para onde o dinheiro está indo e exporte quando precisar.",
+      "Registre gastos em poucos cliques e entenda para onde o dinheiro está indo. Organize o mês com clareza, sem esforço e com visão do que pode ser ajustado.",
     items: [
-      "Categorias e subcategorias para maior precisão",
-      "Filtros por período e categoria",
-      "Exportação em CSV ou PDF",
+      "Categorias rápidas, filtros simples e visão por período",
+      "Exportação em CSV ou PDF para compartilhar quando precisar",
+      "Detalhamento por item para cortes mais inteligentes",
     ],
   },
   Metas: {
     title: "Alcance seus objetivos financeiros",
     description:
-      "Crie metas mensais e acompanhe alertas quando estiver perto do limite.",
+      "Defina metas que fazem sentido para você e acompanhe o progresso em tempo real. Visualize o avanço mês a mês e saiba exatamente o que falta para chegar lá.",
     items: [
-      "Metas por categoria ou geral",
-      "Alertas inteligentes de limite",
-      "Acompanhamento visual do progresso",
+      "Metas gerais ou por categoria com acompanhamento visual",
+      "Alertas antes de estourar o limite e ajustes sugeridos",
+      "Progresso claro para manter o ritmo e motivação",
     ],
   },
 };

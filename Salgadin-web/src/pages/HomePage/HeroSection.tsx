@@ -44,9 +44,9 @@ const colors = [
 
 const buttonStyles = {
   primary:
-    "rounded-lg bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-6 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all hover:scale-105",
+    "rounded-lg bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-6 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] soft-press ui-pressable",
   secondary:
-    "rounded-lg border border-border px-6 py-3 text-sm font-semibold text-foreground-muted hover:bg-surface-2 transition-all",
+    "rounded-lg border border-border px-6 py-3 text-sm font-semibold text-foreground-muted hover:bg-surface-2 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] soft-press ui-pressable",
 };
 
 export function HeroSection() {
@@ -112,6 +112,8 @@ export function HeroSection() {
                   backgroundColor: "var(--color-surface)",
                   color: "var(--color-text)",
                 }}
+                itemStyle={{ color: "var(--color-text)" }}
+                labelStyle={{ color: "var(--color-text-muted)" }}
               />
               <Bar dataKey="gasto" radius={[8, 8, 0, 0]}>
                 {chartData.map((_entry, index) => {

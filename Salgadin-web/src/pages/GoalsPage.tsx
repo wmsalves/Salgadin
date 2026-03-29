@@ -177,7 +177,7 @@ export default function GoalsPage() {
               <div
                 key={goal.id}
                 style={{ animationDelay: `${index * 100}ms` }}
-                className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] hover:-translate-y-1 hover:shadow-xl transition-all duration-300 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+                className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
               >
                 <div className="flex items-center justify-between">
                   <div className="h-12 w-12 rounded-xl bg-primary/15 text-primary grid place-items-center">

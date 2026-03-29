@@ -1,16 +1,16 @@
 ﻿import { useState } from "react";
 import { Menu, X, LogOut, Moon, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
-import LogoSalgadin from "../assets/Logo_Salgadin.svg";
+import LogoSalgadin from "../assets/NewLogo_Salgadin.svg";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
 
 const navLinks = [
-  { href: "/#features", label: "Recursos" },
-  { href: "/#how", label: "Como funciona" },
-  { href: "/#pricing", label: "Precos" },
-  { href: "/#faq", label: "FAQ" },
+  { id: "features", label: "Recursos" },
+  { id: "how", label: "Como funciona" },
+  { id: "pricing", label: "Precos" },
+  { id: "faq", label: "FAQ" },
 ];
 
 export function Header() {
@@ -18,8 +18,15 @@ export function Header() {
   const { isAuthenticated, user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
 
-  const handleLinkClick = () => {
+  const handleLinkClick = (id?: string) => {
     setIsOpen(false);
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (!target) return;
+    const headerOffset = 96;
+    const elementPosition = target.getBoundingClientRect().top + window.scrollY;
+    const offsetPosition = elementPosition - headerOffset;
+    window.scrollTo({ top: offsetPosition, behavior: "smooth" });
   };
 
   return (
@@ -30,10 +37,10 @@ export function Header() {
           className="flex items-center gap-2 rounded-full px-2 py-1 hover:bg-surface-2 transition"
           onClick={handleLinkClick}
         >
-          <div className="h-10 w-10 rounded-full bg-primary/15 text-primary grid place-items-center">
-            <img src={LogoSalgadin} alt="Logo" className="h-6 w-6" />
+          <div className="h-12 w-12 grid place-items-center">
+            <img src={LogoSalgadin} alt="Logo" className="h-12 w-12" />
           </div>
-          <span className="text-xl font-extrabold tracking-tight hidden sm:inline text-foreground">
+          <span className="text-2xl font-extrabold tracking-tight hidden sm:inline text-foreground">
             <span className="bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] bg-clip-text text-transparent">
               Salgadin
             </span>
@@ -42,13 +49,14 @@ export function Header() {
 
         <nav className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-3 text-sm font-medium">
           {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
+            <button
+              key={link.id}
+              type="button"
+              onClick={() => handleLinkClick(link.id)}
               className="text-foreground-muted hover:text-foreground transition-colors px-4 py-2 rounded-full hover:bg-surface-2"
             >
               {link.label}
-            </a>
+            </button>
           ))}
         </nav>
 
@@ -120,14 +128,14 @@ export function Header() {
           >
             <nav className="flex flex-col items-center gap-4 py-6 px-4">
               {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={handleLinkClick}
+                <button
+                  key={link.id}
+                  type="button"
+                  onClick={() => handleLinkClick(link.id)}
                   className="text-foreground-muted hover:text-foreground font-medium transition-colors px-3 py-1.5 rounded-full hover:bg-surface-2"
                 >
                   {link.label}
-                </a>
+                </button>
               ))}
 
               <div className="w-full px-2 py-2">

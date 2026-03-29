@@ -24,7 +24,7 @@ export function HowItWorksSection() {
   }[activeTab];
 
   return (
-    <section id="how" className="mx-auto max-w-6xl px-4 py-12">
+    <section id="how" className="mx-auto max-w-6xl px-4 py-12 scroll-mt-24">
       <h2 className="text-center text-2xl sm:text-3xl font-extrabold text-foreground">
         Como o <span className="text-accent">Salgad</span>
         <span className="text-primary">in</span> funciona?
@@ -47,7 +47,7 @@ export function HowItWorksSection() {
               aria-selected={activeTab === t}
               onClick={() => setActiveTab(t)}
               className={clsx(
-                "rounded-full px-4 py-2 font-medium transition-colors relative z-10 whitespace-nowrap",
+                "rounded-full px-4 py-2 font-medium transition-all duration-200 ease-out relative z-10 whitespace-nowrap hover:-translate-y-0.5 active:translate-y-0",
                 activeTab === t
                   ? "text-primary"
                   : "text-foreground-muted hover:text-foreground"
@@ -85,7 +85,10 @@ export function HowItWorksSection() {
             </p>
             <ul className="space-y-3 text-foreground-muted">
               {tabsContent[activeTab].items.map((item) => (
-                <li key={item} className="flex items-center gap-2">
+                <li
+                  key={item}
+                  className="flex items-center gap-2 rounded-xl px-2 py-1 soft-hover-sm hover:bg-surface-2/60"
+                >
                   <CheckCircle2
                     size={16}
                     className="text-success flex-shrink-0"
@@ -100,9 +103,11 @@ export function HowItWorksSection() {
           <div
             id={`panel-${activeTab}`}
             role="tabpanel"
-            className="min-h-[420px] md:min-h-[440px] rounded-2xl overflow-visible"
+            className="min-h-[420px] md:min-h-[460px] rounded-3xl border border-border/70 bg-surface/70 backdrop-blur-xl p-4 shadow-[0_18px_40px_rgba(60,42,32,0.12)] flex items-start justify-center"
           >
-            {ActiveMockup}
+            <div className="w-full h-full max-w-[520px]">
+              {ActiveMockup}
+            </div>
           </div>
         </motion.div>
       </AnimatePresence>

@@ -292,7 +292,7 @@ export default function CategoriesPage() {
               <div
                 key={cat.id}
                 style={{ animationDelay: `${index * 100}ms` }}
-                className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] hover:-translate-y-1 hover:shadow-xl transition-all duration-300 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+                className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
@@ -407,7 +407,7 @@ export default function CategoriesPage() {
                           {(subcategoryMap[cat.id] || []).map((sub) => (
                             <div
                               key={sub.id}
-                              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-2 px-3 py-1 text-xs text-foreground"
+                              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-2 px-3 py-1 text-xs text-foreground soft-hover-sm hover:bg-surface-3"
                             >
                               {sub.name}
                               <button

@@ -14,8 +14,8 @@ import {
 import clsx from "clsx";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
-import LogoSalgadin from "../assets/Logo_Salgadin.svg";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutGrid },
@@ -33,34 +33,26 @@ export function AppShell() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] text-foreground">
       <div className="flex">
-        <aside
-          className={clsx(
-            "sticky top-0 h-screen border-r border-border/70 bg-surface/80 backdrop-blur-xl transition-all shadow-[10px_0_30px_rgba(60,42,32,0.06)]",
-            collapsed ? "w-20" : "w-64",
-          )}
+        <motion.aside
+          animate={{ width: collapsed ? 80 : 256 }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          className="sticky top-0 h-screen border-r border-border/70 bg-surface/80 backdrop-blur-xl shadow-[10px_0_30px_rgba(60,42,32,0.06)]"
         >
-          <div
-            className={clsx(
-              "flex items-center px-4 py-5",
-              collapsed ? "justify-center" : "justify-between",
-            )}
-          >
+          <div className="relative flex items-center justify-center px-4 py-5">
             {!collapsed && (
-              <div className="flex items-center gap-2">
-                <div className="h-10 w-10 rounded-full text-primary grid place-items-center">
-                  <img src={LogoSalgadin} alt="Logo" className="h-6 w-6" />
-                </div>
-                <div className="text-lg font-semibold text-foreground">
+              <span className="text-xl font-extrabold tracking-tight text-foreground">
+                <span className="bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] bg-clip-text text-transparent">
                   Salgadin
-                </div>
-              </div>
+                </span>
+              </span>
             )}
             <button
               className={clsx(
-                "h-9 w-9 rounded-full border border-border bg-surface-2 text-foreground-muted shadow-sm transition",
+                "absolute top-4 h-9 w-9 rounded-full border border-border bg-surface-2 text-foreground-muted shadow-sm transition soft-press",
                 "hover:text-foreground hover:border-surface-3 hover:bg-surface-3",
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
                 "grid place-items-center leading-none",
+                collapsed ? "left-1/2 -translate-x-1/2" : "right-4",
               )}
               onClick={() => setCollapsed((prev) => !prev)}
               aria-label="Alternar sidebar"
@@ -73,7 +65,7 @@ export function AppShell() {
             </button>
           </div>
 
-          <nav className="px-3 space-y-2">
+          <nav className={clsx("px-3 space-y-2", collapsed ? "mt-6" : "mt-2")}>
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -82,7 +74,7 @@ export function AppShell() {
                   to={item.to}
                   className={({ isActive }) =>
                     clsx(
-                      "w-full flex items-center gap-3 rounded-2xl px-3 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98]",
+                      "w-full flex items-center gap-3 rounded-2xl px-3 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] soft-hover-sm",
                       isActive
                         ? "bg-surface-2 text-primary shadow-[0_10px_20px_rgba(60,42,32,0.08)] translate-x-1"
                         : "text-foreground-muted hover:text-foreground hover:bg-surface-2 hover:translate-x-1",
@@ -92,7 +84,19 @@ export function AppShell() {
                   <span className="h-9 w-9 rounded-full bg-surface-2 text-primary grid place-items-center">
                     <Icon size={18} />
                   </span>
-                  {!collapsed && item.label}
+                  <AnimatePresence mode="wait">
+                    {!collapsed && (
+                      <motion.span
+                        key={item.label}
+                        initial={{ opacity: 0, x: -6 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -6 }}
+                        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                      >
+                        {item.label}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
                 </NavLink>
               );
             })}
@@ -110,7 +114,7 @@ export function AppShell() {
               </div>
             </div>
           )}
-        </aside>
+        </motion.aside>
 
         <main className="flex-1 min-w-0">
           <header className="sticky top-0 z-30 border-b border-border/70 bg-surface/90 backdrop-blur-xl shadow-[0_10px_30px_rgba(60,42,32,0.08)]">
@@ -124,14 +128,14 @@ export function AppShell() {
               <div className="ml-auto flex items-center gap-2">
                 <button
                   onClick={toggleTheme}
-                  className="p-2 rounded-full border border-border text-foreground-muted hover:text-foreground hover:bg-surface-2 transition-colors"
+                  className="p-2 rounded-full border border-border text-foreground-muted hover:text-foreground hover:bg-surface-2 transition-colors soft-press"
                   title={`Mudar para ${theme === "light" ? "dark" : "light"} mode`}
                 >
                   {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
                 </button>
                 <button
                   onClick={logout}
-                  className="p-2 rounded-full border border-border text-foreground-muted hover:text-danger hover:bg-surface-2 transition-colors"
+                  className="p-2 rounded-full border border-border text-foreground-muted hover:text-danger hover:bg-surface-2 transition-colors soft-press"
                   title="Sair"
                 >
                   <LogOut size={18} />

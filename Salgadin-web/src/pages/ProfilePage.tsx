@@ -56,7 +56,10 @@ export default function ProfilePage() {
             Informacoes da conta
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="rounded-2xl border border-border bg-surface-2 p-5 animate-fade-in opacity-0 [animation-fill-mode:forwards]" style={{ animationDelay: "0ms" }}>
+            <div
+              className="rounded-2xl border border-border bg-surface-2 p-5 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+              style={{ animationDelay: "0ms" }}
+            >
               <div className="flex items-center gap-2 text-sm text-foreground-muted">
                 <User size={16} />
                 Nome
@@ -65,7 +68,10 @@ export default function ProfilePage() {
                 {user?.name || "Usuario"}
               </div>
             </div>
-            <div className="rounded-2xl border border-border bg-surface-2 p-5 animate-fade-in opacity-0 [animation-fill-mode:forwards]" style={{ animationDelay: "100ms" }}>
+            <div
+              className="rounded-2xl border border-border bg-surface-2 p-5 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+              style={{ animationDelay: "100ms" }}
+            >
               <div className="flex items-center gap-2 text-sm text-foreground-muted">
                 <Mail size={16} />
                 Email
@@ -155,13 +161,14 @@ export default function ProfilePage() {
               <div
                 key={alert.goalId}
                 style={{ animationDelay: `${index * 100}ms` }}
-                className="rounded-2xl border border-border bg-surface-2 p-5 hover:-translate-y-1 hover:shadow-xl transition-all duration-300 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+                className="rounded-2xl border border-border bg-surface-2 p-5 hover:-translate-y-1 hover:shadow-xl transition-all duration-600 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
               >
                 <div className="text-sm font-semibold text-foreground">
                   {alert.category || "Meta geral"}
                 </div>
                 <div className="mt-1 text-xs text-foreground-subtle">
-                  R$ {alert.spent.toFixed(2)} de R$ {alert.monthlyLimit.toFixed(2)}
+                  R$ {alert.spent.toFixed(2)} de R${" "}
+                  {alert.monthlyLimit.toFixed(2)}
                 </div>
                 <div
                   className={`mt-3 text-xs font-semibold ${

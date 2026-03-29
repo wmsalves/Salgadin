@@ -3,7 +3,7 @@ import clsx from "clsx";
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="mx-auto max-w-7xl px-4 py-16">
+    <section id="features" className="mx-auto max-w-7xl px-4 py-16 scroll-mt-24">
       <h2 className="text-center text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground">
         Tudo o que você precisa para gerenciar
         <br className="hidden sm:block" /> suas finanças
@@ -18,12 +18,12 @@ export function FeaturesSection() {
         {features.map((feature) => (
           <div
             key={feature.title}
-            className="group rounded-xl border border-border bg-surface p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary/40 hover:-translate-y-1"
+            className="group rounded-xl border border-border bg-surface p-6 shadow-sm transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:shadow-lg hover:border-primary/40 hover:-translate-y-0.5 ui-pressable ui-card"
           >
             <div className="flex items-start gap-4">
               <div
                 className={clsx(
-                  "h-12 w-12 grid place-items-center rounded-lg flex-shrink-0 transition-colors group-hover:scale-110",
+                  "h-12 w-12 grid place-items-center rounded-lg flex-shrink-0 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105",
                   feature.colorTheme === "emerald" &&
                     "bg-surface-2 text-success group-hover:bg-surface-3",
                   feature.colorTheme === "amber" &&

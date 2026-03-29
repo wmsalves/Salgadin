@@ -27,17 +27,23 @@ export function Footer() {
             <Link to="/termos" className="hover:text-primary transition-colors">
               Termos
             </Link>
-            <Link to="/privacidade" className="hover:text-primary transition-colors">
+            <Link
+              to="/privacidade"
+              className="hover:text-primary transition-colors"
+            >
               Privacidade
             </Link>
-            <Link to="/contato" className="hover:text-primary transition-colors">
+            <Link
+              to="/contato"
+              className="hover:text-primary transition-colors"
+            >
               Contato
             </Link>
           </div>
         </div>
 
         <div className="mt-8 border-t border-border/70 pt-6 text-center text-xs text-foreground-subtle">
-          Â© {new Date().getFullYear()} Salgadin. Todos os direitos reservados.
+          © {new Date().getFullYear()} Salgadin. Todos os direitos reservados.
         </div>
       </div>
     </footer>

@@ -18,12 +18,10 @@ type ReportMode = "monthly" | "weekly";
 export default function ReportsPage() {
   const [mode, setMode] = useState<ReportMode>("monthly");
   const [monthlyValue, setMonthlyValue] = useState(
-    new Date().toISOString().slice(0, 7)
+    new Date().toISOString().slice(0, 7),
   );
   const [startDate, setStartDate] = useState(
-    new Date(Date.now() - 6 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .slice(0, 10)
+    new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
   );
   const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 10));
   const [report, setReport] = useState<ReportResponse | null>(null);
@@ -61,7 +59,7 @@ export default function ReportsPage() {
     const file = await exportExpenses(
       format,
       report?.startDate?.slice(0, 10),
-      report?.endDate?.slice(0, 10)
+      report?.endDate?.slice(0, 10),
     );
     const url = URL.createObjectURL(file);
     const link = document.createElement("a");
@@ -148,9 +146,7 @@ export default function ReportsPage() {
           ) : (
             <>
               <div>
-                <label className="text-xs text-foreground-muted">
-                  Inicio
-                </label>
+                <label className="text-xs text-foreground-muted">Inicio</label>
                 <input
                   type="date"
                   value={startDate}
@@ -183,16 +179,37 @@ export default function ReportsPage() {
       {!report ? (
         <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-12 text-center text-foreground-subtle flex flex-col items-center justify-center gap-4 animate-in fade-in duration-500">
           <div className="h-10 w-10 text-primary animate-spin">
-             <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <svg
+              className="h-full w-full"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
             </svg>
           </div>
           Carregando dados financeiros...
         </div>
       ) : (
-        <div className={`grid grid-cols-1 xl:grid-cols-3 gap-6 transition-all ${isLoading ? 'opacity-40 grayscale-[0.2] pointer-events-none blur-[1px]' : ''}`}>
-          <div className="xl:col-span-2 rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] animate-fade-in opacity-0 [animation-fill-mode:forwards]" style={{ animationDelay: "0ms" }}>
+        <div
+          className={`grid grid-cols-1 xl:grid-cols-3 gap-6 transition-all ${isLoading ? "opacity-40 grayscale-[0.2] pointer-events-none blur-[1px]" : ""}`}
+        >
+          <div
+            className="xl:col-span-2 rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+            style={{ animationDelay: "0ms" }}
+          >
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-lg font-semibold text-foreground">
@@ -207,9 +224,23 @@ export default function ReportsPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={series}>
                   <defs>
-                    <linearGradient id="reportGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.35} />
-                      <stop offset="100%" stopColor="rgba(242,139,91,0)" stopOpacity={0} />
+                    <linearGradient
+                      id="reportGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop
+                        offset="0%"
+                        stopColor="var(--color-primary)"
+                        stopOpacity={0.35}
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor="rgba(242,139,91,0)"
+                        stopOpacity={0}
+                      />
                     </linearGradient>
                   </defs>
                   <CartesianGrid
@@ -218,8 +249,18 @@ export default function ReportsPage() {
                     vertical={false}
                     opacity={0.6}
                   />
-                  <XAxis dataKey="day" tickLine={false} axisLine={false} tick={{ fill: "var(--chart-muted)" }} />
-                  <YAxis tickFormatter={(value) => `R$ ${value}`} tickLine={false} axisLine={false} tick={{ fill: "var(--chart-muted)" }} />
+                  <XAxis
+                    dataKey="day"
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "var(--chart-muted)" }}
+                  />
+                  <YAxis
+                    tickFormatter={(value) => `R$ ${value}`}
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fill: "var(--chart-muted)" }}
+                  />
                   <Tooltip
                     contentStyle={{
                       background: "var(--color-surface)",
@@ -242,7 +283,10 @@ export default function ReportsPage() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] animate-fade-in opacity-0 [animation-fill-mode:forwards]" style={{ animationDelay: "150ms" }}>
+          <div
+            className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+            style={{ animationDelay: "150ms" }}
+          >
             <h2 className="text-lg font-semibold text-foreground mb-4">
               Por categoria
             </h2>
@@ -251,8 +295,8 @@ export default function ReportsPage() {
                 report.byCategory.map((item, index) => (
                   <div
                     key={item.category}
-                    style={{ animationDelay: `${300 + index * 100}ms` }}
-                    className="flex items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm hover:translate-x-1 hover:bg-surface-3 transition-transform animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+                    style={{ animationDelay: `${600 + index * 100}ms` }}
+                    className="flex items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm soft-hover-sm hover:bg-surface-3 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
                   >
                     <span className="text-foreground">{item.category}</span>
                     <span className="text-foreground-muted">

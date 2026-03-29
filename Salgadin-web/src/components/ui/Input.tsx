@@ -41,19 +41,18 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             </div>
           )}
 
-            <input
-              id={name}
-              name={name}
-              type={inputType}
-              ref={ref}
-              className={clsx(
-              "w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200",
+          <input
+            id={name}
+            name={name}
+            type={inputType}
+            ref={ref}
+            className={clsx(
+              "w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 ui-input",
               "focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)]",
               "placeholder:text-foreground-subtle",
               icon && "pl-10",
               type === "password" && "pr-10",
-              error &&
-                "border-danger focus:ring-danger focus:border-danger"
+              error && "border-danger focus:ring-danger focus:border-danger",
             )}
             {...props}
           />
