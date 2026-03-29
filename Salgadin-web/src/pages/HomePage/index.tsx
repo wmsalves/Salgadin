@@ -6,14 +6,19 @@ import { HowItWorksSection } from "./HowItWorksSection";
 import { FaqSection } from "./FaqSection";
 import { CtaSection } from "./CtaSection";
 import { PricingSection } from "./PricingSection";
-import { motion } from "framer-motion";
+import { motion, type Variants, type Easing } from "framer-motion";
 
-const reveal = {
+const ease: Easing = [0.16, 1, 0.3, 1];
+
+const reveal: Variants = {
   hidden: { opacity: 0, y: 18 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+    transition: {
+      duration: 0.5,
+      ease,
+    },
   },
 };
 
@@ -24,13 +29,10 @@ export default function HomePage() {
       <div className="pointer-events-none absolute -bottom-40 left-10 h-80 w-80 rounded-full bg-accent/10 blur-3xl" />
       <Header />
       <main>
-        <motion.div
-          variants={reveal}
-          initial="hidden"
-          animate="show"
-        >
+        <motion.div variants={reveal} initial="hidden" animate="show">
           <HeroSection />
         </motion.div>
+
         <motion.div
           variants={reveal}
           initial="hidden"
@@ -39,6 +41,7 @@ export default function HomePage() {
         >
           <FeaturesSection />
         </motion.div>
+
         <motion.div
           variants={reveal}
           initial="hidden"
@@ -47,6 +50,7 @@ export default function HomePage() {
         >
           <HowItWorksSection />
         </motion.div>
+
         <motion.div
           variants={reveal}
           initial="hidden"
@@ -55,6 +59,7 @@ export default function HomePage() {
         >
           <PricingSection />
         </motion.div>
+
         <motion.div
           variants={reveal}
           initial="hidden"
@@ -63,6 +68,7 @@ export default function HomePage() {
         >
           <FaqSection />
         </motion.div>
+
         <motion.div
           variants={reveal}
           initial="hidden"

@@ -35,7 +35,7 @@ export function Header() {
         <Link
           to="/"
           className="flex items-center gap-2 rounded-full px-2 py-1 hover:bg-surface-2 transition"
-          onClick={handleLinkClick}
+          onClick={() => handleLinkClick()}
         >
           <div className="h-12 w-12 grid place-items-center">
             <img src={LogoSalgadin} alt="Logo" className="h-12 w-12" />
@@ -68,6 +68,7 @@ export function Header() {
           >
             {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
           </button>
+
           {isAuthenticated ? (
             <>
               <span className="text-sm text-foreground-muted font-medium bg-surface-2 px-3 py-1.5 rounded-full">
@@ -83,18 +84,18 @@ export function Header() {
             </>
           ) : (
             <>
-              <a
-                href="/login"
+              <Link
+                to="/login"
                 className="rounded-full px-4 py-2 text-sm font-medium border border-border text-foreground-muted hover:text-foreground hover:bg-surface-2 transition-all"
               >
                 Entrar
-              </a>
-              <a
-                href="/signup"
+              </Link>
+              <Link
+                to="/signup"
                 className="rounded-full px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] hover:shadow-lg hover:scale-[1.02] transition-all"
               >
                 Comecar gratis
-              </a>
+              </Link>
             </>
           )}
         </div>
@@ -155,20 +156,20 @@ export function Header() {
                   </button>
                 ) : (
                   <>
-                    <a
-                      href="/login"
-                      onClick={handleLinkClick}
+                    <Link
+                      to="/login"
+                      onClick={() => handleLinkClick()}
                       className="w-full text-center rounded-full px-4 py-2 text-sm font-medium border border-border text-foreground-muted hover:text-foreground hover:bg-surface-2 transition-all"
                     >
                       Entrar
-                    </a>
-                    <a
-                      href="/signup"
-                      onClick={handleLinkClick}
+                    </Link>
+                    <Link
+                      to="/signup"
+                      onClick={() => handleLinkClick()}
                       className="w-full text-center rounded-full px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] hover:shadow-lg transition-all"
                     >
                       Comecar gratis
-                    </a>
+                    </Link>
                   </>
                 )}
               </div>
