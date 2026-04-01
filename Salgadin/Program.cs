@@ -1,6 +1,7 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -89,6 +90,14 @@ try
 
     builder.Services.AddEndpointsApiExplorer();
 
+    // Suporte a proxy reverso (Railway/Render) para HTTPS correto.
+    builder.Services.Configure<ForwardedHeadersOptions>(options =>
+    {
+        options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+        options.KnownNetworks.Clear();
+        options.KnownProxies.Clear();
+    });
+
     // Configura a autentica��o via JWT Bearer Token.
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
@@ -170,6 +179,7 @@ try
         app.UseSwaggerUI();
     }
 
+    app.UseForwardedHeaders();
     app.UseHttpsRedirection();
 
     app.UseRouting();
