@@ -62,7 +62,11 @@ namespace Salgadin.Services
             pref.PushEnabled = dto.PushEnabled;
             pref.MinimumThreshold = dto.MinimumThreshold;
 
-            _unitOfWork.NotificationPreferences.Update(pref);
+            if (pref.Id != 0)
+            {
+                _unitOfWork.NotificationPreferences.Update(pref);
+            }
+
             await _unitOfWork.CompleteAsync();
 
             return new NotificationPreferenceDto
