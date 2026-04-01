@@ -28,6 +28,7 @@ const navItems = [
   { to: "/categorias", label: "Categorias", icon: Tags },
   { to: "/metas", label: "Metas", icon: Target },
   { to: "/relatorios", label: "Relatorios", icon: BarChart3 },
+  { to: "/notificacoes", label: "Notificacoes", icon: Bell },
   { to: "/perfil", label: "Perfil", icon: User },
 ];
 
@@ -267,6 +268,7 @@ export function AppShell() {
             { to: "/categorias", label: "Categorias", icon: Tags },
             { to: "/metas", label: "Metas", icon: Target },
             { to: "/relatorios", label: "Relatorios", icon: BarChart3 },
+            { to: "/notificacoes", label: "Notificacoes", icon: Bell },
             { to: "/perfil", label: "Perfil", icon: User },
           ].map((item) => {
             const Icon = item.icon;
