@@ -9,9 +9,21 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Download, CalendarRange } from "lucide-react";
-import { getMonthlyReport, getWeeklyReport } from "../services/reportService";
+import {
+  getMonthlyReport,
+  getWeeklyReport,
+  compareMonthlyReports,
+  getReportSummary,
+} from "../services/reportService";
 import { exportExpenses } from "../services/exportService";
-import type { ReportResponse } from "../lib/types";
+import type {
+  ReportComparison,
+  ReportResponse,
+  ReportSummary,
+  Subcategory,
+} from "../lib/types";
+import { getCategories, type Category } from "../services/categoryService";
+import { getSubcategories } from "../services/subcategoryService";
 
 type ReportMode = "monthly" | "weekly";
 
@@ -25,24 +37,109 @@ export default function ReportsPage() {
   );
   const [endDate, setEndDate] = useState(new Date().toISOString().slice(0, 10));
   const [report, setReport] = useState<ReportResponse | null>(null);
+  const [comparison, setComparison] = useState<ReportComparison | null>(null);
+  const [summary, setSummary] = useState<ReportSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
+  const [categoryId, setCategoryId] = useState<number | "">("");
+  const [subcategoryId, setSubcategoryId] = useState<number | "">("");
+  const [minAmount, setMinAmount] = useState("");
+  const [maxAmount, setMaxAmount] = useState("");
+  const [compareEnabled, setCompareEnabled] = useState(false);
+  const [compareMonthValue, setCompareMonthValue] = useState(
+    new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 7),
+  );
+
+  const filterParams = useMemo(() => {
+    return {
+      categoryId: categoryId === "" ? undefined : Number(categoryId),
+      subcategoryId: subcategoryId === "" ? undefined : Number(subcategoryId),
+      minAmount: minAmount ? Number(minAmount) : undefined,
+      maxAmount: maxAmount ? Number(maxAmount) : undefined,
+    };
+  }, [categoryId, subcategoryId, minAmount, maxAmount]);
 
   const fetchReport = async () => {
     setIsLoading(true);
+    const periodStart =
+      mode === "monthly" ? `${monthlyValue}-01` : startDate;
+    const periodEnd =
+      mode === "monthly"
+        ? (() => {
+            const [year, month] = monthlyValue.split("-").map(Number);
+            const lastDay = new Date(Date.UTC(year, month, 0));
+            return lastDay.toISOString().slice(0, 10);
+          })()
+        : endDate;
     if (mode === "monthly") {
       const [year, month] = monthlyValue.split("-").map(Number);
-      const data = await getMonthlyReport(year, month);
-      setReport(data);
+      if (compareEnabled) {
+        const [compareYear, compareMonth] = compareMonthValue
+          .split("-")
+          .map(Number);
+        const data = await compareMonthlyReports(
+          year,
+          month,
+          compareYear,
+          compareMonth,
+          filterParams,
+        );
+        setComparison(data);
+        setReport(data.current);
+      } else {
+        const data = await getMonthlyReport(year, month, filterParams);
+        setReport(data);
+        setComparison(null);
+      }
     } else {
-      const data = await getWeeklyReport(startDate, endDate);
+      const data = await getWeeklyReport(startDate, endDate, filterParams);
       setReport(data);
+      setComparison(null);
+    }
+    if (periodStart && periodEnd) {
+      const summaryData = await getReportSummary(
+        periodStart,
+        periodEnd,
+        filterParams,
+      );
+      setSummary(summaryData);
     }
     setIsLoading(false);
   };
 
   useEffect(() => {
     fetchReport();
-  }, [mode, monthlyValue, startDate, endDate]);
+  }, [
+    mode,
+    monthlyValue,
+    startDate,
+    endDate,
+    compareEnabled,
+    compareMonthValue,
+    filterParams,
+  ]);
+
+  useEffect(() => {
+    const fetchFilters = async () => {
+      const data = await getCategories();
+      setCategories(data);
+    };
+    fetchFilters();
+  }, []);
+
+  useEffect(() => {
+    if (categoryId === "") {
+      setSubcategories([]);
+      setSubcategoryId("");
+      return;
+    }
+    const fetchSubs = async () => {
+      const data = await getSubcategories(Number(categoryId));
+      setSubcategories(data);
+    };
+    fetchSubs();
+  }, [categoryId]);
 
   const series = useMemo(() => {
     if (!report) return [];
@@ -60,6 +157,7 @@ export default function ReportsPage() {
       format,
       report?.startDate?.slice(0, 10),
       report?.endDate?.slice(0, 10),
+      filterParams,
     );
     const url = URL.createObjectURL(file);
     const link = document.createElement("a");
@@ -140,8 +238,33 @@ export default function ReportsPage() {
                   className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
-              {/* Spacer para travar o Grid e nao pular layout */}
-              <div className="hidden md:block"></div>
+              <div className="flex items-end gap-2">
+                <button
+                  onClick={() => setCompareEnabled((prev) => !prev)}
+                  className={`w-full rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                    compareEnabled
+                      ? "border-primary text-primary"
+                      : "border-border text-foreground-muted"
+                  }`}
+                >
+                  Comparar mes
+                </button>
+              </div>
+              {compareEnabled ? (
+                <div>
+                  <label className="text-xs text-foreground-muted">
+                    Comparar com
+                  </label>
+                  <input
+                    type="month"
+                    value={compareMonthValue}
+                    onChange={(event) => setCompareMonthValue(event.target.value)}
+                    className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  />
+                </div>
+              ) : (
+                <div className="hidden md:block"></div>
+              )}
             </>
           ) : (
             <>
@@ -163,6 +286,7 @@ export default function ReportsPage() {
                   className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
                 />
               </div>
+              <div className="hidden md:block"></div>
             </>
           )}
           <div className="flex items-end">
@@ -172,6 +296,72 @@ export default function ReportsPage() {
             >
               Atualizar
             </button>
+          </div>
+        </div>
+
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label className="text-xs text-foreground-muted">Categoria</label>
+            <select
+              value={categoryId}
+              onChange={(event) =>
+                setCategoryId(
+                  event.target.value ? Number(event.target.value) : "",
+                )
+              }
+              className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
+            >
+              <option value="">Todas</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-foreground-muted">Subcategoria</label>
+            <select
+              value={subcategoryId}
+              onChange={(event) =>
+                setSubcategoryId(
+                  event.target.value ? Number(event.target.value) : "",
+                )
+              }
+              className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
+              disabled={categoryId === ""}
+            >
+              <option value="">Todas</option>
+              {subcategories.map((sub) => (
+                <option key={sub.id} value={sub.id}>
+                  {sub.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-foreground-muted">
+              Valor minimo
+            </label>
+            <input
+              type="number"
+              value={minAmount}
+              onChange={(event) => setMinAmount(event.target.value)}
+              className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
+              placeholder="0"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-foreground-muted">
+              Valor maximo
+            </label>
+            <input
+              type="number"
+              value={maxAmount}
+              onChange={(event) => setMaxAmount(event.target.value)}
+              className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
+              placeholder="5000"
+            />
           </div>
         </div>
       </section>
@@ -206,6 +396,73 @@ export default function ReportsPage() {
         <div
           className={`grid grid-cols-1 xl:grid-cols-3 gap-6 transition-all ${isLoading ? "opacity-40 grayscale-[0.2] pointer-events-none blur-[1px]" : ""}`}
         >
+          {summary && (
+            <div className="xl:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="rounded-2xl border border-border bg-surface-2 p-4">
+                <p className="text-xs text-foreground-subtle">Total</p>
+                <p className="text-lg font-semibold text-foreground">
+                  R$ {summary.total.toFixed(2)}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-border bg-surface-2 p-4">
+                <p className="text-xs text-foreground-subtle">Media diaria</p>
+                <p className="text-lg font-semibold text-foreground">
+                  R$ {summary.averageDaily.toFixed(2)}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-border bg-surface-2 p-4">
+                <p className="text-xs text-foreground-subtle">Maior dia</p>
+                <p className="text-sm font-semibold text-foreground">
+                  {summary.biggestDay ?? "N/A"}
+                </p>
+                <p className="text-xs text-foreground-muted">
+                  R$ {summary.biggestDayTotal.toFixed(2)}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-border bg-surface-2 p-4">
+                <p className="text-xs text-foreground-subtle">
+                  Tendencia vs periodo anterior
+                </p>
+                <p
+                  className={`text-lg font-semibold ${
+                    summary.trendPercent >= 0 ? "text-danger" : "text-primary"
+                  }`}
+                >
+                  {(summary.trendPercent * 100).toFixed(1)}%
+                </p>
+              </div>
+            </div>
+          )}
+          {summary && summary.insights.length > 0 && (
+            <div className="xl:col-span-3 rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
+              <h2 className="text-lg font-semibold text-foreground mb-4">
+                Insights automaticos
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {summary.insights.map((insight, index) => (
+                  <div
+                    key={`${insight.title}-${index}`}
+                    className="rounded-2xl border border-border bg-surface-2 p-4"
+                  >
+                    <p className="text-xs uppercase tracking-wide text-foreground-subtle">
+                      {insight.title}
+                    </p>
+                    <p
+                      className={`mt-2 text-sm font-semibold ${
+                        insight.tone === "positive"
+                          ? "text-primary"
+                          : insight.tone === "negative"
+                            ? "text-danger"
+                            : "text-foreground"
+                      }`}
+                    >
+                      {insight.detail}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <div
             className="xl:col-span-2 rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
             style={{ animationDelay: "0ms" }}
@@ -218,6 +475,21 @@ export default function ReportsPage() {
                 <p className="text-xs text-foreground-subtle">
                   Total: R$ {report.total.toFixed(2)}
                 </p>
+                {comparison && (
+                  <p className="text-xs text-foreground-subtle mt-1">
+                    Variacao:{" "}
+                    <span
+                      className={
+                        comparison.deltaTotal >= 0
+                          ? "text-danger"
+                          : "text-primary"
+                      }
+                    >
+                      R$ {comparison.deltaTotal.toFixed(2)} (
+                      {(comparison.deltaPercent * 100).toFixed(1)}%)
+                    </span>
+                  </p>
+                )}
               </div>
             </div>
             <div className="h-[280px]">

@@ -6,6 +6,10 @@ namespace Salgadin.Services
             string format,
             DateTime? startDate,
             DateTime? endDate,
-            string? category);
+            string? category,
+            int? categoryId,
+            int? subcategoryId,
+            decimal? minAmount,
+            decimal? maxAmount);
     }
 }

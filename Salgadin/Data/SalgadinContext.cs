@@ -16,6 +16,7 @@ namespace Salgadin.Data
         public DbSet<Subcategory> Subcategories { get; set; } = null!;
         public DbSet<BudgetGoal> BudgetGoals { get; set; } = null!;
         public DbSet<NotificationPreference> NotificationPreferences { get; set; } = null!;
+        public DbSet<Notification> Notifications { get; set; } = null!;
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<Income> Incomes { get; set; } = null!;
 

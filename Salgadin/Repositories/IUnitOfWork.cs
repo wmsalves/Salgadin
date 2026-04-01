@@ -9,6 +9,7 @@ namespace Salgadin.Repositories
         IRepository<Subcategory> Subcategories { get; }
         IRepository<BudgetGoal> BudgetGoals { get; }
         IRepository<NotificationPreference> NotificationPreferences { get; }
+        IRepository<Notification> Notifications { get; }
         IRepository<User> Users { get; }
         IRepository<Income> Incomes { get; }
         Task<int> CompleteAsync();

@@ -24,20 +24,51 @@ namespace Salgadin.Services
             string format,
             DateTime? startDate,
             DateTime? endDate,
-            string? category)
+            string? category,
+            int? categoryId,
+            int? subcategoryId,
+            decimal? minAmount,
+            decimal? maxAmount)
         {
             var userId = _userContext.GetUserId();
             var query = _unitOfWork.Expenses.GetQueryable()
                 .Where(e => e.UserId == userId);
 
-            if (startDate.HasValue)
-                query = query.Where(e => e.Date.Date >= startDate.Value.Date);
-            if (endDate.HasValue)
-                query = query.Where(e => e.Date.Date <= endDate.Value.Date);
-            if (!string.IsNullOrWhiteSpace(category))
+            if (startDate.HasValue || endDate.HasValue)
+            {
+                var startUtc = startDate.HasValue
+                    ? DateTime.SpecifyKind(startDate.Value.Date, DateTimeKind.Utc)
+                    : DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
+                var endExclusiveUtc = endDate.HasValue
+                    ? DateTime.SpecifyKind(endDate.Value.Date.AddDays(1), DateTimeKind.Utc)
+                    : DateTime.SpecifyKind(DateTime.MaxValue.Date.AddDays(1), DateTimeKind.Utc);
+
+                query = query.Where(e => e.Date >= startUtc && e.Date < endExclusiveUtc);
+            }
+
+            if (categoryId.HasValue)
+            {
+                query = query.Where(e => e.CategoryId == categoryId.Value);
+            }
+            else if (!string.IsNullOrWhiteSpace(category))
             {
                 var categoryLower = category.Trim().ToLower();
                 query = query.Where(e => e.Category != null && e.Category.Name.ToLower() == categoryLower);
+            }
+
+            if (subcategoryId.HasValue)
+            {
+                query = query.Where(e => e.SubcategoryId == subcategoryId.Value);
+            }
+
+            if (minAmount.HasValue)
+            {
+                query = query.Where(e => e.Amount >= minAmount.Value);
+            }
+
+            if (maxAmount.HasValue)
+            {
+                query = query.Where(e => e.Amount <= maxAmount.Value);
             }
 
             var expenses = await query
@@ -56,7 +87,7 @@ namespace Salgadin.Services
 
             if (safeFormat == "pdf")
             {
-                var content = BuildPdf(expenses, startDate, endDate, category);
+                var content = BuildPdf(expenses, startDate, endDate, category, categoryId, subcategoryId, minAmount, maxAmount);
                 var fileName = $"expenses-{DateTime.UtcNow:yyyyMMdd}.pdf";
                 return (content, "application/pdf", fileName);
             }
@@ -88,7 +119,11 @@ namespace Salgadin.Services
             IEnumerable<Models.Expense> expenses,
             DateTime? startDate,
             DateTime? endDate,
-            string? category)
+            string? category,
+            int? categoryId,
+            int? subcategoryId,
+            decimal? minAmount,
+            decimal? maxAmount)
         {
             var expensesList = expenses.ToList();
             var total = expensesList.Sum(e => e.Amount);
@@ -110,6 +145,22 @@ namespace Salgadin.Services
                         if (!string.IsNullOrWhiteSpace(category))
                         {
                             filters += $" | Categoria: {category}";
+                        }
+                        if (categoryId.HasValue)
+                        {
+                            filters += $" | Categoria ID: {categoryId}";
+                        }
+                        if (subcategoryId.HasValue)
+                        {
+                            filters += $" | Subcategoria ID: {subcategoryId}";
+                        }
+                        if (minAmount.HasValue)
+                        {
+                            filters += $" | Min: {minAmount.Value:C2}";
+                        }
+                        if (maxAmount.HasValue)
+                        {
+                            filters += $" | Max: {maxAmount.Value:C2}";
                         }
 
                         header.Item().Text(filters).FontSize(10).FontColor(Colors.Grey.Darken2);

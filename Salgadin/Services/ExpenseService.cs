@@ -12,12 +12,18 @@ namespace Salgadin.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IUserContextService _userContext;
+        private readonly INotificationService _notificationService;
 
-        public ExpenseService(IUnitOfWork unitOfWork, IMapper mapper, IUserContextService userContext)
+        public ExpenseService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IUserContextService userContext,
+            INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userContext = userContext;
+            _notificationService = notificationService;
         }
 
         public async Task<IEnumerable<DailySummaryDto>> GetDailySummaryAsync(DateTime? startDate, DateTime? endDate)
@@ -75,6 +81,15 @@ namespace Salgadin.Services
             await _unitOfWork.CompleteAsync();
 
             expense.Category = category;
+
+            try
+            {
+                await _notificationService.GenerateGoalNotificationsAsync(expense.Date);
+            }
+            catch
+            {
+                // Nao falha a criacao da despesa caso a notificacao tenha erro.
+            }
 
             return _mapper.Map<ExpenseDto>(expense);
         }

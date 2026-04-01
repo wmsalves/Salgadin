@@ -37,5 +37,26 @@ namespace Salgadin.Controllers
             var alerts = await _service.GetAlertsAsync(year, month);
             return Ok(alerts);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetNotifications([FromQuery] bool unreadOnly = false)
+        {
+            var result = await _service.GetNotificationsAsync(unreadOnly);
+            return Ok(result);
+        }
+
+        [HttpPatch("{id:int}/read")]
+        public async Task<IActionResult> MarkAsRead(int id)
+        {
+            await _service.MarkAsReadAsync(id);
+            return NoContent();
+        }
+
+        [HttpPatch("read-all")]
+        public async Task<IActionResult> MarkAllAsRead()
+        {
+            var count = await _service.MarkAllAsReadAsync();
+            return Ok(new { updated = count });
+        }
     }
 }

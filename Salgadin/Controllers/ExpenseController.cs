@@ -75,9 +75,21 @@ namespace Salgadin.Controllers
             [FromQuery] string format = "csv",
             [FromQuery] DateTime? startDate = null,
             [FromQuery] DateTime? endDate = null,
-            [FromQuery] string? category = null)
+            [FromQuery] string? category = null,
+            [FromQuery] int? categoryId = null,
+            [FromQuery] int? subcategoryId = null,
+            [FromQuery] decimal? minAmount = null,
+            [FromQuery] decimal? maxAmount = null)
         {
-            var result = await _exportService.ExportExpensesAsync(format, startDate, endDate, category);
+            var result = await _exportService.ExportExpensesAsync(
+                format,
+                startDate,
+                endDate,
+                category,
+                categoryId,
+                subcategoryId,
+                minAmount,
+                maxAmount);
             return File(result.Content, result.ContentType, result.FileName);
         }
     }

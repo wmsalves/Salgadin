@@ -51,10 +51,52 @@ export interface ReportResponse {
   byCategory: CategoryTotal[];
 }
 
+export interface ReportComparison {
+  current: ReportResponse;
+  previous: ReportResponse;
+  deltaTotal: number;
+  deltaPercent: number;
+}
+
+export interface ReportSummary {
+  startDate: string;
+  endDate: string;
+  total: number;
+  averageDaily: number;
+  biggestDay?: string | null;
+  biggestDayTotal: number;
+  trendPercent: number;
+  topCategories: CategoryTotal[];
+  insights: ReportInsight[];
+}
+
+export interface ReportInsight {
+  title: string;
+  detail: string;
+  tone: "positive" | "negative" | "neutral";
+}
+
 export interface NotificationPreference {
   emailEnabled: boolean;
   pushEnabled: boolean;
   minimumThreshold: number;
+}
+
+export interface NotificationItem {
+  id: number;
+  type: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+  goalId?: number | null;
+  categoryId?: number | null;
+  category?: string | null;
+  monthlyLimit: number;
+  spent: number;
+  threshold: number;
+  periodYear: number;
+  periodMonth: number;
 }
 
 export interface Subcategory {

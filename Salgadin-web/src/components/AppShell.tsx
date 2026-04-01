@@ -10,12 +10,18 @@ import {
   Target,
   ChevronLeft,
   ChevronRight,
+  Bell,
 } from "lucide-react";
 import clsx from "clsx";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  getNotifications,
+  markNotificationRead,
+} from "../services/notificationService";
+import type { NotificationItem } from "../lib/types";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutGrid },
@@ -29,6 +35,27 @@ export function AppShell() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [collapsed, setCollapsed] = useState(false);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [isBellOpen, setIsBellOpen] = useState(false);
+  const [isLoadingBell, setIsLoadingBell] = useState(false);
+
+  const unreadCount = notifications.filter((item) => !item.isRead).length;
+
+  const fetchNotifications = async (unreadOnly = true) => {
+    setIsLoadingBell(true);
+    try {
+      const data = await getNotifications(unreadOnly);
+      setNotifications(data);
+    } finally {
+      setIsLoadingBell(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(() => fetchNotifications(), 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] text-foreground">
@@ -126,6 +153,89 @@ export function AppShell() {
                 </span>
               </div>
               <div className="ml-auto flex items-center gap-2">
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      setIsBellOpen((prev) => !prev);
+                      if (!isBellOpen) {
+                        fetchNotifications(false);
+                      }
+                    }}
+                    className="relative p-2 rounded-full border border-border text-foreground-muted hover:text-foreground hover:bg-surface-2 transition-colors soft-press"
+                    title="Notificacoes"
+                  >
+                    <Bell size={18} />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 rounded-full bg-danger text-white text-[10px] font-semibold grid place-items-center">
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                      </span>
+                    )}
+                  </button>
+                  {isBellOpen && (
+                    <div className="absolute right-0 mt-3 w-80 max-h-[360px] overflow-auto rounded-2xl border border-border bg-surface/95 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.2)] z-50">
+                      <div className="p-4 border-b border-border/60 flex items-center justify-between">
+                        <span className="text-sm font-semibold text-foreground">
+                          Notificacoes
+                        </span>
+                        <button
+                          onClick={() => setIsBellOpen(false)}
+                          className="text-xs text-foreground-muted hover:text-foreground"
+                        >
+                          Fechar
+                        </button>
+                      </div>
+                      <div className="p-4 space-y-3">
+                        {isLoadingBell ? (
+                          <p className="text-sm text-foreground-subtle">
+                            Carregando...
+                          </p>
+                        ) : notifications.length === 0 ? (
+                          <p className="text-sm text-foreground-subtle">
+                            Nenhuma notificacao no momento.
+                          </p>
+                        ) : (
+                          notifications.map((item) => (
+                            <div
+                              key={item.id}
+                              className="rounded-xl border border-border bg-surface-2 p-3"
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="text-xs font-semibold text-foreground">
+                                  {item.title}
+                                </span>
+                                {!item.isRead && (
+                                  <button
+                                    onClick={async () => {
+                                      await markNotificationRead(item.id);
+                                      setNotifications((prev) =>
+                                        prev.map((n) =>
+                                          n.id === item.id
+                                            ? { ...n, isRead: true }
+                                            : n
+                                        )
+                                      );
+                                    }}
+                                    className="text-[11px] text-primary hover:text-primary/80"
+                                  >
+                                    Marcar lido
+                                  </button>
+                                )}
+                              </div>
+                              <p className="mt-1 text-[11px] text-foreground-subtle">
+                                {item.message}
+                              </p>
+                              <p className="mt-2 text-[10px] text-foreground-muted">
+                                {new Date(item.createdAt).toLocaleString(
+                                  "pt-BR"
+                                )}
+                              </p>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <button
                   onClick={toggleTheme}
                   className="p-2 rounded-full border border-border text-foreground-muted hover:text-foreground hover:bg-surface-2 transition-colors soft-press"
