@@ -185,6 +185,13 @@ Salgadin-web/.vite/
 Salgadin-web/.env.local
 Salgadin-web/.env.*.local
 
+# Environment secrets
+.env
+.env.*
+**/appsettings.Development.json
+**/appsettings.*.json
+!**/appsettings.json
+
 # Logs
 *.log
 npm-debug.log*
