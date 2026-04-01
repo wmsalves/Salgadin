@@ -104,14 +104,23 @@ try
             };
         });
 
-    // Define uma pol�tica de CORS para permitir requisi��es do frontend.
+    // Define uma política de CORS para permitir requisições do frontend.
     var corsPolicy = "_salgadinCors";
+    var corsOrigins = builder.Configuration["CORS_ORIGINS"]?
+        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        ?? new[]
+        {
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "https://salgadin.vercel.app"
+        };
+
     builder.Services.AddCors(options =>
     {
         options.AddPolicy(corsPolicy, policy =>
         {
             policy
-                .WithOrigins("http://localhost:5173", "http://localhost:3000", "https://salgadin.vercel.app")
+                .WithOrigins(corsOrigins)
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();
