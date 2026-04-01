@@ -111,7 +111,7 @@ try
         options.AddPolicy(corsPolicy, policy =>
         {
             policy
-                .WithOrigins("http://localhost:5173", "http://localhost:3000")
+                .WithOrigins("http://localhost:5173", "http://localhost:3000", "https://salgadin.vercel.app")
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials();

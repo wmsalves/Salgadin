@@ -1,0 +1,9 @@
+**/bin
+**/obj
+**/node_modules
+.git
+.gitignore
+.env
+Salgadin-web/dist
+Salgadin-web/node_modules
+logs
