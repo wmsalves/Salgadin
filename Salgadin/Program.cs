@@ -102,14 +102,28 @@ try
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
-            var key = builder.Configuration["Jwt:Key"]
+            var keyString = builder.Configuration["Jwt:Key"]
                 ?? throw new InvalidOperationException("Jwt:Key not configured");
+            var keyBytes = Encoding.UTF8.GetBytes(keyString);
+            if (keyBytes.Length < 64)
+            {
+                throw new InvalidOperationException("Jwt:Key must be at least 64 bytes for HS512.");
+            }
+
+            var issuer = builder.Configuration["Jwt:Issuer"];
+            var audience = builder.Configuration["Jwt:Audience"];
+
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
-                ValidateIssuer = false,
-                ValidateAudience = false
+                IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+                ValidateIssuer = !string.IsNullOrWhiteSpace(issuer),
+                ValidIssuer = issuer,
+                ValidateAudience = !string.IsNullOrWhiteSpace(audience),
+                ValidAudience = audience,
+                ValidateLifetime = true,
+                RequireExpirationTime = true,
+                ClockSkew = TimeSpan.FromMinutes(2)
             };
         });
 

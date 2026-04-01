@@ -1,7 +1,7 @@
 import { api } from "./api";
 import { type LoginFormValues, type SignupFormValues } from "../lib/schemas";
 
-type RegisterPayload = Omit<SignupFormValues, "confirmPassword">;
+type RegisterPayload = SignupFormValues;
 
 interface AuthResponse {
   token: string;

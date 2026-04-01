@@ -6,14 +6,13 @@ using Salgadin.Models;
 using Salgadin.Repositories;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace Salgadin.Services
 {
     public class AuthService : IAuthService
     {
-        // Injeta a Unit of Work para centralizar o acesso a dados.
+        private const int TokenExpiryDays = 7;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
 
@@ -25,14 +24,14 @@ namespace Salgadin.Services
 
         public async Task<string> RegisterAsync(UserRegisterDto dto)
         {
-            // Usa o repositório genérico para criar uma consulta otimizada no banco.
+            var normalizedUsername = NormalizeUsername(dto.Username);
+
             var userExists = await _unitOfWork.Users
                 .GetQueryable()
-                .AnyAsync(u => u.Username == dto.Username);
+                .AnyAsync(u => u.Username == normalizedUsername);
 
             if (userExists)
             {
-                // Lança uma exceção específica para ser tratada pelo middleware de erros.
                 throw new BadInputException("O nome de usuário já está em uso.");
             }
 
@@ -40,16 +39,15 @@ namespace Salgadin.Services
 
             var user = new User
             {
-                Name = dto.Name,
-                Username = dto.Username,
+                Name = dto.Name.Trim(),
+                Username = normalizedUsername,
                 PasswordHash = hash,
                 PasswordSalt = salt
             };
 
-            // Adiciona o novo usuário e salva as alterações através da Unit of Work.
             await _unitOfWork.Users.AddAsync(user);
 
-                        var defaultCategories = new List<Category>
+            var defaultCategories = new List<Category>
             {
                 new Category { Name = "Alimentação", User = user },
                 new Category { Name = "Transporte", User = user },
@@ -70,29 +68,26 @@ namespace Salgadin.Services
 
         public async Task<string> LoginAsync(UserLoginDto dto)
         {
+            var normalizedUsername = NormalizeUsername(dto.Username);
             var user = await _unitOfWork.Users
                 .GetQueryable()
-                .FirstOrDefaultAsync(u => u.Username == dto.Username);
+                .FirstOrDefaultAsync(u => u.Username == normalizedUsername);
 
             if (user == null || !VerifyPassword(dto.Password, user.PasswordHash, user.PasswordSalt))
             {
-                // Lança a exceção padrão do .NET para falhas de autenticação.
-                // O middleware irá capturá-la e retornar o status 401 Unauthorized.
                 throw new UnauthorizedAccessException("Usuário ou senha inválidos.");
             }
 
             return GenerateToken(user);
         }
 
-        // Gera o hash usando BCrypt (O Salt é incorporado automaticamente na string).
         private void CreatePasswordHash(string password, out byte[] hash, out byte[] salt)
         {
             var hashStr = BCrypt.Net.BCrypt.HashPassword(password);
             hash = Encoding.UTF8.GetBytes(hashStr);
-            salt = Array.Empty<byte>(); 
+            salt = Array.Empty<byte>();
         }
 
-        // Verifica a senha usando BCrypt. Senhas velhas HMAC falharão graciosamente aqui.
         private bool VerifyPassword(string password, byte[] hash, byte[] salt)
         {
             try
@@ -102,15 +97,12 @@ namespace Salgadin.Services
             }
             catch
             {
-                // Se der erro de parsing ou nao for formato BCrypt ($2y$), falha em vez de crashar
                 return false;
             }
         }
 
-        // Cria um JSON Web Token (JWT) para o usuário autenticado.
         private string GenerateToken(User user)
         {
-            // Define as 'claims' (informações) que serão incluídas no token.
             var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -118,17 +110,15 @@ namespace Salgadin.Services
                 new Claim(ClaimTypes.Email, user.Username)
             };
 
-            // Obtém a chave de segurança do appsettings.json para assinar o token.
-            var keyString = _configuration["Jwt:Key"] ?? throw new InvalidOperationException("A chave JWT 'Jwt:Key' não está configurada.");
+            var keyString = _configuration["Jwt:Key"]
+                ?? throw new InvalidOperationException("A chave JWT 'Jwt:Key' não está configurada.");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
-
-            // Cria as credenciais de assinatura usando o algoritmo HmacSha512.
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(TokenExpiryDays),
                 SigningCredentials = creds
             };
 
@@ -136,6 +126,11 @@ namespace Salgadin.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
+        }
+
+        private static string NormalizeUsername(string username)
+        {
+            return username.Trim().ToLowerInvariant();
         }
     }
 }
