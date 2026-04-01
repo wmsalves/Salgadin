@@ -28,7 +28,7 @@ namespace Salgadin.Services
 
             var userExists = await _unitOfWork.Users
                 .GetQueryable()
-                .AnyAsync(u => u.Username == normalizedUsername);
+                .AnyAsync(u => u.Username.ToLower() == normalizedUsername);
 
             if (userExists)
             {
@@ -71,7 +71,7 @@ namespace Salgadin.Services
             var normalizedUsername = NormalizeUsername(dto.Username);
             var user = await _unitOfWork.Users
                 .GetQueryable()
-                .FirstOrDefaultAsync(u => u.Username == normalizedUsername);
+                .FirstOrDefaultAsync(u => u.Username.ToLower() == normalizedUsername);
 
             if (user == null || !VerifyPassword(dto.Password, user.PasswordHash, user.PasswordSalt))
             {
