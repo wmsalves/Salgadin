@@ -10,6 +10,17 @@ import { getSubcategories } from "../services/subcategoryService";
 import type { Subcategory } from "../lib/types";
 import { motion, AnimatePresence } from "framer-motion";
 
+const CATEGORY_KEYWORDS: Record<string, string[]> = {
+  "Alimentação": ['ifood', 'uber eats', 'rappi', 'restaurante', 'mercado', 'padaria', 'açougue', 'supermercado', 'hortifruti', 'mcdonalds', "mcdonald's", 'burguer king', 'habibs', 'pizza', 'sushi', 'lanche', 'café', 'padoca', 'extra', 'carrefour', 'pão de açúcar', 'assaí', 'atacadão'],
+  "Transporte": ['uber', '99', 'taxi', 'táxi', 'metrô', 'metro', 'ônibus', 'onibus', 'gasolina', 'posto', 'etanol', 'diesel', 'estacionamento', 'pedágio', 'pedagio', 'blablacar', 'trem', 'cptm', 'bilhete', 'top', 'recarga'],
+  "Moradia": ['aluguel', 'condomínio', 'iptu', 'luz', 'enel', 'eletropaulo', 'cemig', 'água', 'sabesp', 'copasa', 'gás', 'gas', 'internet', 'vivo', 'claro', 'tim', 'oi', 'net', 'tv', 'streaming'],
+  "Saúde": ['farmácia', 'farmacia', 'drogaria', 'droga raia', 'drogasil', 'pacheco', 'médico', 'medica', 'consulta', 'exame', 'laboratório', 'academia', 'smartfit', 'bluefit', 'suplemento', 'growth', 'vitamina', 'dentista', 'plano de saúde', 'unimed', 'amil', 'bradesco saúde', 'psicólogo', 'terapia'],
+  "Educação": ['escola', 'faculdade', 'curso', 'udemy', 'alura', 'rocketseat', 'livro', 'mensalidade', 'material', 'univesp', 'enem', 'vestibular'],
+  "Lazer": ['netflix', 'spotify', 'amazon prime', 'disney', 'hbo', 'cinema', 'teatro', 'show', 'ingresso', 'steam', 'playstation', 'xbox', 'nintendo', 'jogo', 'viagem', 'hotel', 'airbnb', 'booking', 'passeio'],
+  "Assinaturas": ['spotify', 'netflix', 'amazon', 'prime', 'disney+', 'hbo max', 'apple', 'google one', 'icloud', 'm365', 'office 365', 'adobe', 'canva', 'dropbox'],
+  "Pets": ['petz', 'cobasi', 'veterinário', 'ração', 'pet shop', 'banho', 'tosa']
+};
+
 const expenseSchema = z.object({
   description: z
     .string()
@@ -43,6 +54,7 @@ export function AddExpenseModal({
     formState: { errors, isSubmitting },
     reset,
     watch,
+    setValue,
   } = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
@@ -59,6 +71,27 @@ export function AddExpenseModal({
   }, [isOpen]);
 
   const selectedCategory = watch("categoryId");
+  const descriptionValue = watch("description");
+
+  useEffect(() => {
+    if (!descriptionValue || !categories.length || isSubmitting) return;
+    const lowerDesc = descriptionValue.toLowerCase();
+    let foundCategoryName: string | null = null;
+    
+    for (const [catName, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+      if (keywords.some(k => lowerDesc.includes(k))) {
+        foundCategoryName = catName;
+        break;
+      }
+    }
+    
+    if (foundCategoryName) {
+      const matchCat = categories.find(c => c.name === foundCategoryName);
+      if (matchCat && selectedCategory !== String(matchCat.id)) {
+        setValue("categoryId", String(matchCat.id), { shouldValidate: true });
+      }
+    }
+  }, [descriptionValue, categories, setValue, selectedCategory, isSubmitting]);
 
   useEffect(() => {
     if (!selectedCategory) {
@@ -79,7 +112,7 @@ export function AddExpenseModal({
     try {
       const payload = {
         ...data,
-        amount: parseFloat(data.amount.replace(",", ".")),
+        amount: parseFloat(data.amount.replace(/\./g, "").replace(",", ".")),
         categoryId: parseInt(data.categoryId, 10),
         subcategoryId: data.subcategoryId
           ? parseInt(data.subcategoryId, 10)
@@ -159,12 +192,30 @@ export function AddExpenseModal({
                     Valor (R$) <span className="text-danger">*</span>
                   </label>
                   <input
-                    {...register("amount")}
+                    {...(() => {
+                      const { onChange, ...rest } = register("amount");
+                      return {
+                        ...rest,
+                        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                          let val = e.target.value.replace(/\D/g, "");
+                          if (!val) {
+                            e.target.value = "";
+                          } else {
+                            const numericValue = parseInt(val, 10) / 100;
+                            e.target.value = numericValue.toLocaleString("pt-BR", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            });
+                          }
+                          onChange(e);
+                        }
+                      }
+                    })()}
                     id="amount"
                     type="text"
                     inputMode="decimal"
-                    className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)] placeholder:text-foreground-subtle"
-                    placeholder="25,50"
+                    className="w-full font-mono tabular-nums rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)] placeholder:text-foreground-subtle"
+                    placeholder="0,00"
                   />
                   {errors.amount && (
                     <p className="mt-2 text-sm text-danger font-medium">

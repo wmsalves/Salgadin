@@ -11,7 +11,7 @@ export function FaqSection() {
   };
 
   return (
-    <section id="faq" className="mx-auto max-w-3xl px-4 py-12 scroll-mt-24">
+    <section id="faq" className="mx-auto max-w-3xl px-4 py-12 scroll-mt-24 mb-0 bg-transparent">
       <h2 className="text-center text-2xl sm:text-3xl font-extrabold text-foreground">
         Perguntas Frequentes
       </h2>

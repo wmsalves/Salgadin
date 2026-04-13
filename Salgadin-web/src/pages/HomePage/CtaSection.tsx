@@ -1,4 +1,4 @@
-﻿import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth";
 import { Link } from "react-router-dom";
 
 const buttonStyles = {
@@ -16,7 +16,7 @@ export function CtaSection() {
     : "Criar minha conta gratis";
 
   return (
-    <section className="mt-6 bg-gradient-to-tr from-[var(--brand-from)]/20 via-[var(--bg-via)] to-[var(--brand-to)]/20">
+    <section className="bg-transparent">
       <div className="mx-auto max-w-6xl px-4 py-12 text-center">
         <h3 className="text-3xl font-extrabold text-foreground">
           Pronto para assumir o controle?

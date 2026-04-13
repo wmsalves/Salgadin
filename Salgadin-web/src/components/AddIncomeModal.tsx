@@ -47,7 +47,7 @@ export function AddIncomeModal({
     try {
       const payload = {
         ...data,
-        amount: parseFloat(data.amount.replace(",", ".")),
+        amount: parseFloat(data.amount.replace(/\./g, "").replace(",", ".")),
       };
 
       await addIncome(payload);
@@ -123,12 +123,30 @@ export function AddIncomeModal({
                     Valor (R$) <span className="text-danger">*</span>
                   </label>
                   <input
-                    {...register("amount")}
+                    {...(() => {
+                      const { onChange, ...rest } = register("amount");
+                      return {
+                        ...rest,
+                        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                          let val = e.target.value.replace(/\D/g, "");
+                          if (!val) {
+                            e.target.value = "";
+                          } else {
+                            const numericValue = parseInt(val, 10) / 100;
+                            e.target.value = numericValue.toLocaleString("pt-BR", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            });
+                          }
+                          onChange(e);
+                        }
+                      }
+                    })()}
                     id="amountIncome"
                     type="text"
                     inputMode="decimal"
-                    className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 focus:shadow-lg placeholder:text-foreground-subtle"
-                    placeholder="2500,00"
+                    className="w-full font-mono tabular-nums rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 focus:shadow-lg placeholder:text-foreground-subtle"
+                    placeholder="0,00"
                   />
                   {errors.amount && (
                     <p className="mt-2 text-sm text-danger font-medium">
