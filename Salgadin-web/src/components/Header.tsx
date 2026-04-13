@@ -1,7 +1,7 @@
 ﻿import { useState } from "react";
 import { Menu, X, LogOut, Moon, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
-import LogoSalgadin from "../assets/NewLogo_Salgadin.svg";
+import LogoSalgadin from "../assets/Logo.svg";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
