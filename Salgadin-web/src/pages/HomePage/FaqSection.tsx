@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { faqItems } from "./content";
-import { ChevronDown } from "lucide-react";
 import clsx from "clsx";
+import { ChevronDown } from "lucide-react";
+import { faqItems } from "./content";
 
 export function FaqSection() {
   const [activeItem, setActiveItem] = useState<string | null>(null);
@@ -11,58 +11,57 @@ export function FaqSection() {
   };
 
   return (
-    <section id="faq" className="mx-auto max-w-3xl px-4 py-12 scroll-mt-24 mb-0 bg-transparent">
-      <h2 className="text-center text-2xl sm:text-3xl font-extrabold text-foreground">
-        Perguntas Frequentes
+    <section
+      id="faq"
+      className="mx-auto mb-0 max-w-3xl scroll-mt-24 bg-transparent px-4 py-16"
+    >
+      <h2 className="text-center text-2xl font-extrabold text-foreground sm:text-3xl">
+        Perguntas frequentes
       </h2>
-      <p className="mt-2 text-center text-foreground-muted text-sm sm:text-base">
-        Encontre respostas para as dúvidas mais comuns sobre o Salgadin.
+      <p className="mt-2 text-center text-sm leading-6 text-foreground-muted sm:text-base">
+        Respostas diretas sobre o que o Salgadin faz hoje.
       </p>
       <div className="mt-8 space-y-4">
-        {faqItems.map((item) => {
+        {faqItems.map((item, index) => {
           const isOpen = activeItem === item.q;
+          const panelId = `faq-panel-${index}`;
 
           return (
             <div
               key={item.q}
               className={clsx(
-                "rounded-2xl border border-border bg-surface shadow-sm overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
-                isOpen &&
-                  "border-primary/30",
+                "overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface shadow-[var(--shadow-card)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                isOpen && "border-primary/35"
               )}
             >
               <button
+                type="button"
                 onClick={() => toggleItem(item.q)}
-                className={clsx(
-                  "w-full flex justify-between items-center text-left p-5 font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
-                )}
+                className="flex min-h-14 w-full items-center justify-between gap-4 p-5 text-left font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                 aria-expanded={isOpen}
+                aria-controls={panelId}
               >
                 <span>{item.q}</span>
                 <ChevronDown
                   className={clsx(
-                    "h-5 w-5 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
-                    isOpen && "rotate-180",
+                    "h-5 w-5 shrink-0 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                    isOpen && "rotate-180"
                   )}
+                  aria-hidden="true"
                 />
               </button>
 
               <div
+                id={panelId}
                 className={clsx(
-                  "transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] grid",
+                  "grid transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
                   isOpen
                     ? "grid-rows-[1fr] opacity-100"
-                    : "grid-rows-[0fr] opacity-0",
+                    : "grid-rows-[0fr] opacity-0"
                 )}
               >
-                <div
-                  className={clsx(
-                    "overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
-                    isOpen ? "opacity-100" : "opacity-0",
-                  )}
-                >
-                  <p className="px-5 pb-5 text-sm text-foreground-muted">
+                <div className="overflow-hidden">
+                  <p className="px-5 pb-5 text-sm leading-6 text-foreground-muted">
                     {item.a}
                   </p>
                 </div>

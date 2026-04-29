@@ -6,7 +6,7 @@ import { HowItWorksSection } from "./HowItWorksSection";
 import { FaqSection } from "./FaqSection";
 import { CtaSection } from "./CtaSection";
 import { PricingSection } from "./PricingSection";
-import { motion, type Variants, type Easing } from "framer-motion";
+import { MotionConfig, motion, type Variants, type Easing } from "framer-motion";
 
 const ease: Easing = [0.16, 1, 0.3, 1];
 
@@ -24,61 +24,67 @@ const reveal: Variants = {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] text-foreground relative overflow-hidden">
-      <div className="pointer-events-none absolute -top-32 right-0 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-40 left-10 h-80 w-80 rounded-full bg-accent/10 blur-3xl" />
-      <Header />
-      <main>
-        <motion.div variants={reveal} initial="hidden" animate="show">
-          <HeroSection />
-        </motion.div>
+    <MotionConfig reducedMotion="user">
+      <div className="min-h-screen overflow-x-hidden bg-gradient-to-b from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] text-foreground">
+        <Header />
+        <main>
+          <motion.div variants={reveal} initial="hidden" animate="show">
+            <HeroSection />
+          </motion.div>
 
-        <motion.div
-          variants={reveal}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          <FeaturesSection />
-        </motion.div>
+          <div className="border-y border-border/70 bg-surface/45">
+            <motion.div
+              variants={reveal}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.2 }}
+            >
+              <FeaturesSection />
+            </motion.div>
+          </div>
 
-        <motion.div
-          variants={reveal}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          <HowItWorksSection />
-        </motion.div>
+          <motion.div
+            variants={reveal}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            <HowItWorksSection />
+          </motion.div>
 
-        <motion.div
-          variants={reveal}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          <PricingSection />
-        </motion.div>
+          <div className="border-y border-border/60 bg-surface-2/45">
+            <motion.div
+              variants={reveal}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.2 }}
+            >
+              <PricingSection />
+            </motion.div>
+          </div>
 
-        <motion.div
-          variants={reveal}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          <FaqSection />
-        </motion.div>
+          <motion.div
+            variants={reveal}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            <FaqSection />
+          </motion.div>
 
-        <motion.div
-          variants={reveal}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          <CtaSection />
-        </motion.div>
-      </main>
-      <Footer />
-    </div>
+          <div className="border-t border-border/60 bg-surface/45">
+            <motion.div
+              variants={reveal}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.2 }}
+            >
+              <CtaSection />
+            </motion.div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    </MotionConfig>
   );
 }

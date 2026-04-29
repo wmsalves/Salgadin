@@ -62,7 +62,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               <button
                 type="button"
                 onClick={() => setIsPasswordVisible(!isPasswordVisible)}
-                className="text-foreground-subtle hover:text-foreground-muted"
+                className="grid h-9 w-9 place-items-center rounded-xl text-foreground-subtle hover:bg-surface-2 hover:text-foreground-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                 aria-label={
                   isPasswordVisible ? "Esconder senha" : "Mostrar senha"
                 }

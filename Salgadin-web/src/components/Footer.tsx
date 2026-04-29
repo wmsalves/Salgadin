@@ -10,32 +10,35 @@ export function Footer() {
             <a
               href="#"
               aria-label="Twitter"
-              className="h-9 w-9 rounded-full bg-surface text-foreground-subtle hover:text-foreground hover:bg-surface-2 grid place-items-center transition"
+              className="grid h-11 w-11 place-items-center rounded-xl bg-surface text-foreground-subtle transition hover:bg-surface-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
               <Twitter size={18} />
             </a>
             <a
               href="#"
               aria-label="Instagram"
-              className="h-9 w-9 rounded-full bg-surface text-foreground-subtle hover:text-foreground hover:bg-surface-2 grid place-items-center transition"
+              className="grid h-11 w-11 place-items-center rounded-xl bg-surface text-foreground-subtle transition hover:bg-surface-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
               <Instagram size={18} />
             </a>
           </div>
 
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-foreground-muted">
-            <Link to="/termos" className="hover:text-primary transition-colors">
+            <Link
+              to="/termos"
+              className="inline-flex min-h-11 items-center rounded-xl px-2 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            >
               Termos
             </Link>
             <Link
               to="/privacidade"
-              className="hover:text-primary transition-colors"
+              className="inline-flex min-h-11 items-center rounded-xl px-2 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
               Privacidade
             </Link>
             <Link
               to="/contato"
-              className="hover:text-primary transition-colors"
+              className="inline-flex min-h-11 items-center rounded-xl px-2 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
               Contato
             </Link>

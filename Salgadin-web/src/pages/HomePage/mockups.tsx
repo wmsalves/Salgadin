@@ -168,7 +168,7 @@ export const DashboardMockup = () => {
       </div>
 
       <div className="mt-3 flex-1 rounded-2xl border border-border bg-surface-2 px-3 py-2">
-        <p className="text-[10px] text-foreground-subtle">Ultimas despesas</p>
+        <p className="text-[10px] text-foreground-subtle">Últimas despesas</p>
         <div className="mt-2 space-y-2">
           {[
             { title: "Mercado", value: "- R$ 86,40" },
@@ -196,7 +196,7 @@ const mockExpenses = [
     iconColor: "text-danger",
     bgColor: "bg-surface-2",
     title: "iFood",
-    category: "Alimentacao",
+    category: "Alimentação",
     date: "29 Set",
     amount: "- R$ 45,90",
   },
@@ -223,7 +223,7 @@ const mockExpenses = [
     iconColor: "text-success",
     bgColor: "bg-surface-2",
     title: "Curso de React",
-    category: "Educacao",
+    category: "Educação",
     date: "27 Set",
     amount: "- R$ 79,90",
   },
@@ -250,9 +250,9 @@ export const ExpensesMockup = () => (
   <MockupShell>
     <div className="flex items-center justify-between">
       <div>
-        <h3 className="font-bold text-foreground">Despesas do Mes</h3>
+        <h3 className="font-bold text-foreground">Despesas do mês</h3>
         <p className="text-xs text-foreground-subtle">
-          Controle rapido das saidas
+          Controle rápido das saídas
         </p>
       </div>
       <MoreHorizontal size={16} className="text-foreground-subtle" />
@@ -265,14 +265,14 @@ export const ExpensesMockup = () => (
       </div>
       <div className="bg-surface-2 rounded-xl p-2 border border-border/60">
         <p className="text-[11px] text-foreground-subtle">Maior categoria</p>
-        <p className="text-sm font-semibold text-primary">Alimentacao</p>
+        <p className="text-sm font-semibold text-primary">Alimentação</p>
       </div>
     </div>
 
     <div className="bg-gradient-to-b from-[var(--bg-via)] to-[var(--bg-to)]/60 rounded-2xl border border-border/70 p-3 mt-3 h-[140px]">
       <div className="flex items-center justify-between">
         <p className="text-xs font-semibold text-foreground-muted">
-          Tendencia semanal
+          Tendência semanal
         </p>
         <span className="text-[10px] text-foreground-subtle bg-surface-2 px-2 py-0.5 rounded-full">
           Ultimos 5 dias

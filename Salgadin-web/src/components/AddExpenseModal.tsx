@@ -197,7 +197,7 @@ export function AddExpenseModal({
                       return {
                         ...rest,
                         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-                          let val = e.target.value.replace(/\D/g, "");
+                          const val = e.target.value.replace(/\D/g, "");
                           if (!val) {
                             e.target.value = "";
                           } else {
@@ -321,5 +321,4 @@ export function AddExpenseModal({
     </AnimatePresence>
   );
 }
-
 
