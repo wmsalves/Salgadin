@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Menu, X, LogOut, Moon, Sun, Wallet } from "lucide-react";
+import { Menu, X, LogOut, Moon, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
+import logo from "../assets/logo.svg";
 
 const navLinks = [
   { id: "features", label: "Recursos" },
@@ -34,12 +35,18 @@ export function Header() {
       <div className="mx-auto flex min-h-[76px] max-w-7xl items-center gap-4 px-4 py-3 relative">
         <Link
           to="/"
-          className="flex min-h-11 items-center gap-2 rounded-xl px-2 py-1 transition hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+          className="flex min-h-11 items-center gap-3 rounded-xl px-2 py-1 transition hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
           onClick={() => handleLinkClick()}
         >
-          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-[var(--brand-from)] via-[var(--brand-to)] to-[var(--brand-to-strong)] text-[var(--color-on-primary)] shadow-[0_10px_24px_rgba(60,42,32,0.16)]">
-            <Wallet size={22} aria-hidden="true" />
-          </div>
+          <img
+            src={logo}
+            alt=""
+            width="46"
+            height="46"
+            decoding="async"
+            className="h-11 w-auto object-contain"
+            aria-hidden="true"
+          />
           <span className="text-2xl font-extrabold tracking-tight hidden sm:inline text-foreground">
             <span className="bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] bg-clip-text text-transparent">
               Salgadin

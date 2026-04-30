@@ -14,6 +14,7 @@ import {
   Bell,
 } from "lucide-react";
 import clsx from "clsx";
+import logo from "../assets/logo.svg";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
 import { motion, AnimatePresence } from "framer-motion";
@@ -44,6 +45,7 @@ export function AppShell() {
     () => notifications.filter((item) => !item.isRead).length,
     [notifications],
   );
+  const homePath = "/dashboard";
 
   const fetchNotifications = useCallback(async (unreadOnly = true) => {
     setIsLoadingBell(true);
@@ -70,13 +72,33 @@ export function AppShell() {
           className="sticky top-0 h-screen border-r border-border/70 bg-surface/95 shadow-[10px_0_24px_rgba(60,42,32,0.06)] hidden md:flex md:flex-col"
         >
           <div className="relative flex items-center justify-center px-4 py-5">
-            {!collapsed && (
-              <span className="text-xl font-extrabold tracking-tight text-foreground">
-                <span className="bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] bg-clip-text text-transparent">
-                  Salgadin
+            <NavLink
+              to={homePath}
+              className={clsx(
+                "flex min-h-11 items-center gap-3 rounded-xl transition hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                collapsed ? "justify-center p-2" : "justify-start px-2 py-1",
+              )}
+            >
+              <img
+                src={logo}
+                alt=""
+                width={collapsed ? 44 : 46}
+                height={collapsed ? 44 : 46}
+                decoding="async"
+                className={clsx(
+                  "w-auto object-contain",
+                  collapsed ? "h-11 max-w-[44px]" : "h-11 max-w-[46px]",
+                )}
+                aria-hidden="true"
+              />
+              {!collapsed && (
+                <span className="text-2xl font-extrabold tracking-tight text-foreground">
+                  <span className="bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] bg-clip-text text-transparent">
+                    Salgadin
+                  </span>
                 </span>
-              </span>
-            )}
+              )}
+            </NavLink>
             <button
               className={clsx(
                 "absolute top-4 h-9 w-9 rounded-full border border-border bg-surface-2 text-foreground-muted shadow-sm transition soft-press",
@@ -150,6 +172,26 @@ export function AppShell() {
         <main className="flex-1 min-w-0">
           <header className="sticky top-0 z-30 border-b border-border/70 bg-surface/95 shadow-[0_8px_24px_rgba(60,42,32,0.08)]">
             <div className="px-6 lg:px-8 py-3 flex items-center gap-3">
+              <NavLink
+                to={homePath}
+                className="md:hidden flex items-center gap-2 rounded-xl px-2 py-1 transition hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                aria-label="Ir para o dashboard"
+              >
+                <img
+                  src={logo}
+                  alt=""
+                  width="38"
+                  height="38"
+                  decoding="async"
+                  className="h-9 w-auto object-contain"
+                  aria-hidden="true"
+                />
+                <span className="text-xl font-extrabold tracking-tight text-foreground">
+                  <span className="bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] bg-clip-text text-transparent">
+                    Salgadin
+                  </span>
+                </span>
+              </NavLink>
               <div className="flex items-center gap-2 rounded-full bg-surface-2 px-3 py-1.5 text-sm text-foreground-muted">
                 <span>Bem-vindo</span>
                 <span className="font-semibold text-foreground">

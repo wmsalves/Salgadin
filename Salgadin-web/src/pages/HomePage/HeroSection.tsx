@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useTheme } from "../../hooks/useTheme";
+import logo from "../../assets/logo.svg";
 
 const HeroChartPreview = lazy(() =>
   import("./HeroChartPreview").then((module) => ({
@@ -40,6 +41,22 @@ export function HeroSection() {
       aria-labelledby="hero-heading"
       className="mx-auto w-full max-w-7xl min-w-0 overflow-hidden px-4 pb-16 pt-12 sm:pb-20 sm:pt-16"
     >
+      <div className="mx-auto mb-6 flex max-w-xs items-center justify-center gap-3 rounded-full border border-border/70 bg-surface/80 px-4 py-2 shadow-[0_10px_24px_rgba(60,42,32,0.08)] sm:max-w-fit">
+        <img
+          src={logo}
+          alt=""
+          width="34"
+          height="34"
+          decoding="async"
+          className="h-8 w-auto object-contain"
+          aria-hidden="true"
+        />
+        <span className="text-lg font-extrabold tracking-tight text-foreground">
+          <span className="bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] bg-clip-text text-transparent">
+            Salgadin
+          </span>
+        </span>
+      </div>
       <h1
         id="hero-heading"
         className="mx-auto max-w-xs text-center text-4xl font-extrabold leading-[1.08] sm:max-w-none sm:text-5xl md:text-6xl"
