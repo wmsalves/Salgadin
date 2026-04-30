@@ -1,44 +1,17 @@
+import { Suspense, lazy } from "react";
 import { Link } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-  CartesianGrid,
-  ReferenceLine,
-} from "recharts";
 import { useAuth } from "../../hooks/useAuth";
 import { useTheme } from "../../hooks/useTheme";
 
-function formatCurrency(value: number) {
-  return value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    minimumFractionDigits: 2,
-  });
-}
-
-const chartData = [
-  { name: "Seg", gasto: 15.5, detalhe: "café e transporte", level: "regular" },
-  { name: "Ter", gasto: 27.0, detalhe: "lanche", level: "regular" },
-  { name: "Qua", gasto: 45.8, detalhe: "mercado", level: "attention" },
-  { name: "Qui", gasto: 22.3, detalhe: "transporte", level: "regular" },
-  {
-    name: "Sex",
-    gasto: 89.1,
-    detalhe: "delivery e mercado",
-    level: "attention",
-  },
-  { name: "Sab", gasto: 60.0, detalhe: "lazer", level: "attention" },
-  { name: "Dom", gasto: 35.0, detalhe: "padaria", level: "regular" },
-];
+const HeroChartPreview = lazy(() =>
+  import("./HeroChartPreview").then((module) => ({
+    default: module.HeroChartPreview,
+  })),
+);
 
 const trustCues = [
-  "Sem cartão de crédito",
+  "Sem cartao de credito",
   "Comece em poucos minutos",
   "Controle simples, sem planilhas",
 ];
@@ -56,7 +29,7 @@ export function HeroSection() {
   const primaryHref = isAuthenticated ? "/dashboard" : "/signup";
   const primaryLabel = isAuthenticated
     ? "Acessar minha conta"
-    : "Começar gratuitamente";
+    : "Comecar gratuitamente";
   const chartColors =
     theme === "dark"
       ? { regular: "#ff9d6c", attention: "#f6bf73" }
@@ -76,16 +49,19 @@ export function HeroSection() {
           gastos,
         </span>
         <br />
-        <span className="text-foreground"> sem complicação.</span>
+        <span className="text-foreground"> sem complicacao.</span>
       </h1>
       <p className="mx-auto mt-6 max-w-xs text-center text-base leading-8 text-foreground-muted sm:max-w-2xl sm:text-lg">
-        O Salgadin ajuda você a enxergar cafés, lanches, delivery, mercado e
-        transporte em gráficos simples, para decidir melhor sem planilhas
+        O Salgadin ajuda voce a enxergar cafes, lanches, delivery, mercado e
+        transporte em graficos simples, para decidir melhor sem planilhas
         complicadas.
       </p>
 
       <div className="mx-auto mt-9 flex max-w-xs flex-col justify-center gap-3 sm:max-w-none sm:flex-row sm:gap-4">
-        <Link to={primaryHref} className={`${buttonStyles.primary} w-full sm:w-auto`}>
+        <Link
+          to={primaryHref}
+          className={`${buttonStyles.primary} w-full sm:w-auto`}
+        >
           {primaryLabel}
         </Link>
         <a href="#how" className={`${buttonStyles.secondary} w-full sm:w-auto`}>
@@ -127,11 +103,11 @@ export function HeroSection() {
                 className="mt-2 max-w-xl text-sm leading-6 text-foreground-muted"
               >
                 Cada barra mostra despesas registradas manualmente no dia, como
-                café, lanche, delivery, mercado e transporte.
+                cafe, lanche, delivery, mercado e transporte.
               </p>
             </div>
             <ul
-              aria-label="Legenda do gráfico"
+              aria-label="Legenda do grafico"
               className="grid min-w-0 gap-2 text-sm text-foreground-muted sm:grid-cols-2 md:min-w-[310px]"
             >
               <li className="flex items-center gap-2 rounded-xl border border-border/70 bg-surface-2/70 px-3 py-2">
@@ -146,15 +122,15 @@ export function HeroSection() {
                   className="h-3 w-3 rounded-full bg-[var(--chart-high-expense)]"
                   aria-hidden
                 />
-                Dia que pede atenção
+                Dia que pede atencao
               </li>
             </ul>
           </div>
 
           <p id="weekly-chart-summary" className="sr-only">
-            O gráfico mostra gastos de segunda a domingo: segunda R$ 15,50,
-            terça R$ 27,00, quarta R$ 45,80, quinta R$ 22,30, sexta R$ 89,10,
-            sábado R$ 60,00 e domingo R$ 35,00. Sexta-feira foi o maior gasto,
+            O grafico mostra gastos de segunda a domingo: segunda R$ 15,50,
+            terca R$ 27,00, quarta R$ 45,80, quinta R$ 22,30, sexta R$ 89,10,
+            sabado R$ 60,00 e domingo R$ 35,00. Sexta-feira foi o maior gasto,
             principalmente com delivery e mercado.
           </p>
 
@@ -163,112 +139,33 @@ export function HeroSection() {
             aria-hidden="true"
           >
             <div className="h-[280px] w-[560px] max-w-none sm:w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={chartData}
-                  margin={{ top: 18, right: 12, left: 8, bottom: 0 }}
-                >
-                  <CartesianGrid
-                    vertical={false}
-                    stroke="var(--color-border)"
-                    strokeDasharray="4 4"
-                  />
-                  <XAxis
-                    dataKey="name"
-                    tickLine={false}
-                    axisLine={false}
-                    tick={{ fill: "var(--chart-muted)", fontSize: 13 }}
-                  />
-                  <YAxis
-                    tickLine={false}
-                    axisLine={false}
-                    width={56}
-                    tickFormatter={(value) => `R$ ${value}`}
-                    tick={{ fill: "var(--chart-muted)", fontSize: 13 }}
-                  />
-                  <ReferenceLine
-                    y={40}
-                    stroke="var(--chart-reference)"
-                    strokeDasharray="5 5"
-                    label={{
-                      value: "ritmo do dia",
-                      position: "insideTopRight",
-                      fill: "var(--color-text-muted)",
-                      fontSize: 12,
-                    }}
-                  />
-                  <Tooltip
-                    isAnimationActive={false}
-                    animationDuration={0}
-                    allowEscapeViewBox={{ x: false, y: false }}
-                    cursor={{ fill: "var(--color-surface-2)" }}
-                    formatter={(value, _name, item) => [
-                      `${formatCurrency(Number(value))} em ${
-                        item.payload.detalhe
-                      }`,
-                      "Gasto registrado",
-                    ]}
-                    contentStyle={{
-                      borderRadius: "14px",
-                      border: "1px solid var(--color-border)",
-                      backgroundColor: "var(--color-surface)",
-                      color: "var(--color-text)",
-                      boxShadow: "var(--shadow-card)",
-                    }}
-                    itemStyle={{ color: "var(--color-text)" }}
-                    labelStyle={{
-                      color: "var(--color-text-muted)",
-                      fontWeight: 700,
-                    }}
-                    wrapperStyle={{
-                      outline: "none",
-                      pointerEvents: "none",
-                      transition: "none",
-                    }}
-                  />
-                  <Bar
-                    dataKey="gasto"
-                    fill={chartColors.regular}
-                    maxBarSize={48}
-                    radius={[10, 10, 4, 4]}
-                    isAnimationActive={false}
-                  >
-                    {chartData.map((entry) => (
-                      <Cell
-                        key={entry.name}
-                        fill={
-                          entry.level === "attention"
-                            ? chartColors.attention
-                            : chartColors.regular
-                        }
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              <Suspense
+                fallback={
+                  <div className="h-full w-full rounded-2xl bg-surface-2/70 animate-pulse" />
+                }
+              >
+                <HeroChartPreview chartColors={chartColors} />
+              </Suspense>
             </div>
           </div>
 
           <figcaption className="mt-3 flex flex-col gap-2 rounded-2xl border border-border/70 bg-surface-2/60 px-4 py-3 text-sm text-foreground-muted sm:flex-row sm:items-center sm:justify-between">
-            <span>
-              Pico da semana: sexta-feira, {formatCurrency(89.1)} em delivery e
-              mercado.
-            </span>
+            <span>Pico da semana: sexta-feira, R$ 89,10 em delivery e mercado.</span>
             <span className="font-semibold text-primary">
-              Total do exemplo: {formatCurrency(294.7)}
+              Total do exemplo: R$ 294,70
             </span>
           </figcaption>
         </figure>
 
         <div className="absolute -right-2 -top-4 hidden animate-float sm:block">
           <div className="rounded-xl border border-border bg-surface px-3 py-1.5 text-xs shadow-[0_14px_32px_rgba(60,42,32,0.16)]">
-            <div className="font-semibold text-accent">Economia do mês</div>
+            <div className="font-semibold text-accent">Economia do mes</div>
             <div className="font-bold text-foreground">R$ 1.250,00</div>
           </div>
         </div>
         <div className="absolute -bottom-5 -left-2 hidden animate-float [animation-delay:-1.5s] sm:block">
           <div className="rounded-xl border border-border bg-surface px-3 py-1.5 text-xs shadow-[0_14px_32px_rgba(60,42,32,0.16)]">
-            <div className="font-semibold text-primary">Metas do mês</div>
+            <div className="font-semibold text-primary">Metas do mes</div>
             <div className="font-bold text-foreground">3 de 5</div>
           </div>
         </div>

@@ -1,7 +1,6 @@
-﻿import { useState } from "react";
-import { Menu, X, LogOut, Moon, Sun } from "lucide-react";
+import { useState } from "react";
+import { Menu, X, LogOut, Moon, Sun, Wallet } from "lucide-react";
 import { Link } from "react-router-dom";
-import LogoSalgadin from "../assets/Logo.svg";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
@@ -9,7 +8,7 @@ import { useTheme } from "../hooks/useTheme";
 const navLinks = [
   { id: "features", label: "Recursos" },
   { id: "how", label: "Como funciona" },
-  { id: "pricing", label: "Preços" },
+  { id: "pricing", label: "Precos" },
   { id: "faq", label: "FAQ" },
 ];
 
@@ -38,8 +37,8 @@ export function Header() {
           className="flex min-h-11 items-center gap-2 rounded-xl px-2 py-1 transition hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
           onClick={() => handleLinkClick()}
         >
-          <div className="h-12 w-12 grid place-items-center">
-            <img src={LogoSalgadin} alt="Logo" className="h-12 w-12" />
+          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-[var(--brand-from)] via-[var(--brand-to)] to-[var(--brand-to-strong)] text-[var(--color-on-primary)] shadow-[0_10px_24px_rgba(60,42,32,0.16)]">
+            <Wallet size={22} aria-hidden="true" />
           </div>
           <span className="text-2xl font-extrabold tracking-tight hidden sm:inline text-foreground">
             <span className="bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] bg-clip-text text-transparent">
@@ -75,7 +74,7 @@ export function Header() {
           {isAuthenticated ? (
             <>
               <span className="text-sm text-foreground-muted font-medium bg-surface-2 px-3 py-1.5 rounded-full">
-                Olá, {user?.name}
+                Ola, {user?.name}
               </span>
               <button
                 type="button"
@@ -99,7 +98,7 @@ export function Header() {
                 to="/signup"
                 className="inline-flex min-h-11 items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-4 py-2 text-sm font-semibold text-[var(--color-on-primary)] shadow-[0_10px_24px_rgba(60,42,32,0.16)] transition-all hover:-translate-y-0.5 hover:from-[var(--brand-from-strong)] hover:to-[var(--brand-to-strong)] hover:shadow-[0_16px_32px_rgba(60,42,32,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
               >
-                Começar grátis
+                Comecar gratis
               </Link>
             </>
           )}
@@ -183,7 +182,7 @@ export function Header() {
                       onClick={() => handleLinkClick()}
                       className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-4 py-2 text-center text-sm font-semibold text-[var(--color-on-primary)] shadow-[0_10px_24px_rgba(60,42,32,0.14)] transition-all hover:from-[var(--brand-from-strong)] hover:to-[var(--brand-to-strong)] hover:shadow-[0_16px_32px_rgba(60,42,32,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                     >
-                      Começar grátis
+                      Comecar gratis
                     </Link>
                   </>
                 )}

@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { Suspense, lazy, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import clsx from "clsx";
 import { BarChart3, CheckCircle2, ReceiptText, UserPlus } from "lucide-react";
 import { tabsContent } from "./content";
-import { DashboardMockup, ExpensesMockup, GoalsMockup } from "./mockups";
 
 type TabKey = keyof typeof tabsContent;
+const HowItWorksMockupPanel = lazy(() => import("./HowItWorksMockupPanel"));
 
 const tabContentVariants = {
   initial: { opacity: 0, y: 10 },
@@ -17,17 +17,17 @@ const steps = [
   {
     title: "Crie sua conta",
     description:
-      "Entre pelo cadastro gratuito e deixe seu espaço pronto para organizar o mês.",
+      "Entre pelo cadastro gratuito e deixe seu espaco pronto para organizar o mes.",
     icon: UserPlus,
   },
   {
     title: "Registre seus pequenos gastos",
     description:
-      "Adicione manualmente café, lanche, delivery, mercado, transporte ou compras recorrentes.",
+      "Adicione manualmente cafe, lanche, delivery, mercado, transporte ou compras recorrentes.",
     icon: ReceiptText,
   },
   {
-    title: "Veja seus padrões em gráficos simples",
+    title: "Veja seus padroes em graficos simples",
     description:
       "Acompanhe onde o dinheiro se repete e decida com mais clareza o que ajustar.",
     icon: BarChart3,
@@ -38,12 +38,6 @@ export function HowItWorksSection() {
   const [activeTab, setActiveTab] = useState<TabKey>("Dashboard");
   const TABS = Object.keys(tabsContent) as TabKey[];
 
-  const ActiveMockup = {
-    Dashboard: <DashboardMockup />,
-    Despesas: <ExpensesMockup />,
-    Metas: <GoalsMockup />,
-  }[activeTab];
-
   return (
     <section id="how" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-16">
       <h2 className="text-center text-2xl font-extrabold text-foreground sm:text-3xl">
@@ -51,8 +45,8 @@ export function HowItWorksSection() {
         <span className="text-primary">in</span> funciona?
       </h2>
       <p className="mx-auto mt-2 max-w-2xl text-center text-sm leading-6 text-foreground-muted sm:text-base">
-        Um fluxo simples para transformar lançamentos manuais em clareza visual,
-        sem integração bancária ou planilhas complicadas.
+        Um fluxo simples para transformar lancamentos manuais em clareza visual,
+        sem integracao bancaria ou planilhas complicadas.
       </p>
 
       <ol className="mt-8 grid gap-4 md:grid-cols-3">
@@ -154,7 +148,15 @@ export function HowItWorksSection() {
             aria-labelledby={`tab-${activeTab}`}
             className="flex min-h-[380px] items-start justify-center rounded-[var(--radius-card)] border border-border/70 bg-surface/80 p-3 shadow-[var(--shadow-card)] backdrop-blur-xl sm:p-4 md:min-h-[460px]"
           >
-            <div className="h-full w-full max-w-[520px]">{ActiveMockup}</div>
+            <div className="h-full w-full max-w-[520px]">
+              <Suspense
+                fallback={
+                  <div className="h-[600px] w-full rounded-2xl bg-surface-2/70 animate-pulse" />
+                }
+              >
+                <HowItWorksMockupPanel activeTab={activeTab} />
+              </Suspense>
+            </div>
           </div>
         </motion.div>
       </AnimatePresence>
