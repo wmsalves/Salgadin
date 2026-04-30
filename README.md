@@ -46,21 +46,24 @@ Instructions on how to set up and run the project locally.
     ```bash
     cd salgadin/Salgadin
     ```
-3.  Set environment variables:
+3.  Set local secrets with `dotnet user-secrets`:
     ```bash
-    setx SUPABASE_DB_CONNECTION "Host=...;Port=5432;Database=postgres;Username=...;Password=...;SSL Mode=Require"
-    setx Jwt__Key "YOUR_JWT_SECRET"
+    dotnet user-secrets set "SUPABASE_DB_CONNECTION" "Host=...;Port=6543;Database=postgres;Username=...;Password=...;SSL Mode=Require"
+    dotnet user-secrets set "Jwt:Key" "YOUR_JWT_SECRET"
     ```
-    `ConnectionStrings__DefaultConnection`, `SUPABASE_DATABASE_URL`, `SUPABASE_CONNECTION_STRING`, `DATABASE_URL`, and `POSTGRES_URL` are also supported. PostgreSQL URLs such as `postgresql://user:password@host:5432/postgres?sslmode=require` are normalized automatically.
-4.  Apply EF Core migrations to create the database:
+4.  For deployed environments, set the same values as platform environment variables instead of committing them to `appsettings.json`.
+    `SUPABASE_DB_CONNECTION`, `ConnectionStrings__DefaultConnection`, `SUPABASE_DATABASE_URL`, `SUPABASE_CONNECTION_STRING`, `DATABASE_URL`, and `POSTGRES_URL` are supported. PostgreSQL URLs such as `postgresql://user:password@host:5432/postgres?sslmode=require` are normalized automatically.
+5.  Apply EF Core migrations to create the database:
     ```bash
     dotnet ef database update
     ```
-5.  Run the application:
+6.  Run the application:
     ```bash
     dotnet run
     ```
     The API will be available at `https://localhost:7XXX`.
+
+Production deployment and migration guidance is documented in [docs/deployment/database.md](D:/Projetos/Salgadin/docs/deployment/database.md).
 
 ### Frontend Setup
 

@@ -15,6 +15,7 @@ using Salgadin.Validators;
 using Serilog;
 using QuestPDF.Infrastructure;
 using System.Text;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.RateLimiting;
 
 // Configura um logger inicial para capturar erros durante a inicialização.
@@ -181,6 +182,8 @@ try
 
     var app = builder.Build();
 
+    await DatabaseStartupValidator.ValidateAsync(app);
+
     // ----- Middleware pipeline -----
 
     // Adiciona o middleware do Serilog para logar informações de cada requisição.
@@ -209,6 +212,41 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
 
+    var internalHealthToken = app.Configuration["INTERNAL_HEALTH_TOKEN"];
+    if (!string.IsNullOrWhiteSpace(internalHealthToken))
+    {
+        app.MapGet("/internal/health/database", async (HttpContext httpContext, SalgadinContext dbContext, CancellationToken cancellationToken) =>
+        {
+            if (!httpContext.Request.Headers.TryGetValue("X-Internal-Health-Token", out var providedToken) ||
+                !FixedTimeEquals(providedToken.ToString(), internalHealthToken))
+            {
+                return Results.Unauthorized();
+            }
+
+            try
+            {
+                var canConnect = await dbContext.Database.CanConnectAsync(cancellationToken);
+                var pendingMigrationCount = canConnect
+                    ? (await dbContext.Database.GetPendingMigrationsAsync(cancellationToken)).Count()
+                    : -1;
+
+                return canConnect && pendingMigrationCount == 0
+                    ? Results.Ok(new
+                    {
+                        status = "ok",
+                        database = "reachable",
+                        pendingMigrations = pendingMigrationCount
+                    })
+                    : Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
+            }
+            catch
+            {
+                return Results.StatusCode(StatusCodes.Status503ServiceUnavailable);
+            }
+        })
+        .ExcludeFromDescription();
+    }
+
     app.MapControllers();
 
     app.Run();
@@ -222,4 +260,13 @@ finally
 {
     // Garante que todos os logs sejam gravados antes de a aplicação fechar.
     Log.CloseAndFlush();
+}
+
+static bool FixedTimeEquals(string providedToken, string expectedToken)
+{
+    var providedBytes = Encoding.UTF8.GetBytes(providedToken);
+    var expectedBytes = Encoding.UTF8.GetBytes(expectedToken);
+
+    return providedBytes.Length == expectedBytes.Length &&
+           CryptographicOperations.FixedTimeEquals(providedBytes, expectedBytes);
 }
