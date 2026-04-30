@@ -21,7 +21,7 @@ The name *"Salgadin"* comes from the Portuguese word for “savory snack” (sal
 - **Data Visualization**: Recharts.
 - **HTTP Client**: Axios.
 - **Backend**: C# with ASP.NET Core.
-- **Database**: Entity Framework Core with SQL Server.
+- **Database**: Supabase Postgres with Entity Framework Core and Npgsql.
 - **Authentication**: JWT (JSON Web Tokens).
 - **API Documentation**: Swagger/OpenAPI.
 - **Logging**: Serilog.
@@ -32,9 +32,9 @@ Instructions on how to set up and run the project locally.
 
 ### Prerequisites
 
-- .NET 8 SDK
-- Node.js (v18 or newer)
-- SQL Server (LocalDB or a full instance)
+- .NET 9 SDK
+- Node.js (v20 or newer)
+- A Supabase project with the Postgres connection string
 
 ### Backend Setup
 
@@ -46,17 +46,17 @@ Instructions on how to set up and run the project locally.
     ```bash
     cd salgadin/Salgadin
     ```
-3.  Update the database connection string in `appsettings.json` if needed.
-4.  Set environment variables:
+3.  Set environment variables:
     ```bash
-    setx ConnectionStrings__DefaultConnection "Host=...;Database=...;Username=...;Password=...;SSL Mode=Require;Trust Server Certificate=true"
+    setx SUPABASE_DB_CONNECTION "Host=...;Port=5432;Database=postgres;Username=...;Password=...;SSL Mode=Require"
     setx Jwt__Key "YOUR_JWT_SECRET"
     ```
-5.  Apply EF Core migrations to create the database:
+    `ConnectionStrings__DefaultConnection`, `SUPABASE_DATABASE_URL`, `SUPABASE_CONNECTION_STRING`, `DATABASE_URL`, and `POSTGRES_URL` are also supported. PostgreSQL URLs such as `postgresql://user:password@host:5432/postgres?sslmode=require` are normalized automatically.
+4.  Apply EF Core migrations to create the database:
     ```bash
     dotnet ef database update
     ```
-6.  Run the application:
+5.  Run the application:
     ```bash
     dotnet run
     ```

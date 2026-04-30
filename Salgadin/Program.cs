@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Salgadin.Configuration;
 using Salgadin.Data;
 using Salgadin.Mappings;
 using Salgadin.Repositories;
@@ -16,18 +17,18 @@ using QuestPDF.Infrastructure;
 using System.Text;
 using Microsoft.AspNetCore.RateLimiting;
 
-// Configura um logger inicial para capturar erros durante a inicializa��o.
+// Configura um logger inicial para capturar erros durante a inicialização.
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateBootstrapLogger();
 
 try
 {
-    Log.Information("Iniciando a aplica��o Salgadin.");
+    Log.Information("Iniciando a aplicação Salgadin.");
 
     var builder = WebApplication.CreateBuilder(args);
 
-    // Configura o Serilog para ser o provedor de logging principal da aplica��o.
+    // Configura o Serilog para ser o provedor de logging principal da aplicação.
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
@@ -39,8 +40,9 @@ try
     QuestPDF.Settings.License = LicenseType.Community;
 
     // Configura o Entity Framework Core para usar o PostgreSQL.
+    var databaseConnectionString = DatabaseConnectionString.Resolve(builder.Configuration);
     builder.Services.AddDbContext<SalgadinContext>(options =>
-        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+        options.UseNpgsql(databaseConnectionString));
 
 
     // Registra os perfis de mapeamento do AutoMapper.
@@ -61,7 +63,7 @@ try
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<IUserContextService, UserContextService>();
 
-    // Permite o acesso ao HttpContext nos servi�os.
+    // Permite o acesso ao HttpContext nos serviços.
     builder.Services.AddHttpContextAccessor();
 
     builder.Services.AddRateLimiter(options =>
@@ -78,10 +80,10 @@ try
 
     // Registra os validadores do FluentValidation.
     builder.Services.AddValidatorsFromAssemblyContaining<UserRegisterDtoValidator>();
-    // Habilita a valida��o autom�tica via FluentValidation.
+    // Habilita a validação automática via FluentValidation.
     builder.Services.AddFluentValidationAutoValidation();
 
-    // Adiciona os servi�os dos controllers da API.
+    // Adiciona os serviços dos controllers da API.
     builder.Services.AddControllers()
         .AddJsonOptions(options =>
         {
@@ -90,7 +92,7 @@ try
 
     builder.Services.AddEndpointsApiExplorer();
 
-    // Suporte a proxy reverso (Railway/Render) para HTTPS correto.
+    // Suporte a proxy reverso para HTTPS correto.
     builder.Services.Configure<ForwardedHeadersOptions>(options =>
     {
         options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
@@ -98,7 +100,7 @@ try
         options.KnownProxies.Clear();
     });
 
-    // Configura a autentica��o via JWT Bearer Token.
+    // Configura a autenticação via JWT Bearer Token.
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
@@ -150,7 +152,7 @@ try
         });
     });
 
-    // Configura o Swagger para documenta��o da API.
+    // Configura o Swagger para documentação da API.
     builder.Services.AddSwaggerGen(c =>
     {
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "Salgadin API", Version = "v1" });
@@ -181,7 +183,7 @@ try
 
     // ----- Middleware pipeline -----
 
-    // Adiciona o middleware do Serilog para logar informa��es de cada requisi��o.
+    // Adiciona o middleware do Serilog para logar informações de cada requisição.
     app.UseSerilogRequestLogging();
 
     // Adiciona o middleware global para tratamento de erros.
@@ -201,7 +203,7 @@ try
     // Ativa o RateLimiter (Deve vir apos o routing)
     app.UseRateLimiter();
 
-    // Aplica a pol�tica de CORS.
+    // Aplica a política de CORS.
     app.UseCors(corsPolicy);
 
     app.UseAuthentication();
@@ -213,11 +215,11 @@ try
 }
 catch (Exception ex)
 {
-    // Captura e loga qualquer erro fatal durante a inicializa��o.
-    Log.Fatal(ex, "A aplica��o falhou ao iniciar.");
+    // Captura e loga qualquer erro fatal durante a inicialização.
+    Log.Fatal(ex, "A aplicação falhou ao iniciar.");
 }
 finally
 {
-    // Garante que todos os logs sejam gravados antes de a aplica��o fechar.
+    // Garante que todos os logs sejam gravados antes de a aplicação fechar.
     Log.CloseAndFlush();
 }

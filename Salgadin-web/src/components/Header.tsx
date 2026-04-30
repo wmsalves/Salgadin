@@ -31,7 +31,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/70 bg-gradient-to-r from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] shadow-[0_12px_35px_rgba(60,42,32,0.12)]">
+    <header className="sticky top-0 z-50 border-b border-border/70 bg-gradient-to-r from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] shadow-[0_12px_35px_rgba(60,42,32,0.12)] relative">
       <div className="mx-auto flex min-h-[76px] max-w-7xl items-center gap-4 px-4 py-3 relative">
         <Link
           to="/"
@@ -138,7 +138,7 @@ export function Header() {
               duration: shouldReduceMotion ? 0 : 0.22,
               ease: [0.16, 1, 0.3, 1],
             }}
-            className="border-t border-border bg-surface/95 shadow-[0_18px_42px_rgba(60,42,32,0.14)] md:hidden"
+            className="absolute left-0 right-0 top-full border-t border-border bg-surface/95 shadow-[0_18px_42px_rgba(60,42,32,0.14)] md:hidden"
             id="mobile-navigation"
           >
             <nav className="flex flex-col items-stretch gap-2 px-4 py-4">

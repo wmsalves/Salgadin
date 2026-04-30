@@ -9,7 +9,7 @@ services:
         value: Production
       - key: PORT
         value: 10000
-      - key: ConnectionStrings__DefaultConnection
+      - key: SUPABASE_DB_CONNECTION
         sync: false
       - key: Jwt__Key
         sync: false
