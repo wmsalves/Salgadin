@@ -14,7 +14,7 @@ import {
   Bell,
 } from "lucide-react";
 import clsx from "clsx";
-import logo from "../assets/logo.svg";
+import logo from "../assets/Logo.svg";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
 import { motion, AnimatePresence } from "framer-motion";

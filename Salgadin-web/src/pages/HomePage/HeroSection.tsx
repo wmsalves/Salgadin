@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useTheme } from "../../hooks/useTheme";
-import logo from "../../assets/logo.svg";
+import logo from "../../assets/Logo.svg";
 
 const HeroChartPreview = lazy(() =>
   import("./HeroChartPreview").then((module) => ({

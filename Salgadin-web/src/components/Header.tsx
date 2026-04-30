@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
-import logo from "../assets/logo.svg";
+import logo from "../assets/Logo.svg";
 
 const navLinks = [
   { id: "features", label: "Recursos" },
