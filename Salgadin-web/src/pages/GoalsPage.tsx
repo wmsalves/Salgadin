@@ -86,7 +86,7 @@ export default function GoalsPage() {
       </header>
 
       {isFormOpen && (
-        <section className="rounded-2xl border border-border bg-surface/70 backdrop-blur-xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
+        <section className="rounded-2xl border border-border bg-surface/92 p-6 shadow-[0_14px_30px_rgba(0,0,0,0.10)]">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <label className="text-xs text-foreground-muted">
@@ -149,7 +149,7 @@ export default function GoalsPage() {
       )}
 
       {isLoading ? (
-        <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-12 text-center text-foreground-subtle flex flex-col items-center justify-center gap-4 animate-in fade-in duration-500">
+        <div className="rounded-3xl border border-border/70 bg-surface/92 p-12 text-center text-foreground-subtle flex flex-col items-center justify-center gap-4 animate-in fade-in duration-500">
           <div className="h-10 w-10 text-primary animate-spin">
             <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -177,7 +177,7 @@ export default function GoalsPage() {
               <div
                 key={goal.id}
                 style={{ animationDelay: `${index * 100}ms` }}
-                className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+                className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
               >
                 <div className="flex items-center justify-between">
                   <div className="h-12 w-12 rounded-xl bg-primary/15 text-primary grid place-items-center">

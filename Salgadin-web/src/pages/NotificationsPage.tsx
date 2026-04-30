@@ -98,7 +98,7 @@ export default function NotificationsPage() {
         </div>
       </section>
 
-      <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
+      <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)]">
         {isLoading ? (
           <div className="text-sm text-foreground-subtle">Carregando...</div>
         ) : items.length === 0 ? (

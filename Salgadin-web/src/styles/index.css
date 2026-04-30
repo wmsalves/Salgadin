@@ -90,18 +90,15 @@ body,
   color: var(--color-text);
 }
 
-:where(html, body, #root, :root) *,
-:where(html, body, #root, :root) *::before,
-:where(html, body, #root, :root) *::after {
+:where(a, button, input, select, textarea, summary, label),
+:where(a, button, input, select, textarea, summary, label)::before,
+:where(a, button, input, select, textarea, summary, label)::after {
   transition: background-color var(--motion-base) var(--ease-out),
     color var(--motion-base) var(--ease-out),
     border-color var(--motion-base) var(--ease-out),
     box-shadow var(--motion-base) var(--ease-out),
     transform var(--motion-base) var(--ease-out),
-    opacity var(--motion-base) var(--ease-out),
-    filter var(--motion-base) var(--ease-out),
-    fill var(--motion-base) var(--ease-out),
-    stroke var(--motion-base) var(--ease-out);
+    opacity var(--motion-base) var(--ease-out);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -111,9 +108,9 @@ body,
     scroll-behavior: auto;
   }
 
-  :where(html, body, #root, :root) *,
-  :where(html, body, #root, :root) *::before,
-  :where(html, body, #root, :root) *::after {
+  :where(a, button, input, select, textarea, summary, label),
+  :where(a, button, input, select, textarea, summary, label)::before,
+  :where(a, button, input, select, textarea, summary, label)::after {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

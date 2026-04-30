@@ -1,3 +1,4 @@
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import {
   LayoutGrid,
@@ -15,7 +16,6 @@ import {
 import clsx from "clsx";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
-import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   getNotifications,
@@ -40,9 +40,12 @@ export function AppShell() {
   const [isBellOpen, setIsBellOpen] = useState(false);
   const [isLoadingBell, setIsLoadingBell] = useState(false);
 
-  const unreadCount = notifications.filter((item) => !item.isRead).length;
+  const unreadCount = useMemo(
+    () => notifications.filter((item) => !item.isRead).length,
+    [notifications],
+  );
 
-  const fetchNotifications = async (unreadOnly = true) => {
+  const fetchNotifications = useCallback(async (unreadOnly = true) => {
     setIsLoadingBell(true);
     try {
       const data = await getNotifications(unreadOnly);
@@ -50,13 +53,13 @@ export function AppShell() {
     } finally {
       setIsLoadingBell(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchNotifications();
     const interval = setInterval(() => fetchNotifications(), 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchNotifications]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] text-foreground">
@@ -64,7 +67,7 @@ export function AppShell() {
         <motion.aside
           animate={{ width: collapsed ? 80 : 256 }}
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          className="sticky top-0 h-screen border-r border-border/70 bg-surface/80 backdrop-blur-xl shadow-[10px_0_30px_rgba(60,42,32,0.06)] hidden md:flex md:flex-col"
+          className="sticky top-0 h-screen border-r border-border/70 bg-surface/95 shadow-[10px_0_24px_rgba(60,42,32,0.06)] hidden md:flex md:flex-col"
         >
           <div className="relative flex items-center justify-center px-4 py-5">
             {!collapsed && (
@@ -145,7 +148,7 @@ export function AppShell() {
         </motion.aside>
 
         <main className="flex-1 min-w-0">
-          <header className="sticky top-0 z-30 border-b border-border/70 bg-surface/90 backdrop-blur-xl shadow-[0_10px_30px_rgba(60,42,32,0.08)]">
+          <header className="sticky top-0 z-30 border-b border-border/70 bg-surface/95 shadow-[0_8px_24px_rgba(60,42,32,0.08)]">
             <div className="px-6 lg:px-8 py-3 flex items-center gap-3">
               <div className="flex items-center gap-2 rounded-full bg-surface-2 px-3 py-1.5 text-sm text-foreground-muted">
                 <span>Bem-vindo</span>
@@ -173,7 +176,7 @@ export function AppShell() {
                     )}
                   </button>
                   {isBellOpen && (
-                    <div className="absolute right-0 mt-3 w-80 max-h-[360px] overflow-auto rounded-2xl border border-border bg-surface/95 backdrop-blur-xl shadow-[0_20px_40px_rgba(0,0,0,0.2)] z-50">
+                    <div className="absolute right-0 mt-3 w-80 max-h-[360px] overflow-auto rounded-2xl border border-border bg-surface shadow-[0_18px_36px_rgba(0,0,0,0.18)] z-50">
                       <div className="p-4 border-b border-border/60 flex items-center justify-between">
                         <span className="text-sm font-semibold text-foreground">
                           Notificacoes
@@ -255,13 +258,11 @@ export function AppShell() {
             </div>
           </header>
 
-          <section className="p-6 lg:p-8 pb-24 md:pb-8">
-            <Outlet />
-          </section>
+          <ShellOutlet />
         </main>
       </div>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/70 bg-surface/95 backdrop-blur-xl shadow-[0_-10px_30px_rgba(60,42,32,0.12)] md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/70 bg-surface/98 shadow-[0_-8px_24px_rgba(60,42,32,0.12)] md:hidden">
         <div className="mx-auto max-w-6xl px-4 py-2 flex items-center justify-between">
           {[
             { to: "/dashboard", label: "Dashboard", icon: LayoutGrid },
@@ -297,3 +298,11 @@ export function AppShell() {
     </div>
   );
 }
+
+const ShellOutlet = memo(function ShellOutlet() {
+  return (
+    <section className="p-6 lg:p-8 pb-24 md:pb-8">
+      <Outlet />
+    </section>
+  );
+});

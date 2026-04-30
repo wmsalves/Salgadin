@@ -327,7 +327,7 @@ export default function DashboardPage() {
             <div
               key={card.title}
               style={{ animationDelay: `${index * 100}ms` }}
-              className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-5 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+              className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -359,7 +359,7 @@ export default function DashboardPage() {
       </section>
 
       <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <div className="xl:col-span-2 rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover">
+        <div className="xl:col-span-2 rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
             <div>
               <h2 className="text-lg font-semibold text-foreground">
@@ -455,7 +455,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover">
+          <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover">
             <h2 className="text-lg font-semibold text-foreground mb-4">Despesas por Categoria</h2>
             {expensesByCategory.length > 0 ? (
               <div className="h-[200px]">
@@ -490,7 +490,7 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover">
+          <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover">
             <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                <Target size={20} className="text-info" />
                Alertas de Metas
@@ -540,7 +540,7 @@ export default function DashboardPage() {
       </section>
 
       <section className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover flex flex-col">
+        <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-foreground">
               Ultimas receitas
@@ -592,7 +592,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover flex flex-col">
+        <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-foreground">
               Ultimas despesas

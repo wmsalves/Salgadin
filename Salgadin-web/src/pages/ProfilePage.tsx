@@ -80,7 +80,7 @@ export default function ProfilePage() {
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in zoom-in-95 duration-500 fade-in">
-        <section className="lg:col-span-2 rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
+        <section className="lg:col-span-2 rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)]">
           <h2 className="text-lg font-semibold text-foreground mb-4">
             Informacoes da conta
           </h2>
@@ -112,7 +112,7 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
+        <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)]">
           <h2 className="text-lg font-semibold text-foreground mb-4">
             Preferencias
           </h2>
@@ -180,7 +180,7 @@ export default function ProfilePage() {
         </section>
       </div>
 
-      <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] animate-in zoom-in-95 duration-500 fade-in delay-150 [animation-fill-mode:backwards]">
+      <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] animate-in zoom-in-95 duration-500 fade-in delay-150 [animation-fill-mode:backwards]">
         <h2 className="text-lg font-semibold text-foreground mb-4">
           Alertas do mes
         </h2>
@@ -218,7 +218,7 @@ export default function ProfilePage() {
         )}
       </section>
 
-      <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] animate-in zoom-in-95 duration-500 fade-in delay-200 [animation-fill-mode:backwards]">
+      <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] animate-in zoom-in-95 duration-500 fade-in delay-200 [animation-fill-mode:backwards]">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           <h2 className="text-lg font-semibold text-foreground">
             Notificacoes automaticas

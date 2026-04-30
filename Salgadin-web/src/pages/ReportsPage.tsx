@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   AreaChart,
   Area,
@@ -27,6 +27,13 @@ import { getSubcategories } from "../services/subcategoryService";
 
 type ReportMode = "monthly" | "weekly";
 
+type ReportFilters = {
+  categoryId?: number;
+  subcategoryId?: number;
+  minAmount?: number;
+  maxAmount?: number;
+};
+
 export default function ReportsPage() {
   const [mode, setMode] = useState<ReportMode>("monthly");
   const [monthlyValue, setMonthlyValue] = useState(
@@ -51,7 +58,7 @@ export default function ReportsPage() {
     new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 7),
   );
 
-  const filterParams = useMemo(() => {
+  const draftFilterParams = useMemo<ReportFilters>(() => {
     return {
       categoryId: categoryId === "" ? undefined : Number(categoryId),
       subcategoryId: subcategoryId === "" ? undefined : Number(subcategoryId),
@@ -59,11 +66,11 @@ export default function ReportsPage() {
       maxAmount: maxAmount ? Number(maxAmount) : undefined,
     };
   }, [categoryId, subcategoryId, minAmount, maxAmount]);
+  const [appliedFilters, setAppliedFilters] = useState<ReportFilters>({});
 
-  const fetchReport = async () => {
+  const fetchReport = useCallback(async (filters: ReportFilters = appliedFilters) => {
     setIsLoading(true);
-    const periodStart =
-      mode === "monthly" ? `${monthlyValue}-01` : startDate;
+    const periodStart = mode === "monthly" ? `${monthlyValue}-01` : startDate;
     const periodEnd =
       mode === "monthly"
         ? (() => {
@@ -83,42 +90,38 @@ export default function ReportsPage() {
           month,
           compareYear,
           compareMonth,
-          filterParams,
+          filters,
         );
         setComparison(data);
         setReport(data.current);
       } else {
-        const data = await getMonthlyReport(year, month, filterParams);
+        const data = await getMonthlyReport(year, month, filters);
         setReport(data);
         setComparison(null);
       }
     } else {
-      const data = await getWeeklyReport(startDate, endDate, filterParams);
+      const data = await getWeeklyReport(startDate, endDate, filters);
       setReport(data);
       setComparison(null);
     }
     if (periodStart && periodEnd) {
-      const summaryData = await getReportSummary(
-        periodStart,
-        periodEnd,
-        filterParams,
-      );
+      const summaryData = await getReportSummary(periodStart, periodEnd, filters);
       setSummary(summaryData);
     }
     setIsLoading(false);
-  };
-
-  useEffect(() => {
-    fetchReport();
   }, [
+    appliedFilters,
+    compareEnabled,
+    compareMonthValue,
+    endDate,
     mode,
     monthlyValue,
     startDate,
-    endDate,
-    compareEnabled,
-    compareMonthValue,
-    filterParams,
   ]);
+
+  useEffect(() => {
+    fetchReport();
+  }, [fetchReport]);
 
   useEffect(() => {
     const fetchFilters = async () => {
@@ -157,7 +160,7 @@ export default function ReportsPage() {
       format,
       report?.startDate?.slice(0, 10),
       report?.endDate?.slice(0, 10),
-      filterParams,
+      appliedFilters,
     );
     const url = URL.createObjectURL(file);
     const link = document.createElement("a");
@@ -291,14 +294,21 @@ export default function ReportsPage() {
           )}
           <div className="flex items-end">
             <button
-              onClick={fetchReport}
+              onClick={() => {
+                const nextFilters = JSON.stringify(draftFilterParams);
+                const currentFilters = JSON.stringify(appliedFilters);
+                if (nextFilters !== currentFilters) {
+                  setAppliedFilters(draftFilterParams);
+                  return;
+                }
+                fetchReport(draftFilterParams);
+              }}
               className="w-full rounded-xl border border-border bg-surface-2 px-4 py-2 text-sm font-semibold text-foreground hover:bg-surface-3 transition-colors active:scale-[0.98]"
             >
               Atualizar
             </button>
           </div>
         </div>
-
         <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label className="text-xs text-foreground-muted">Categoria</label>
@@ -367,7 +377,7 @@ export default function ReportsPage() {
       </section>
 
       {!report ? (
-        <div className="rounded-3xl border border-border/70 bg-surface/75 backdrop-blur-xl p-12 text-center text-foreground-subtle flex flex-col items-center justify-center gap-4 animate-in fade-in duration-500">
+        <div className="rounded-3xl border border-border/70 bg-surface/92 p-12 text-center text-foreground-subtle flex flex-col items-center justify-center gap-4 animate-in fade-in duration-500">
           <div className="h-10 w-10 text-primary animate-spin">
             <svg
               className="h-full w-full"
@@ -434,7 +444,7 @@ export default function ReportsPage() {
             </div>
           )}
           {summary && summary.insights.length > 0 && (
-            <div className="xl:col-span-3 rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)]">
+            <div className="xl:col-span-3 rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)]">
               <h2 className="text-lg font-semibold text-foreground mb-4">
                 Insights automaticos
               </h2>
@@ -464,7 +474,7 @@ export default function ReportsPage() {
             </div>
           )}
           <div
-            className="xl:col-span-2 rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+            className="xl:col-span-2 rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
             style={{ animationDelay: "0ms" }}
           >
             <div className="flex items-center justify-between mb-4">
@@ -556,7 +566,7 @@ export default function ReportsPage() {
           </div>
 
           <div
-            className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/90 via-surface/75 to-surface-2/70 backdrop-blur-xl p-6 shadow-[0_18px_40px_rgba(60,42,32,0.12)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+            className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
             style={{ animationDelay: "150ms" }}
           >
             <h2 className="text-lg font-semibold text-foreground mb-4">
