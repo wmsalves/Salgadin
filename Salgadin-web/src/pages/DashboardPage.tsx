@@ -43,6 +43,7 @@ import { getGoalAlerts } from "../services/goalService";
 import type { DailySummary, Expense, GoalAlert, Income } from "../lib/types";
 import { AddExpenseModal } from "../components/AddExpenseModal";
 import { AddIncomeModal } from "../components/AddIncomeModal";
+import { ConfirmActionModal } from "../components/ConfirmActionModal";
 import { formatApiDate, formatDisplayDate } from "../lib/dates";
 
 const categoryIcons: Record<string, React.ComponentType<{ size?: number }>> = {
@@ -74,6 +75,11 @@ export default function DashboardPage() {
   const [isAddIncomeModalOpen, setIsAddIncomeModalOpen] = useState(false);
   const [expenseToEdit, setExpenseToEdit] = useState<Expense | null>(null);
   const [incomeToEdit, setIncomeToEdit] = useState<Income | null>(null);
+  const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
+  const [incomeToDelete, setIncomeToDelete] = useState<Income | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [isDeletingExpense, setIsDeletingExpense] = useState(false);
+  const [isDeletingIncome, setIsDeletingIncome] = useState(false);
   const [isFabOpen, setIsFabOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -110,31 +116,35 @@ export default function DashboardPage() {
     fetchData().finally(() => setIsLoading(false));
   }, [fetchData]);
 
-  const handleDeleteExpense = async (id: number) => {
-    if (!window.confirm("Deseja apagar esta despesa permanentemente?")) {
-      return;
-    }
-
+  const handleDeleteExpense = async () => {
+    if (!expenseToDelete) return;
+    setIsDeletingExpense(true);
+    setDeleteError(null);
     try {
-      await deleteExpense(id);
-      fetchData();
+      await deleteExpense(expenseToDelete.id);
+      await fetchData();
+      setExpenseToDelete(null);
     } catch (err) {
       console.error("Falha ao remover despesa:", err);
-      alert("Nao foi possivel excluir a despesa.");
+      setDeleteError("Nao foi possivel excluir a despesa.");
+    } finally {
+      setIsDeletingExpense(false);
     }
   };
 
-  const handleDeleteIncome = async (id: number) => {
-    if (!window.confirm("Deseja apagar esta receita permanentemente?")) {
-      return;
-    }
-
+  const handleDeleteIncome = async () => {
+    if (!incomeToDelete) return;
+    setIsDeletingIncome(true);
+    setDeleteError(null);
     try {
-      await deleteIncome(id);
-      fetchData();
+      await deleteIncome(incomeToDelete.id);
+      await fetchData();
+      setIncomeToDelete(null);
     } catch (err) {
       console.error("Falha ao remover receita:", err);
-      alert("Nao foi possivel excluir a receita.");
+      setDeleteError("Nao foi possivel excluir a receita.");
+    } finally {
+      setIsDeletingIncome(false);
     }
   };
 
@@ -684,7 +694,10 @@ export default function DashboardPage() {
                         <Pencil size={15} />
                       </button>
                       <button
-                        onClick={() => handleDeleteIncome(inc.id)}
+                        onClick={() => {
+                          setDeleteError(null);
+                          setIncomeToDelete(inc);
+                        }}
                         className="rounded-lg p-1.5 text-foreground-muted transition-colors hover:bg-danger/10 hover:text-danger"
                         title="Excluir receita"
                       >
@@ -754,7 +767,10 @@ export default function DashboardPage() {
                         <Pencil size={15} />
                       </button>
                       <button
-                        onClick={() => handleDeleteExpense(exp.id)}
+                        onClick={() => {
+                          setDeleteError(null);
+                          setExpenseToDelete(exp);
+                        }}
                         className="rounded-lg p-1.5 text-foreground-muted transition-colors hover:bg-danger/10 hover:text-danger"
                         title="Excluir despesa"
                       >
@@ -791,6 +807,34 @@ export default function DashboardPage() {
         }}
         onSuccess={fetchData}
         incomeToEdit={incomeToEdit}
+      />
+      <ConfirmActionModal
+        isOpen={expenseToDelete !== null}
+        title="Excluir despesa"
+        description={`Voce esta prestes a excluir permanentemente a despesa "${expenseToDelete?.description ?? ""}". Esta acao nao podera ser desfeita.`}
+        confirmLabel="Sim, excluir"
+        onClose={() => {
+          if (isDeletingExpense) return;
+          setDeleteError(null);
+          setExpenseToDelete(null);
+        }}
+        onConfirm={handleDeleteExpense}
+        isConfirming={isDeletingExpense}
+        errorMessage={deleteError}
+      />
+      <ConfirmActionModal
+        isOpen={incomeToDelete !== null}
+        title="Excluir receita"
+        description={`Voce esta prestes a excluir permanentemente a receita "${incomeToDelete?.description ?? ""}". Esta acao nao podera ser desfeita.`}
+        confirmLabel="Sim, excluir"
+        onClose={() => {
+          if (isDeletingIncome) return;
+          setDeleteError(null);
+          setIncomeToDelete(null);
+        }}
+        onConfirm={handleDeleteIncome}
+        isConfirming={isDeletingIncome}
+        errorMessage={deleteError}
       />
     </div>
   );

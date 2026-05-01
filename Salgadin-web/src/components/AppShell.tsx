@@ -88,7 +88,7 @@ export function AppShell() {
         <motion.aside
           animate={{ width: collapsed ? 80 : 256 }}
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          className="sticky top-0 h-screen border-r border-border/70 bg-surface/95 shadow-[10px_0_24px_rgba(60,42,32,0.06)] hidden md:flex md:flex-col"
+          className="sticky top-0 h-screen border-r border-border/70 bg-surface/95 shadow-[10px_0_24px_rgba(60,42,32,0.06)] hidden md:flex md:flex-col relative"
         >
           <div className="relative flex items-center justify-center px-4 py-5">
             <NavLink
@@ -118,24 +118,26 @@ export function AppShell() {
                 </span>
               )}
             </NavLink>
-            <button
-              className={clsx(
-                "absolute top-4 h-9 w-9 rounded-full border border-border bg-surface-2 text-foreground-muted shadow-sm transition soft-press",
-                "hover:text-foreground hover:border-surface-3 hover:bg-surface-3",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
-                "grid place-items-center leading-none",
-                collapsed ? "left-1/2 -translate-x-1/2" : "right-4",
-              )}
-              onClick={() => setCollapsed((prev) => !prev)}
-              aria-label="Alternar sidebar"
-            >
-              {collapsed ? (
-                <ChevronRight size={18} />
-              ) : (
-                <ChevronLeft size={18} />
-              )}
-            </button>
           </div>
+
+          <button
+            className={clsx(
+              "absolute right-0 top-1/2 z-20 hidden h-16 w-8 -translate-y-1/2 translate-x-1/2 rounded-full border border-border bg-surface text-foreground-muted shadow-[0_12px_28px_rgba(60,42,32,0.12)] transition md:grid place-items-center soft-press",
+              "hover:text-foreground hover:border-surface-3 hover:bg-surface-2",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+            )}
+            onClick={() => setCollapsed((prev) => !prev)}
+            aria-label={collapsed ? "Expandir sidebar" : "Recolher sidebar"}
+            title={collapsed ? "Expandir sidebar" : "Recolher sidebar"}
+          >
+            <span className="pointer-events-none flex h-10 w-5 items-center justify-center rounded-full border border-border/60 bg-surface-2/80">
+              {collapsed ? (
+                <ChevronRight size={16} />
+              ) : (
+                <ChevronLeft size={16} />
+              )}
+            </span>
+          </button>
 
           <nav className={clsx("px-3 space-y-2", collapsed ? "mt-6" : "mt-2")}>
             {navItems.map((item) => {

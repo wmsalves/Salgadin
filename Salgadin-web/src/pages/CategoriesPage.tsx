@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { DeleteCategoryModal } from "../components/DeleteCategoryModal";
+import { ConfirmActionModal } from "../components/ConfirmActionModal";
 import {
   getCategorySummary,
   deleteCategory,
@@ -87,6 +88,13 @@ export default function CategoriesPage() {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [categoryToEdit, setCategoryToEdit] = useState<{ id: number; name: string } | null>(null);
+  const [subcategoryToDelete, setSubcategoryToDelete] = useState<{
+    categoryId: number;
+    subcategoryId: number;
+    name: string;
+  } | null>(null);
+  const [isDeletingSubcategory, setIsDeletingSubcategory] = useState(false);
+  const [deleteSubcategoryError, setDeleteSubcategoryError] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -183,22 +191,29 @@ export default function CategoriesPage() {
     }
   };
 
-  const handleDeleteSubcategory = async (
-    categoryId: number,
-    subcategoryId: number
-  ) => {
-    if (!window.confirm("Deseja excluir esta subcategoria?")) return;
+  const handleDeleteSubcategory = async () => {
+    if (!subcategoryToDelete) return;
+    setIsDeletingSubcategory(true);
+    setDeleteSubcategoryError(null);
     try {
-      await deleteSubcategory(categoryId, subcategoryId);
+      await deleteSubcategory(
+        subcategoryToDelete.categoryId,
+        subcategoryToDelete.subcategoryId,
+      );
       setSubcategoryMap((prev) => ({
         ...prev,
-        [categoryId]: (prev[categoryId] || []).filter(
-          (item) => item.id !== subcategoryId
+        [subcategoryToDelete.categoryId]: (prev[subcategoryToDelete.categoryId] || []).filter(
+          (item) => item.id !== subcategoryToDelete.subcategoryId
         ),
       }));
+      setSubcategoryToDelete(null);
     } catch (err) {
       console.error("Falha ao excluir subcategoria:", err);
-      alert(getErrorMessage(err, "Nao foi possivel excluir a subcategoria."));
+      setDeleteSubcategoryError(
+        getErrorMessage(err, "Nao foi possivel excluir a subcategoria."),
+      );
+    } finally {
+      setIsDeletingSubcategory(false);
     }
   };
 
@@ -411,9 +426,14 @@ export default function CategoriesPage() {
                             >
                               {sub.name}
                               <button
-                                onClick={() =>
-                                  handleDeleteSubcategory(cat.id, sub.id)
-                                }
+                                onClick={() => {
+                                  setDeleteSubcategoryError(null);
+                                  setSubcategoryToDelete({
+                                    categoryId: cat.id,
+                                    subcategoryId: sub.id,
+                                    name: sub.name,
+                                  });
+                                }}
                                 className="text-danger hover:text-danger-strong"
                                 aria-label={`Excluir ${sub.name}`}
                               >
@@ -450,6 +470,21 @@ export default function CategoriesPage() {
         initialData={categoryToEdit}
         onClose={() => setIsEditModalOpen(false)}
         onSuccess={fetchData}
+      />
+
+      <ConfirmActionModal
+        isOpen={subcategoryToDelete !== null}
+        title="Excluir subcategoria"
+        description={`Voce esta prestes a excluir permanentemente a subcategoria "${subcategoryToDelete?.name ?? ""}". Esta acao nao podera ser desfeita.`}
+        confirmLabel="Sim, excluir"
+        onClose={() => {
+          if (isDeletingSubcategory) return;
+          setDeleteSubcategoryError(null);
+          setSubcategoryToDelete(null);
+        }}
+        onConfirm={handleDeleteSubcategory}
+        isConfirming={isDeletingSubcategory}
+        errorMessage={deleteSubcategoryError}
       />
     </div>
   );

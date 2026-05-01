@@ -1,6 +1,7 @@
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import clsx from "clsx";
+import { Loader2 } from "lucide-react";
 
 const buttonVariants = cva(
   "inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] font-semibold transition-all duration-200 ease-out disabled:cursor-not-allowed disabled:opacity-50 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ui-pressable",
@@ -27,13 +28,14 @@ const buttonVariants = cva(
       variant: "primary",
       size: "default",
     },
-  }
+  },
 );
 
 interface ButtonProps
   extends ComponentProps<"button">,
     VariantProps<typeof buttonVariants> {
   isLoading?: boolean;
+  loadingIcon?: ReactNode;
 }
 
 export function Button({
@@ -42,6 +44,7 @@ export function Button({
   variant,
   size,
   isLoading = false,
+  loadingIcon,
   disabled,
   ...props
 }: ButtonProps) {
@@ -53,7 +56,9 @@ export function Button({
     >
       {isLoading ? (
         <>
-          <span className="animate-spin mr-2">⚡</span>
+          <span className="mr-2 inline-flex items-center">
+            {loadingIcon ?? <Loader2 size={16} className="animate-spin" />}
+          </span>
           {children}
         </>
       ) : (

@@ -1,4 +1,4 @@
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, LogIn } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -90,6 +90,7 @@ export default function LoginPage() {
             <Button
               type="submit"
               isLoading={isSubmitting}
+              loadingIcon={<LogIn size={16} />}
               className="w-full mt-4"
             >
               {isSubmitting ? "Entrando..." : "Entrar"}
