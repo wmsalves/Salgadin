@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 
 import { Header } from "../components/Header";
+import { GoogleAuthButton } from "../components/GoogleAuthButton";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { PasswordStrength } from "../components/ui/PasswordStrength";
@@ -16,6 +17,7 @@ export default function SignupPage() {
   const navigate = useNavigate();
   const [apiError, setApiError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const hasGoogleAuth = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim());
 
   const {
     register,
@@ -149,6 +151,20 @@ export default function SignupPage() {
                       {successMessage}
                     </p>
                   </div>
+                )}
+
+                {hasGoogleAuth && (
+                  <>
+                    <div className="flex items-center gap-3 pt-1">
+                      <div className="h-px flex-1 bg-border" />
+                      <span className="text-xs text-foreground-muted font-medium">
+                        ou continue com
+                      </span>
+                      <div className="h-px flex-1 bg-border" />
+                    </div>
+
+                    <GoogleAuthButton text="signup_with" />
+                  </>
                 )}
               </form>
 

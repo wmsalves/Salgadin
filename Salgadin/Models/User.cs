@@ -10,6 +10,12 @@ namespace Salgadin.Models
 
         public string? PhoneNumber { get; set; }
 
+        public string? GoogleSubjectId { get; set; }
+
+        public string? ExternalProvider { get; set; }
+
+        public string? AvatarUrl { get; set; }
+
         public byte[] PasswordHash { get; set; } = null!;
 
         public byte[] PasswordSalt { get; set; } = null!;

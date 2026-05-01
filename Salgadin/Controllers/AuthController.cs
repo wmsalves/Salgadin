@@ -21,7 +21,6 @@ namespace Salgadin.Controllers
         [EnableRateLimiting("LoginPolicy")]
         public async Task<IActionResult> Register([FromBody] UserRegisterDto dto)
         {
-            // Sem try-catch. A lógica de tratamento de erro é delegada para o middleware.
             var token = await _authService.RegisterAsync(dto);
             return Ok(new { token });
         }
@@ -30,8 +29,15 @@ namespace Salgadin.Controllers
         [EnableRateLimiting("LoginPolicy")]
         public async Task<IActionResult> Login([FromBody] UserLoginDto dto)
         {
-            // Sem try-catch. O middleware cuidará de exceções como UnauthorizedAccessException.
             var token = await _authService.LoginAsync(dto);
+            return Ok(new { token });
+        }
+
+        [HttpPost("google")]
+        [EnableRateLimiting("LoginPolicy")]
+        public async Task<IActionResult> Google([FromBody] GoogleLoginRequest dto, CancellationToken cancellationToken)
+        {
+            var token = await _authService.LoginWithGoogleAsync(dto, cancellationToken);
             return Ok(new { token });
         }
 

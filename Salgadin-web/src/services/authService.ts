@@ -12,6 +12,7 @@ export interface UserProfile {
   name: string;
   email: string;
   phoneNumber: string | null;
+  avatarUrl?: string | null;
 }
 
 export interface UpdateProfileData {
@@ -35,6 +36,11 @@ export const registerUser = async (data: RegisterPayload) => {
 
 export const loginUser = async (data: LoginFormValues) => {
   const response = await api.post<AuthResponse>("/auth/login", data);
+  return response.data;
+};
+
+export const loginWithGoogle = async (idToken: string) => {
+  const response = await api.post<AuthResponse>("/auth/google", { idToken });
   return response.data;
 };
 

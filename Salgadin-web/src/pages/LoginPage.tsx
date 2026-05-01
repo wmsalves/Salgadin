@@ -4,9 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 
-import GoogleLogo from "../assets/google-icon-logo.svg";
-import FacebookLogo from "../assets/facebook-icon-logo.svg";
 import { Header } from "../components/Header";
+import { GoogleAuthButton } from "../components/GoogleAuthButton";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { loginSchema, type LoginFormValues } from "../lib/schemas";
@@ -17,6 +16,7 @@ export default function LoginPage() {
   const [apiError, setApiError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { login } = useAuth();
+  const hasGoogleAuth = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim());
 
   const {
     register,
@@ -104,42 +104,19 @@ export default function LoginPage() {
               </div>
             )}
 
-            <div className="flex items-center gap-3 pt-1">
-              <div className="h-px flex-1 bg-border" />
-              <span className="text-xs text-foreground-muted font-medium">
-                ou continue com:
-              </span>
-              <div className="h-px flex-1 bg-border" />
-            </div>
+            {hasGoogleAuth && (
+              <>
+                <div className="flex items-center gap-3 pt-1">
+                  <div className="h-px flex-1 bg-border" />
+                  <span className="text-xs text-foreground-muted font-medium">
+                    ou continue com
+                  </span>
+                  <div className="h-px flex-1 bg-border" />
+                </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                title="Entrar com Google"
-              >
-                <img
-                  src={GoogleLogo}
-                  alt="GoogleLogo"
-                  className="h-4 w-4 mr-1"
-                />
-                <span className="text-xs">Google</span>
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                title="Entrar com Facebook"
-              >
-                <img
-                  src={FacebookLogo}
-                  alt="FacebookLogo"
-                  className="h-4 w-4 mr-1"
-                />
-                <span className="text-xs">Facebook</span>
-              </Button>
-            </div>
+                <GoogleAuthButton text="signin_with" />
+              </>
+            )}
           </form>
 
           <p className="mt-4 text-center text-xs text-foreground-muted">

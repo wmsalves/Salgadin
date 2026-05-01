@@ -44,6 +44,7 @@ Recommended:
 - `Jwt__Issuer`
 - `Jwt__Audience`
 - `CORS_ORIGINS`
+- `Authentication__Google__ClientId` when Google sign-in is enabled
 
 Optional:
 
@@ -71,6 +72,7 @@ Startup migration modes:
 Required:
 
 - `VITE_API_URL`
+- `VITE_GOOGLE_CLIENT_ID` when Google sign-in is enabled
 
 Optional, only if the frontend really queries Supabase directly:
 
@@ -241,6 +243,9 @@ dotnet ef database update --project .\Salgadin\Salgadin.csproj --startup-project
 4. Deploy the API on Render.
 5. Verify the service starts successfully.
 6. Optionally call the internal health endpoint if `INTERNAL_HEALTH_TOKEN` is configured.
+7. If Google sign-in is enabled, confirm both:
+   - `Authentication__Google__ClientId` on Render
+   - `VITE_GOOGLE_CLIENT_ID` on the frontend deployment
 
 For a Render single-instance MVP flow, you may set:
 

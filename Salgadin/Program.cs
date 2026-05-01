@@ -63,6 +63,7 @@ try
     builder.Services.AddScoped<INotificationService, NotificationService>();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<IUserContextService, UserContextService>();
+    builder.Services.AddScoped<IGoogleTokenValidator, GoogleTokenValidator>();
 
     // Permite o acesso ao HttpContext nos serviços.
     builder.Services.AddHttpContextAccessor();

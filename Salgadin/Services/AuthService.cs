@@ -1,3 +1,4 @@
+using Google.Apis.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Salgadin.DTOs;
@@ -6,6 +7,7 @@ using Salgadin.Models;
 using Salgadin.Repositories;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Salgadin.Services
@@ -16,12 +18,21 @@ namespace Salgadin.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
         private readonly IUserContextService _userContextService;
+        private readonly IGoogleTokenValidator _googleTokenValidator;
+        private readonly ILogger<AuthService> _logger;
 
-        public AuthService(IUnitOfWork unitOfWork, IConfiguration configuration, IUserContextService userContextService)
+        public AuthService(
+            IUnitOfWork unitOfWork,
+            IConfiguration configuration,
+            IUserContextService userContextService,
+            IGoogleTokenValidator googleTokenValidator,
+            ILogger<AuthService> logger)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
             _userContextService = userContextService;
+            _googleTokenValidator = googleTokenValidator;
+            _logger = logger;
         }
 
         public async Task<string> RegisterAsync(UserRegisterDto dto)
@@ -37,32 +48,19 @@ namespace Salgadin.Services
                 throw new BadInputException("O nome de usuário já está em uso.");
             }
 
-            CreatePasswordHash(dto.Password, out byte[] hash, out byte[] salt);
+            CreatePasswordHash(dto.Password, out byte[] hash, out _);
 
             var user = new User
             {
                 Name = dto.Name.Trim(),
                 Username = normalizedUsername,
                 PasswordHash = hash,
-                PasswordSalt = salt
+                PasswordSalt = Array.Empty<byte>(),
+                ExternalProvider = "local"
             };
 
             await _unitOfWork.Users.AddAsync(user);
-
-            var defaultCategories = new List<Category>
-            {
-                new Category { Name = "Alimentação", User = user },
-                new Category { Name = "Transporte", User = user },
-                new Category { Name = "Moradia", User = user },
-                new Category { Name = "Lazer", User = user },
-                new Category { Name = "Outros", User = user }
-            };
-
-            foreach (var category in defaultCategories)
-            {
-                await _unitOfWork.Categories.AddAsync(category);
-            }
-
+            await AddDefaultCategoriesForUserAsync(user);
             await _unitOfWork.CompleteAsync();
 
             return GenerateToken(user);
@@ -79,6 +77,114 @@ namespace Salgadin.Services
             {
                 throw new UnauthorizedAccessException("Usuário ou senha inválidos.");
             }
+
+            return GenerateToken(user);
+        }
+
+        public async Task<string> LoginWithGoogleAsync(GoogleLoginRequest dto, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(dto.IdToken))
+            {
+                throw new BadInputException("O token do Google é obrigatório.");
+            }
+
+            var clientId = _configuration["Authentication:Google:ClientId"];
+            if (string.IsNullOrWhiteSpace(clientId))
+            {
+                throw new InvalidOperationException("Authentication:Google:ClientId not configured.");
+            }
+
+            GoogleIdentityPayload googleIdentity;
+            try
+            {
+                googleIdentity = await _googleTokenValidator.ValidateAsync(dto.IdToken, clientId, cancellationToken);
+            }
+            catch (InvalidJwtException ex)
+            {
+                _logger.LogWarning(ex, "Falha ao validar id_token do Google.");
+                throw new UnauthorizedAccessException("Token Google inválido.");
+            }
+
+            if (string.IsNullOrWhiteSpace(googleIdentity.Email))
+            {
+                throw new UnauthorizedAccessException("O token do Google não contém um email válido.");
+            }
+
+            if (!googleIdentity.EmailVerified)
+            {
+                throw new UnauthorizedAccessException("A conta do Google precisa ter email verificado.");
+            }
+
+            var normalizedEmail = NormalizeUsername(googleIdentity.Email);
+            var user = await _unitOfWork.Users
+                .GetQueryable()
+                .FirstOrDefaultAsync(
+                    u => u.GoogleSubjectId == googleIdentity.Subject || u.Username.ToLower() == normalizedEmail,
+                    cancellationToken);
+
+            if (user == null)
+            {
+                CreatePasswordHash(CreateRandomPassword(), out byte[] hash, out _);
+
+                user = new User
+                {
+                    Name = string.IsNullOrWhiteSpace(googleIdentity.Name)
+                        ? normalizedEmail
+                        : googleIdentity.Name.Trim(),
+                    Username = normalizedEmail,
+                    GoogleSubjectId = googleIdentity.Subject,
+                    ExternalProvider = "google",
+                    AvatarUrl = googleIdentity.Picture,
+                    PasswordHash = hash,
+                    PasswordSalt = Array.Empty<byte>()
+                };
+
+                await _unitOfWork.Users.AddAsync(user);
+                await AddDefaultCategoriesForUserAsync(user);
+            }
+            else
+            {
+                if (!string.IsNullOrWhiteSpace(user.GoogleSubjectId) &&
+                    !string.Equals(user.GoogleSubjectId, googleIdentity.Subject, StringComparison.Ordinal))
+                {
+                    throw new UnauthorizedAccessException("Esta conta já está vinculada a outro login Google.");
+                }
+
+                var hasChanges = false;
+
+                if (string.IsNullOrWhiteSpace(user.GoogleSubjectId))
+                {
+                    user.GoogleSubjectId = googleIdentity.Subject;
+                    hasChanges = true;
+                }
+
+                if (string.IsNullOrWhiteSpace(user.ExternalProvider))
+                {
+                    user.ExternalProvider = "google";
+                    hasChanges = true;
+                }
+
+                if (!string.IsNullOrWhiteSpace(googleIdentity.Picture) &&
+                    !string.Equals(user.AvatarUrl, googleIdentity.Picture, StringComparison.Ordinal))
+                {
+                    user.AvatarUrl = googleIdentity.Picture;
+                    hasChanges = true;
+                }
+
+                if (string.IsNullOrWhiteSpace(user.Name) && !string.IsNullOrWhiteSpace(googleIdentity.Name))
+                {
+                    user.Name = googleIdentity.Name.Trim();
+                    hasChanges = true;
+                }
+
+                if (hasChanges)
+                {
+                    _unitOfWork.Users.Update(user);
+                }
+            }
+
+            await _unitOfWork.CompleteAsync();
+            _logger.LogInformation("Login Google concluído para o usuário {UserId}.", user.Id);
 
             return GenerateToken(user);
         }
@@ -133,15 +239,32 @@ namespace Salgadin.Services
 
             if (passwordChanged)
             {
-                CreatePasswordHash(dto.NewPassword!, out byte[] hash, out byte[] salt);
+                CreatePasswordHash(dto.NewPassword!, out byte[] hash, out _);
                 user.PasswordHash = hash;
-                user.PasswordSalt = salt;
+                user.PasswordSalt = Array.Empty<byte>();
             }
 
             _unitOfWork.Users.Update(user);
             await _unitOfWork.CompleteAsync();
 
             return (GenerateToken(user), ToProfileDto(user));
+        }
+
+        private async Task AddDefaultCategoriesForUserAsync(User user)
+        {
+            var defaultCategories = new List<Category>
+            {
+                new Category { Name = "Alimentação", User = user },
+                new Category { Name = "Transporte", User = user },
+                new Category { Name = "Moradia", User = user },
+                new Category { Name = "Lazer", User = user },
+                new Category { Name = "Outros", User = user }
+            };
+
+            foreach (var category in defaultCategories)
+            {
+                await _unitOfWork.Categories.AddAsync(category);
+            }
         }
 
         private void CreatePasswordHash(string password, out byte[] hash, out byte[] salt)
@@ -191,6 +314,11 @@ namespace Salgadin.Services
             return tokenHandler.WriteToken(token);
         }
 
+        private static string CreateRandomPassword()
+        {
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+        }
+
         private static string NormalizeUsername(string username)
         {
             return username.Trim().ToLowerInvariant();
@@ -203,7 +331,8 @@ namespace Salgadin.Services
                 Id = user.Id,
                 Name = user.Name,
                 Email = user.Username,
-                PhoneNumber = user.PhoneNumber
+                PhoneNumber = user.PhoneNumber,
+                AvatarUrl = user.AvatarUrl
             };
         }
     }

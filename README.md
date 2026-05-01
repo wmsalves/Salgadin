@@ -50,6 +50,7 @@ Instructions on how to set up and run the project locally.
     ```bash
     dotnet user-secrets set "SUPABASE_DB_CONNECTION" "Host=...;Port=6543;Database=postgres;Username=...;Password=...;SSL Mode=Require"
     dotnet user-secrets set "Jwt:Key" "YOUR_JWT_SECRET"
+    dotnet user-secrets set "Authentication:Google:ClientId" "YOUR_GOOGLE_WEB_CLIENT_ID"
     ```
 4.  For deployed environments, set the same values as platform environment variables instead of committing them to `appsettings.json`.
     `SUPABASE_DB_CONNECTION`, `ConnectionStrings__DefaultConnection`, `SUPABASE_DATABASE_URL`, `SUPABASE_CONNECTION_STRING`, `DATABASE_URL`, and `POSTGRES_URL` are supported. PostgreSQL URLs such as `postgresql://user:password@host:5432/postgres?sslmode=require` are normalized automatically.
@@ -76,7 +77,12 @@ Use `Database__ApplyMigrationsOnStartup=true` only when you explicitly want the 
     ```bash
     npm install
     ```
-3.  Run the development server:
+3.  Configure local frontend environment variables:
+    ```bash
+    VITE_API_URL=http://localhost:5297/api
+    VITE_GOOGLE_CLIENT_ID=your_google_web_client_id
+    ```
+4.  Run the development server:
     ```bash
     npm run dev
     ```

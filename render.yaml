@@ -17,6 +17,8 @@ services:
         sync: false
       - key: Jwt__Audience
         sync: false
+      - key: Authentication__Google__ClientId
+        sync: false
       - key: CORS_ORIGINS
         sync: false
       - key: INTERNAL_HEALTH_TOKEN
