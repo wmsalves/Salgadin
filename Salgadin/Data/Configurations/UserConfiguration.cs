@@ -14,6 +14,9 @@ namespace Salgadin.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
 
+            builder.Property(u => u.PhoneNumber)
+                .HasMaxLength(20);
+
             // Garante que o nome de usuário seja único em toda a tabela.
             builder.HasIndex(u => u.Username).IsUnique();
 

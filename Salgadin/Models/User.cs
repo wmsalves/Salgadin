@@ -8,6 +8,8 @@ namespace Salgadin.Models
 
         public string Username { get; set; } = string.Empty;
 
+        public string? PhoneNumber { get; set; }
+
         public byte[] PasswordHash { get; set; } = null!;
 
         public byte[] PasswordSalt { get; set; } = null!;

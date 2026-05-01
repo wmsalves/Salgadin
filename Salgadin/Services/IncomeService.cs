@@ -40,10 +40,21 @@ namespace Salgadin.Services
             var query = _unitOfWork.Incomes.GetQueryable()
                 .Where(i => i.UserId == userId);
 
-            if (startDate.HasValue)
-                query = query.Where(i => i.Date >= startDate.Value.ToUniversalTime());
-            if (endDate.HasValue)
-                query = query.Where(i => i.Date <= endDate.Value.ToUniversalTime());
+            var normalizedStartDate = startDate.HasValue
+                ? DateOnlyNormalizer.Normalize(startDate.Value)
+                : (DateTime?)null;
+            var normalizedEndDate = endDate.HasValue
+                ? DateOnlyNormalizer.Normalize(endDate.Value)
+                : (DateTime?)null;
+
+            if (normalizedStartDate.HasValue || normalizedEndDate.HasValue)
+            {
+                query = query.Where(i =>
+                    i.IsFixed
+                        ? (!normalizedEndDate.HasValue || i.Date.Date <= normalizedEndDate.Value.Date)
+                        : (!normalizedStartDate.HasValue || i.Date.Date >= normalizedStartDate.Value.Date) &&
+                          (!normalizedEndDate.HasValue || i.Date.Date <= normalizedEndDate.Value.Date));
+            }
             if (isFixed.HasValue)
                 query = query.Where(i => i.IsFixed == isFixed.Value);
 
@@ -71,6 +82,7 @@ namespace Salgadin.Services
             var userId = _userContextService.GetUserId();
             var income = _mapper.Map<Income>(incomeDto);
             income.UserId = userId;
+            income.Date = DateOnlyNormalizer.Normalize(income.Date);
 
             await _unitOfWork.Incomes.AddAsync(income);
             await _unitOfWork.CompleteAsync();
@@ -88,6 +100,7 @@ namespace Salgadin.Services
                 throw new NotFoundException("Receita não encontrada.");
 
             _mapper.Map(incomeDto, income);
+            income.Date = DateOnlyNormalizer.Normalize(income.Date);
 
             _unitOfWork.Incomes.Update(income);
             await _unitOfWork.CompleteAsync();

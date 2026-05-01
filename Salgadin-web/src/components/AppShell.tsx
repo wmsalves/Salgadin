@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import {
   LayoutGrid,
   Tags,
@@ -12,6 +12,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Bell,
+  ChevronDown,
+  LogOutIcon,
+  Menu,
+  Settings2,
 } from "lucide-react";
 import clsx from "clsx";
 import logo from "../assets/Logo.svg";
@@ -36,16 +40,26 @@ const navItems = [
 export function AppShell() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isBellOpen, setIsBellOpen] = useState(false);
   const [isLoadingBell, setIsLoadingBell] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const unreadCount = useMemo(
     () => notifications.filter((item) => !item.isRead).length,
     [notifications],
   );
   const homePath = "/dashboard";
+  const firstName = useMemo(
+    () => user?.name?.trim().split(" ")[0] ?? "voce",
+    [user?.name],
+  );
+  const userInitial = useMemo(
+    () => user?.name?.trim().charAt(0).toUpperCase() ?? "U",
+    [user?.name],
+  );
 
   const fetchNotifications = useCallback(async (unreadOnly = true) => {
     setIsLoadingBell(true);
@@ -62,6 +76,11 @@ export function AppShell() {
     const interval = setInterval(() => fetchNotifications(), 60000);
     return () => clearInterval(interval);
   }, [fetchNotifications]);
+
+  useEffect(() => {
+    setIsBellOpen(false);
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] text-foreground">
@@ -192,13 +211,13 @@ export function AppShell() {
                   </span>
                 </span>
               </NavLink>
-              <div className="flex items-center gap-2 rounded-full bg-surface-2 px-3 py-1.5 text-sm text-foreground-muted">
+              <div className="hidden items-center gap-2 rounded-full bg-surface-2 px-3 py-1.5 text-sm text-foreground-muted md:flex">
                 <span>Bem-vindo</span>
                 <span className="font-semibold text-foreground">
                   {user?.name}
                 </span>
               </div>
-              <div className="ml-auto flex items-center gap-2">
+              <div className="ml-auto hidden items-center gap-2 md:flex">
                 <div className="relative">
                   <button
                     onClick={() => {
@@ -218,7 +237,7 @@ export function AppShell() {
                     )}
                   </button>
                   {isBellOpen && (
-                    <div className="absolute right-0 mt-3 w-80 max-h-[360px] overflow-auto rounded-2xl border border-border bg-surface shadow-[0_18px_36px_rgba(0,0,0,0.18)] z-50">
+                    <div className="absolute left-1/2 mt-3 max-h-[360px] w-[min(22rem,calc(100vw-1.5rem))] -translate-x-1/2 overflow-auto rounded-2xl border border-border bg-surface shadow-[0_18px_36px_rgba(0,0,0,0.18)] z-50 md:left-auto md:right-0 md:w-80 md:translate-x-0">
                       <div className="p-4 border-b border-border/60 flex items-center justify-between">
                         <span className="text-sm font-semibold text-foreground">
                           Notificacoes
@@ -296,6 +315,128 @@ export function AppShell() {
                 >
                   <LogOut size={18} />
                 </button>
+              </div>
+              <div className="ml-auto md:hidden">
+                <div className="relative">
+                  <button
+                    onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+                    className="flex items-center gap-2 rounded-full border border-border bg-surface-2 px-2.5 py-2 text-foreground transition-colors hover:bg-surface-3 soft-press"
+                    aria-label="Abrir menu da conta"
+                  >
+                    <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-xs font-semibold text-white">
+                      {userInitial}
+                    </span>
+                    <span className="grid h-8 w-8 place-items-center rounded-full bg-primary/12 text-primary">
+                      <Menu size={16} />
+                    </span>
+                    <ChevronDown
+                      size={16}
+                      className={clsx(
+                        "text-foreground-muted transition-transform",
+                        isMobileMenuOpen && "rotate-180",
+                      )}
+                    />
+                  </button>
+
+                  {isMobileMenuOpen && (
+                    <div className="absolute right-0 mt-3 w-[min(21rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_18px_36px_rgba(0,0,0,0.18)] z-50">
+                      <div className="border-b border-border/70 bg-surface-2 px-4 py-3">
+                        <div className="text-xs text-foreground-muted">Conta</div>
+                        <div className="mt-1 text-sm font-semibold text-foreground">
+                          {firstName}
+                        </div>
+                        <div className="mt-0.5 text-xs text-foreground-muted">
+                          {user?.email}
+                        </div>
+                      </div>
+
+                      <div className="p-2">
+                        <button
+                          onClick={() => {
+                            setIsBellOpen((prev) => !prev);
+                            if (!isBellOpen) {
+                              fetchNotifications(false);
+                            }
+                          }}
+                          className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm text-foreground transition-colors hover:bg-surface-2"
+                        >
+                          <span className="flex items-center gap-3">
+                            <Bell size={16} className="text-foreground-muted" />
+                            Notificacoes
+                          </span>
+                          <span className="rounded-full bg-danger px-2 py-0.5 text-[11px] font-semibold text-white">
+                            {unreadCount > 9 ? "9+" : unreadCount}
+                          </span>
+                        </button>
+
+                        {isBellOpen && (
+                          <div className="mt-2 rounded-xl border border-border bg-surface-2 p-3">
+                            {isLoadingBell ? (
+                              <p className="text-sm text-foreground-subtle">
+                                Carregando...
+                              </p>
+                            ) : notifications.length === 0 ? (
+                              <p className="text-sm text-foreground-subtle">
+                                Nenhuma notificacao no momento.
+                              </p>
+                            ) : (
+                              <div className="max-h-64 space-y-3 overflow-auto">
+                                {notifications.map((item) => (
+                                  <div
+                                    key={item.id}
+                                    className="rounded-xl border border-border/70 bg-surface px-3 py-2.5"
+                                  >
+                                    <div className="flex items-center justify-between gap-2">
+                                      <span className="text-xs font-semibold text-foreground">
+                                        {item.title}
+                                      </span>
+                                      {!item.isRead && (
+                                        <button
+                                          onClick={async () => {
+                                            await markNotificationRead(item.id);
+                                            setNotifications((prev) =>
+                                              prev.map((n) =>
+                                                n.id === item.id
+                                                  ? { ...n, isRead: true }
+                                                  : n,
+                                              ),
+                                            );
+                                          }}
+                                          className="text-[11px] text-primary"
+                                        >
+                                          Marcar lido
+                                        </button>
+                                      )}
+                                    </div>
+                                    <p className="mt-1 text-[11px] text-foreground-subtle">
+                                      {item.message}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        <button
+                          onClick={toggleTheme}
+                          className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-foreground transition-colors hover:bg-surface-2"
+                        >
+                          <Settings2 size={16} className="text-foreground-muted" />
+                          Tema: {theme === "light" ? "claro" : "escuro"}
+                        </button>
+
+                        <button
+                          onClick={logout}
+                          className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-danger transition-colors hover:bg-danger/10"
+                        >
+                          <LogOutIcon size={16} />
+                          Sair
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </header>

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Salgadin.DTOs;
 using Microsoft.AspNetCore.RateLimiting;
 using Salgadin.Services;
@@ -32,6 +33,26 @@ namespace Salgadin.Controllers
             // Sem try-catch. O middleware cuidará de exceções como UnauthorizedAccessException.
             var token = await _authService.LoginAsync(dto);
             return Ok(new { token });
+        }
+
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<IActionResult> Me()
+        {
+            var profile = await _authService.GetProfileAsync();
+            return Ok(profile);
+        }
+
+        [Authorize]
+        [HttpPut("me")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserProfileDto dto)
+        {
+            var result = await _authService.UpdateProfileAsync(dto);
+            return Ok(new
+            {
+                token = result.Token,
+                profile = result.Profile
+            });
         }
     }
 }

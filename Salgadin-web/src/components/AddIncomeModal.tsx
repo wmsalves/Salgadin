@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { X } from "lucide-react";
 import { Button } from "./ui/Button";
-import { addIncome } from "../services/incomeService";
+import { addIncome, updateIncome } from "../services/incomeService";
 import { motion, AnimatePresence } from "framer-motion";
+import type { Income } from "../lib/types";
+import { formatDateForInput, toDateInputValue } from "../lib/dates";
 
 const incomeSchema = z.object({
   description: z.string().min(3, "A descrição deve ter no mínimo 3 caracteres."),
@@ -20,14 +22,17 @@ interface AddIncomeModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  incomeToEdit?: Income | null;
 }
 
 export function AddIncomeModal({
   isOpen,
   onClose,
   onSuccess,
+  incomeToEdit = null,
 }: AddIncomeModalProps) {
   const [apiError, setApiError] = useState<string | null>(null);
+  const isEditing = incomeToEdit !== null;
 
   const {
     register,
@@ -37,10 +42,36 @@ export function AddIncomeModal({
   } = useForm<IncomeFormValues>({
     resolver: zodResolver(incomeSchema),
     defaultValues: {
-      date: new Date().toISOString().split("T")[0],
+      date: formatDateForInput(new Date()),
       isFixed: false,
     },
   });
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    if (incomeToEdit) {
+      reset({
+        description: incomeToEdit.description,
+        amount: incomeToEdit.amount.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+        date: toDateInputValue(incomeToEdit.date),
+        isFixed: incomeToEdit.isFixed,
+      });
+      return;
+    }
+
+    reset({
+      description: "",
+      amount: "",
+      date: formatDateForInput(new Date()),
+      isFixed: false,
+    });
+  }, [incomeToEdit, isOpen, reset]);
 
   async function onSubmit(data: IncomeFormValues) {
     setApiError(null);
@@ -50,7 +81,11 @@ export function AddIncomeModal({
         amount: parseFloat(data.amount.replace(/\./g, "").replace(",", ".")),
       };
 
-      await addIncome(payload);
+      if (incomeToEdit) {
+        await updateIncome(incomeToEdit.id, payload);
+      } else {
+        await addIncome(payload);
+      }
       onSuccess();
       handleClose();
     } catch (error) {
@@ -60,7 +95,12 @@ export function AddIncomeModal({
   }
 
   const handleClose = () => {
-    reset();
+    reset({
+      description: "",
+      amount: "",
+      date: formatDateForInput(new Date()),
+      isFixed: false,
+    });
     setApiError(null);
     onClose();
   };
@@ -83,7 +123,7 @@ export function AddIncomeModal({
           >
             <div className="bg-gradient-to-r from-emerald-500 to-teal-400 px-6 py-4 flex justify-between items-center">
               <h2 className="text-lg font-bold text-white">
-                Nova Receita
+                {isEditing ? "Editar Receita" : "Nova Receita"}
               </h2>
               <button
                 onClick={handleClose}
@@ -207,7 +247,7 @@ export function AddIncomeModal({
                   disabled={isSubmitting}
                   className="inline-flex items-center justify-center rounded-xl bg-emerald-500 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/30 transition-all hover:bg-emerald-600 disabled:opacity-70"
                 >
-                  {isSubmitting ? "Salvando..." : "Salvar Receita"}
+                  {isSubmitting ? "Salvando..." : isEditing ? "Salvar Alteracoes" : "Salvar Receita"}
                 </button>
               </div>
             </form>

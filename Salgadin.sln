@@ -5,6 +5,8 @@ VisualStudioVersion = 17.13.35919.96 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Salgadin", "Salgadin\Salgadin.csproj", "{6C23943C-92ED-42D3-AF5E-27721BC9ACF5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Salgadin.Tests", "Salgadin.Tests\Salgadin.Tests.csproj", "{E35D8DD7-1548-4B50-AC5D-3F93E62AADE4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{6C23943C-92ED-42D3-AF5E-27721BC9ACF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C23943C-92ED-42D3-AF5E-27721BC9ACF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C23943C-92ED-42D3-AF5E-27721BC9ACF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E35D8DD7-1548-4B50-AC5D-3F93E62AADE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E35D8DD7-1548-4B50-AC5D-3F93E62AADE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E35D8DD7-1548-4B50-AC5D-3F93E62AADE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E35D8DD7-1548-4B50-AC5D-3F93E62AADE4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

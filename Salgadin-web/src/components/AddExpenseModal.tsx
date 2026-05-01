@@ -5,10 +5,11 @@ import { z } from "zod";
 import { X } from "lucide-react";
 import { Button } from "./ui/Button";
 import { getCategories, type Category } from "../services/categoryService";
-import { addExpense } from "../services/expenseService";
+import { addExpense, updateExpense } from "../services/expenseService";
 import { getSubcategories } from "../services/subcategoryService";
-import type { Subcategory } from "../lib/types";
+import type { Expense, Subcategory } from "../lib/types";
 import { motion, AnimatePresence } from "framer-motion";
+import { formatDateForInput, toDateInputValue } from "../lib/dates";
 
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
   "Alimentação": ['ifood', 'uber eats', 'rappi', 'restaurante', 'mercado', 'padaria', 'açougue', 'supermercado', 'hortifruti', 'mcdonalds', "mcdonald's", 'burguer king', 'habibs', 'pizza', 'sushi', 'lanche', 'café', 'padoca', 'extra', 'carrefour', 'pão de açúcar', 'assaí', 'atacadão'],
@@ -37,16 +38,19 @@ interface AddExpenseModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  expenseToEdit?: Expense | null;
 }
 
 export function AddExpenseModal({
   isOpen,
   onClose,
   onSuccess,
+  expenseToEdit = null,
 }: AddExpenseModalProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [apiError, setApiError] = useState<string | null>(null);
+  const isEditing = expenseToEdit !== null;
 
   const {
     register,
@@ -58,7 +62,7 @@ export function AddExpenseModal({
   } = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
-      date: new Date().toISOString().split("T")[0],
+      date: formatDateForInput(new Date()),
     },
   });
 
@@ -69,6 +73,36 @@ export function AddExpenseModal({
         .catch((err) => console.error("Falha ao buscar categorias", err));
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    if (expenseToEdit) {
+      reset({
+        description: expenseToEdit.description,
+        amount: Math.abs(expenseToEdit.amount).toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+        date: toDateInputValue(expenseToEdit.date),
+        categoryId: String(expenseToEdit.categoryId),
+        subcategoryId: expenseToEdit.subcategoryId
+          ? String(expenseToEdit.subcategoryId)
+          : "",
+      });
+      return;
+    }
+
+    reset({
+      description: "",
+      amount: "",
+      date: formatDateForInput(new Date()),
+      categoryId: "",
+      subcategoryId: "",
+    });
+  }, [expenseToEdit, isOpen, reset]);
 
   const selectedCategory = watch("categoryId");
   const descriptionValue = watch("description");
@@ -119,7 +153,11 @@ export function AddExpenseModal({
           : undefined,
       };
 
-      await addExpense(payload);
+      if (expenseToEdit) {
+        await updateExpense(expenseToEdit.id, payload);
+      } else {
+        await addExpense(payload);
+      }
       onSuccess();
       handleClose();
     } catch (error) {
@@ -129,7 +167,13 @@ export function AddExpenseModal({
   }
 
   const handleClose = () => {
-    reset();
+    reset({
+      description: "",
+      amount: "",
+      date: formatDateForInput(new Date()),
+      categoryId: "",
+      subcategoryId: "",
+    });
     setApiError(null);
     onClose();
   };
@@ -152,7 +196,7 @@ export function AddExpenseModal({
           >
             <div className="bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-6 py-4 flex justify-between items-center">
               <h2 className="text-lg font-bold text-white">
-                Adicionar Nova Despesa
+                {isEditing ? "Editar Despesa" : "Adicionar Nova Despesa"}
               </h2>
               <button
                 onClick={handleClose}
@@ -311,7 +355,7 @@ export function AddExpenseModal({
                   Cancelar
                 </Button>
                 <Button type="submit" isLoading={isSubmitting}>
-                  {isSubmitting ? "Salvando..." : "Salvar Despesa"}
+                  {isSubmitting ? "Salvando..." : isEditing ? "Salvar Alteracoes" : "Salvar Despesa"}
                 </Button>
               </div>
             </form>
@@ -321,4 +365,3 @@ export function AddExpenseModal({
     </AnimatePresence>
   );
 }
-

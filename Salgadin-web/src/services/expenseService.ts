@@ -9,6 +9,8 @@ export interface CreateExpenseData {
   subcategoryId?: number | null;
 }
 
+export type UpdateExpenseData = CreateExpenseData;
+
 export const getExpenses = async (startDate?: string, endDate?: string): Promise<Expense[]> => {
   const response = await api.get("/expense", { params: { startDate, endDate } });
   return response.data.items;
@@ -27,4 +29,11 @@ export const addExpense = async (
 };
 export const deleteExpense = async (id: number): Promise<void> => {
   await api.delete(`/expense/${id}`);
+};
+
+export const updateExpense = async (
+  id: number,
+  expenseData: UpdateExpenseData,
+): Promise<void> => {
+  await api.put(`/expense/${id}`, expenseData);
 };

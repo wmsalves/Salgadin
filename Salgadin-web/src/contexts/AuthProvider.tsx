@@ -12,7 +12,11 @@ function parseJwt(token: string): User {
       .join("")
   );
   const payload = JSON.parse(jsonPayload);
-  return { id: payload.nameid, name: payload.unique_name };
+  return {
+    id: payload.nameid,
+    name: payload.unique_name,
+    email: payload.email,
+  };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -21,6 +25,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const login = useCallback((newToken: string) => {
+    const decodedUser = parseJwt(newToken);
+    localStorage.setItem("@Salgadin:token", newToken);
+    api.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
+    setUser(decodedUser);
+    setToken(newToken);
+  }, []);
+
+  const updateAuthUser = useCallback((newToken: string) => {
     const decodedUser = parseJwt(newToken);
     localStorage.setItem("@Salgadin:token", newToken);
     api.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
@@ -52,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         login,
         logout,
+        updateAuthUser,
       }}
     >
       {children}

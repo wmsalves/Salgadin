@@ -19,6 +19,8 @@ namespace Salgadin.Mappings
                     opt.MapFrom(src => DateTime.SpecifyKind(src.Date, DateTimeKind.Utc))
                 );
             CreateMap<Expense, ExpenseDto>()
+                .ForMember(dest => dest.CategoryId,
+                    opt => opt.MapFrom(src => src.CategoryId))
                 .ForMember(dest => dest.Category,
                      opt => opt.MapFrom(src => src.Category != null ? src.Category.Name : ""))
                 .ForMember(dest => dest.SubcategoryId,

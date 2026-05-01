@@ -32,18 +32,25 @@ namespace Salgadin.Services
             var query = _unitOfWork.Expenses.GetQueryable()
                 .Where(e => e.UserId == userId);
 
-            if (startDate.HasValue)
-                query = query.Where(e => e.Date.Date >= startDate.Value.Date);
+            var startUtc = startDate.HasValue
+                ? AsUtcStartOfDay(startDate.Value)
+                : (DateTime?)null;
+            var endUtcExclusive = endDate.HasValue
+                ? AsUtcStartOfNextDay(endDate.Value)
+                : (DateTime?)null;
 
-            if (endDate.HasValue)
-                query = query.Where(e => e.Date.Date <= endDate.Value.Date);
+            if (startUtc.HasValue)
+                query = query.Where(e => e.Date >= startUtc.Value);
+
+            if (endUtcExclusive.HasValue)
+                query = query.Where(e => e.Date < endUtcExclusive.Value);
 
             var expensesFromDb = await query
                 .Include(e => e.Category)
                 .ToListAsync();
 
             var summary = expensesFromDb
-                .GroupBy(e => e.Date.Date)
+                .GroupBy(e => AsUtcStartOfDay(e.Date))
                 .Select(group => new DailySummaryDto
                 {
                     Date = group.Key,
@@ -75,7 +82,7 @@ namespace Salgadin.Services
             var expense = _mapper.Map<Expense>(dto);
             expense.UserId = userId;
 
-            expense.Date = DateTime.SpecifyKind(expense.Date, DateTimeKind.Utc);
+            expense.Date = NormalizeToUtc(dto.Date);
 
             await _unitOfWork.Expenses.AddAsync(expense);
             await _unitOfWork.CompleteAsync();
@@ -110,10 +117,17 @@ namespace Salgadin.Services
             var query = _unitOfWork.Expenses.GetQueryable()
                 .Where(e => e.UserId == userId);
 
-            if (startDate.HasValue)
-                query = query.Where(e => e.Date.Date >= startDate.Value.Date);
-            if (endDate.HasValue)
-                query = query.Where(e => e.Date.Date <= endDate.Value.Date);
+            var startUtc = startDate.HasValue
+                ? AsUtcStartOfDay(startDate.Value)
+                : (DateTime?)null;
+            var endUtcExclusive = endDate.HasValue
+                ? AsUtcStartOfNextDay(endDate.Value)
+                : (DateTime?)null;
+
+            if (startUtc.HasValue)
+                query = query.Where(e => e.Date >= startUtc.Value);
+            if (endUtcExclusive.HasValue)
+                query = query.Where(e => e.Date < endUtcExclusive.Value);
             if (!string.IsNullOrWhiteSpace(category))
                 query = query.Where(e => e.Category != null && e.Category.Name.Equals(category, StringComparison.OrdinalIgnoreCase));
 
@@ -151,6 +165,7 @@ namespace Salgadin.Services
             }
 
             _mapper.Map(dto, existing);
+            existing.Date = NormalizeToUtc(dto.Date);
             _unitOfWork.Expenses.Update(existing);
             await _unitOfWork.CompleteAsync();
         }
@@ -186,7 +201,23 @@ namespace Salgadin.Services
             var userId = _userContext.GetUserId();
             var query = _unitOfWork.Expenses.GetQueryable()
                 .Where(e => e.UserId == userId);
-            // ... (lógica de filtro) ...
+
+            var startUtc = startDate.HasValue
+                ? AsUtcStartOfDay(startDate.Value)
+                : (DateTime?)null;
+            var endUtcExclusive = endDate.HasValue
+                ? AsUtcStartOfNextDay(endDate.Value)
+                : (DateTime?)null;
+
+            if (startUtc.HasValue)
+                query = query.Where(e => e.Date >= startUtc.Value);
+
+            if (endUtcExclusive.HasValue)
+                query = query.Where(e => e.Date < endUtcExclusive.Value);
+
+            if (!string.IsNullOrWhiteSpace(category))
+                query = query.Where(e => e.Category != null && e.Category.Name.Equals(category, StringComparison.OrdinalIgnoreCase));
+
             var expenses = await query
                 .Include(e => e.Category)
                 .Include(e => e.Subcategory)
@@ -205,6 +236,27 @@ namespace Salgadin.Services
             {
                 throw new KeyNotFoundException("Subcategoria não encontrada ou inválida para a categoria informada.");
             }
+        }
+
+        private static DateTime NormalizeToUtc(DateTime value)
+        {
+            return value.Kind switch
+            {
+                DateTimeKind.Utc => value,
+                DateTimeKind.Local => value.ToUniversalTime(),
+                _ => DateTime.SpecifyKind(value, DateTimeKind.Utc)
+            };
+        }
+
+        private static DateTime AsUtcStartOfDay(DateTime value)
+        {
+            var utc = NormalizeToUtc(value);
+            return new DateTime(utc.Year, utc.Month, utc.Day, 0, 0, 0, DateTimeKind.Utc);
+        }
+
+        private static DateTime AsUtcStartOfNextDay(DateTime value)
+        {
+            return AsUtcStartOfDay(value).AddDays(1);
         }
     }
 }

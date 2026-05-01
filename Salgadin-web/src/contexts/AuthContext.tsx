@@ -3,6 +3,7 @@ import { createContext } from "react";
 export interface User {
   id: string;
   name: string;
+  email: string;
 }
 
 export interface AuthContextData {
@@ -12,6 +13,7 @@ export interface AuthContextData {
   isLoading: boolean;
   login: (token: string) => void;
   logout: () => void;
+  updateAuthUser: (token: string) => void;
 }
 
 export const AuthContext = createContext({} as AuthContextData);

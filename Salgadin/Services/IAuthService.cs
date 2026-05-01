@@ -6,5 +6,7 @@ namespace Salgadin.Services
     {
         Task<string> RegisterAsync(UserRegisterDto dto);
         Task<string> LoginAsync(UserLoginDto dto);
+        Task<UserProfileDto> GetProfileAsync();
+        Task<(string Token, UserProfileDto Profile)> UpdateProfileAsync(UpdateUserProfileDto dto);
     }
 }
