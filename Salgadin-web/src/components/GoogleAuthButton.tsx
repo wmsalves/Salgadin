@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 import { LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -19,6 +19,27 @@ export function GoogleAuthButton({
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [buttonWidth, setButtonWidth] = useState(320);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) {
+      return;
+    }
+
+    const element = containerRef.current;
+    const updateWidth = () => {
+      const nextWidth = Math.max(220, Math.floor(element.clientWidth - 24));
+      setButtonWidth(nextWidth);
+    };
+
+    updateWidth();
+
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
 
   if (!googleClientId) {
     return null;
@@ -47,20 +68,27 @@ export function GoogleAuthButton({
   return (
     <div className="space-y-3">
       <div
-        className={isLoading ? "pointer-events-none opacity-70" : undefined}
+        ref={containerRef}
+        className="rounded-2xl border border-border/70 bg-gradient-to-br from-[var(--brand-from)]/6 via-surface to-[var(--brand-to)]/8 p-3 sm:p-4 shadow-[0_12px_28px_rgba(60,42,32,0.08)]"
       >
-        <GoogleLogin
-          onSuccess={handleSuccess}
-          onError={() =>
-            setError("Não foi possível iniciar o login com Google.")
-          }
-          text={text}
-          theme="outline"
-          size="large"
-          shape="pill"
-          logo_alignment="left"
-          width="100%"
-        />
+        <div
+          className={isLoading ? "pointer-events-none opacity-70" : undefined}
+        >
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={handleSuccess}
+              onError={() =>
+                setError("Não foi possível iniciar o login com Google.")
+              }
+              text={text}
+              theme="filled_black"
+              size="large"
+              shape="pill"
+              logo_alignment="left"
+              width={buttonWidth}
+            />
+          </div>
+        </div>
       </div>
 
       {isLoading && (
