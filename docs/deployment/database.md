@@ -17,6 +17,8 @@ The API is configured to fail fast in `Production` when:
 
 That prevents Render from serving the API against an empty or outdated Supabase database.
 
+When explicitly enabled, the API can also apply pending EF Core migrations during startup before it begins accepting requests.
+
 ## Source of truth
 
 Do not create or alter application tables manually in Supabase when they already belong to the EF Core model.
@@ -48,11 +50,21 @@ Optional:
 - `INTERNAL_HEALTH_TOKEN`
 - `Database__ValidateSchemaOnStartup`
 - `Database__FailOnPendingMigrations`
+- `Database__ApplyMigrationsOnStartup`
 
 Emergency override:
 
 - set `Database__ValidateSchemaOnStartup=false` only as a temporary operational exception.
 - this disables the startup schema guard, but does not change the default production behavior.
+
+Startup migration modes:
+
+- conservative production: `Database__ApplyMigrationsOnStartup=false`
+  - apply migrations manually with `dotnet ef database update`
+  - the API refuses to start if migrations are pending
+- single-instance MVP on Render: `Database__ApplyMigrationsOnStartup=true`
+  - the API applies pending migrations on startup
+  - if migration application fails, startup fails and the service does not accept requests
 
 ### Vercel
 
@@ -82,6 +94,33 @@ Notes:
 - Do not commit this value to `appsettings.json`.
 
 The application also accepts PostgreSQL URL format and normalizes it internally, but the Npgsql key/value format is less error-prone for operations.
+
+## Startup migration behavior
+
+Configuration key:
+
+```text
+Database:ApplyMigrationsOnStartup
+```
+
+Environment variable form:
+
+```text
+Database__ApplyMigrationsOnStartup
+```
+
+Behavior:
+
+- when `true`:
+  - startup creates a scope
+  - verifies database connectivity
+  - logs pending migrations
+  - runs `db.Database.MigrateAsync()`
+  - logs success
+  - aborts startup if migration application fails
+- when `false`:
+  - startup does not mutate schema
+  - pending migrations still fail startup in production when validation is enabled
 
 ## Official migration command
 
@@ -202,6 +241,14 @@ dotnet ef database update --project .\Salgadin\Salgadin.csproj --startup-project
 4. Deploy the API on Render.
 5. Verify the service starts successfully.
 6. Optionally call the internal health endpoint if `INTERNAL_HEALTH_TOKEN` is configured.
+
+For a Render single-instance MVP flow, you may set:
+
+```text
+Database__ApplyMigrationsOnStartup=true
+```
+
+That lets the container apply pending EF Core migrations before serving traffic. For stricter production operations, leave it `false` and keep manual migration application in CI or from a workstation.
 
 ## Post-deploy checklist
 

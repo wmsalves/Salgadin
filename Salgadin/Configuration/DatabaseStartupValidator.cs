@@ -5,7 +5,7 @@ namespace Salgadin.Configuration;
 
 public static class DatabaseStartupValidator
 {
-    public static async Task ValidateAsync(WebApplication app)
+    public static async Task EnsureReadyAsync(WebApplication app)
     {
         using var scope = app.Services.CreateScope();
 
@@ -35,6 +35,21 @@ public static class DatabaseStartupValidator
 
             var pendingMigrations = (await dbContext.Database.GetPendingMigrationsAsync()).ToArray();
 
+            if (pendingMigrations.Length > 0 && options.ApplyMigrationsOnStartup)
+            {
+                logger.LogInformation(
+                    "Applying pending EF Core migrations on startup: {PendingMigrations}.",
+                    string.Join(", ", pendingMigrations));
+
+                await dbContext.Database.MigrateAsync();
+
+                logger.LogInformation(
+                    "Successfully applied EF Core migrations on startup: {AppliedMigrations}.",
+                    string.Join(", ", pendingMigrations));
+
+                pendingMigrations = (await dbContext.Database.GetPendingMigrationsAsync()).ToArray();
+            }
+
             if (pendingMigrations.Length > 0 && options.FailOnPendingMigrations)
             {
                 logger.LogCritical(
@@ -59,4 +74,6 @@ public static class DatabaseStartupValidator
             throw;
         }
     }
+
+    public static Task ValidateAsync(WebApplication app) => EnsureReadyAsync(app);
 }

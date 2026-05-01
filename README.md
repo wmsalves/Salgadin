@@ -64,6 +64,7 @@ Instructions on how to set up and run the project locally.
     The API will be available at `https://localhost:7XXX`.
 
 Production deployment and migration guidance is documented in [docs/deployment/database.md](D:/Projetos/Salgadin/docs/deployment/database.md).
+Use `Database__ApplyMigrationsOnStartup=true` only when you explicitly want the API to apply EF Core migrations during startup, such as a single-instance MVP deployment on Render.
 
 ### Frontend Setup
 

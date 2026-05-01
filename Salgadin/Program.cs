@@ -182,7 +182,7 @@ try
 
     var app = builder.Build();
 
-    await DatabaseStartupValidator.ValidateAsync(app);
+    await DatabaseStartupValidator.EnsureReadyAsync(app);
 
     // ----- Middleware pipeline -----
 
