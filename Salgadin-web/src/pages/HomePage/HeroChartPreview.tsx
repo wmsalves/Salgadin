@@ -1,16 +1,79 @@
+import { useEffect, useState } from "react";
+
 type ChartColors = {
   regular: string;
   attention: string;
 };
 
-const chartData = [
-  { name: "Seg", gasto: 15.5, detalhe: "cafe e transporte", level: "regular" },
-  { name: "Ter", gasto: 27, detalhe: "lanche", level: "regular" },
-  { name: "Qua", gasto: 45.8, detalhe: "mercado", level: "attention" },
-  { name: "Qui", gasto: 22.3, detalhe: "transporte", level: "regular" },
-  { name: "Sex", gasto: 89.1, detalhe: "delivery e mercado", level: "attention" },
-  { name: "Sab", gasto: 60, detalhe: "lazer", level: "attention" },
-  { name: "Dom", gasto: 35, detalhe: "padaria", level: "regular" },
+type SpendingPart = {
+  label: string;
+  value: number;
+  tone: "regular" | "attention";
+};
+
+type ChartDay = {
+  name: string;
+  detalhe: string;
+  spending: SpendingPart[];
+};
+
+const chartData: ChartDay[] = [
+  {
+    name: "Seg",
+    detalhe: "cafe e transporte",
+    spending: [
+      { label: "Alimentação", value: 8.5, tone: "regular" },
+      { label: "Transporte", value: 7, tone: "regular" },
+    ],
+  },
+  {
+    name: "Ter",
+    detalhe: "alimentação e transporte",
+    spending: [
+      { label: "Alimentação", value: 20, tone: "regular" },
+      { label: "Transporte", value: 50, tone: "attention" },
+    ],
+  },
+  {
+    name: "Qua",
+    detalhe: "mercado e padaria",
+    spending: [
+      { label: "Mercado", value: 33.8, tone: "attention" },
+      { label: "Padaria", value: 12, tone: "regular" },
+    ],
+  },
+  {
+    name: "Qui",
+    detalhe: "transporte e lanche",
+    spending: [
+      { label: "Transporte", value: 14.3, tone: "regular" },
+      { label: "Lanche", value: 8, tone: "regular" },
+    ],
+  },
+  {
+    name: "Sex",
+    detalhe: "delivery e mercado",
+    spending: [
+      { label: "Delivery", value: 41.1, tone: "attention" },
+      { label: "Mercado", value: 48, tone: "attention" },
+    ],
+  },
+  {
+    name: "Sab",
+    detalhe: "lazer e transporte",
+    spending: [
+      { label: "Lazer", value: 38, tone: "attention" },
+      { label: "Transporte", value: 22, tone: "regular" },
+    ],
+  },
+  {
+    name: "Dom",
+    detalhe: "padaria e almoço",
+    spending: [
+      { label: "Padaria", value: 11, tone: "regular" },
+      { label: "Almoço", value: 24, tone: "regular" },
+    ],
+  },
 ];
 
 function formatCurrency(value: number) {
@@ -21,19 +84,46 @@ function formatCurrency(value: number) {
   });
 }
 
-export function HeroChartPreview({ chartColors }: { chartColors: ChartColors }) {
-  const maxValue = Math.max(...chartData.map((item) => item.gasto));
+function getAxisMax(maxValue: number) {
+  if (maxValue <= 0) {
+    return 10;
+  }
+
+  return Math.ceil((maxValue * 1.1) / 10) * 10;
+}
+
+export function HeroChartPreview({
+  chartColors,
+}: {
+  chartColors: ChartColors;
+}) {
+  const [isAnimatedIn, setIsAnimatedIn] = useState(false);
+  const normalizedData = chartData.map((day) => ({
+    ...day,
+    total: day.spending.reduce((sum, item) => sum + item.value, 0),
+  }));
+  const axisMax = getAxisMax(
+    Math.max(...normalizedData.map((item) => item.total)),
+  );
+  const axisMarks = [1, 0.75, 0.5, 0.25, 0].map((ratio) =>
+    Math.round(axisMax * ratio),
+  );
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setIsAnimatedIn(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   return (
-    <div className="grid h-full grid-rows-[1fr_auto] rounded-2xl border border-border/60 bg-gradient-to-b from-surface to-surface-2/50 p-4">
-      <div className="grid grid-cols-[56px_1fr] gap-4">
-        <div className="flex flex-col justify-between text-[11px] text-foreground-subtle">
-          {[100, 75, 50, 25, 0].map((mark) => (
+    <div className="grid h-full grid-rows-[1fr_auto] rounded-2xl border border-border/60 bg-gradient-to-b from-surface to-surface-2/50 p-4 sm:p-5">
+      <div className="grid h-full min-h-0 grid-cols-[56px_1fr] gap-4">
+        <div className="flex h-full min-h-0 flex-col justify-between text-[11px] text-foreground-subtle">
+          {axisMarks.map((mark) => (
             <span key={mark}>R$ {mark}</span>
           ))}
         </div>
 
-        <div className="relative">
+        <div className="relative h-full min-h-0">
           <div className="absolute inset-0 flex flex-col justify-between">
             {[0, 1, 2, 3, 4].map((line) => (
               <div
@@ -42,44 +132,99 @@ export function HeroChartPreview({ chartColors }: { chartColors: ChartColors }) 
               />
             ))}
           </div>
-          <div className="absolute left-0 right-0 top-[55%] border-t border-dashed border-[var(--chart-reference)]/70" />
 
-          <div className="relative flex h-full items-end justify-between gap-3 px-1 pt-4">
-            {chartData.map((item) => {
-              const height = `${Math.max((item.gasto / maxValue) * 100, 12)}%`;
-              const fill =
-                item.level === "attention"
-                  ? chartColors.attention
-                  : chartColors.regular;
-
-              return (
-                <div
-                  key={item.name}
-                  className="flex min-w-0 flex-1 flex-col items-center gap-2"
-                >
-                  <div className="text-center text-[11px] text-foreground-muted">
-                    {formatCurrency(item.gasto)}
-                  </div>
-                  <div className="flex h-full w-full items-end">
-                    <div
-                      className="w-full rounded-t-[10px] rounded-b-[4px] shadow-[0_10px_24px_rgba(60,42,32,0.12)]"
-                      style={{ height, backgroundColor: fill }}
-                      title={`${item.name}: ${formatCurrency(item.gasto)} em ${item.detalhe}`}
-                    />
-                  </div>
-                  <div className="text-[12px] font-medium text-foreground-subtle">
-                    {item.name}
+          <div className="relative flex h-full min-h-0 items-end justify-between gap-3 px-1 pt-4">
+            {normalizedData.map((day) => (
+              <div
+                key={day.name}
+                className="group relative flex h-full min-h-0 min-w-0 flex-1 flex-col items-center gap-2"
+              >
+                <div className="pointer-events-none absolute -top-2 left-1/2 z-10 w-44 -translate-x-1/2 -translate-y-full rounded-xl border border-border/70 bg-surface px-3 py-2 text-left opacity-0 shadow-[0_18px_36px_rgba(60,42,32,0.14)] transition duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
+                  <p className="text-[11px] font-semibold text-foreground">
+                    {day.name} - {formatCurrency(day.total)}
+                  </p>
+                  <div className="mt-1.5 space-y-1">
+                    {day.spending.map((item) => (
+                      <div
+                        key={`${day.name}-${item.label}`}
+                        className="flex items-center justify-between gap-2 text-[11px] text-foreground-muted"
+                      >
+                        <span>{item.label}</span>
+                        <span className="font-medium text-foreground">
+                          {formatCurrency(item.value)}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              );
-            })}
+
+                <div className="text-center text-[11px] font-medium text-foreground-muted">
+                  {formatCurrency(day.total)}
+                </div>
+
+                <div className="flex h-full min-h-0 w-full items-end">
+                  <button
+                    type="button"
+                    className="flex h-full min-h-0 w-full items-end rounded-t-[10px] rounded-b-[4px] bg-transparent p-0 text-left transition duration-200 group-hover:-translate-y-0.5"
+                    title={`${day.name}: ${formatCurrency(day.total)} em ${day.detalhe}`}
+                  >
+                    <div
+                      className="flex h-full w-full origin-bottom flex-col justify-end overflow-hidden rounded-t-[10px] rounded-b-[4px] border border-white/15 shadow-[0_12px_26px_rgba(60,42,32,0.14)] transition-[transform] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                      style={{
+                        transform: isAnimatedIn ? "scaleY(1)" : "scaleY(0.04)",
+                        transitionDelay: `${normalizedData.findIndex((item) => item.name === day.name) * 90}ms`,
+                      }}
+                    >
+                      {day.spending
+                        .slice()
+                        .reverse()
+                        .map((item, index) => {
+                          const height = `${(item.value / axisMax) * 100}%`;
+                          const fill =
+                            item.tone === "attention"
+                              ? index === 0
+                                ? chartColors.attention
+                                : "color-mix(in srgb, var(--color-warning) 75%, white 25%)"
+                              : index === 0
+                                ? chartColors.regular
+                                : "color-mix(in srgb, var(--color-primary) 72%, white 28%)";
+
+                          return (
+                            <div
+                              key={`${day.name}-${item.label}`}
+                              style={{ height, backgroundColor: fill }}
+                              className="w-full border-t border-white/20 first:border-t-0 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]"
+                            />
+                          );
+                        })}
+                    </div>
+                  </button>
+                </div>
+
+                <div className="text-[12px] font-medium text-foreground-subtle">
+                  {day.name}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-between rounded-xl border border-border/70 bg-surface/80 px-3 py-2 text-xs text-foreground-muted">
-        <span>Ritmo do dia: R$ 40</span>
-        <span className="font-medium text-foreground">7 lancamentos</span>
+      <div className="mt-4 rounded-xl border border-border/70 bg-surface/80 px-3 py-3 text-xs text-foreground-muted">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <span>Ritmo do dia: R$ 40</span>
+          <span className="font-medium text-foreground">
+            14 lançamentos no exemplo
+          </span>
+        </div>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <span className="rounded-full bg-surface-2 px-2.5 py-1">
+            Alimentação + transporte na terça
+          </span>
+          <span className="rounded-full bg-surface-2 px-2.5 py-1">
+            Sexta foi o pico com delivery e mercado
+          </span>
+        </div>
       </div>
     </div>
   );

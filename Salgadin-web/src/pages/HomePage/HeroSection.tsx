@@ -145,17 +145,17 @@ export function HeroSection() {
           </div>
 
           <p id="weekly-chart-summary" className="sr-only">
-            O grafico mostra gastos de segunda a domingo: segunda R$ 15,50,
-            terca R$ 27,00, quarta R$ 45,80, quinta R$ 22,30, sexta R$ 89,10,
-            sabado R$ 60,00 e domingo R$ 35,00. Sexta-feira foi o maior gasto,
-            principalmente com delivery e mercado.
+            O grafico mostra gastos de segunda a domingo com composicao por
+            categoria. Na terca-feira, por exemplo, foram R$ 20,00 com
+            alimentacao e R$ 50,00 com transporte. Sexta-feira foi o maior
+            gasto, principalmente com delivery e mercado.
           </p>
 
           <div
             className="mt-6 max-w-full overflow-x-auto overflow-y-hidden pb-2 sm:overflow-visible"
             aria-hidden="true"
           >
-            <div className="h-[280px] w-[560px] max-w-none sm:w-full">
+            <div className="h-[340px] w-[640px] max-w-none sm:h-[360px] sm:w-full">
               <Suspense
                 fallback={
                   <div className="h-full w-full rounded-2xl bg-surface-2/70 animate-pulse" />
@@ -167,9 +167,9 @@ export function HeroSection() {
           </div>
 
           <figcaption className="mt-3 flex flex-col gap-2 rounded-2xl border border-border/70 bg-surface-2/60 px-4 py-3 text-sm text-foreground-muted sm:flex-row sm:items-center sm:justify-between">
-            <span>Pico da semana: sexta-feira, R$ 89,10 em delivery e mercado.</span>
+            <span>Terça: alimentação e transporte. Sexta: delivery e mercado no pico da semana.</span>
             <span className="font-semibold text-primary">
-              Total do exemplo: R$ 294,70
+              Total do exemplo: R$ 337,70
             </span>
           </figcaption>
         </figure>

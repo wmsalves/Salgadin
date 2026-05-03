@@ -1,11 +1,9 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Salgadin.DTOs;
+using Salgadin.Exceptions;
 using Salgadin.Models;
 using Salgadin.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Salgadin.Services
 {
@@ -79,7 +77,16 @@ namespace Salgadin.Services
         public async Task<CategoryDto> CreateAsync(CreateCategoryDto dto)
         {
             var userId = _userContext.GetUserId();
+            var normalizedName = dto.Name.Trim();
+
+            if (await _unitOfWork.Categories.GetQueryable()
+                .AnyAsync(c => c.UserId == userId && c.Name.ToLower() == normalizedName.ToLower()))
+            {
+                throw new BadInputException("Já existe uma categoria com esse nome.");
+            }
+
             var category = _mapper.Map<Category>(dto);
+            category.Name = normalizedName;
             category.UserId = userId;
 
             await _unitOfWork.Categories.AddAsync(category);
@@ -91,6 +98,7 @@ namespace Salgadin.Services
         public async Task<CategoryDto?> UpdateAsync(int id, UpdateCategoryDto dto)
         {
             var userId = _userContext.GetUserId();
+            var normalizedName = dto.Name.Trim();
             var category = await _unitOfWork.Categories
                 .GetQueryable()
                 .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
@@ -100,7 +108,13 @@ namespace Salgadin.Services
                 return null;
             }
 
-            category.Name = dto.Name;
+            if (await _unitOfWork.Categories.GetQueryable()
+                .AnyAsync(c => c.UserId == userId && c.Id != id && c.Name.ToLower() == normalizedName.ToLower()))
+            {
+                throw new BadInputException("Já existe uma categoria com esse nome.");
+            }
+
+            category.Name = normalizedName;
 
             _unitOfWork.Categories.Update(category);
             await _unitOfWork.CompleteAsync();

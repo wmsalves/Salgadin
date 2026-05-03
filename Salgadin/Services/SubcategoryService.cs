@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Salgadin.DTOs;
+using Salgadin.Exceptions;
 using Salgadin.Models;
 using Salgadin.Repositories;
 
@@ -42,6 +43,7 @@ namespace Salgadin.Services
         public async Task<SubcategoryDto> CreateAsync(int categoryId, CreateSubcategoryDto dto)
         {
             var userId = _userContext.GetUserId();
+            var normalizedName = dto.Name.Trim();
             var category = await _unitOfWork.Categories.GetQueryable()
                 .FirstOrDefaultAsync(c => c.Id == categoryId && c.UserId == userId);
 
@@ -50,7 +52,16 @@ namespace Salgadin.Services
                 throw new KeyNotFoundException("Categoria não encontrada.");
             }
 
+            if (await _unitOfWork.Subcategories.GetQueryable()
+                .AnyAsync(sc => sc.UserId == userId
+                    && sc.CategoryId == categoryId
+                    && sc.Name.ToLower() == normalizedName.ToLower()))
+            {
+                throw new BadInputException("JÃ¡ existe uma subcategoria com esse nome nessa categoria.");
+            }
+
             var subcategory = _mapper.Map<Subcategory>(dto);
+            subcategory.Name = normalizedName;
             subcategory.CategoryId = categoryId;
             subcategory.UserId = userId;
 
@@ -63,6 +74,7 @@ namespace Salgadin.Services
         public async Task<SubcategoryDto?> UpdateAsync(int categoryId, int id, UpdateSubcategoryDto dto)
         {
             var userId = _userContext.GetUserId();
+            var normalizedName = dto.Name.Trim();
             var subcategory = await _unitOfWork.Subcategories.GetQueryable()
                 .FirstOrDefaultAsync(sc => sc.Id == id && sc.UserId == userId && sc.CategoryId == categoryId);
 
@@ -71,7 +83,16 @@ namespace Salgadin.Services
                 return null;
             }
 
-            subcategory.Name = dto.Name;
+            if (await _unitOfWork.Subcategories.GetQueryable()
+                .AnyAsync(sc => sc.UserId == userId
+                    && sc.CategoryId == categoryId
+                    && sc.Id != id
+                    && sc.Name.ToLower() == normalizedName.ToLower()))
+            {
+                throw new BadInputException("JÃ¡ existe uma subcategoria com esse nome nessa categoria.");
+            }
+
+            subcategory.Name = normalizedName;
 
             _unitOfWork.Subcategories.Update(subcategory);
             await _unitOfWork.CompleteAsync();

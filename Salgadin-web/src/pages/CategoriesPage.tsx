@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { DeleteCategoryModal } from "../components/DeleteCategoryModal";
 import { ConfirmActionModal } from "../components/ConfirmActionModal";
 import {
@@ -62,6 +62,7 @@ const getErrorMessage = (error: unknown, fallback: string) => {
 };
 
 export default function CategoriesPage() {
+  const categoryInputRef = useRef<HTMLInputElement | null>(null);
   const [categories, setCategories] = useState<CategorySummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -79,6 +80,9 @@ export default function CategoriesPage() {
   >({});
   const [newSubcategoryName, setNewSubcategoryName] = useState<
     Record<number, string>
+  >({});
+  const [subcategoryCreateError, setSubcategoryCreateError] = useState<
+    Record<number, string | null>
   >({});
   
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -143,17 +147,26 @@ export default function CategoriesPage() {
 
   const handleCreateCategory = async () => {
     const name = newCategoryName.trim();
-    if (!name) return;
+    if (!name) {
+      setCreateError("Digite um nome para criar a categoria.");
+      categoryInputRef.current?.focus();
+      return;
+    }
+
+    if (name.length < 3) {
+      setCreateError("O nome da categoria deve ter pelo menos 3 caracteres.");
+      categoryInputRef.current?.focus();
+      return;
+    }
+
     setIsCreating(true);
     setCreateError(null);
     try {
-      const created = await createCategory({ name });
+      await createCategory({ name });
       setNewCategoryName("");
-      setCategories((prev) => [...prev, { ...created, spent: 0, limit: 0 }]);
+      await fetchData();
     } catch (error) {
-      const message = getErrorMessage(error, "Falha ao criar a categoria.");
-      setCreateError(message);
-      alert(message);
+      setCreateError(getErrorMessage(error, "Falha ao criar a categoria."));
     } finally {
       setIsCreating(false);
     }
@@ -178,6 +191,7 @@ export default function CategoriesPage() {
   const handleAddSubcategory = async (categoryId: number) => {
     const name = (newSubcategoryName[categoryId] || "").trim();
     if (!name) return;
+    setSubcategoryCreateError((prev) => ({ ...prev, [categoryId]: null }));
     try {
       const created = await createSubcategory(categoryId, name);
       setSubcategoryMap((prev) => ({
@@ -187,7 +201,13 @@ export default function CategoriesPage() {
       setNewSubcategoryName((prev) => ({ ...prev, [categoryId]: "" }));
     } catch (err) {
       console.error("Falha ao criar subcategoria:", err);
-      alert(getErrorMessage(err, "Nao foi possivel criar a subcategoria."));
+      setSubcategoryCreateError((prev) => ({
+        ...prev,
+        [categoryId]: getErrorMessage(
+          err,
+          "Nao foi possivel criar a subcategoria.",
+        ),
+      }));
     }
   };
 
@@ -266,8 +286,14 @@ export default function CategoriesPage() {
         </div>
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
           <input
+            ref={categoryInputRef}
             value={newCategoryName}
-            onChange={(event) => setNewCategoryName(event.target.value)}
+            onChange={(event) => {
+              setNewCategoryName(event.target.value);
+              if (createError) {
+                setCreateError(null);
+              }
+            }}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
                 event.preventDefault();
@@ -275,7 +301,11 @@ export default function CategoriesPage() {
               }
             }}
             placeholder="Nova categoria"
-            className="flex-1 rounded-xl border border-border bg-surface/70 px-4 py-2 text-sm text-foreground outline-none focus:border-primary/50"
+            aria-invalid={createError ? "true" : "false"}
+            className={clsx(
+              "flex-1 rounded-xl border bg-surface/70 px-4 py-2 text-sm text-foreground outline-none focus:border-primary/50",
+              createError ? "border-danger/60" : "border-border",
+            )}
           />
           <button
             type="button"
@@ -412,6 +442,11 @@ export default function CategoriesPage() {
                           Adicionar
                         </button>
                       </div>
+                      {subcategoryCreateError[cat.id] && (
+                        <p className="text-xs text-danger">
+                          {subcategoryCreateError[cat.id]}
+                        </p>
+                      )}
 
                       {subcategoryLoading[cat.id] ? (
                         <p className="text-xs text-foreground-subtle">

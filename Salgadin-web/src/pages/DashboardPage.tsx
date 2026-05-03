@@ -39,8 +39,8 @@ import {
   getExpenses,
 } from "../services/expenseService";
 import { deleteIncome, getIncomes } from "../services/incomeService";
-import { getGoalAlerts } from "../services/goalService";
-import type { DailySummary, Expense, GoalAlert, Income } from "../lib/types";
+import { getGoalAlerts, getGoals } from "../services/goalService";
+import type { DailySummary, Expense, Goal, GoalAlert, Income } from "../lib/types";
 import { AddExpenseModal } from "../components/AddExpenseModal";
 import { AddIncomeModal } from "../components/AddIncomeModal";
 import { ConfirmActionModal } from "../components/ConfirmActionModal";
@@ -68,6 +68,7 @@ export default function DashboardPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [incomes, setIncomes] = useState<Income[]>([]);
   const [summary, setSummary] = useState<DailySummary[]>([]);
+  const [goals, setGoals] = useState<Goal[]>([]);
   const [alerts, setAlerts] = useState<GoalAlert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -81,6 +82,7 @@ export default function DashboardPage() {
   const [isDeletingExpense, setIsDeletingExpense] = useState(false);
   const [isDeletingIncome, setIsDeletingIncome] = useState(false);
   const [isFabOpen, setIsFabOpen] = useState(false);
+  const [showAllCategories, setShowAllCategories] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const fetchData = useCallback(async () => {
@@ -91,17 +93,19 @@ export default function DashboardPage() {
       const startDate = formatApiDate(new Date(year, month, 1));
       const endDate = formatApiDate(new Date(year, month + 1, 0));
 
-      const [expensesData, summaryData, incomesData, alertsData] =
+      const [expensesData, summaryData, incomesData, goalsData, alertsData] =
         await Promise.all([
           getExpenses(startDate, endDate),
           getDailySummary(startDate, endDate),
           getIncomes(startDate, endDate),
+          getGoals(),
           getGoalAlerts(year, month + 1),
         ]);
 
       setExpenses(expensesData);
       setSummary(summaryData);
       setIncomes(incomesData);
+      setGoals(goalsData);
       setAlerts(alertsData);
     } catch (err) {
       console.error("Falha ao buscar dados do dashboard:", err);
@@ -161,6 +165,10 @@ export default function DashboardPage() {
   const totalExpenses = summary.reduce((acc, day) => acc + day.total, 0);
   const totalRevenue = incomes.reduce((acc, inc) => acc + inc.amount, 0);
   const balance = totalRevenue - totalExpenses;
+  const activeGoalsCount = useMemo(
+    () => goals.filter((goal) => goal.isActive).length,
+    [goals],
+  );
 
   const currentMonthLabel = useMemo(
     () =>
@@ -204,6 +212,14 @@ export default function DashboardPage() {
       .sort((a, b) => b.value - a.value);
   }, [expenses]);
 
+  const visibleCategories = useMemo(
+    () =>
+      showAllCategories
+        ? expensesByCategory
+        : expensesByCategory.slice(0, 4),
+    [expensesByCategory, showAllCategories],
+  );
+
   const summaryCards = useMemo(
     () => [
       {
@@ -222,8 +238,8 @@ export default function DashboardPage() {
       {
         title: "Metas Ativas",
         helper: "Economia em progresso",
-        value: "3 metas",
-        trend: "Aguardando review",
+        value: `${activeGoalsCount} ${activeGoalsCount === 1 ? "meta" : "metas"}`,
+        trend: activeGoalsCount > 0 ? "Ativas agora" : "Nenhuma ativa",
         trendIcon: <Target size={14} />,
         icon: Target,
         tone: "info",
@@ -241,7 +257,7 @@ export default function DashboardPage() {
         tone: "danger",
       },
     ],
-    [balance, totalExpenses],
+    [activeGoalsCount, balance, totalExpenses],
   );
 
   if (isLoading) {
@@ -531,47 +547,93 @@ export default function DashboardPage() {
 
         <div className="space-y-6">
           <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover">
-            <h2 className="mb-4 text-lg font-semibold text-foreground">
-              Despesas por Categoria
-            </h2>
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">
+                  Despesas por Categoria
+                </h2>
+                <p className="mt-1 text-xs text-foreground-subtle">
+                  Veja o gráfico e a lista logo abaixo para entender melhor seus gastos.
+                </p>
+              </div>
+              {expensesByCategory.length > 4 && (
+                <button
+                  type="button"
+                  onClick={() => setShowAllCategories((prev) => !prev)}
+                  className="shrink-0 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-surface-3"
+                >
+                  {showAllCategories ? "Ver menos" : "Ver mais"}
+                </button>
+              )}
+            </div>
             {expensesByCategory.length > 0 ? (
-              <div className="h-[200px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={expensesByCategory}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={80}
-                      paddingAngle={5}
-                      dataKey="value"
-                      stroke="none"
+              <div className="space-y-4">
+                <div className="h-[220px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={expensesByCategory}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={82}
+                        paddingAngle={5}
+                        dataKey="value"
+                        stroke="none"
+                      >
+                        {expensesByCategory.map((_, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={CHART_COLORS[index % CHART_COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(value: number) =>
+                          value.toLocaleString("pt-BR", {
+                            style: "currency",
+                            currency: "BRL",
+                          })
+                        }
+                        contentStyle={{
+                          borderRadius: "12px",
+                          border: "1px solid var(--color-border)",
+                          background: "var(--color-surface)",
+                          color: "var(--color-text)",
+                          fontFamily: "var(--font-mono, monospace)",
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div className="space-y-2">
+                  {visibleCategories.map((item, index) => (
+                    <div
+                      key={item.name}
+                      className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-surface-2 px-3 py-2.5"
                     >
-                      {expensesByCategory.map((_, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={CHART_COLORS[index % CHART_COLORS.length]}
+                      <div className="flex min-w-0 items-center gap-3">
+                        <span
+                          className="h-3.5 w-3.5 shrink-0 rounded-full"
+                          style={{
+                            backgroundColor:
+                              CHART_COLORS[index % CHART_COLORS.length],
+                          }}
                         />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      formatter={(value: number) =>
-                        value.toLocaleString("pt-BR", {
+                        <span className="truncate text-sm font-medium text-foreground">
+                          {item.name}
+                        </span>
+                      </div>
+                      <span className="font-mono text-sm font-semibold text-foreground tabular-nums">
+                        {item.value.toLocaleString("pt-BR", {
                           style: "currency",
                           currency: "BRL",
-                        })
-                      }
-                      contentStyle={{
-                        borderRadius: "12px",
-                        border: "1px solid var(--color-border)",
-                        background: "var(--color-surface)",
-                        color: "var(--color-text)",
-                        fontFamily: "var(--font-mono, monospace)",
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+                        })}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             ) : (
               <div className="flex h-[200px] flex-col items-center justify-center text-foreground-subtle">
@@ -662,16 +724,17 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={inc.id}
-                    className="group flex items-center gap-4 rounded-2xl border border-border bg-surface-2 p-3.5 soft-hover-sm hover:bg-surface-3/30 transition-colors"
+                    className="group rounded-2xl border border-border bg-surface-2 p-3.5 soft-hover-sm hover:bg-surface-3/30 transition-colors"
                   >
-                    <div className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-full bg-success/10 text-success shadow-sm">
-                      <Wallet size={18} />
-                    </div>
-                    <div className="min-w-0 flex-1">
+                    <div className="flex items-start gap-3">
+                      <div className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-full bg-success/10 text-success shadow-sm">
+                        <Wallet size={18} />
+                      </div>
+                      <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold text-foreground">
                         {inc.description}
                       </p>
-                      <p className="mt-0.5 text-xs text-foreground-subtle">
+                      <p className="hidden text-xs text-foreground-subtle sm:mt-0.5 sm:block">
                         {inc.isFixed ? "Renda Fixa" : "Renda Extra"} •{" "}
                         {formatDisplayDate(inc.date, {
                           day: "2-digit",
@@ -679,7 +742,24 @@ export default function DashboardPage() {
                         })}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    </div>
+                    <div className="mt-3 flex items-center justify-between gap-3 border-t border-border/70 pt-3 sm:hidden">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-foreground-subtle">
+                        <span className="rounded-full bg-surface px-2 py-0.5">
+                          {inc.isFixed ? "Renda fixa" : "Renda extra"}
+                        </span>
+                        <span>
+                          {formatDisplayDate(inc.date, {
+                            day: "2-digit",
+                            month: "short",
+                          })}
+                        </span>
+                      </div>
+                      <div className="font-mono text-sm font-semibold tracking-tight text-success tabular-nums">
+                        + {amountLabel}
+                      </div>
+                    </div>
+                    <div className="hidden items-center gap-2 sm:flex">
                       <div className="font-mono text-sm font-semibold tracking-tight text-success tabular-nums">
                         + {amountLabel}
                       </div>
@@ -734,16 +814,17 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={exp.id}
-                    className="group flex items-center gap-4 rounded-2xl border border-border bg-surface-2 p-3.5 soft-hover-sm hover:bg-surface-3/30 transition-colors"
+                    className="group rounded-2xl border border-border bg-surface-2 p-3.5 soft-hover-sm hover:bg-surface-3/30 transition-colors"
                   >
-                    <div className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-full bg-surface-3 text-primary shadow-sm">
-                      <Icon size={18} />
-                    </div>
-                    <div className="min-w-0 flex-1">
+                    <div className="flex items-start gap-3">
+                      <div className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-full bg-surface-3 text-primary shadow-sm">
+                        <Icon size={18} />
+                      </div>
+                      <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
                         {exp.description}
                       </p>
-                      <p className="mt-0.5 text-xs text-foreground-subtle">
+                      <p className="hidden text-xs text-foreground-subtle sm:mt-0.5 sm:block">
                         {exp.category}
                         {exp.subcategory ? ` / ${exp.subcategory}` : ""} •{" "}
                         {formatDisplayDate(exp.date, {
@@ -752,7 +833,25 @@ export default function DashboardPage() {
                         })}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    </div>
+                    <div className="mt-3 flex items-center justify-between gap-3 border-t border-border/70 pt-3 sm:hidden">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-foreground-subtle">
+                        <span className="rounded-full bg-surface px-2 py-0.5">
+                          {exp.category}
+                          {exp.subcategory ? ` / ${exp.subcategory}` : ""}
+                        </span>
+                        <span>
+                          {formatDisplayDate(exp.date, {
+                            day: "2-digit",
+                            month: "short",
+                          })}
+                        </span>
+                      </div>
+                      <div className="font-mono text-sm font-semibold tracking-tight text-danger tabular-nums">
+                        - {amountLabel}
+                      </div>
+                    </div>
+                    <div className="hidden items-center gap-2 sm:flex">
                       <div className="font-mono text-sm font-semibold tracking-tight text-danger tabular-nums">
                         - {amountLabel}
                       </div>
