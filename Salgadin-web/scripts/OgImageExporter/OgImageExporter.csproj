@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Web.WebView2.Core">
+      <HintPath>C:\Program Files\Microsoft SQL Server Management Studio 21\Release\Common7\IDE\PrivateAssemblies\Microsoft.Web.WebView2.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.WebView2.Wpf">
+      <HintPath>C:\Program Files\Microsoft SQL Server Management Studio 21\Release\Common7\IDE\PrivateAssemblies\Microsoft.Web.WebView2.Wpf.dll</HintPath>
+    </Reference>
+    <Content Include="C:\Program Files\Microsoft SQL Server Management Studio 21\Release\Common7\IDE\PrivateAssemblies\WebView2Loader.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>WebView2Loader.dll</Link>
+    </Content>
+  </ItemGroup>
+</Project>
