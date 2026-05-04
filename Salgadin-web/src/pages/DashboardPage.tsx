@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Area,
   AreaChart,
@@ -44,6 +45,7 @@ import type { DailySummary, Expense, Goal, GoalAlert, Income } from "../lib/type
 import { AddExpenseModal } from "../components/AddExpenseModal";
 import { AddIncomeModal } from "../components/AddIncomeModal";
 import { ConfirmActionModal } from "../components/ConfirmActionModal";
+import { EmptyState } from "../components/EmptyState";
 import { formatApiDate, formatDisplayDate } from "../lib/dates";
 
 const categoryIcons: Record<string, React.ComponentType<{ size?: number }>> = {
@@ -165,6 +167,9 @@ export default function DashboardPage() {
   const totalExpenses = summary.reduce((acc, day) => acc + day.total, 0);
   const totalRevenue = incomes.reduce((acc, inc) => acc + inc.amount, 0);
   const balance = totalRevenue - totalExpenses;
+  const hasFinancialData = expenses.length > 0 || incomes.length > 0;
+  const shouldShowGuidedStart =
+    !hasFinancialData && goals.length === 0 && alerts.length === 0;
   const activeGoalsCount = useMemo(
     () => goals.filter((goal) => goal.isActive).length,
     [goals],
@@ -398,6 +403,108 @@ export default function DashboardPage() {
         </div>
       </header>
 
+      {shouldShowGuidedStart && (
+        <section className="rounded-3xl border border-primary/24 bg-gradient-to-br from-primary/12 via-surface/92 to-surface-2/82 p-5 shadow-[0_18px_42px_rgba(60,42,32,0.12)] sm:p-7">
+          <div className="grid gap-6 lg:grid-cols-[1.05fr_1.3fr] lg:items-center">
+            <div>
+              <span className="inline-flex items-center rounded-full border border-primary/24 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                Primeiros passos
+              </span>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-foreground">
+                Seu painel ainda esta vazio
+              </h2>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-foreground-muted">
+                Comece com um lancamento real. O Salgadin fica mais util quando
+                voce registra renda, pequenos gastos e uma meta simples para o mes.
+              </p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              {[
+                {
+                  title: "Registre sua renda",
+                  description: "Defina a base do seu saldo mensal.",
+                  icon: Wallet,
+                  action: () => setIsAddIncomeModalOpen(true),
+                  label: "Adicionar renda",
+                },
+                {
+                  title: "Adicione um pequeno gasto",
+                  description: "Cafes, lanches e transporte comecam a mostrar padroes.",
+                  icon: Receipt,
+                  action: () => setIsAddExpenseModalOpen(true),
+                  label: "Adicionar gasto",
+                },
+                {
+                  title: "Organize categorias",
+                  description: "Deixe os gastos claros por tipo de consumo.",
+                  icon: PieChartIcon,
+                  href: "/categorias",
+                  label: "Criar categorias",
+                },
+                {
+                  title: "Crie uma meta",
+                  description: "Controle os pequenos gastos antes que eles crescam.",
+                  icon: Target,
+                  href: "/metas",
+                  label: "Criar meta",
+                },
+              ].map((item) => {
+                const Icon = item.icon;
+                return item.href ? (
+                  <Link
+                    key={item.title}
+                    to={item.href}
+                    className="rounded-2xl border border-border/70 bg-surface/78 p-4 transition hover:border-primary/30 hover:bg-surface-2"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                        <Icon size={18} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-semibold text-foreground">
+                          {item.title}
+                        </h3>
+                        <p className="mt-1 text-xs leading-5 text-foreground-muted">
+                          {item.description}
+                        </p>
+                        <span className="mt-3 inline-flex text-xs font-semibold text-primary">
+                          {item.label}
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                ) : (
+                  <button
+                    key={item.title}
+                    type="button"
+                    onClick={item.action}
+                    className="rounded-2xl border border-border/70 bg-surface/78 p-4 text-left transition hover:border-primary/30 hover:bg-surface-2"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+                        <Icon size={18} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-semibold text-foreground">
+                          {item.title}
+                        </h3>
+                        <p className="mt-1 text-xs leading-5 text-foreground-muted">
+                          {item.description}
+                        </p>
+                        <span className="mt-3 inline-flex text-xs font-semibold text-primary">
+                          {item.label}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {summaryCards.map((card, index) => {
           const Icon = card.icon;
@@ -535,12 +642,21 @@ export default function DashboardPage() {
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex h-full flex-col items-center justify-center text-foreground-subtle">
-                <TrendingDown size={40} className="mb-3 opacity-20" />
-                <p className="text-sm font-medium">
-                  Nenhum dado financeiro para o periodo.
-                </p>
-              </div>
+              <EmptyState
+                icon={TrendingDown}
+                title="Sem dados suficientes ainda"
+                description="Registre alguns lancamentos para visualizar seus padroes de gasto ao longo do mes."
+                primaryAction={{
+                  label: "Adicionar despesa",
+                  onClick: () => setIsAddExpenseModalOpen(true),
+                }}
+                secondaryAction={{
+                  label: "Adicionar renda",
+                  onClick: () => setIsAddIncomeModalOpen(true),
+                }}
+                className="flex h-full flex-col items-center justify-center"
+                compact
+              />
             )}
           </div>
         </div>
@@ -636,10 +752,21 @@ export default function DashboardPage() {
                 </div>
               </div>
             ) : (
-              <div className="flex h-[200px] flex-col items-center justify-center text-foreground-subtle">
-                <PieChartIcon size={40} className="mb-3 opacity-20" />
-                <p className="text-sm font-medium">Nenhuma despesa para exibir</p>
-              </div>
+              <EmptyState
+                icon={PieChartIcon}
+                title="Categorias aparecem depois do primeiro gasto"
+                description="Adicione uma despesa categorizada para entender onde os pequenos gastos se concentram."
+                primaryAction={{
+                  label: "Adicionar despesa",
+                  onClick: () => setIsAddExpenseModalOpen(true),
+                }}
+                secondaryAction={{
+                  label: "Criar categorias",
+                  href: "/categorias",
+                }}
+                className="min-h-[220px]"
+                compact
+              />
             )}
           </div>
 
@@ -692,14 +819,21 @@ export default function DashboardPage() {
                   );
                 })
               ) : (
-                <div className="flex flex-col items-center justify-center py-4 text-foreground-subtle">
-                  <Target size={32} className="mb-2 opacity-20" />
-                  <p className="text-center text-sm font-medium">
-                    Dentro dos limites.
-                    <br />
-                    Tudo sob controle!
-                  </p>
-                </div>
+                <EmptyState
+                  icon={Target}
+                  title={goals.length > 0 ? "Dentro dos limites" : "Nenhuma meta ativa ainda"}
+                  description={
+                    goals.length > 0
+                      ? "Tudo sob controle neste periodo. Continue registrando seus gastos para acompanhar os alertas."
+                      : "Crie uma meta para controlar os pequenos gastos antes que eles crescam."
+                  }
+                  primaryAction={
+                    goals.length > 0
+                      ? undefined
+                      : { label: "Criar meta", href: "/metas" }
+                  }
+                  compact
+                />
               )}
             </div>
           </div>
@@ -788,10 +922,17 @@ export default function DashboardPage() {
                 );
               })
             ) : (
-              <div className="flex flex-1 flex-col items-center justify-center py-6 text-foreground-subtle">
-                <HandCoins size={40} className="mb-3 opacity-20" />
-                <p className="text-sm font-medium">Nenhuma receita registrada.</p>
-              </div>
+              <EmptyState
+                icon={HandCoins}
+                title="Registre sua primeira renda"
+                description="Com a renda cadastrada, o saldo mensal e a leitura dos gastos ficam mais claros."
+                primaryAction={{
+                  label: "Adicionar renda",
+                  onClick: () => setIsAddIncomeModalOpen(true),
+                }}
+                className="flex-1"
+                compact
+              />
             )}
           </div>
         </div>
@@ -880,10 +1021,17 @@ export default function DashboardPage() {
                 );
               })
             ) : (
-              <div className="flex flex-1 flex-col items-center justify-center py-6 text-foreground-subtle">
-                <Receipt size={40} className="mb-3 opacity-20" />
-                <p className="text-sm font-medium">Nenhuma despesa registrada.</p>
-              </div>
+              <EmptyState
+                icon={Receipt}
+                title="Adicione seu primeiro gasto"
+                description="Comece por algo pequeno, como cafe, lanche ou transporte. E isso que revela seus habitos."
+                primaryAction={{
+                  label: "Adicionar despesa",
+                  onClick: () => setIsAddExpenseModalOpen(true),
+                }}
+                className="flex-1"
+                compact
+              />
             )}
           </div>
         </div>

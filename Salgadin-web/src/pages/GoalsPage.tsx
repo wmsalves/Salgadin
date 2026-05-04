@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Trophy, Sparkles, Target, ArrowUpRight } from "lucide-react";
 import { getGoals, createGoal, getGoalAlerts } from "../services/goalService";
 import { getCategories, type Category } from "../services/categoryService";
 import type { Goal, GoalAlert } from "../lib/types";
+import { EmptyState } from "../components/EmptyState";
 
 const defaultAlertThreshold = 0.8;
 
@@ -21,7 +22,7 @@ export default function GoalsPage() {
 
   const now = useMemo(() => new Date(), []);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
       const [goalsData, alertsData, categoriesData] = await Promise.all([
@@ -35,11 +36,11 @@ export default function GoalsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [now]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const alertsByGoal = useMemo(() => {
     return alerts.reduce<Record<number, GoalAlert>>((acc, item) => {
@@ -159,9 +160,20 @@ export default function GoalsPage() {
           Carregando metas...
         </div>
       ) : goals.length === 0 ? (
-        <div className="rounded-2xl border border-border bg-surface/70 p-6 text-center text-foreground-subtle">
-          Nenhuma meta cadastrada.
-        </div>
+        <EmptyState
+          icon={Target}
+          title="Crie sua primeira meta"
+          description="Escolha um limite simples para os pequenos gastos do mes. O Salgadin avisa quando voce estiver chegando perto."
+          primaryAction={{
+            label: "Criar meta",
+            onClick: () => setIsFormOpen(true),
+          }}
+          secondaryAction={
+            categories.length === 0
+              ? { label: "Criar categorias", href: "/categorias" }
+              : undefined
+          }
+        />
       ) : (
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {goals.map((goal, index) => {

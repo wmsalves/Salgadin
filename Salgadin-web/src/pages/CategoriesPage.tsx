@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { DeleteCategoryModal } from "../components/DeleteCategoryModal";
 import { ConfirmActionModal } from "../components/ConfirmActionModal";
+import { EmptyState } from "../components/EmptyState";
 import {
   getCategorySummary,
   deleteCategory,
@@ -325,9 +326,19 @@ export default function CategoriesPage() {
       </header>
 
       {categoryCards.length === 0 ? (
-        <div className="rounded-2xl border border-border bg-surface/70 p-8 text-center text-foreground-subtle">
-          Voce ainda nao tem nenhuma categoria personalizada.
-        </div>
+        <EmptyState
+          icon={Sparkles}
+          title="Organize seus primeiros pequenos gastos"
+          description="Crie categorias como alimentacao, transporte ou mercado para entender para onde o dinheiro vai."
+          primaryAction={{
+            label: "Criar categoria",
+            onClick: () => categoryInputRef.current?.focus(),
+          }}
+          secondaryAction={{
+            label: "Ver dashboard",
+            href: "/dashboard",
+          }}
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
           {categoryCards.map((cat, index) => {
@@ -478,9 +489,10 @@ export default function CategoriesPage() {
                           ))}
                         </div>
                       ) : (
-                        <p className="text-xs text-foreground-subtle">
-                          Nenhuma subcategoria cadastrada.
-                        </p>
+                        <div className="rounded-xl border border-dashed border-border bg-surface/60 px-3 py-2 text-xs leading-5 text-foreground-subtle">
+                          Use subcategorias para separar detalhes como cafe,
+                          aplicativo, mercado ou lanche.
+                        </div>
                       )}
                     </div>
                   )}

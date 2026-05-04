@@ -8,7 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Download, CalendarRange } from "lucide-react";
+import { Download, CalendarRange, LineChart, PieChart } from "lucide-react";
 import {
   getMonthlyReport,
   getWeeklyReport,
@@ -24,6 +24,7 @@ import type {
 } from "../lib/types";
 import { getCategories, type Category } from "../services/categoryService";
 import { getSubcategories } from "../services/subcategoryService";
+import { EmptyState } from "../components/EmptyState";
 
 type ReportMode = "monthly" | "weekly";
 
@@ -154,6 +155,10 @@ export default function ReportsPage() {
       value: item.total,
     }));
   }, [report]);
+  const hasReportData = useMemo(
+    () => series.some((item) => item.value > 0) || (report?.total ?? 0) > 0,
+    [report?.total, series],
+  );
 
   const handleExport = async (format: "csv" | "pdf") => {
     const file = await exportExpenses(
@@ -503,65 +508,76 @@ export default function ReportsPage() {
               </div>
             </div>
             <div className="h-[280px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={series}>
-                  <defs>
-                    <linearGradient
-                      id="reportGradient"
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop
-                        offset="0%"
-                        stopColor="var(--color-primary)"
-                        stopOpacity={0.35}
-                      />
-                      <stop
-                        offset="100%"
-                        stopColor="rgba(242,139,91,0)"
-                        stopOpacity={0}
-                      />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid
-                    stroke="var(--color-border)"
-                    strokeDasharray="4 4"
-                    vertical={false}
-                    opacity={0.6}
-                  />
-                  <XAxis
-                    dataKey="day"
-                    tickLine={false}
-                    axisLine={false}
-                    tick={{ fill: "var(--chart-muted)" }}
-                  />
-                  <YAxis
-                    tickFormatter={(value) => `R$ ${value}`}
-                    tickLine={false}
-                    axisLine={false}
-                    tick={{ fill: "var(--chart-muted)" }}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      background: "var(--color-surface)",
-                      border: "1px solid var(--color-border)",
-                      color: "var(--color-text)",
-                      borderRadius: "16px",
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="value"
-                    stroke="var(--color-primary)"
-                    strokeWidth={2.5}
-                    dot={false}
-                    activeDot={{ r: 4, fill: "var(--color-primary)" }}
-                    fill="url(#reportGradient)"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              {hasReportData ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={series}>
+                    <defs>
+                      <linearGradient
+                        id="reportGradient"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="0%"
+                          stopColor="var(--color-primary)"
+                          stopOpacity={0.35}
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor="rgba(242,139,91,0)"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      stroke="var(--color-border)"
+                      strokeDasharray="4 4"
+                      vertical={false}
+                      opacity={0.6}
+                    />
+                    <XAxis
+                      dataKey="day"
+                      tickLine={false}
+                      axisLine={false}
+                      tick={{ fill: "var(--chart-muted)" }}
+                    />
+                    <YAxis
+                      tickFormatter={(value) => `R$ ${value}`}
+                      tickLine={false}
+                      axisLine={false}
+                      tick={{ fill: "var(--chart-muted)" }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        background: "var(--color-surface)",
+                        border: "1px solid var(--color-border)",
+                        color: "var(--color-text)",
+                        borderRadius: "16px",
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="value"
+                      stroke="var(--color-primary)"
+                      strokeWidth={2.5}
+                      dot={false}
+                      activeDot={{ r: 4, fill: "var(--color-primary)" }}
+                      fill="url(#reportGradient)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                <EmptyState
+                  icon={LineChart}
+                  title="Sem dados suficientes ainda"
+                  description="Registre algumas despesas para transformar seus lancamentos em tendencias e comparacoes."
+                  primaryAction={{ label: "Ir para o dashboard", href: "/dashboard" }}
+                  compact
+                  className="flex h-full flex-col items-center justify-center"
+                />
+              )}
             </div>
           </div>
 
@@ -587,9 +603,13 @@ export default function ReportsPage() {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-foreground-subtle">
-                  Nenhuma categoria encontrada.
-                </p>
+                <EmptyState
+                  icon={PieChart}
+                  title="Categorias ainda sem movimento"
+                  description="Quando voce cadastrar gastos por categoria, este resumo mostra onde os pequenos valores estao se acumulando."
+                  primaryAction={{ label: "Criar categorias", href: "/categorias" }}
+                  compact
+                />
               )}
             </div>
           </div>
