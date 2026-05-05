@@ -19,6 +19,9 @@ namespace Salgadin.Data
         public DbSet<Notification> Notifications { get; set; } = null!;
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<Income> Incomes { get; set; } = null!;
+        public DbSet<UserWhatsAppAccount> UserWhatsAppAccounts { get; set; } = null!;
+        public DbSet<WhatsAppLinkCode> WhatsAppLinkCodes { get; set; } = null!;
+        public DbSet<WhatsAppProcessedMessage> WhatsAppProcessedMessages { get; set; } = null!;
 
         // Sobrescreve o método OnModelCreating para aplicar as configurações.
         protected override void OnModelCreating(ModelBuilder modelBuilder)

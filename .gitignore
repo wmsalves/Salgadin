@@ -205,6 +205,9 @@ pnpm-debug.log*
 *.swp
 *.swo
 
+# Local AI agent
+AGENTS.md
+
 # System
 .DS_Store
 Thumbs.db

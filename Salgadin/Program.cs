@@ -64,6 +64,8 @@ try
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<IUserContextService, UserContextService>();
     builder.Services.AddScoped<IGoogleTokenValidator, GoogleTokenValidator>();
+    builder.Services.AddSingleton<IWhatsAppExpenseMessageParser, WhatsAppExpenseMessageParser>();
+    builder.Services.AddScoped<IWhatsAppIntegrationService, WhatsAppIntegrationService>();
 
     // Permite o acesso ao HttpContext nos serviços.
     builder.Services.AddHttpContextAccessor();

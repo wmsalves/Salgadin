@@ -67,6 +67,8 @@ Instructions on how to set up and run the project locally.
 Production deployment and migration guidance is documented in [docs/deployment/database.md](D:/Projetos/Salgadin/docs/deployment/database.md).
 Use `Database__ApplyMigrationsOnStartup=true` only when you explicitly want the API to apply EF Core migrations during startup, such as a single-instance MVP deployment on Render.
 
+The internal foundation for future WhatsApp expense capture is documented in [docs/integrations/whatsapp.md](docs/integrations/whatsapp.md).
+
 ### Frontend Setup
 
 1.  In a new terminal, navigate to the frontend folder:

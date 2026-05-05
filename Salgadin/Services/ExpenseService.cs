@@ -67,7 +67,11 @@ namespace Salgadin.Services
         public async Task<ExpenseDto> AddExpenseAsync(CreateExpenseDto dto)
         {
             var userId = _userContext.GetUserId();
+            return await AddExpenseForUserAsync(userId, dto);
+        }
 
+        public async Task<ExpenseDto> AddExpenseForUserAsync(int userId, CreateExpenseDto dto)
+        {
             var category = await _unitOfWork.Categories.GetByIdAsync(dto.CategoryId);
             if (category == null || category.UserId != userId)
             {

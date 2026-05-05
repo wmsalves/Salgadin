@@ -41,7 +41,13 @@ import {
 } from "../services/expenseService";
 import { deleteIncome, getIncomes } from "../services/incomeService";
 import { getGoalAlerts, getGoals } from "../services/goalService";
-import type { DailySummary, Expense, Goal, GoalAlert, Income } from "../lib/types";
+import type {
+  DailySummary,
+  Expense,
+  Goal,
+  GoalAlert,
+  Income,
+} from "../lib/types";
 import { AddExpenseModal } from "../components/AddExpenseModal";
 import { AddIncomeModal } from "../components/AddIncomeModal";
 import { ConfirmActionModal } from "../components/ConfirmActionModal";
@@ -219,9 +225,7 @@ export default function DashboardPage() {
 
   const visibleCategories = useMemo(
     () =>
-      showAllCategories
-        ? expensesByCategory
-        : expensesByCategory.slice(0, 4),
+      showAllCategories ? expensesByCategory : expensesByCategory.slice(0, 4),
     [expensesByCategory, showAllCategories],
   );
 
@@ -236,7 +240,11 @@ export default function DashboardPage() {
         }),
         trend: balance >= 0 ? "Positivo" : "Atencao",
         trendIcon:
-          balance >= 0 ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />,
+          balance >= 0 ? (
+            <ArrowUpRight size={14} />
+          ) : (
+            <ArrowDownRight size={14} />
+          ),
         icon: Wallet,
         tone: balance >= 0 ? "success" : "danger",
       },
@@ -341,7 +349,9 @@ export default function DashboardPage() {
           onClick={() => setIsFabOpen(!isFabOpen)}
           className={clsx(
             "flex h-14 w-14 items-center justify-center rounded-full shadow-[0_8px_30px_rgb(var(--shadow-color)/0.3)] transition-transform",
-            isFabOpen ? "rotate-45 bg-surface-3 text-foreground" : "bg-primary text-white",
+            isFabOpen
+              ? "rotate-45 bg-surface-3 text-foreground"
+              : "bg-primary text-white",
           )}
         >
           <Plus size={26} />
@@ -415,7 +425,8 @@ export default function DashboardPage() {
               </h2>
               <p className="mt-2 max-w-xl text-sm leading-6 text-foreground-muted">
                 Comece com um lancamento real. O Salgadin fica mais util quando
-                voce registra renda, pequenos gastos e uma meta simples para o mes.
+                voce registra renda, pequenos gastos e uma meta simples para o
+                mes.
               </p>
             </div>
 
@@ -430,7 +441,8 @@ export default function DashboardPage() {
                 },
                 {
                   title: "Adicione um pequeno gasto",
-                  description: "Cafes, lanches e transporte comecam a mostrar padroes.",
+                  description:
+                    "Cafes, lanches e transporte comecam a mostrar padroes.",
                   icon: Receipt,
                   action: () => setIsAddExpenseModalOpen(true),
                   label: "Adicionar gasto",
@@ -444,7 +456,8 @@ export default function DashboardPage() {
                 },
                 {
                   title: "Crie uma meta",
-                  description: "Controle os pequenos gastos antes que eles crescam.",
+                  description:
+                    "Controle os pequenos gastos antes que eles crescam.",
                   icon: Target,
                   href: "/metas",
                   label: "Criar meta",
@@ -542,7 +555,12 @@ export default function DashboardPage() {
               <div className="mt-4 font-mono text-2xl font-semibold tracking-tight text-foreground tabular-nums">
                 {card.value}
               </div>
-              <div className={clsx("mt-2 flex items-center gap-1 text-xs font-medium", toneClass)}>
+              <div
+                className={clsx(
+                  "mt-2 flex items-center gap-1 text-xs font-medium",
+                  toneClass,
+                )}
+              >
                 {card.trendIcon} {card.trend}
               </div>
             </div>
@@ -578,14 +596,28 @@ export default function DashboardPage() {
               </span>
             </div>
           </div>
-          <div className="h-[280px]">
+          <div className="h-[475px]">
             {cashflowData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={cashflowData}>
                   <defs>
-                    <linearGradient id={chartGradient.id} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={chartGradient.from} stopOpacity={0.35} />
-                      <stop offset="100%" stopColor={chartGradient.to} stopOpacity={0} />
+                    <linearGradient
+                      id={chartGradient.id}
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop
+                        offset="0%"
+                        stopColor={chartGradient.from}
+                        stopOpacity={0.35}
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor={chartGradient.to}
+                        stopOpacity={0}
+                      />
                     </linearGradient>
                   </defs>
                   <CartesianGrid
@@ -669,7 +701,8 @@ export default function DashboardPage() {
                   Despesas por Categoria
                 </h2>
                 <p className="mt-1 text-xs text-foreground-subtle">
-                  Veja o gráfico e a lista logo abaixo para entender melhor seus gastos.
+                  Veja o gráfico e a lista logo abaixo para entender melhor seus
+                  gastos.
                 </p>
               </div>
               {expensesByCategory.length > 4 && (
@@ -821,7 +854,11 @@ export default function DashboardPage() {
               ) : (
                 <EmptyState
                   icon={Target}
-                  title={goals.length > 0 ? "Dentro dos limites" : "Nenhuma meta ativa ainda"}
+                  title={
+                    goals.length > 0
+                      ? "Dentro dos limites"
+                      : "Nenhuma meta ativa ainda"
+                  }
                   description={
                     goals.length > 0
                       ? "Tudo sob controle neste periodo. Continue registrando seus gastos para acompanhar os alertas."
@@ -865,17 +902,17 @@ export default function DashboardPage() {
                         <Wallet size={18} />
                       </div>
                       <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-foreground">
-                        {inc.description}
-                      </p>
-                      <p className="hidden text-xs text-foreground-subtle sm:mt-0.5 sm:block">
-                        {inc.isFixed ? "Renda Fixa" : "Renda Extra"} •{" "}
-                        {formatDisplayDate(inc.date, {
-                          day: "2-digit",
-                          month: "short",
-                        })}
-                      </p>
-                    </div>
+                        <p className="truncate text-sm font-semibold text-foreground">
+                          {inc.description}
+                        </p>
+                        <p className="hidden text-xs text-foreground-subtle sm:mt-0.5 sm:block">
+                          {inc.isFixed ? "Renda Fixa" : "Renda Extra"} •{" "}
+                          {formatDisplayDate(inc.date, {
+                            day: "2-digit",
+                            month: "short",
+                          })}
+                        </p>
+                      </div>
                     </div>
                     <div className="mt-3 flex items-center justify-between gap-3 border-t border-border/70 pt-3 sm:hidden">
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-foreground-subtle">
@@ -947,10 +984,13 @@ export default function DashboardPage() {
             {expenses.length > 0 ? (
               expenses.slice(0, 5).map((exp) => {
                 const Icon = categoryIcons[exp.category] || PiggyBank;
-                const amountLabel = Math.abs(exp.amount).toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                });
+                const amountLabel = Math.abs(exp.amount).toLocaleString(
+                  "pt-BR",
+                  {
+                    style: "currency",
+                    currency: "BRL",
+                  },
+                );
 
                 return (
                   <div
@@ -962,18 +1002,20 @@ export default function DashboardPage() {
                         <Icon size={18} />
                       </div>
                       <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
-                        {exp.description}
-                      </p>
-                      <p className="hidden text-xs text-foreground-subtle sm:mt-0.5 sm:block">
-                        {exp.category}
-                        {exp.subcategory ? ` / ${exp.subcategory}` : ""} •{" "}
-                        {formatDisplayDate(exp.date, {
-                          day: "2-digit",
-                          month: "short",
-                        })}
-                      </p>
-                    </div>
+                        <p className="truncate text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
+                          {exp.description}
+                        </p>
+                        <p className="hidden text-xs text-foreground-subtle sm:mt-0.5 sm:block">
+                          {exp.category}
+                          {exp.subcategory
+                            ? ` / ${exp.subcategory}`
+                            : ""} •{" "}
+                          {formatDisplayDate(exp.date, {
+                            day: "2-digit",
+                            month: "short",
+                          })}
+                        </p>
+                      </div>
                     </div>
                     <div className="mt-3 flex items-center justify-between gap-3 border-t border-border/70 pt-3 sm:hidden">
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-foreground-subtle">

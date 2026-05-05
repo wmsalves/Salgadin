@@ -16,6 +16,7 @@ namespace Salgadin.Services
 
         // Criar (retorna o DTO criado para usar em CreatedAtAction)
         Task<ExpenseDto> AddExpenseAsync(CreateExpenseDto dto);
+        Task<ExpenseDto> AddExpenseForUserAsync(int userId, CreateExpenseDto dto);
 
         // Atualizar e excluir (sem retorno; use 204 NoContent)
         Task UpdateExpenseAsync(int id, UpdateExpenseDto dto);
