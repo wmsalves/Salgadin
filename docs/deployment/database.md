@@ -124,6 +124,61 @@ Behavior:
   - startup does not mutate schema
   - pending migrations still fail startup in production when validation is enabled
 
+## Public health endpoints
+
+The API exposes minimal public health endpoints for production operations:
+
+```text
+GET /health
+GET /health/live
+GET /health/ready
+```
+
+Behavior:
+
+- `/health` returns `200` when the API process is alive.
+- `/health/live` returns `200` when the API process is alive.
+- `/health/ready` checks PostgreSQL connectivity.
+- `/health/ready` returns `200` when the API can connect to the database.
+- `/health/ready` returns `503` when the database is unreachable.
+
+Example response:
+
+```json
+{
+  "status": "healthy",
+  "service": "Salgadin API",
+  "timestamp": "2026-05-01T12:00:00.0000000+00:00"
+}
+```
+
+Readiness response:
+
+```json
+{
+  "status": "healthy",
+  "service": "Salgadin API",
+  "database": "healthy",
+  "timestamp": "2026-05-01T12:00:00.0000000+00:00"
+}
+```
+
+These endpoints do not return connection strings, secrets, stack traces, user data, or migration names.
+
+For Render, use:
+
+```text
+Health Check Path: /health
+```
+
+`render.yaml` already defines:
+
+```yaml
+healthCheckPath: /health
+```
+
+Use `/health/ready` manually after deploy when you want to confirm API + database connectivity.
+
 ## Official migration command
 
 Run migrations from a machine or CI environment that has the .NET SDK and network access to the Supabase database:
@@ -242,8 +297,15 @@ dotnet ef database update --project .\Salgadin\Salgadin.csproj --startup-project
 
 4. Deploy the API on Render.
 5. Verify the service starts successfully.
-6. Optionally call the internal health endpoint if `INTERNAL_HEALTH_TOKEN` is configured.
-7. If Google sign-in is enabled, confirm both:
+6. Verify public health endpoints:
+
+```powershell
+Invoke-RestMethod https://<render-service-url>/health
+Invoke-RestMethod https://<render-service-url>/health/ready
+```
+
+7. Optionally call the internal health endpoint if `INTERNAL_HEALTH_TOKEN` is configured.
+8. If Google sign-in is enabled, confirm both:
    - `Authentication__Google__ClientId` on Render
    - `VITE_GOOGLE_CLIENT_ID` on the frontend deployment
 

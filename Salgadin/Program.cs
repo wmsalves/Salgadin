@@ -183,6 +183,13 @@ try
 
     var app = builder.Build();
 
+    var startupValidationOptions = DatabaseStartupValidationOptions.FromConfiguration(app.Configuration, app.Environment);
+    app.Logger.LogInformation(
+        "Salgadin API startup. Environment={EnvironmentName}; ApplyMigrationsOnStartup={ApplyMigrationsOnStartup}; ValidateSchemaOnStartup={ValidateSchemaOnStartup}.",
+        app.Environment.EnvironmentName,
+        startupValidationOptions.ApplyMigrationsOnStartup,
+        startupValidationOptions.ValidateSchemaOnStartup);
+
     await DatabaseStartupValidator.EnsureReadyAsync(app);
 
     // ----- Middleware pipeline -----
@@ -212,6 +219,46 @@ try
 
     app.UseAuthentication();
     app.UseAuthorization();
+
+    app.MapGet("/health", () => Results.Ok(CreateHealthResponse("healthy")))
+        .AllowAnonymous()
+        .ExcludeFromDescription();
+
+    app.MapGet("/health/live", () => Results.Ok(CreateHealthResponse("healthy")))
+        .AllowAnonymous()
+        .ExcludeFromDescription();
+
+    app.MapGet("/health/ready", async (
+        SalgadinContext dbContext,
+        ILoggerFactory loggerFactory,
+        CancellationToken cancellationToken) =>
+    {
+        var logger = loggerFactory.CreateLogger("HealthChecks");
+
+        try
+        {
+            var canConnect = await dbContext.Database.CanConnectAsync(cancellationToken);
+
+            if (!canConnect)
+            {
+                logger.LogWarning("Readiness health check failed because the database is unreachable.");
+                return Results.Json(
+                    CreateReadinessResponse("unhealthy", "unhealthy"),
+                    statusCode: StatusCodes.Status503ServiceUnavailable);
+            }
+
+            return Results.Ok(CreateReadinessResponse("healthy", "healthy"));
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Readiness health check failed while validating database connectivity.");
+            return Results.Json(
+                CreateReadinessResponse("unhealthy", "unhealthy"),
+                statusCode: StatusCodes.Status503ServiceUnavailable);
+        }
+    })
+    .AllowAnonymous()
+    .ExcludeFromDescription();
 
     var internalHealthToken = app.Configuration["INTERNAL_HEALTH_TOKEN"];
     if (!string.IsNullOrWhiteSpace(internalHealthToken))
@@ -270,4 +317,25 @@ static bool FixedTimeEquals(string providedToken, string expectedToken)
 
     return providedBytes.Length == expectedBytes.Length &&
            CryptographicOperations.FixedTimeEquals(providedBytes, expectedBytes);
+}
+
+static object CreateHealthResponse(string status)
+{
+    return new
+    {
+        status,
+        service = "Salgadin API",
+        timestamp = DateTimeOffset.UtcNow
+    };
+}
+
+static object CreateReadinessResponse(string status, string database)
+{
+    return new
+    {
+        status,
+        service = "Salgadin API",
+        database,
+        timestamp = DateTimeOffset.UtcNow
+    };
 }
