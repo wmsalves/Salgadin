@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useTheme } from "../../hooks/useTheme";
-import logo from "../../assets/Logo.svg";
+import logo from "../../assets/logo.svg";
 
 const HeroChartPreview = lazy(() =>
   import("./HeroChartPreview").then((module) => ({
@@ -12,7 +12,7 @@ const HeroChartPreview = lazy(() =>
 );
 
 const trustCues = [
-  "Sem cartao de credito",
+  "Sem cartao de credito para comecar",
   "Comece em poucos minutos",
   "Controle simples, sem planilhas",
 ];
@@ -39,9 +39,9 @@ export function HeroSection() {
   return (
     <section
       aria-labelledby="hero-heading"
-      className="mx-auto w-full max-w-7xl min-w-0 overflow-hidden px-4 pb-16 pt-12 sm:pb-20 sm:pt-16"
+      className="mx-auto w-full max-w-7xl min-w-0 overflow-hidden px-4 pb-16 pt-10 sm:pb-20 sm:pt-14 lg:pb-24"
     >
-      <div className="mx-auto mb-6 flex max-w-xs items-center justify-center gap-3 rounded-full border border-border/70 bg-surface/80 px-4 py-2 shadow-[0_10px_24px_rgba(60,42,32,0.08)] sm:max-w-fit">
+      <div className="mx-auto mb-8 flex max-w-xs items-center justify-center gap-3 rounded-full border border-border/70 bg-surface/80 px-4 py-2 shadow-[0_10px_24px_rgba(60,42,32,0.08)] sm:max-w-fit">
         <img
           src={logo}
           alt=""
@@ -59,22 +59,48 @@ export function HeroSection() {
       </div>
       <h1
         id="hero-heading"
-        className="mx-auto max-w-xs text-center text-4xl font-extrabold leading-[1.08] sm:max-w-none sm:text-5xl md:text-6xl"
+        className="mx-auto max-w-sm text-center text-[2.6rem] font-extrabold leading-[1.04] sm:max-w-4xl sm:text-5xl md:text-6xl"
       >
         <span className="bg-gradient-to-r from-[var(--brand-from-strong)] to-[var(--brand-to-strong)] bg-clip-text text-transparent">
-          Entenda seus <br className="sm:hidden" />
-          gastos,
+          Controle seus pequenos gastos
         </span>
         <br />
-        <span className="text-foreground"> sem complicacao.</span>
+        <span className="text-foreground">antes que eles crescam.</span>
       </h1>
-      <p className="mx-auto mt-6 max-w-xs text-center text-base leading-8 text-foreground-muted sm:max-w-2xl sm:text-lg">
-        O Salgadin ajuda voce a enxergar cafes, lanches, delivery, mercado e
-        transporte em graficos simples, para decidir melhor sem planilhas
-        complicadas.
+      <p className="mx-auto mt-6 max-w-xs text-center text-base leading-8 text-foreground-muted sm:max-w-3xl sm:text-lg">
+        Visualize, categorize e acompanhe os gastos que se repetem no dia a dia.
+        O Salgadin foi feito para transformar lancamentos simples em clareza
+        real sobre seus habitos financeiros.
       </p>
 
-      <div className="mx-auto mt-9 flex max-w-xs flex-col justify-center gap-3 sm:max-w-none sm:flex-row sm:gap-4">
+      <div className="mx-auto mt-7 grid max-w-5xl gap-3 text-left md:grid-cols-3">
+        <div className="rounded-2xl border border-border/70 bg-surface/80 px-4 py-4 shadow-[0_10px_24px_rgba(60,42,32,0.08)]">
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-primary">
+            Registro rapido
+          </p>
+          <p className="mt-2 text-sm leading-6 text-foreground-muted">
+            Lance cafe, lanche, delivery, mercado ou transporte sem depender de planilhas.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-border/70 bg-surface/80 px-4 py-4 shadow-[0_10px_24px_rgba(60,42,32,0.08)]">
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-accent">
+            Leitura clara
+          </p>
+          <p className="mt-2 text-sm leading-6 text-foreground-muted">
+            Veja o que pesa no mes com categorias, graficos e resumos feitos para decisoes praticas.
+          </p>
+        </div>
+        <div className="rounded-2xl border border-border/70 bg-surface/80 px-4 py-4 shadow-[0_10px_24px_rgba(60,42,32,0.08)]">
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-primary">
+            Evolucao do produto
+          </p>
+          <p className="mt-2 text-sm leading-6 text-foreground-muted">
+            WhatsApp e recursos Pro estao em preparacao, sem promessas artificiais na experiencia atual.
+          </p>
+        </div>
+      </div>
+
+      <div className="mx-auto mt-10 flex max-w-xs flex-col justify-center gap-3 sm:max-w-none sm:flex-row sm:items-center sm:gap-4">
         <Link
           to={primaryHref}
           className={`${buttonStyles.primary} w-full sm:w-auto`}
@@ -86,7 +112,7 @@ export function HeroSection() {
         </a>
       </div>
 
-      <ul className="mx-auto mt-5 flex max-w-xs flex-col items-stretch justify-center gap-2 px-1 text-sm text-foreground-muted sm:max-w-3xl sm:flex-row sm:flex-wrap sm:items-center">
+      <ul className="mx-auto mt-6 flex max-w-sm flex-col items-stretch justify-center gap-2 px-1 text-sm text-foreground-muted sm:max-w-3xl sm:flex-row sm:flex-wrap sm:items-center">
         {trustCues.map((cue) => (
           <li
             key={cue}
@@ -98,7 +124,7 @@ export function HeroSection() {
         ))}
       </ul>
 
-      <div className="relative mt-16">
+      <div className="relative mt-14 sm:mt-16">
         <figure
           className="mx-auto w-full max-w-[22rem] min-w-0 overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface/95 p-4 shadow-[var(--shadow-card)] sm:max-w-5xl sm:p-6"
           aria-labelledby="weekly-chart-title"

@@ -6,6 +6,7 @@ import { HowItWorksSection } from "./HowItWorksSection";
 import { FaqSection } from "./FaqSection";
 import { CtaSection } from "./CtaSection";
 import { PricingSection } from "./PricingSection";
+import { TrustSection } from "./TrustSection";
 import { MotionConfig, motion, type Variants, type Easing } from "framer-motion";
 
 const ease: Easing = [0.16, 1, 0.3, 1];
@@ -62,6 +63,15 @@ export default function HomePage() {
               <PricingSection />
             </motion.div>
           </div>
+
+          <motion.div
+            variants={reveal}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            <TrustSection />
+          </motion.div>
 
           <motion.div
             variants={reveal}

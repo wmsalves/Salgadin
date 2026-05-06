@@ -13,9 +13,12 @@ export function FaqSection() {
   return (
     <section
       id="faq"
-      className="mx-auto mb-0 max-w-3xl scroll-mt-24 bg-transparent px-4 py-16"
+      className="mx-auto mb-0 max-w-4xl scroll-mt-24 bg-transparent px-4 py-16 sm:py-20"
     >
-      <h2 className="text-center text-2xl font-extrabold text-foreground sm:text-3xl">
+      <p className="text-center text-sm font-semibold uppercase tracking-[0.12em] text-primary">
+        FAQ
+      </p>
+      <h2 className="mt-3 text-center text-2xl font-extrabold text-foreground sm:text-3xl">
         Perguntas frequentes
       </h2>
       <p className="mt-2 text-center text-sm leading-6 text-foreground-muted sm:text-base">
