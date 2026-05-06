@@ -816,7 +816,7 @@ export default function ProfilePage() {
                     </p>
                   </div>
                   <span className="inline-flex w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                    Simulação local
+                    Em desenvolvimento
                   </span>
                 </div>
               </div>
@@ -900,40 +900,54 @@ export default function ProfilePage() {
               )}
 
               <div className="rounded-2xl border border-border bg-surface-2 p-4">
-                <h3 className="text-sm font-semibold text-foreground">
-                  Exemplos de comandos
-                </h3>
-                <div className="mt-3 grid grid-cols-1 gap-2">
+                <div className="flex flex-col gap-2">
+                  <h3 className="text-sm font-semibold text-foreground">
+                    Experiência planejada
+                  </h3>
+                  <p className="text-xs leading-5 text-foreground-subtle">
+                    No futuro, você poderá registrar gastos por mensagem usando
+                    comandos simples como estes.
+                  </p>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
                   {[
                     "Adicionar 50 em almoço",
                     "Gastei 25 com Uber",
                     "Paguei 120 no mercado",
                     "Resumo de hoje",
                   ].map((command) => (
-                    <div
+                    <span
                       key={command}
-                      className="rounded-xl border border-border bg-surface px-3 py-2 font-mono text-xs text-foreground-muted"
+                      className="rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[11px] text-foreground-muted"
                     >
                       {command}
-                    </div>
+                    </span>
                   ))}
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-border bg-surface-2 p-4">
-                <div>
-                  <p className="text-sm font-semibold text-foreground">
-                    Como a simulação funciona
-                  </p>
-                  <p className="mt-1 text-xs leading-5 text-foreground-subtle">
-                    O backend já consegue interpretar mensagens simuladas,
-                    localizar o telefone vinculado e registrar uma despesa sem
-                    criar duplicidade por `messageId`.
-                  </p>
+              {isWhatsAppSimulatorEnabled && (
+                <div className="rounded-2xl border border-dashed border-border bg-surface-2/70 p-4">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-subtle">
+                        Ferramentas de desenvolvimento
+                      </p>
+                      <p className="mt-1 text-xs leading-5 text-foreground-muted">
+                        Área interna para validar o parser e o fluxo de
+                        mensagens simuladas. Não faz parte da experiência
+                        pública do WhatsApp.
+                      </p>
+                    </div>
+                    <span className="inline-flex w-fit rounded-full border border-danger/20 bg-danger/10 px-2.5 py-1 text-[11px] font-semibold text-danger">
+                      Restrito
+                    </span>
+                  </div>
+                  <div className="mt-4">
+                    <WhatsAppSimulationPanel />
+                  </div>
                 </div>
-              </div>
-
-              {isWhatsAppSimulatorEnabled && <WhatsAppSimulationPanel />}
+              )}
             </div>
           </SettingsCard>
         </div>
