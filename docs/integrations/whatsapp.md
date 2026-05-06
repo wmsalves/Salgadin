@@ -4,6 +4,8 @@ This document describes the internal WhatsApp foundation for Salgadin.
 
 The current implementation does not integrate with Meta WhatsApp Cloud API or Twilio. It only prepares the backend architecture and provides a local simulation endpoint for validating the future flow.
 
+The simulator is an internal testing tool. It is not a public-facing WhatsApp feature and it does not send real messages.
+
 ## Goal
 
 Allow a user to register small daily expenses from messages such as:
@@ -111,6 +113,7 @@ For production or staging tests, all three settings must be coherent:
 - `WhatsApp__SimulatorAllowedEmails=...` defines which authenticated users can call it.
 
 The allowed email list is backend-only and must not be exposed to the frontend.
+The backend controller uses manual authorization checks for this endpoint, so the environment flag and allowlist must remain aligned with tests and documentation.
 
 ### Simulate incoming message
 
@@ -160,6 +163,13 @@ The frontend should show a friendly message such as:
 ```text
 Seu usuário não está autorizado a usar o simulador WhatsApp neste ambiente.
 ```
+
+Other common environment responses:
+
+- `401 Unauthorized`
+  - authenticated session is required outside Development
+- `404 Not Found`
+  - simulation endpoint is not enabled in the current environment
 
 ## Parser behavior
 

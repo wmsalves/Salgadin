@@ -54,6 +54,7 @@ Instructions on how to set up and run the project locally.
     ```
 4.  For deployed environments, set the same values as platform environment variables instead of committing them to `appsettings.json`.
     `SUPABASE_DB_CONNECTION`, `ConnectionStrings__DefaultConnection`, `SUPABASE_DATABASE_URL`, `SUPABASE_CONNECTION_STRING`, `DATABASE_URL`, and `POSTGRES_URL` are supported. PostgreSQL URLs such as `postgresql://user:password@host:5432/postgres?sslmode=require` are normalized automatically.
+    Recommended production envs for the backend are `SUPABASE_DB_CONNECTION`, `Jwt__Key`, `ASPNETCORE_ENVIRONMENT`, `CORS_ORIGINS`, and `Authentication__Google__ClientId` when Google Sign-In is enabled.
 5.  Apply EF Core migrations to create the database:
     ```bash
     dotnet ef database update
@@ -85,6 +86,9 @@ The internal foundation for future WhatsApp expense capture is documented in [do
     VITE_GOOGLE_CLIENT_ID=your_google_web_client_id
     VITE_ENABLE_WHATSAPP_SIMULATOR=true # optional, only for explicit simulator access outside dev
     ```
+    Optional legacy/future envs, only if the frontend really uses Supabase directly:
+    `VITE_SUPABASE_URL`
+    `VITE_SUPABASE_PUBLISHABLE_KEY`
     Outside backend Development, the simulator endpoint also requires `WhatsApp__EnableSimulationEndpoint=true` and a backend-only allowlist in `WhatsApp__SimulatorAllowedEmails`.
 4.  Run the development server:
     ```bash
@@ -98,11 +102,23 @@ A brief overview of the main API endpoints.
 
 - `POST /api/auth/register`: Register a new user.
 - `POST /api/auth/login`: Authenticate a user and receive a JWT.
-- `GET /api/expenses`: Get a paginated list of expenses for the authenticated user.
-- `POST /api/expenses`: Create a new expense.
-- `GET /api/categories`: Get all categories for the authenticated user.
+- `POST /api/auth/google`: Authenticate with Google and receive the Salgadin JWT.
+- `GET /api/expense`: Get a paginated list of expenses for the authenticated user.
+- `POST /api/expense`: Create a new expense.
+- `GET /api/category`: Get all categories for the authenticated user.
+- `GET /health`: Liveness endpoint for production health checks.
 
 > For complete and interactive API documentation, run the backend and navigate to the `/swagger` endpoint.
+
+## WhatsApp Simulator
+
+The WhatsApp simulator is an internal testing surface, not a public WhatsApp integration.
+
+- Frontend visibility: `VITE_ENABLE_WHATSAPP_SIMULATOR=true` or local `Development`
+- Backend enable flag outside `Development`: `WhatsApp__EnableSimulationEndpoint=true`
+- Backend allowlist outside `Development`: `WhatsApp__SimulatorAllowedEmails=email1@example.com,email2@example.com`
+
+For the full internal flow, see [docs/integrations/whatsapp.md](docs/integrations/whatsapp.md).
 
 ## 🔗 Prototype
 

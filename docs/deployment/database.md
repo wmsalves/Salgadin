@@ -66,6 +66,7 @@ Startup migration modes:
 - single-instance MVP on Render: `Database__ApplyMigrationsOnStartup=true`
   - the API applies pending migrations on startup
   - if migration application fails, startup fails and the service does not accept requests
+  - keep `Database__ValidateSchemaOnStartup=true` so startup still fails if the database is unreachable or migrations cannot be completed
 
 ### Vercel
 
@@ -124,6 +125,15 @@ Behavior:
   - startup does not mutate schema
   - pending migrations still fail startup in production when validation is enabled
 
+Related startup validation flags:
+
+- `Database__ValidateSchemaOnStartup`
+  - defaults to `true` in `Production`
+  - controls whether the API performs startup database validation at all
+- `Database__FailOnPendingMigrations`
+  - defaults to `true` in `Production`
+  - controls whether pending migrations block startup when validation is enabled
+
 ## Public health endpoints
 
 The API exposes minimal public health endpoints for production operations:
@@ -138,9 +148,15 @@ Behavior:
 
 - `/health` returns `200` when the API process is alive.
 - `/health/live` returns `200` when the API process is alive.
-- `/health/ready` checks PostgreSQL connectivity.
+- `/health/ready` checks PostgreSQL connectivity only.
 - `/health/ready` returns `200` when the API can connect to the database.
 - `/health/ready` returns `503` when the database is unreachable.
+
+Important:
+
+- `/health/ready` does not inspect pending EF Core migrations.
+- readiness is not a replacement for startup schema validation or `dotnet ef database update`.
+- schema protection comes from the startup validator and the EF Core migration workflow.
 
 Example response:
 
@@ -239,6 +255,9 @@ Expected migrations today:
 - `20260328001621_AddIncomeEntity`
 - `20260328005237_AddUserFullName`
 - `20260401123923_AddNotifications`
+- `20260501194240_AddUserPhoneNumber`
+- `20260501204442_AddGoogleAuthFields`
+- `20260505230214_AddWhatsAppIntegrationFoundation`
 
 ## Internal database health endpoint
 
@@ -257,6 +276,7 @@ Behavior:
 - never returns connection strings, secrets, or user data.
 
 This endpoint is intentionally minimal and hidden from Swagger.
+It is stricter than `/health/ready` because it also checks pending migrations.
 
 ## Local workflow
 
