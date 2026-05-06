@@ -145,8 +145,9 @@ export default function ProfilePage() {
   const [settingsError, setSettingsError] = useState<string | null>(null);
   const [whatsAppMessage, setWhatsAppMessage] = useState<string | null>(null);
   const [whatsAppError, setWhatsAppError] = useState<string | null>(null);
-  const [whatsAppStatus, setWhatsAppStatus] =
-    useState<WhatsAppStatus | null>(null);
+  const [whatsAppStatus, setWhatsAppStatus] = useState<WhatsAppStatus | null>(
+    null,
+  );
   const [whatsAppLinkCode, setWhatsAppLinkCode] =
     useState<WhatsAppLinkCode | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -162,7 +163,9 @@ export default function ProfilePage() {
   const now = useMemo(() => new Date(), []);
   const displayName = profile?.name ?? user?.name ?? "Usuario";
   const hasExpenses = recentExpenses.length > 0;
-  const unreadNotifications = notifications.filter((item) => !item.isRead).length;
+  const unreadNotifications = notifications.filter(
+    (item) => !item.isRead,
+  ).length;
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -252,7 +255,10 @@ export default function ProfilePage() {
       nextErrors.phoneNumber = "Use o formato (31) 98888-8888.";
     }
 
-    if (passwordChanged && !strongPasswordPattern.test(profileForm.newPassword)) {
+    if (
+      passwordChanged &&
+      !strongPasswordPattern.test(profileForm.newPassword)
+    ) {
       nextErrors.newPassword =
         "Use 8+ caracteres, maiuscula, minuscula, numero e caractere especial.";
     }
@@ -302,7 +308,9 @@ export default function ProfilePage() {
       setProfileMessage("Dados da conta atualizados com sucesso.");
     } catch (error) {
       console.error("Falha ao atualizar perfil:", error);
-      setProfileError("Nao foi possivel atualizar o perfil. Verifique os dados informados.");
+      setProfileError(
+        "Nao foi possivel atualizar o perfil. Verifique os dados informados.",
+      );
     } finally {
       setIsSavingProfile(false);
     }
@@ -478,8 +486,8 @@ export default function ProfilePage() {
         </div>
       </section>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="space-y-6 xl:col-span-2">
+      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)]">
+        <div className="space-y-5 xl:space-y-6">
           <SettingsCard
             icon={User}
             title="Profile"
@@ -567,9 +575,9 @@ export default function ProfilePage() {
             description="Altere senha e email com confirmacao da senha atual."
           >
             <div className="rounded-2xl border border-primary/20 bg-primary/8 px-4 py-3 text-sm text-foreground-muted">
-              Se voce entrou com Google e ainda nao definiu senha local, continue
-              usando o Google Sign-In ate configurar uma senha pelo fluxo
-              tradicional.
+              Se voce entrou com Google e ainda nao definiu senha local,
+              continue usando o Google Sign-In ate configurar uma senha pelo
+              fluxo tradicional.
             </div>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div>
@@ -636,79 +644,27 @@ export default function ProfilePage() {
                 )}
               </div>
             </div>
-          </SettingsCard>
 
-          {profileError && (
-            <div className="rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
-              {profileError}
-            </div>
-          )}
-          {profileMessage && (
-            <div className="rounded-2xl border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
-              {profileMessage}
-            </div>
-          )}
-
-          <div className="flex justify-end">
-            <button
-              onClick={handleSaveProfile}
-              disabled={isSavingProfile}
-              className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {isSavingProfile ? "Salvando..." : "Salvar conta"}
-            </button>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <SettingsCard
-            icon={Database}
-            title="Data"
-            description="Seus lancamentos pertencem a voce e podem ser baixados."
-          >
-            {hasExpenses ? (
-              <div className="space-y-4">
-                <div className="rounded-2xl border border-border bg-surface-2 p-4">
-                  <h3 className="text-sm font-semibold text-foreground">
-                    Exportar despesas
-                  </h3>
-                  <p className="mt-1 text-xs text-foreground-subtle">
-                    CSV com Data, Descricao, Valor, Categoria e Subcategoria.
-                    Periodo: todos os registros disponiveis.
-                  </p>
-                  <button
-                    onClick={handleExportExpenses}
-                    disabled={isExportingExpenses}
-                    className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
-                  >
-                    <Download size={16} />
-                    {isExportingExpenses ? "Preparando CSV..." : "Baixar CSV"}
-                  </button>
-                </div>
-                <div className="rounded-2xl border border-border bg-surface-2 p-4 opacity-75">
-                  <h3 className="text-sm font-semibold text-foreground">
-                    Exportar rendas
-                  </h3>
-                  <p className="mt-1 text-xs text-foreground-subtle">
-                    Em breve: exportacao separada das rendas cadastradas.
-                  </p>
-                  <button
-                    disabled
-                    className="mt-4 w-full rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-foreground-muted"
-                  >
-                    Em breve
-                  </button>
-                </div>
+            {profileError && (
+              <div className="mt-4 rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
+                {profileError}
               </div>
-            ) : (
-              <EmptyState
-                icon={Database}
-                title="Sem despesas para exportar"
-                description="Registre seu primeiro gasto para gerar um CSV com seus lancamentos financeiros."
-                primaryAction={{ label: "Ir para o dashboard", href: "/dashboard" }}
-                compact
-              />
             )}
+            {profileMessage && (
+              <div className="mt-4 rounded-2xl border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
+                {profileMessage}
+              </div>
+            )}
+
+            <div className="mt-5 flex justify-stretch sm:justify-end">
+              <button
+                onClick={handleSaveProfile}
+                disabled={isSavingProfile}
+                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
+              >
+                {isSavingProfile ? "Salvando..." : "Salvar conta"}
+              </button>
+            </div>
           </SettingsCard>
 
           <SettingsCard
@@ -716,7 +672,7 @@ export default function ProfilePage() {
             title="Preferences"
             description="Preferencias basicas do app e alertas financeiros."
           >
-            <div className="space-y-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <button
                 onClick={toggleTheme}
                 className="flex w-full items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm transition hover:bg-surface-3"
@@ -768,7 +724,7 @@ export default function ProfilePage() {
                   }
                 />
               </label>
-              <div className="rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm">
+              <div className="rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm sm:col-span-2">
                 <label className="flex items-center gap-2 text-foreground-muted">
                   <Shield size={16} />
                   Limiar minimo (0-1)
@@ -790,12 +746,67 @@ export default function ProfilePage() {
               </div>
               <button
                 onClick={handleSavePreferences}
-                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
                 disabled={isSaving}
               >
                 {isSaving ? "Salvando..." : "Salvar preferencias"}
               </button>
             </div>
+          </SettingsCard>
+        </div>
+
+        <div className="space-y-5 xl:space-y-6">
+          <SettingsCard
+            icon={Database}
+            title="Data"
+            description="Seus lancamentos pertencem a voce e podem ser baixados."
+          >
+            {hasExpenses ? (
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-border bg-surface-2 p-4">
+                  <h3 className="text-sm font-semibold text-foreground">
+                    Exportar despesas
+                  </h3>
+                  <p className="mt-1 text-xs text-foreground-subtle">
+                    CSV com Data, Descricao, Valor, Categoria e Subcategoria.
+                    Periodo: todos os registros disponiveis.
+                  </p>
+                  <button
+                    onClick={handleExportExpenses}
+                    disabled={isExportingExpenses}
+                    className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    <Download size={16} />
+                    {isExportingExpenses ? "Preparando CSV..." : "Baixar CSV"}
+                  </button>
+                </div>
+                <div className="rounded-2xl border border-border bg-surface-2 p-4 opacity-75">
+                  <h3 className="text-sm font-semibold text-foreground">
+                    Exportar rendas
+                  </h3>
+                  <p className="mt-1 text-xs text-foreground-subtle">
+                    Em breve: exportacao separada das rendas cadastradas.
+                  </p>
+                  <button
+                    disabled
+                    className="mt-4 w-full rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-foreground-muted"
+                  >
+                    Em breve
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <EmptyState
+                icon={Database}
+                title="Sem despesas para exportar"
+                description="Registre seu primeiro gasto para gerar um CSV com seus lancamentos financeiros."
+                primaryAction={{
+                  label: "Ir para o dashboard",
+                  href: "/dashboard",
+                }}
+                compact
+              />
+            )}
           </SettingsCard>
 
           <SettingsCard
@@ -835,7 +846,9 @@ export default function ProfilePage() {
                             : "bg-surface-3 text-foreground-muted"
                         }`}
                       >
-                        {whatsAppStatus?.connected ? "Conectado" : "Desconectado"}
+                        {whatsAppStatus?.connected
+                          ? "Conectado"
+                          : "Desconectado"}
                       </span>
                       {whatsAppStatus?.phoneNumber && (
                         <span className="text-xs font-medium text-foreground-muted">
@@ -1043,7 +1056,9 @@ export default function ProfilePage() {
                         {notification.message}
                       </p>
                       <p className="mt-2 text-[11px] text-foreground-muted">
-                        {new Date(notification.createdAt).toLocaleString("pt-BR")}
+                        {new Date(notification.createdAt).toLocaleString(
+                          "pt-BR",
+                        )}
                       </p>
                     </div>
                     {!notification.isRead && (
