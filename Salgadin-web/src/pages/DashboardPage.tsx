@@ -569,8 +569,8 @@ export default function DashboardPage() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover xl:col-span-2">
-          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-h-[540px] flex-col rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover sm:min-h-[620px] xl:col-span-2">
+          <div className="mb-6 flex shrink-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-lg font-semibold text-foreground">
                 Fluxo de Caixa Mensal
@@ -596,83 +596,85 @@ export default function DashboardPage() {
               </span>
             </div>
           </div>
-          <div className="h-[475px]">
+          <div className="flex min-h-[360px] flex-1 sm:min-h-[420px]">
             {cashflowData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={cashflowData}>
-                  <defs>
-                    <linearGradient
-                      id={chartGradient.id}
-                      x1="0"
-                      y1="0"
-                      x2="0"
-                      y2="1"
-                    >
-                      <stop
-                        offset="0%"
-                        stopColor={chartGradient.from}
-                        stopOpacity={0.35}
-                      />
-                      <stop
-                        offset="100%"
-                        stopColor={chartGradient.to}
-                        stopOpacity={0}
-                      />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid
-                    stroke="var(--color-border)"
-                    strokeDasharray="4 4"
-                    vertical={false}
-                    opacity={0.6}
-                  />
-                  <XAxis
-                    dataKey="day"
-                    tickLine={false}
-                    axisLine={false}
-                    tick={{ fill: "var(--chart-muted)", fontSize: 12 }}
-                    dy={10}
-                  />
-                  <YAxis
-                    tickFormatter={(value) => `R$ ${value}`}
-                    tickLine={false}
-                    axisLine={false}
-                    tick={{ fill: "var(--chart-muted)", fontSize: 12 }}
-                    dx={-10}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      background: "var(--color-surface)",
-                      border: "1px solid var(--color-border)",
-                      color: "var(--color-text)",
-                      borderRadius: "16px",
-                      fontFamily: "var(--font-mono, monospace)",
-                    }}
-                    itemStyle={{
-                      fontFamily: "var(--font-mono, monospace)",
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="value"
-                    stroke="var(--color-primary)"
-                    strokeWidth={3}
-                    dot={{
-                      r: 4,
-                      strokeWidth: 2,
-                      fill: "var(--color-surface)",
-                      stroke: "var(--color-primary)",
-                    }}
-                    activeDot={{
-                      r: 6,
-                      fill: "var(--color-primary)",
-                      stroke: "var(--color-surface)",
-                      strokeWidth: 2,
-                    }}
-                    fill={`url(#${chartGradient.id})`}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              <div className="min-h-[360px] flex-1 sm:min-h-[420px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={cashflowData}>
+                    <defs>
+                      <linearGradient
+                        id={chartGradient.id}
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="0%"
+                          stopColor={chartGradient.from}
+                          stopOpacity={0.35}
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor={chartGradient.to}
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      stroke="var(--color-border)"
+                      strokeDasharray="4 4"
+                      vertical={false}
+                      opacity={0.6}
+                    />
+                    <XAxis
+                      dataKey="day"
+                      tickLine={false}
+                      axisLine={false}
+                      tick={{ fill: "var(--chart-muted)", fontSize: 12 }}
+                      dy={10}
+                    />
+                    <YAxis
+                      tickFormatter={(value) => `R$ ${value}`}
+                      tickLine={false}
+                      axisLine={false}
+                      tick={{ fill: "var(--chart-muted)", fontSize: 12 }}
+                      dx={-10}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        background: "var(--color-surface)",
+                        border: "1px solid var(--color-border)",
+                        color: "var(--color-text)",
+                        borderRadius: "16px",
+                        fontFamily: "var(--font-mono, monospace)",
+                      }}
+                      itemStyle={{
+                        fontFamily: "var(--font-mono, monospace)",
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="value"
+                      stroke="var(--color-primary)"
+                      strokeWidth={3}
+                      dot={{
+                        r: 4,
+                        strokeWidth: 2,
+                        fill: "var(--color-surface)",
+                        stroke: "var(--color-primary)",
+                      }}
+                      activeDot={{
+                        r: 6,
+                        fill: "var(--color-primary)",
+                        stroke: "var(--color-surface)",
+                        strokeWidth: 2,
+                      }}
+                      fill={`url(#${chartGradient.id})`}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
             ) : (
               <EmptyState
                 icon={TrendingDown}
@@ -686,8 +688,8 @@ export default function DashboardPage() {
                   label: "Adicionar renda",
                   onClick: () => setIsAddIncomeModalOpen(true),
                 }}
-                className="flex h-full flex-col items-center justify-center"
-                compact
+                className="flex min-h-[360px] flex-1 flex-col items-center justify-center sm:min-h-[420px]"
+                size="spacious"
               />
             )}
           </div>

@@ -45,6 +45,13 @@ import {
   markNotificationRead,
   updateNotificationPreferences,
 } from "../services/notificationService";
+import {
+  disconnectWhatsApp,
+  generateWhatsAppLinkCode,
+  getWhatsAppStatus,
+  type WhatsAppLinkCode,
+  type WhatsAppStatus,
+} from "../services/whatsAppService";
 
 const phonePattern = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
 const strongPasswordPattern =
@@ -125,10 +132,19 @@ export default function ProfilePage() {
   const [isNotifying, setIsNotifying] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [isExportingExpenses, setIsExportingExpenses] = useState(false);
+  const [isGeneratingWhatsAppCode, setIsGeneratingWhatsAppCode] =
+    useState(false);
+  const [isDisconnectingWhatsApp, setIsDisconnectingWhatsApp] = useState(false);
   const [profileMessage, setProfileMessage] = useState<string | null>(null);
   const [profileError, setProfileError] = useState<string | null>(null);
   const [settingsMessage, setSettingsMessage] = useState<string | null>(null);
   const [settingsError, setSettingsError] = useState<string | null>(null);
+  const [whatsAppMessage, setWhatsAppMessage] = useState<string | null>(null);
+  const [whatsAppError, setWhatsAppError] = useState<string | null>(null);
+  const [whatsAppStatus, setWhatsAppStatus] =
+    useState<WhatsAppStatus | null>(null);
+  const [whatsAppLinkCode, setWhatsAppLinkCode] =
+    useState<WhatsAppLinkCode | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [profileForm, setProfileForm] = useState({
     name: "",
@@ -149,14 +165,24 @@ export default function ProfilePage() {
     setSettingsError(null);
 
     try {
-      const [profileData, prefs, alertsData, notificationsData, expensesData] =
-        await Promise.all([
-          getMyProfile(),
-          getNotificationPreferences(),
-          getNotificationAlerts(now.getFullYear(), now.getMonth() + 1),
-          getNotifications(),
-          getExpenses(),
-        ]);
+      const [
+        profileData,
+        prefs,
+        alertsData,
+        notificationsData,
+        expensesData,
+        whatsAppStatusData,
+      ] = await Promise.all([
+        getMyProfile(),
+        getNotificationPreferences(),
+        getNotificationAlerts(now.getFullYear(), now.getMonth() + 1),
+        getNotifications(),
+        getExpenses(),
+        getWhatsAppStatus().catch(() => ({
+          connected: false,
+          phoneNumber: null,
+        })),
+      ]);
 
       setProfile(profileData);
       setProfileForm({
@@ -171,6 +197,7 @@ export default function ProfilePage() {
       setAlerts(alertsData);
       setNotifications(notificationsData);
       setRecentExpenses(expensesData);
+      setWhatsAppStatus(whatsAppStatusData);
     } catch (error) {
       console.error("Falha ao carregar configuracoes:", error);
       setSettingsError(
@@ -291,6 +318,45 @@ export default function ProfilePage() {
       setSettingsError("Nao foi possivel exportar suas despesas agora.");
     } finally {
       setIsExportingExpenses(false);
+    }
+  };
+
+  const handleGenerateWhatsAppCode = async () => {
+    setIsGeneratingWhatsAppCode(true);
+    setWhatsAppMessage(null);
+    setWhatsAppError(null);
+
+    try {
+      const code = await generateWhatsAppLinkCode();
+      const status = await getWhatsAppStatus();
+      setWhatsAppLinkCode(code);
+      setWhatsAppStatus(status);
+      setWhatsAppMessage("Codigo de conexao gerado.");
+    } catch (error) {
+      console.error("Falha ao gerar codigo do WhatsApp:", error);
+      setWhatsAppError(
+        "Nao foi possivel gerar o codigo. Verifique se seu telefone esta salvo no perfil.",
+      );
+    } finally {
+      setIsGeneratingWhatsAppCode(false);
+    }
+  };
+
+  const handleDisconnectWhatsApp = async () => {
+    setIsDisconnectingWhatsApp(true);
+    setWhatsAppMessage(null);
+    setWhatsAppError(null);
+
+    try {
+      await disconnectWhatsApp();
+      setWhatsAppStatus({ connected: false, phoneNumber: null });
+      setWhatsAppLinkCode(null);
+      setWhatsAppMessage("WhatsApp desconectado.");
+    } catch (error) {
+      console.error("Falha ao desconectar WhatsApp:", error);
+      setWhatsAppError("Nao foi possivel desconectar o WhatsApp agora.");
+    } finally {
+      setIsDisconnectingWhatsApp(false);
     }
   };
 
@@ -730,22 +796,137 @@ export default function ProfilePage() {
 
           <SettingsCard
             icon={MessageCircle}
-            title="Integrations"
-            description="Conecte o Salgadin aos canais do seu dia a dia."
+            title="WhatsApp"
+            description="Prepare o registro rapido de pequenos gastos por mensagem."
           >
-            <div className="rounded-2xl border border-border bg-surface-2 p-4">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <h3 className="text-sm font-semibold text-foreground">
-                    WhatsApp
-                  </h3>
-                  <p className="mt-1 text-xs text-foreground-subtle">
-                    Em breve: lembretes e lancamentos rapidos pelo telefone.
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-border bg-surface-2 p-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">
+                      Integração em desenvolvimento
+                    </h3>
+                    <p className="mt-1 text-xs leading-5 text-foreground-subtle">
+                      Esta etapa prepara a conexão. O envio real pelo WhatsApp
+                      ainda não está disponível via Meta ou Twilio.
+                    </p>
+                  </div>
+                  <span className="inline-flex w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                    Simulação local
+                  </span>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-border bg-surface-2 p-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-xs font-medium uppercase tracking-[0.14em] text-foreground-subtle">
+                      Status
+                    </p>
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                          whatsAppStatus?.connected
+                            ? "bg-success/10 text-success"
+                            : "bg-surface-3 text-foreground-muted"
+                        }`}
+                      >
+                        {whatsAppStatus?.connected ? "Conectado" : "Desconectado"}
+                      </span>
+                      {whatsAppStatus?.phoneNumber && (
+                        <span className="text-xs font-medium text-foreground-muted">
+                          {whatsAppStatus.phoneNumber}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 sm:min-w-44">
+                    <button
+                      onClick={handleGenerateWhatsAppCode}
+                      disabled={isGeneratingWhatsAppCode}
+                      className="rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                    >
+                      {isGeneratingWhatsAppCode
+                        ? "Gerando..."
+                        : "Gerar código de conexão"}
+                    </button>
+                    {whatsAppStatus?.connected && (
+                      <button
+                        onClick={handleDisconnectWhatsApp}
+                        disabled={isDisconnectingWhatsApp}
+                        className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-foreground-muted transition hover:bg-surface-3 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-70"
+                      >
+                        {isDisconnectingWhatsApp
+                          ? "Desconectando..."
+                          : "Desconectar WhatsApp"}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {whatsAppLinkCode && (
+                <div className="rounded-2xl border border-primary/24 bg-primary/8 p-4">
+                  <p className="text-xs font-medium uppercase tracking-[0.14em] text-primary">
+                    Código de conexão
+                  </p>
+                  <div className="mt-2 rounded-xl border border-primary/20 bg-surface px-4 py-3 font-mono text-lg font-semibold tracking-wide text-foreground">
+                    {whatsAppLinkCode.code}
+                  </div>
+                  <p className="mt-3 text-xs leading-5 text-foreground-muted">
+                    Expira em{" "}
+                    {new Date(whatsAppLinkCode.expiresAt).toLocaleString(
+                      "pt-BR",
+                    )}
+                    . No futuro, envie este código para o WhatsApp do Salgadin
+                    para conectar sua conta.
                   </p>
                 </div>
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                  Em breve
-                </span>
+              )}
+
+              {whatsAppError && (
+                <div className="rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
+                  {whatsAppError}
+                </div>
+              )}
+              {whatsAppMessage && (
+                <div className="rounded-2xl border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
+                  {whatsAppMessage}
+                </div>
+              )}
+
+              <div className="rounded-2xl border border-border bg-surface-2 p-4">
+                <h3 className="text-sm font-semibold text-foreground">
+                  Exemplos de comandos
+                </h3>
+                <div className="mt-3 grid grid-cols-1 gap-2">
+                  {[
+                    "Adicionar 50 em almoço",
+                    "Gastei 25 com Uber",
+                    "Paguei 120 no mercado",
+                    "Resumo de hoje",
+                  ].map((command) => (
+                    <div
+                      key={command}
+                      className="rounded-xl border border-border bg-surface px-3 py-2 font-mono text-xs text-foreground-muted"
+                    >
+                      {command}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-border bg-surface-2 p-4">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">
+                    Como a simulação funciona
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-foreground-subtle">
+                    O backend já consegue interpretar mensagens simuladas,
+                    localizar o telefone vinculado e registrar uma despesa sem
+                    criar duplicidade por `messageId`.
+                  </p>
+                </div>
               </div>
             </div>
           </SettingsCard>
