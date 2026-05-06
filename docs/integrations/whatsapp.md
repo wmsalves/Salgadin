@@ -90,7 +90,27 @@ It can be explicitly enabled outside Development with:
 WhatsApp__EnableSimulationEndpoint=true
 ```
 
-Use that only for controlled testing. Do not expose this endpoint publicly in production.
+Outside Development, enabling the endpoint is not enough. The caller must also be authenticated with the normal Salgadin JWT and the authenticated email must be present in:
+
+```text
+WhatsApp__SimulatorAllowedEmails=email1@example.com,email2@example.com
+```
+
+Use this only for controlled testing. Do not expose broad access in production.
+
+Frontend visibility is controlled separately:
+
+```text
+VITE_ENABLE_WHATSAPP_SIMULATOR=true
+```
+
+For production or staging tests, all three settings must be coherent:
+
+- `VITE_ENABLE_WHATSAPP_SIMULATOR=true` shows the panel in the frontend.
+- `WhatsApp__EnableSimulationEndpoint=true` enables the backend endpoint outside Development.
+- `WhatsApp__SimulatorAllowedEmails=...` defines which authenticated users can call it.
+
+The allowed email list is backend-only and must not be exposed to the frontend.
 
 ### Simulate incoming message
 
@@ -127,6 +147,18 @@ Unlinked phone response:
 {
   "reply": "Este telefone ainda nao esta conectado ao Salgadin."
 }
+```
+
+Unauthorized simulator user response:
+
+```http
+403 Forbidden
+```
+
+The frontend should show a friendly message such as:
+
+```text
+Seu usuário não está autorizado a usar o simulador WhatsApp neste ambiente.
 ```
 
 ## Parser behavior

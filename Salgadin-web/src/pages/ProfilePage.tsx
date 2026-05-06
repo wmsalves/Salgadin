@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { EmptyState } from "../components/EmptyState";
+import { WhatsAppSimulationPanel } from "../components/settings/WhatsAppSimulationPanel";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
 import type {
@@ -56,6 +57,9 @@ import {
 const phonePattern = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
 const strongPasswordPattern =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$/;
+const isWhatsAppSimulatorEnabled =
+  import.meta.env.DEV ||
+  import.meta.env.VITE_ENABLE_WHATSAPP_SIMULATOR === "true";
 
 function formatPhoneNumber(value: string) {
   const digits = value.replace(/\D/g, "").slice(0, 11);
@@ -928,6 +932,8 @@ export default function ProfilePage() {
                   </p>
                 </div>
               </div>
+
+              {isWhatsAppSimulatorEnabled && <WhatsAppSimulationPanel />}
             </div>
           </SettingsCard>
         </div>

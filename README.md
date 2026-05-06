@@ -83,7 +83,9 @@ The internal foundation for future WhatsApp expense capture is documented in [do
     ```bash
     VITE_API_URL=http://localhost:5297/api
     VITE_GOOGLE_CLIENT_ID=your_google_web_client_id
+    VITE_ENABLE_WHATSAPP_SIMULATOR=true # optional, only for explicit simulator access outside dev
     ```
+    Outside backend Development, the simulator endpoint also requires `WhatsApp__EnableSimulationEndpoint=true` and a backend-only allowlist in `WhatsApp__SimulatorAllowedEmails`.
 4.  Run the development server:
     ```bash
     npm run dev
