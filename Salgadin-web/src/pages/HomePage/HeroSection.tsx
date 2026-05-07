@@ -74,7 +74,7 @@ export function HeroSection() {
       </p>
 
       <div className="mx-auto mt-7 grid max-w-5xl gap-3 text-left md:grid-cols-3">
-        <div className="rounded-2xl border border-border/70 bg-surface/80 px-4 py-4 shadow-[0_10px_24px_rgba(60,42,32,0.08)]">
+        <div className="ui-card rounded-2xl border border-border/70 bg-surface/80 px-4 py-4 shadow-[0_10px_24px_rgba(60,42,32,0.08)]">
           <p className="text-xs font-semibold uppercase tracking-[0.08em] text-primary">
             Registro rapido
           </p>
@@ -82,7 +82,7 @@ export function HeroSection() {
             Lance cafe, lanche, delivery, mercado ou transporte sem depender de planilhas.
           </p>
         </div>
-        <div className="rounded-2xl border border-border/70 bg-surface/80 px-4 py-4 shadow-[0_10px_24px_rgba(60,42,32,0.08)]">
+        <div className="ui-card rounded-2xl border border-border/70 bg-surface/80 px-4 py-4 shadow-[0_10px_24px_rgba(60,42,32,0.08)]">
           <p className="text-xs font-semibold uppercase tracking-[0.08em] text-accent">
             Leitura clara
           </p>
@@ -90,7 +90,7 @@ export function HeroSection() {
             Veja o que pesa no mes com categorias, graficos e resumos feitos para decisoes praticas.
           </p>
         </div>
-        <div className="rounded-2xl border border-border/70 bg-surface/80 px-4 py-4 shadow-[0_10px_24px_rgba(60,42,32,0.08)]">
+        <div className="ui-card rounded-2xl border border-border/70 bg-surface/80 px-4 py-4 shadow-[0_10px_24px_rgba(60,42,32,0.08)]">
           <p className="text-xs font-semibold uppercase tracking-[0.08em] text-primary">
             Evolucao do produto
           </p>
@@ -116,7 +116,7 @@ export function HeroSection() {
         {trustCues.map((cue) => (
           <li
             key={cue}
-            className="inline-flex min-h-9 max-w-full items-center justify-center gap-2 rounded-xl border border-border/80 bg-surface/70 px-3 py-1.5 shadow-[0_8px_20px_rgba(60,42,32,0.06)]"
+            className="ui-surface-interactive inline-flex min-h-9 max-w-full items-center justify-center gap-2 rounded-xl border border-border/80 bg-surface/70 px-3 py-1.5 shadow-[0_8px_20px_rgba(60,42,32,0.06)]"
           >
             <CheckCircle2 size={16} className="text-success" aria-hidden />
             <span>{cue}</span>

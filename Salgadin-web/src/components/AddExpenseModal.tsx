@@ -8,8 +8,9 @@ import { getCategories, type Category } from "../services/categoryService";
 import { addExpense, updateExpense } from "../services/expenseService";
 import { getSubcategories } from "../services/subcategoryService";
 import type { Expense, Subcategory } from "../lib/types";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { formatDateForInput, toDateInputValue } from "../lib/dates";
+import { getMotionProps, modalMotion, MOTION } from "../lib/motion";
 
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
   "Alimentação": ['ifood', 'uber eats', 'rappi', 'restaurante', 'mercado', 'padaria', 'açougue', 'supermercado', 'hortifruti', 'mcdonalds', "mcdonald's", 'burguer king', 'habibs', 'pizza', 'sushi', 'lanche', 'café', 'padoca', 'extra', 'carrefour', 'pão de açúcar', 'assaí', 'atacadão'],
@@ -47,6 +48,7 @@ export function AddExpenseModal({
   onSuccess,
   expenseToEdit = null,
 }: AddExpenseModalProps) {
+  const shouldReduceMotion = Boolean(useReducedMotion());
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -182,16 +184,17 @@ export function AddExpenseModal({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          {...modalMotion.backdrop}
+          transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
           className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4"
         >
           <motion.div
-            initial={{ scale: 0.95, y: 20, opacity: 0 }}
-            animate={{ scale: 1, y: 0, opacity: 1 }}
-            exit={{ scale: 0.95, y: 20, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            {...getMotionProps(shouldReduceMotion, modalMotion.panel, {
+              initial: { opacity: 0 },
+              animate: { opacity: 1 },
+              exit: { opacity: 0 },
+            })}
+            transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
             className="bg-surface rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
           >
             <div className="bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-6 py-4 flex justify-between items-center">
@@ -200,7 +203,7 @@ export function AddExpenseModal({
               </h2>
               <button
                 onClick={handleClose}
-                className="p-1 rounded-full text-white hover:bg-white/20 transition-colors"
+                className="ui-surface-interactive rounded-full p-1 text-white hover:bg-white/20"
               >
                 <X size={20} />
               </button>

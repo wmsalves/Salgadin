@@ -27,6 +27,7 @@ import {
   markNotificationRead,
 } from "../services/notificationService";
 import type { NotificationItem } from "../lib/types";
+import { dropdownMotion, MOTION } from "../lib/motion";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutGrid },
@@ -87,14 +88,14 @@ export function AppShell() {
       <div className="flex">
         <motion.aside
           animate={{ width: collapsed ? 80 : 256 }}
-          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          transition={MOTION.panel}
           className="sticky top-0 h-screen border-r border-border/70 bg-surface/95 shadow-[10px_0_24px_rgba(60,42,32,0.06)] hidden md:flex md:flex-col relative"
         >
           <div className="relative flex items-center justify-center px-4 py-5">
             <NavLink
               to={homePath}
               className={clsx(
-                "flex min-h-11 items-center gap-3 rounded-xl transition hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                "ui-surface-interactive flex min-h-11 items-center gap-3 rounded-xl hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
                 collapsed ? "justify-center p-2" : "justify-start px-2 py-1",
               )}
             >
@@ -165,7 +166,7 @@ export function AppShell() {
                         initial={{ opacity: 0, x: -6 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -6 }}
-                        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                        transition={MOTION.micro}
                       >
                         {item.label}
                       </motion.span>
@@ -195,7 +196,7 @@ export function AppShell() {
             <div className="px-6 lg:px-8 py-3 flex items-center gap-3">
               <NavLink
                 to={homePath}
-                className="md:hidden flex items-center gap-2 rounded-xl px-2 py-1 transition hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                className="ui-surface-interactive md:hidden flex items-center gap-2 rounded-xl px-2 py-1 hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                 aria-label="Ir para o dashboard"
               >
                 <img
@@ -228,7 +229,7 @@ export function AppShell() {
                         fetchNotifications(false);
                       }
                     }}
-                    className="relative p-2 rounded-full border border-border text-foreground-muted hover:text-foreground hover:bg-surface-2 transition-colors soft-press"
+                    className="ui-surface-interactive relative rounded-full border border-border p-2 text-foreground-muted hover:bg-surface-2 hover:text-foreground soft-press"
                     title="Notificacoes"
                   >
                     <Bell size={18} />
@@ -238,8 +239,13 @@ export function AppShell() {
                       </span>
                     )}
                   </button>
-                  {isBellOpen && (
-                    <div className="absolute left-1/2 mt-3 max-h-[360px] w-[min(22rem,calc(100vw-1.5rem))] -translate-x-1/2 overflow-auto rounded-2xl border border-border bg-surface shadow-[0_18px_36px_rgba(0,0,0,0.18)] z-50 md:left-auto md:right-0 md:w-80 md:translate-x-0">
+                  <AnimatePresence>
+                    {isBellOpen && (
+                    <motion.div
+                      {...dropdownMotion}
+                      transition={MOTION.smooth}
+                      className="ui-popover-panel absolute left-1/2 z-50 mt-3 max-h-[360px] w-[min(22rem,calc(100vw-1.5rem))] -translate-x-1/2 overflow-auto rounded-2xl border border-border bg-surface shadow-[0_18px_36px_rgba(0,0,0,0.18)] md:left-auto md:right-0 md:w-80 md:translate-x-0"
+                    >
                       <div className="p-4 border-b border-border/60 flex items-center justify-between">
                         <span className="text-sm font-semibold text-foreground">
                           Notificacoes
@@ -300,19 +306,20 @@ export function AppShell() {
                           ))
                         )}
                       </div>
-                    </div>
-                  )}
+                    </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
                 <button
                   onClick={toggleTheme}
-                  className="p-2 rounded-full border border-border text-foreground-muted hover:text-foreground hover:bg-surface-2 transition-colors soft-press"
+                  className="ui-surface-interactive rounded-full border border-border p-2 text-foreground-muted hover:bg-surface-2 hover:text-foreground soft-press"
                   title={`Mudar para ${theme === "light" ? "dark" : "light"} mode`}
                 >
                   {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
                 </button>
                 <button
                   onClick={logout}
-                  className="p-2 rounded-full border border-border text-foreground-muted hover:text-danger hover:bg-surface-2 transition-colors soft-press"
+                  className="ui-surface-interactive rounded-full border border-border p-2 text-foreground-muted hover:bg-surface-2 hover:text-danger soft-press"
                   title="Sair"
                 >
                   <LogOut size={18} />
@@ -322,7 +329,7 @@ export function AppShell() {
                 <div className="relative">
                   <button
                     onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-                    className="flex items-center gap-2 rounded-full border border-border bg-surface-2 px-2.5 py-2 text-foreground transition-colors hover:bg-surface-3 soft-press"
+                    className="ui-surface-interactive flex items-center gap-2 rounded-full border border-border bg-surface-2 px-2.5 py-2 text-foreground hover:bg-surface-3 soft-press"
                     aria-label="Abrir menu da conta"
                   >
                     <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-xs font-semibold text-white">
@@ -340,8 +347,13 @@ export function AppShell() {
                     />
                   </button>
 
-                  {isMobileMenuOpen && (
-                    <div className="absolute right-0 mt-3 w-[min(21rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_18px_36px_rgba(0,0,0,0.18)] z-50">
+                  <AnimatePresence>
+                    {isMobileMenuOpen && (
+                    <motion.div
+                      {...dropdownMotion}
+                      transition={MOTION.smooth}
+                      className="ui-popover-panel absolute right-0 z-50 mt-3 w-[min(21rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_18px_36px_rgba(0,0,0,0.18)]"
+                    >
                       <div className="border-b border-border/70 bg-surface-2 px-4 py-3">
                         <div className="text-xs text-foreground-muted">Conta</div>
                         <div className="mt-1 text-sm font-semibold text-foreground">
@@ -360,7 +372,7 @@ export function AppShell() {
                               fetchNotifications(false);
                             }
                           }}
-                          className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm text-foreground transition-colors hover:bg-surface-2"
+                          className="ui-surface-interactive flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm text-foreground hover:bg-surface-2"
                         >
                           <span className="flex items-center gap-3">
                             <Bell size={16} className="text-foreground-muted" />
@@ -422,7 +434,7 @@ export function AppShell() {
 
                         <button
                           onClick={toggleTheme}
-                          className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-foreground transition-colors hover:bg-surface-2"
+                          className="ui-surface-interactive mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-foreground hover:bg-surface-2"
                         >
                           <Settings2 size={16} className="text-foreground-muted" />
                           Tema: {theme === "light" ? "claro" : "escuro"}
@@ -430,14 +442,15 @@ export function AppShell() {
 
                         <button
                           onClick={logout}
-                          className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-danger transition-colors hover:bg-danger/10"
+                          className="ui-surface-interactive mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-danger hover:bg-danger/10"
                         >
                           <LogOutIcon size={16} />
                           Sair
                         </button>
                       </div>
-                    </div>
-                  )}
+                    </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
             </div>

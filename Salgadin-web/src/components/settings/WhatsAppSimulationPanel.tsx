@@ -7,10 +7,12 @@ import {
   Send,
   Terminal,
 } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   simulateWhatsAppMessage,
   type WhatsAppSimulationRequest,
 } from "../../services/whatsAppService";
+import { collapseMotion, getMotionProps, MOTION } from "../../lib/motion";
 
 const exampleMessages = [
   "Adicionar 50 em almoço",
@@ -56,6 +58,7 @@ function getErrorMessage(error: unknown) {
 }
 
 export function WhatsAppSimulationPanel() {
+  const shouldReduceMotion = Boolean(useReducedMotion());
   const initialMessageId = useMemo(() => createMessageId(), []);
   const [isOpen, setIsOpen] = useState(false);
   const [form, setForm] = useState<WhatsAppSimulationRequest>({
@@ -96,7 +99,7 @@ export function WhatsAppSimulationPanel() {
         onClick={() => setIsOpen((prev) => !prev)}
         aria-expanded={isOpen}
         aria-controls="whatsapp-simulator-panel"
-        className="flex w-full flex-col gap-3 px-4 py-4 text-left transition hover:bg-surface-2 focus:outline-none focus:ring-2 focus:ring-primary/25 sm:flex-row sm:items-center sm:justify-between"
+        className="ui-surface-interactive flex w-full flex-col gap-3 px-4 py-4 text-left hover:bg-surface-2 focus:outline-none focus:ring-2 focus:ring-primary/25 sm:flex-row sm:items-center sm:justify-between"
       >
         <span className="flex min-w-0 items-start gap-3">
           <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-surface-2 text-primary">
@@ -124,15 +127,22 @@ export function WhatsAppSimulationPanel() {
           {isOpen ? "Ocultar" : "Abrir"}
           <ChevronDown
             size={16}
-            className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
+            className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
           />
         </span>
       </button>
 
+      <AnimatePresence initial={false}>
       {isOpen && (
-        <div
+        <motion.div
+          {...getMotionProps(shouldReduceMotion, collapseMotion, {
+            initial: { opacity: 0 },
+            animate: { opacity: 1 },
+            exit: { opacity: 0 },
+          })}
+          transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
           id="whatsapp-simulator-panel"
-          className="border-t border-border/70 bg-surface-2/45 p-4"
+          className="overflow-hidden border-t border-border/70 bg-surface-2/45 p-4"
         >
           <div className="rounded-xl border border-primary/20 bg-primary/8 px-3 py-2.5 text-xs leading-5 text-foreground-muted">
             Use esta ferramenta apenas para simular o fluxo interno. Em
@@ -143,11 +153,11 @@ export function WhatsAppSimulationPanel() {
           <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="text-xs font-medium text-foreground-muted">
               Telefone/remetente
-              <input
-                value={form.from}
-                onChange={(event) => updateField("from", event.target.value)}
-                className="mt-2 w-full rounded-xl border border-border bg-surface px-3 py-2.5 font-mono text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-              />
+                <input
+                  value={form.from}
+                  onChange={(event) => updateField("from", event.target.value)}
+                  className="ui-input mt-2 w-full rounded-xl border border-border bg-surface px-3 py-2.5 font-mono text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                />
             </label>
 
             <label className="text-xs font-medium text-foreground-muted">
@@ -158,13 +168,13 @@ export function WhatsAppSimulationPanel() {
                   onChange={(event) =>
                     updateField("messageId", event.target.value)
                   }
-                  className="min-w-0 flex-1 rounded-xl border border-border bg-surface px-3 py-2.5 font-mono text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  className="ui-input min-w-0 flex-1 rounded-xl border border-border bg-surface px-3 py-2.5 font-mono text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
                 <button
                   type="button"
                   onClick={() => updateField("messageId", createMessageId())}
                   aria-label="Gerar novo Message ID"
-                  className="inline-flex items-center justify-center rounded-xl border border-border bg-surface px-3 py-2 text-xs font-semibold text-foreground-muted transition hover:bg-surface-3 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="ui-surface-interactive inline-flex items-center justify-center rounded-xl border border-border bg-surface px-3 py-2 text-xs font-semibold text-foreground-muted hover:bg-surface-3 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   <RefreshCw size={14} />
                 </button>
@@ -177,7 +187,7 @@ export function WhatsAppSimulationPanel() {
                 value={form.text}
                 onChange={(event) => updateField("text", event.target.value)}
                 rows={3}
-                className="mt-2 w-full resize-none rounded-xl border border-border bg-surface px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="ui-input mt-2 w-full resize-none rounded-xl border border-border bg-surface px-3 py-2.5 text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
             </label>
           </div>
@@ -192,7 +202,7 @@ export function WhatsAppSimulationPanel() {
                   key={message}
                   type="button"
                   onClick={() => updateField("text", message)}
-                  className="rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[11px] text-foreground-muted transition hover:border-primary/30 hover:bg-primary/8 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="ui-surface-interactive rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[11px] text-foreground-muted hover:border-primary/30 hover:bg-primary/8 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   {message}
                 </button>
@@ -204,14 +214,14 @@ export function WhatsAppSimulationPanel() {
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-70"
+            className="ui-pressable mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-70"
           >
             <Send size={16} />
             {isSubmitting ? "Simulando..." : "Simular mensagem"}
           </button>
 
           {reply && (
-            <div className="mt-4 rounded-2xl border border-success/25 bg-surface px-4 py-3 text-sm text-foreground">
+            <div className="ui-status-message mt-4 rounded-2xl border border-success/25 bg-surface px-4 py-3 text-sm text-foreground">
               <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-success">
                 <CheckCircle2 size={14} />
                 Resposta simulada
@@ -223,7 +233,7 @@ export function WhatsAppSimulationPanel() {
           )}
 
           {errorMessage && (
-            <div className="mt-4 rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
+            <div className="ui-status-message mt-4 rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
               <div className="mb-1 flex items-center gap-2 font-semibold">
                 <AlertTriangle size={15} />
                 Não foi possível simular
@@ -231,8 +241,9 @@ export function WhatsAppSimulationPanel() {
               <p className="text-xs leading-5">{errorMessage}</p>
             </div>
           )}
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </div>
   );
 }

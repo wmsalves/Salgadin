@@ -8,6 +8,7 @@
   --motion-base: 240ms;
   --motion-slow: 360ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --ring-color: 184 88 47;
   --motion-hover: 220ms;
   --motion-enter: 280ms;
@@ -93,12 +94,12 @@ body,
 :where(a, button, input, select, textarea, summary, label),
 :where(a, button, input, select, textarea, summary, label)::before,
 :where(a, button, input, select, textarea, summary, label)::after {
-  transition: background-color var(--motion-base) var(--ease-out),
-    color var(--motion-base) var(--ease-out),
-    border-color var(--motion-base) var(--ease-out),
-    box-shadow var(--motion-base) var(--ease-out),
-    transform var(--motion-base) var(--ease-out),
-    opacity var(--motion-base) var(--ease-out);
+  transition: background-color var(--motion-hover) var(--ease-out),
+    color var(--motion-hover) var(--ease-out),
+    border-color var(--motion-hover) var(--ease-out),
+    box-shadow var(--motion-hover) var(--ease-out),
+    transform var(--motion-hover) var(--ease-out),
+    opacity var(--motion-hover) var(--ease-out);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -115,6 +116,15 @@ body,
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
+
+  .animate-fade-in,
+  .animate-float,
+  .ui-fade-up,
+  .ui-pop-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 :where(a, button, input, select, textarea, summary):focus-visible {
@@ -127,9 +137,11 @@ body,
     box-shadow var(--motion-base) var(--ease-out);
 }
 
-.soft-hover:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-card-hover);
+@media (hover: hover) and (pointer: fine) {
+  .soft-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card-hover);
+  }
 }
 
 .soft-hover-sm {
@@ -138,8 +150,10 @@ body,
     box-shadow var(--motion-base) var(--ease-out);
 }
 
-.soft-hover-sm:hover {
-  transform: translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+  .soft-hover-sm:hover {
+    transform: translateY(-2px);
+  }
 }
 
 .soft-press {
@@ -164,13 +178,15 @@ body,
     box-shadow var(--motion-base) var(--ease-out),
     background-color var(--motion-base) var(--ease-out),
     border-color var(--motion-base) var(--ease-out),
-    color var(--motion-base) var(--ease-out);
+  color var(--motion-base) var(--ease-out);
   will-change: transform;
 }
 
-.ui-pressable:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 32px rgb(var(--shadow-color) / 0.16);
+@media (hover: hover) and (pointer: fine) {
+  .ui-pressable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 32px rgb(var(--shadow-color) / 0.16);
+  }
 }
 
 .ui-pressable:active {
@@ -189,9 +205,11 @@ body,
   will-change: transform;
 }
 
-.ui-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-card-hover);
+@media (hover: hover) and (pointer: fine) {
+  .ui-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card-hover);
+  }
 }
 
 .ui-input {
@@ -208,4 +226,65 @@ body,
   transition: border-color var(--motion-hover) var(--ease-out),
     box-shadow var(--motion-hover) var(--ease-out),
     background-color var(--motion-hover) var(--ease-out);
+}
+
+:where(button:disabled, [role="button"][aria-disabled="true"]) {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.ui-surface-interactive {
+  transition: background-color var(--motion-hover) var(--ease-out),
+    border-color var(--motion-hover) var(--ease-out),
+    color var(--motion-hover) var(--ease-out),
+    box-shadow var(--motion-hover) var(--ease-out),
+    transform var(--motion-hover) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ui-surface-interactive:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 28px rgb(var(--shadow-color) / 0.1);
+  }
+}
+
+.ui-fade-up {
+  animation: ui-fade-up var(--motion-enter) var(--ease-out) both;
+}
+
+.ui-pop-in {
+  animation: ui-pop-in var(--motion-base) var(--ease-out) both;
+}
+
+.ui-popover-panel {
+  transform-origin: top center;
+  will-change: transform, opacity;
+}
+
+.ui-status-message {
+  animation: ui-fade-up var(--motion-fast) var(--ease-out) both;
+}
+
+@keyframes ui-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ui-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

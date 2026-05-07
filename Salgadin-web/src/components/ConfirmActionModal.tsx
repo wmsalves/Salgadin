@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { AlertTriangle, Loader2, X } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import clsx from "clsx";
+import { getMotionProps, modalMotion, MOTION } from "../lib/motion";
 
 interface ConfirmActionModalProps {
   isOpen: boolean;
@@ -26,6 +27,8 @@ export function ConfirmActionModal({
   errorMessage = null,
   tone = "danger",
 }: ConfirmActionModalProps) {
+  const shouldReduceMotion = Boolean(useReducedMotion());
+
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
       if (event.key === "Escape" && !isConfirming) {
@@ -50,26 +53,28 @@ export function ConfirmActionModal({
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            {...modalMotion.backdrop}
+            transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
             onClick={!isConfirming ? onClose : undefined}
             className="absolute inset-0 bg-background/80 backdrop-blur-sm"
           />
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            {...getMotionProps(shouldReduceMotion, modalMotion.panel, {
+              initial: { opacity: 0 },
+              animate: { opacity: 1 },
+              exit: { opacity: 0 },
+            })}
+            transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
             className="relative w-full max-w-md overflow-hidden rounded-3xl border border-border/70 bg-surface shadow-2xl"
           >
             <div className="flex items-center justify-between border-b border-border/60 p-6">
               <h2 className="text-xl font-bold text-foreground">{title}</h2>
-              <button
-                onClick={onClose}
-                disabled={isConfirming}
-                className="rounded-full p-2 text-foreground-muted transition-colors hover:bg-surface-2 hover:text-foreground disabled:opacity-50"
-              >
+                <button
+                  onClick={onClose}
+                  disabled={isConfirming}
+                  className="ui-surface-interactive rounded-full p-2 text-foreground-muted hover:bg-surface-2 hover:text-foreground disabled:opacity-50"
+                >
                 <X size={20} />
               </button>
             </div>
@@ -83,7 +88,7 @@ export function ConfirmActionModal({
               </div>
 
               {errorMessage && (
-                <div className="mb-6 flex items-start gap-2 rounded-xl border border-danger/30 bg-danger/10 p-4 text-sm font-medium text-danger">
+                <div className="ui-status-message mb-6 flex items-start gap-2 rounded-xl border border-danger/30 bg-danger/10 p-4 text-sm font-medium text-danger">
                   <AlertTriangle size={16} className="mt-0.5 shrink-0" />
                   <p>{errorMessage}</p>
                 </div>
@@ -93,7 +98,7 @@ export function ConfirmActionModal({
                 <button
                   onClick={onClose}
                   disabled={isConfirming}
-                  className="rounded-full px-5 py-2.5 text-sm font-semibold text-foreground-muted transition-colors hover:bg-surface-2 disabled:opacity-50"
+                  className="ui-surface-interactive rounded-full px-5 py-2.5 text-sm font-semibold text-foreground-muted hover:bg-surface-2 disabled:opacity-50"
                 >
                   Cancelar
                 </button>
@@ -101,7 +106,7 @@ export function ConfirmActionModal({
                   onClick={onConfirm}
                   disabled={isConfirming}
                   className={clsx(
-                    "flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold shadow-xl transition",
+                    "ui-pressable flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold shadow-xl",
                     accentClass,
                     isConfirming && "cursor-not-allowed opacity-70",
                   )}

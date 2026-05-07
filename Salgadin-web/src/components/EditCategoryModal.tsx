@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { X, Tag } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,6 +8,7 @@ import { Input } from "./ui/Input";
 import { Button } from "./ui/Button";
 import { updateCategory, type Category } from "../services/categoryService";
 import { AxiosError } from "axios";
+import { getMotionProps, modalMotion, MOTION } from "../lib/motion";
 
 const editCategorySchema = z.object({
   name: z.string().min(2, "A categoria deve ter no mínimo 2 caracteres."),
@@ -28,6 +29,8 @@ export function EditCategoryModal({
   onSuccess,
   initialData,
 }: EditCategoryModalProps) {
+  const shouldReduceMotion = Boolean(useReducedMotion());
+
   const {
     register,
     handleSubmit,
@@ -82,17 +85,19 @@ export function EditCategoryModal({
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            {...modalMotion.backdrop}
+            transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
             onClick={onClose}
             className="absolute inset-0 bg-background/80 backdrop-blur-sm"
           />
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            {...getMotionProps(shouldReduceMotion, modalMotion.panel, {
+              initial: { opacity: 0 },
+              animate: { opacity: 1 },
+              exit: { opacity: 0 },
+            })}
+            transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
             className="relative w-full max-w-md overflow-hidden rounded-3xl bg-surface border border-border shadow-2xl"
           >
             <div className="flex items-center justify-between border-b border-border/60 bg-surface-2/50 px-6 py-4">
@@ -101,7 +106,7 @@ export function EditCategoryModal({
               </h2>
               <button
                 onClick={onClose}
-                className="rounded-full p-2 text-foreground-muted hover:bg-surface-3 hover:text-foreground transition-colors"
+                className="ui-surface-interactive rounded-full p-2 text-foreground-muted hover:bg-surface-3 hover:text-foreground"
               >
                 <X size={20} />
               </button>
@@ -120,7 +125,7 @@ export function EditCategoryModal({
               </div>
 
               {errors.root && (
-                <div className="mt-4 rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
+                <div className="ui-status-message mt-4 rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
                   {errors.root.message}
                 </div>
               )}
@@ -129,7 +134,7 @@ export function EditCategoryModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-full px-5 py-2.5 text-sm font-semibold text-foreground-muted hover:bg-surface-2 transition-colors"
+                  className="ui-surface-interactive rounded-full px-5 py-2.5 text-sm font-semibold text-foreground-muted hover:bg-surface-2"
                 >
                   Cancelar
                 </button>

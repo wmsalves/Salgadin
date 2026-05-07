@@ -86,6 +86,41 @@ type DashboardInsight = {
   tone: "positive" | "neutral" | "attention";
 };
 
+type CategoryExpenseSlice = {
+  name: string;
+  value: number;
+};
+
+type CategoryChartTooltipProps = {
+  active?: boolean;
+  payload?: Array<{
+    value?: number | string;
+    payload?: CategoryExpenseSlice;
+  }>;
+};
+
+function CategoryChartTooltip({
+  active,
+  payload,
+}: CategoryChartTooltipProps) {
+  const category = payload?.[0]?.payload;
+
+  if (!active || !category) {
+    return null;
+  }
+
+  return (
+    <div className="min-w-[148px] rounded-2xl border border-border/80 bg-[rgba(24,18,15,0.96)] px-3.5 py-3 shadow-[0_16px_36px_rgba(12,9,7,0.28)] backdrop-blur-sm">
+      <p className="text-xs font-medium text-foreground-muted">
+        {category.name}
+      </p>
+      <p className="mt-1 font-mono text-sm font-semibold text-foreground tabular-nums">
+        {formatCurrency(category.value)}
+      </p>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [incomes, setIncomes] = useState<Income[]>([]);
@@ -225,7 +260,7 @@ export default function DashboardPage() {
     [summary],
   );
 
-  const expensesByCategory = useMemo(() => {
+  const expensesByCategory = useMemo<CategoryExpenseSlice[]>(() => {
     const map = new Map<string, number>();
     expenses.forEach((exp) => {
       const val = Math.abs(exp.amount);
@@ -903,7 +938,7 @@ export default function DashboardPage() {
               <div className="space-y-4">
                 <div className="h-[220px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
+                    <PieChart accessibilityLayer={false} tabIndex={-1}>
                       <Pie
                         data={expensesByCategory}
                         cx="50%"
@@ -913,6 +948,7 @@ export default function DashboardPage() {
                         paddingAngle={5}
                         dataKey="value"
                         stroke="none"
+                        rootTabIndex={-1}
                       >
                         {expensesByCategory.map((_, index) => (
                           <Cell
@@ -922,19 +958,10 @@ export default function DashboardPage() {
                         ))}
                       </Pie>
                       <Tooltip
-                        formatter={(value: number) =>
-                          value.toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })
-                        }
-                        contentStyle={{
-                          borderRadius: "12px",
-                          border: "1px solid var(--color-border)",
-                          background: "var(--color-surface)",
-                          color: "var(--color-text)",
-                          fontFamily: "var(--font-mono, monospace)",
-                        }}
+                        cursor={false}
+                        isAnimationActive={false}
+                        wrapperStyle={{ outline: "none", pointerEvents: "none" }}
+                        content={<CategoryChartTooltip />}
                       />
                     </PieChart>
                   </ResponsiveContainer>

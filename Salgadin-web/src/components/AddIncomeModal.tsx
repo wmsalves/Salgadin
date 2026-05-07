@@ -5,9 +5,10 @@ import { z } from "zod";
 import { X } from "lucide-react";
 import { Button } from "./ui/Button";
 import { addIncome, updateIncome } from "../services/incomeService";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import type { Income } from "../lib/types";
 import { formatDateForInput, toDateInputValue } from "../lib/dates";
+import { getMotionProps, modalMotion, MOTION } from "../lib/motion";
 
 const incomeSchema = z.object({
   description: z.string().min(3, "A descrição deve ter no mínimo 3 caracteres."),
@@ -31,6 +32,7 @@ export function AddIncomeModal({
   onSuccess,
   incomeToEdit = null,
 }: AddIncomeModalProps) {
+  const shouldReduceMotion = Boolean(useReducedMotion());
   const [apiError, setApiError] = useState<string | null>(null);
   const isEditing = incomeToEdit !== null;
 
@@ -109,16 +111,17 @@ export function AddIncomeModal({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          {...modalMotion.backdrop}
+          transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
           className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4"
         >
           <motion.div
-            initial={{ scale: 0.95, y: 20, opacity: 0 }}
-            animate={{ scale: 1, y: 0, opacity: 1 }}
-            exit={{ scale: 0.95, y: 20, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            {...getMotionProps(shouldReduceMotion, modalMotion.panel, {
+              initial: { opacity: 0 },
+              animate: { opacity: 1 },
+              exit: { opacity: 0 },
+            })}
+            transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
             className="bg-surface rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
           >
             <div className="bg-gradient-to-r from-emerald-500 to-teal-400 px-6 py-4 flex justify-between items-center">
@@ -127,7 +130,7 @@ export function AddIncomeModal({
               </h2>
               <button
                 onClick={handleClose}
-                className="p-1 rounded-full text-white hover:bg-white/20 transition-colors"
+                className="ui-surface-interactive rounded-full p-1 text-white hover:bg-white/20"
               >
                 <X size={20} />
               </button>

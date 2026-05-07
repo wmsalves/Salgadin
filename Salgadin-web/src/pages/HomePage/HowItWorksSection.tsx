@@ -1,17 +1,12 @@
 import { Suspense, lazy, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import clsx from "clsx";
 import { BarChart3, CheckCircle2, ReceiptText, UserPlus } from "lucide-react";
 import { tabsContent } from "./content";
+import { MOTION } from "../../lib/motion";
 
 type TabKey = keyof typeof tabsContent;
 const HowItWorksMockupPanel = lazy(() => import("./HowItWorksMockupPanel"));
-
-const tabContentVariants = {
-  initial: { opacity: 0, y: 10 },
-  enter: { opacity: 1, y: 0, transition: { duration: 0.3 } },
-  exit: { opacity: 0, y: -10, transition: { duration: 0.2 } },
-};
 
 const steps = [
   {
@@ -36,7 +31,20 @@ const steps = [
 
 export function HowItWorksSection() {
   const [activeTab, setActiveTab] = useState<TabKey>("Dashboard");
+  const shouldReduceMotion = useReducedMotion();
   const TABS = Object.keys(tabsContent) as TabKey[];
+
+  const tabContentVariants = shouldReduceMotion
+    ? {
+        initial: { opacity: 0 },
+        enter: { opacity: 1, transition: { duration: 0 } },
+        exit: { opacity: 0, transition: { duration: 0 } },
+      }
+    : {
+        initial: { opacity: 0, y: 10 },
+        enter: { opacity: 1, y: 0, transition: MOTION.enter },
+        exit: { opacity: 0, y: -8, transition: MOTION.micro },
+      };
 
   return (
     <section id="how" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-16">
@@ -53,7 +61,7 @@ export function HowItWorksSection() {
         {steps.map((step, index) => (
           <li
             key={step.title}
-            className="group rounded-[var(--radius-card)] border border-border bg-surface/90 p-5 shadow-[var(--shadow-card)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:border-primary/35 hover:shadow-[var(--shadow-card-hover)]"
+            className="group ui-card rounded-[var(--radius-card)] border border-border bg-surface/90 p-5 shadow-[var(--shadow-card)] hover:border-primary/35"
           >
             <div className="flex items-start gap-4">
               <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-surface-2 text-primary transition-colors group-hover:bg-surface-3">
@@ -100,7 +108,7 @@ export function HowItWorksSection() {
                 <motion.div
                   layoutId="active-tab-indicator"
                   className="absolute inset-0 -z-10 rounded-xl bg-primary/10"
-                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
                 />
               )}
               {t}
