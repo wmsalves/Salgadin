@@ -105,6 +105,8 @@ A brief overview of the main API endpoints.
 - `POST /api/auth/google`: Authenticate with Google and receive the Salgadin JWT.
 - `GET /api/expense`: Get a paginated list of expenses for the authenticated user.
 - `POST /api/expense`: Create a new expense.
+- `GET /api/expense/export`: Export authenticated user expenses.
+- `GET /api/income/export`: Export authenticated user incomes.
 - `GET /api/category`: Get all categories for the authenticated user.
 - `GET /health`: Liveness endpoint for production health checks.
 

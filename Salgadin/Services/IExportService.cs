@@ -11,5 +11,9 @@ namespace Salgadin.Services
             int? subcategoryId,
             decimal? minAmount,
             decimal? maxAmount);
+
+        Task<(byte[] Content, string ContentType, string FileName)> ExportIncomesAsync(
+            DateTime? startDate,
+            DateTime? endDate);
     }
 }

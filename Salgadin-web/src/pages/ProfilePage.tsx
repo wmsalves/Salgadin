@@ -28,6 +28,7 @@ import { useTheme } from "../hooks/useTheme";
 import type {
   Expense,
   GoalAlert,
+  Income,
   NotificationItem,
   NotificationPreference,
 } from "../lib/types";
@@ -36,8 +37,9 @@ import {
   updateMyProfile,
   type UserProfile,
 } from "../services/authService";
-import { exportExpenses } from "../services/exportService";
+import { exportExpenses, exportIncomes } from "../services/exportService";
 import { getExpenses } from "../services/expenseService";
+import { getIncomes } from "../services/incomeService";
 import {
   getNotificationAlerts,
   getNotificationPreferences,
@@ -131,11 +133,13 @@ export default function ProfilePage() {
   const [alerts, setAlerts] = useState<GoalAlert[]>([]);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [recentExpenses, setRecentExpenses] = useState<Expense[]>([]);
+  const [recentIncomes, setRecentIncomes] = useState<Income[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isNotifying, setIsNotifying] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [isExportingExpenses, setIsExportingExpenses] = useState(false);
+  const [isExportingIncomes, setIsExportingIncomes] = useState(false);
   const [isGeneratingWhatsAppCode, setIsGeneratingWhatsAppCode] =
     useState(false);
   const [isDisconnectingWhatsApp, setIsDisconnectingWhatsApp] = useState(false);
@@ -163,6 +167,8 @@ export default function ProfilePage() {
   const now = useMemo(() => new Date(), []);
   const displayName = profile?.name ?? user?.name ?? "Usuario";
   const hasExpenses = recentExpenses.length > 0;
+  const hasIncomes = recentIncomes.length > 0;
+  const hasExportableData = hasExpenses || hasIncomes;
   const unreadNotifications = notifications.filter(
     (item) => !item.isRead,
   ).length;
@@ -175,19 +181,21 @@ export default function ProfilePage() {
       const [
         profileData,
         prefs,
-        alertsData,
-        notificationsData,
-        expensesData,
-        whatsAppStatusData,
-      ] = await Promise.all([
-        getMyProfile(),
-        getNotificationPreferences(),
-        getNotificationAlerts(now.getFullYear(), now.getMonth() + 1),
-        getNotifications(),
-        getExpenses(),
-        getWhatsAppStatus().catch(() => ({
-          connected: false,
-          phoneNumber: null,
+          alertsData,
+          notificationsData,
+          expensesData,
+          incomesData,
+          whatsAppStatusData,
+        ] = await Promise.all([
+          getMyProfile(),
+          getNotificationPreferences(),
+          getNotificationAlerts(now.getFullYear(), now.getMonth() + 1),
+          getNotifications(),
+          getExpenses(),
+          getIncomes(),
+          getWhatsAppStatus().catch(() => ({
+            connected: false,
+            phoneNumber: null,
         })),
       ]);
 
@@ -200,11 +208,12 @@ export default function ProfilePage() {
         newPassword: "",
         confirmNewPassword: "",
       });
-      setPreferences(prefs);
-      setAlerts(alertsData);
-      setNotifications(notificationsData);
-      setRecentExpenses(expensesData);
-      setWhatsAppStatus(whatsAppStatusData);
+        setPreferences(prefs);
+        setAlerts(alertsData);
+        setNotifications(notificationsData);
+        setRecentExpenses(expensesData);
+        setRecentIncomes(incomesData);
+        setWhatsAppStatus(whatsAppStatusData);
     } catch (error) {
       console.error("Falha ao carregar configuracoes:", error);
       setSettingsError(
@@ -330,6 +339,23 @@ export default function ProfilePage() {
       setSettingsError("Nao foi possivel exportar suas despesas agora.");
     } finally {
       setIsExportingExpenses(false);
+    }
+  };
+
+  const handleExportIncomes = async () => {
+    setIsExportingIncomes(true);
+    setSettingsMessage(null);
+    setSettingsError(null);
+
+    try {
+      const file = await exportIncomes();
+      downloadBlob(file, "salgadin-rendas.csv");
+      setSettingsMessage("Exportacao de rendas iniciada.");
+    } catch (error) {
+      console.error("Falha ao exportar rendas:", error);
+      setSettingsError("Nao foi possivel exportar suas rendas agora.");
+    } finally {
+      setIsExportingIncomes(false);
     }
   };
 
@@ -761,48 +787,59 @@ export default function ProfilePage() {
             title="Data"
             description="Seus lancamentos pertencem a voce e podem ser baixados."
           >
-            {hasExpenses ? (
-              <div className="space-y-4">
-                <div className="rounded-2xl border border-border bg-surface-2 p-4">
-                  <h3 className="text-sm font-semibold text-foreground">
-                    Exportar despesas
-                  </h3>
-                  <p className="mt-1 text-xs text-foreground-subtle">
-                    CSV com Data, Descricao, Valor, Categoria e Subcategoria.
-                    Periodo: todos os registros disponiveis.
-                  </p>
-                  <button
-                    onClick={handleExportExpenses}
-                    disabled={isExportingExpenses}
-                    className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
-                  >
-                    <Download size={16} />
-                    {isExportingExpenses ? "Preparando CSV..." : "Baixar CSV"}
-                  </button>
+              {hasExportableData ? (
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-border bg-surface-2 p-4">
+                    <h3 className="text-sm font-semibold text-foreground">
+                      Exportar despesas
+                    </h3>
+                    <p className="mt-1 text-xs text-foreground-subtle">
+                      CSV com Data, Descricao, Valor, Categoria e Subcategoria.
+                      Periodo: todos os registros disponiveis.
+                    </p>
+                    <button
+                      onClick={handleExportExpenses}
+                      disabled={isExportingExpenses || !hasExpenses}
+                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                    >
+                      <Download size={16} />
+                      {isExportingExpenses
+                        ? "Preparando CSV..."
+                        : hasExpenses
+                          ? "Baixar CSV"
+                          : "Sem despesas registradas"}
+                    </button>
+                  </div>
+                  <div className="rounded-2xl border border-border bg-surface-2 p-4">
+                    <h3 className="text-sm font-semibold text-foreground">
+                      Exportar rendas
+                    </h3>
+                    <p className="mt-1 text-xs text-foreground-subtle">
+                      CSV com Data, Descricao, Tipo e Valor. Periodo: todas as
+                      rendas disponiveis.
+                    </p>
+                    <button
+                      onClick={handleExportIncomes}
+                      disabled={isExportingIncomes || !hasIncomes}
+                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-70"
+                    >
+                      <Download size={16} />
+                      {isExportingIncomes
+                        ? "Preparando CSV..."
+                        : hasIncomes
+                          ? "Baixar CSV de rendas"
+                          : "Sem rendas registradas"}
+                    </button>
+                  </div>
                 </div>
-                <div className="rounded-2xl border border-border bg-surface-2 p-4 opacity-75">
-                  <h3 className="text-sm font-semibold text-foreground">
-                    Exportar rendas
-                  </h3>
-                  <p className="mt-1 text-xs text-foreground-subtle">
-                    Em breve: exportacao separada das rendas cadastradas.
-                  </p>
-                  <button
-                    disabled
-                    className="mt-4 w-full rounded-xl border border-border px-4 py-2.5 text-sm font-semibold text-foreground-muted"
-                  >
-                    Em breve
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <EmptyState
-                icon={Database}
-                title="Sem despesas para exportar"
-                description="Registre seu primeiro gasto para gerar um CSV com seus lancamentos financeiros."
-                primaryAction={{
-                  label: "Ir para o dashboard",
-                  href: "/dashboard",
+              ) : (
+                <EmptyState
+                  icon={Database}
+                  title="Sem dados para exportar"
+                  description="Registre sua primeira renda ou despesa para baixar um CSV com seus lancamentos financeiros."
+                  primaryAction={{
+                    label: "Ir para o dashboard",
+                    href: "/dashboard",
                 }}
                 compact
               />

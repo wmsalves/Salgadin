@@ -11,10 +11,12 @@ namespace Salgadin.Controllers
     public class IncomeController : ControllerBase
     {
         private readonly IIncomeService _service;
+        private readonly IExportService _exportService;
 
-        public IncomeController(IIncomeService service)
+        public IncomeController(IIncomeService service, IExportService exportService)
         {
             _service = service;
+            _exportService = exportService;
         }
 
         [HttpGet("{id:int}")]
@@ -58,6 +60,15 @@ namespace Salgadin.Controllers
         {
             await _service.DeleteIncomeAsync(id);
             return NoContent();
+        }
+
+        [HttpGet("export")]
+        public async Task<IActionResult> Export(
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] DateTime? endDate = null)
+        {
+            var result = await _exportService.ExportIncomesAsync(startDate, endDate);
+            return File(result.Content, result.ContentType, result.FileName);
         }
     }
 }

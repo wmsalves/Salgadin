@@ -323,6 +323,7 @@ Validar:
 - seção de preferências carrega
 - seção de WhatsApp carrega
 - exportação de despesas está visível
+- exportação de rendas está visível
 
 ### 5.7 Open Graph image
 
@@ -357,14 +358,15 @@ Executar pelo menos este fluxo após o deploy:
 10. criar uma meta
 11. acessar relatórios
 12. exportar CSV de despesas
-13. acessar Profile/Settings
-14. fazer logout
-15. fazer login novamente
-16. confirmar que os dados continuam acessíveis corretamente
+13. exportar CSV de rendas
+14. acessar Profile/Settings
+15. fazer logout
+16. fazer login novamente
+17. confirmar que os dados continuam acessíveis corretamente
 
 Se Google Sign-In estiver ativo, complementar:
 
-17. testar login com Google em uma conta de teste
+18. testar login com Google em uma conta de teste
 
 ---
 
@@ -476,4 +478,3 @@ Um deploy só deve ser considerado saudável quando:
 - simulador WhatsApp não aparece para usuário comum
 - um usuário comum não autorizado não consegue usar o simulador WhatsApp fora de Development
 - smoke test manual principal foi concluído
-

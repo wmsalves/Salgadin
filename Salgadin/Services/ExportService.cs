@@ -114,6 +114,35 @@ namespace Salgadin.Services
             throw new BadInputException("Formato inválido. Use 'csv' ou 'pdf'.");
         }
 
+        public async Task<(byte[] Content, string ContentType, string FileName)> ExportIncomesAsync(
+            DateTime? startDate,
+            DateTime? endDate)
+        {
+            var userId = _userContext.GetUserId();
+            var query = _unitOfWork.Incomes.GetQueryable()
+                .Where(i => i.UserId == userId);
+
+            if (startDate.HasValue || endDate.HasValue)
+            {
+                var startUtc = startDate.HasValue
+                    ? DateOnlyNormalizer.Normalize(startDate.Value)
+                    : DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
+                var endExclusiveUtc = endDate.HasValue
+                    ? DateOnlyNormalizer.Normalize(endDate.Value).AddDays(1)
+                    : DateTime.SpecifyKind(DateTime.MaxValue, DateTimeKind.Utc);
+
+                query = query.Where(i => i.Date >= startUtc && i.Date < endExclusiveUtc);
+            }
+
+            var incomes = await query
+                .OrderByDescending(i => i.Date)
+                .ToListAsync();
+
+            var content = BuildIncomeCsv(incomes);
+            var fileName = $"incomes-{DateTime.UtcNow:yyyyMMdd}.csv";
+            return (content, "text/csv", fileName);
+        }
+
         private static byte[] BuildCsv(IEnumerable<Models.Expense> expenses)
         {
             var sb = new StringBuilder();
@@ -127,6 +156,25 @@ namespace Salgadin.Services
                     e.Amount.ToString(CultureInfo.InvariantCulture),
                     EscapeCsv(e.Category?.Name ?? string.Empty),
                     EscapeCsv(e.Subcategory?.Name ?? string.Empty)
+                );
+                sb.AppendLine(line);
+            }
+
+            return Encoding.UTF8.GetBytes(sb.ToString());
+        }
+
+        private static byte[] BuildIncomeCsv(IEnumerable<Models.Income> incomes)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("Data,Descricao,Tipo,Valor");
+
+            foreach (var income in incomes)
+            {
+                var line = string.Join(",",
+                    EscapeCsv(income.Date.ToString("yyyy-MM-dd")),
+                    EscapeCsv(income.Description),
+                    EscapeCsv(income.IsFixed ? "Renda fixa" : "Renda extra"),
+                    income.Amount.ToString(CultureInfo.InvariantCulture)
                 );
                 sb.AppendLine(line);
             }

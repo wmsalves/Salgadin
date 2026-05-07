@@ -18,3 +18,14 @@ export const exportExpenses = async (
   });
   return response.data;
 };
+
+export const exportIncomes = async (
+  startDate?: string,
+  endDate?: string,
+): Promise<Blob> => {
+  const response = await api.get("/income/export", {
+    params: { startDate, endDate },
+    responseType: "blob",
+  });
+  return response.data;
+};
