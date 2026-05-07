@@ -27,9 +27,11 @@ import {
   Plus,
   Receipt,
   ShoppingCart,
+  Sparkles,
   Target,
   Trash2,
   TrendingDown,
+  TrendingUp,
   Bus,
   Wallet,
 } from "lucide-react";
@@ -71,6 +73,18 @@ const CHART_COLORS = [
   "var(--color-success)",
   "var(--color-primary-strong)",
 ];
+
+const formatCurrency = (value: number) =>
+  value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+
+type DashboardInsight = {
+  title: string;
+  detail: string;
+  tone: "positive" | "neutral" | "attention";
+};
 
 export default function DashboardPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -272,6 +286,85 @@ export default function DashboardPage() {
     ],
     [activeGoalsCount, balance, totalExpenses],
   );
+
+  const financialInsights = useMemo<DashboardInsight[]>(() => {
+    if (expenses.length === 0 || totalExpenses <= 0) {
+      return [];
+    }
+
+    const insights: DashboardInsight[] = [];
+
+    const topCategory = expensesByCategory[0];
+    if (topCategory) {
+      const share = Math.round((topCategory.value / totalExpenses) * 100);
+      insights.push({
+        title: `${topCategory.name} lidera seus gastos`,
+        detail:
+          share >= 1
+            ? `${topCategory.name} representa ${share}% das despesas de ${currentMonthLabel}.`
+            : `${topCategory.name} foi a categoria com maior peso neste periodo.`,
+        tone: share >= 45 ? "attention" : "neutral",
+      });
+    }
+
+    const sortedSummary = summary
+      .slice()
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const currentWeek = sortedSummary.slice(-7);
+    const previousWeek = sortedSummary.slice(-14, -7);
+    const currentWeekTotal = currentWeek.reduce((acc, day) => acc + day.total, 0);
+    const previousWeekTotal = previousWeek.reduce(
+      (acc, day) => acc + day.total,
+      0,
+    );
+
+    if (currentWeek.length >= 2 && previousWeek.length > 0) {
+      const delta = currentWeekTotal - previousWeekTotal;
+
+      if (Math.abs(delta) < 0.01) {
+        insights.push({
+          title: "Seu ritmo ficou estavel",
+          detail:
+            "O volume gasto nesta semana ficou muito proximo da semana anterior.",
+          tone: "neutral",
+        });
+      } else if (delta > 0) {
+        insights.push({
+          title: "Voce gastou mais do que na semana anterior",
+          detail: `${formatCurrency(delta)} acima da semana passada dentro do periodo atual.`,
+          tone: "attention",
+        });
+      } else {
+        insights.push({
+          title: "Voce reduziu o ritmo da semana",
+          detail: `${formatCurrency(Math.abs(delta))} abaixo da semana anterior dentro do periodo atual.`,
+          tone: "positive",
+        });
+      }
+    }
+
+    const latestExpense = expenses
+      .slice()
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+    const highestExpense = expenses
+      .slice()
+      .sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount))[0];
+
+    if (highestExpense) {
+      const insightTitle =
+        latestExpense && latestExpense.id === highestExpense.id
+          ? "Seu maior lancamento recente"
+          : "Seu maior lancamento do periodo";
+
+      insights.push({
+        title: insightTitle,
+        detail: `${formatCurrency(Math.abs(highestExpense.amount))} em ${highestExpense.category || "Outros"}${highestExpense.description ? `, registrado como "${highestExpense.description}".` : "."}`,
+        tone: "neutral",
+      });
+    }
+
+    return insights.slice(0, 3);
+  }, [currentMonthLabel, expenses, expensesByCategory, summary, totalExpenses]);
 
   if (isLoading) {
     return (
@@ -566,6 +659,95 @@ export default function DashboardPage() {
             </div>
           );
         })}
+      </section>
+
+      <section className="rounded-3xl border border-border/70 bg-surface/92 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] sm:p-6">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground">
+              <Sparkles size={18} className="text-primary" />
+              Insights financeiros
+            </h2>
+            <p className="mt-1 text-sm leading-6 text-foreground-muted">
+              Leituras simples do periodo atual para apoiar suas proximas decisoes.
+            </p>
+          </div>
+          <span className="inline-flex w-fit rounded-full border border-border bg-surface-2 px-3 py-1 text-xs font-semibold text-foreground-subtle">
+            Sem IA externa
+          </span>
+        </div>
+
+        {financialInsights.length > 0 ? (
+          <div className="mt-5 grid gap-3 md:grid-cols-3">
+            {financialInsights.map((insight) => {
+              const toneClasses =
+                insight.tone === "positive"
+                  ? {
+                      border: "border-success/20",
+                      bg: "bg-success/10",
+                      text: "text-success",
+                      icon: TrendingUp,
+                    }
+                  : insight.tone === "attention"
+                    ? {
+                        border: "border-warning/25",
+                        bg: "bg-warning/10",
+                        text: "text-warning",
+                        icon: TrendingDown,
+                      }
+                    : {
+                        border: "border-primary/18",
+                        bg: "bg-primary/10",
+                        text: "text-primary",
+                        icon: Sparkles,
+                      };
+              const InsightIcon = toneClasses.icon;
+
+              return (
+                <article
+                  key={`${insight.title}-${insight.detail}`}
+                  className={clsx(
+                    "rounded-2xl border bg-surface/82 p-4",
+                    toneClasses.border,
+                  )}
+                >
+                  <div
+                    className={clsx(
+                      "grid h-10 w-10 place-items-center rounded-xl",
+                      toneClasses.bg,
+                      toneClasses.text,
+                    )}
+                  >
+                    <InsightIcon size={18} />
+                  </div>
+                  <h3 className="mt-4 text-sm font-semibold text-foreground">
+                    {insight.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-foreground-muted">
+                    {insight.detail}
+                  </p>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="mt-5">
+            <EmptyState
+              icon={Sparkles}
+              title="Voce ainda nao tem dados suficientes para gerar insights"
+              description="Registre algumas despesas e receitas para o dashboard identificar padroes simples do seu periodo."
+              primaryAction={{
+                label: "Adicionar despesa",
+                onClick: () => setIsAddExpenseModalOpen(true),
+              }}
+              secondaryAction={{
+                label: "Adicionar renda",
+                onClick: () => setIsAddIncomeModalOpen(true),
+              }}
+              compact
+            />
+          </div>
+        )}
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">

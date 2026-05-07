@@ -25,22 +25,16 @@ export function Footer() {
 
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-foreground-muted">
             <Link
-              to="/termos"
+              to="/terms"
               className="inline-flex min-h-11 items-center rounded-xl px-2 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
               Termos
             </Link>
             <Link
-              to="/privacidade"
+              to="/privacy"
               className="inline-flex min-h-11 items-center rounded-xl px-2 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
               Privacidade
-            </Link>
-            <Link
-              to="/contato"
-              className="inline-flex min-h-11 items-center rounded-xl px-2 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-            >
-              Contato
             </Link>
           </div>
         </div>
