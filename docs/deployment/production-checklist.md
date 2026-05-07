@@ -1,103 +1,122 @@
-# Production Deployment Checklist
+# Salgadin — Production Checklist
 
-Use this checklist immediately after deploying:
+Este documento transforma a Fase 0 do roadmap em um checklist operacional para validar a produção após cada deploy.
 
-- frontend on Vercel
-- backend on Render
-- database on Supabase Postgres
+Escopo atual:
 
-This document is a practical post-deploy validation flow.
-For migration mechanics and startup validation details, see `docs/deployment/database.md`.
+- frontend em Vercel
+- backend em Render
+- banco em Supabase Postgres
+- autenticação tradicional + Google Sign-In
+- JWT próprio
+- EF Core migrations
+- health checks
+- Open Graph image
+- fundação WhatsApp com simulador restrito
 
-## 1. Expected production environment
+Use este checklist imediatamente depois de:
 
-### Vercel
+- deploy do frontend
+- deploy do backend
+- mudança de env vars
+- aplicação de migrations
 
-Required:
+Para detalhes de migrations, startup validation e readiness, consulte também:
+
+- `docs/deployment/database.md`
+- `docs/product/product-context.md`
+- `docs/product/roadmap.md`
+
+---
+
+## 1. Pré-requisitos antes da validação
+
+Antes de começar a validação pós-deploy, confirme:
+
+- o deploy do frontend terminou sem erro na Vercel
+- o deploy do backend terminou sem erro no Render
+- o banco de produção correto é o Supabase
+- a estratégia de migrations da release atual é conhecida:
+  - manual com `dotnet ef database update`
+  - ou startup com `Database__ApplyMigrationsOnStartup=true`
+
+Tenha em mãos:
+
+- URL pública do frontend
+- URL pública do backend
+- acesso ao painel da Vercel
+- acesso ao painel da Render
+- acesso ao projeto do Supabase
+- uma conta de teste válida
+- um usuário comum não autorizado para testar o gating do simulador, quando aplicável
+
+---
+
+## 2. Checklist de variáveis de ambiente
+
+### 2.1 Vercel
+
+Confirmar:
 
 - `VITE_API_URL`
+- `VITE_GOOGLE_CLIENT_ID` quando Google Sign-In estiver ativo
 
-Conditional:
+Normalmente em produção:
 
-- `VITE_GOOGLE_CLIENT_ID` when Google Sign-In is enabled
+- `VITE_ENABLE_WHATSAPP_SIMULATOR` ausente
+- ou `VITE_ENABLE_WHATSAPP_SIMULATOR=false`
 
-Optional, only if the frontend really queries Supabase directly:
+Observações:
 
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_PUBLISHABLE_KEY`
+- `VITE_API_URL` deve apontar para a API pública correta da Render
+- `VITE_GOOGLE_CLIENT_ID` deve ser compatível com o mesmo client configurado no backend
+- não habilitar o simulador WhatsApp no frontend para uso público comum
 
-Do not enable the WhatsApp simulator for normal public production use:
+### 2.2 Render
 
-- `VITE_ENABLE_WHATSAPP_SIMULATOR` should be unset or `false`
-
-### Render
-
-Required:
+Confirmar:
 
 - `SUPABASE_DB_CONNECTION`
 - `Jwt__Key`
 - `ASPNETCORE_ENVIRONMENT=Production`
-
-Recommended:
-
-- `Jwt__Issuer`
-- `Jwt__Audience`
 - `CORS_ORIGINS`
-- `Authentication__Google__ClientId` when Google Sign-In is enabled
-
-Optional operational flags:
-
+- `Authentication__Google__ClientId` quando Google Sign-In estiver ativo
 - `Database__ApplyMigrationsOnStartup`
 - `Database__ValidateSchemaOnStartup`
-- `Database__FailOnPendingMigrations`
-- `INTERNAL_HEALTH_TOKEN`
 
-WhatsApp simulator flags must stay off for public production unless you are running a controlled internal test:
+Somente para cenários controlados:
 
 - `WhatsApp__EnableSimulationEndpoint`
 - `WhatsApp__SimulatorAllowedEmails`
 
-## 2. Backend health checks
+Observações:
 
-After deploy, verify these endpoints manually:
+- `SUPABASE_DB_CONNECTION` deve apontar para Supabase, não Neon
+- `Jwt__Key` deve ser longo o bastante para HS512
+- `CORS_ORIGINS` deve incluir o domínio final da Vercel
+- se `WhatsApp__EnableSimulationEndpoint` estiver ativo fora de Development, a allowlist deve existir e ser restrita
 
-### Public health
+---
 
-- `GET /health`
-- `GET /health/live`
-- `GET /health/ready`
+## 3. Checklist de banco / Supabase
 
-Expected:
+### 3.1 Confirmar que Render aponta para Supabase
 
-- `/health` returns `200`
-- `/health/live` returns `200`
-- `/health/ready` returns `200` only when the API can connect to PostgreSQL
+No painel da Render, valide a connection string configurada.
 
-Important:
+O host deve ser do Supabase, por exemplo:
 
-- `/health/ready` validates database connectivity only
-- `/health/ready` does not replace migration/schema validation
+- `aws-1-us-west-2.pooler.supabase.com`
+- ou o host PostgreSQL do Supabase correspondente ao projeto
 
-### Internal database health
+Não aceitar:
 
-Only if `INTERNAL_HEALTH_TOKEN` is configured:
+- host legado de Neon
+- string antiga reaproveitada por engano
 
-- `GET /internal/health/database`
-- Header: `X-Internal-Health-Token: <token>`
+### 3.2 Validar `__EFMigrationsHistory`
 
-Expected:
-
-- `200` when DB is reachable and there are no pending migrations
-- `401` if token is missing or invalid
-- `503` if DB is unreachable or migrations are pending
-
-## 3. Supabase schema validation
-
-Connect to the production Supabase database and verify:
-
-### A. EF migration history exists
-
-Run:
+Rodar no SQL editor do Supabase:
 
 ```sql
 select *
@@ -105,7 +124,7 @@ from public."__EFMigrationsHistory"
 order by "MigrationId";
 ```
 
-Expected migrations:
+Confirmar a presença das migrations atuais:
 
 - `20260323031243_InitialPostgres`
 - `20260328001621_AddIncomeEntity`
@@ -115,9 +134,9 @@ Expected migrations:
 - `20260501204442_AddGoogleAuthFields`
 - `20260505230214_AddWhatsAppIntegrationFoundation`
 
-### B. Application tables exist in `public`
+### 3.3 Confirmar schema esperado
 
-Run:
+Rodar:
 
 ```sql
 select table_name
@@ -126,182 +145,335 @@ where table_schema = 'public'
 order by table_name;
 ```
 
-Expected core tables:
+Confirmar pelo menos as tabelas principais:
 
-- `BudgetGoals`
+- `Users`
 - `Categories`
+- `Subcategories`
 - `Expenses`
 - `Incomes`
+- `BudgetGoals`
 - `NotificationPreferences`
 - `Notifications`
-- `Subcategories`
-- `Users`
+- `UserWhatsAppAccounts`
+- `WhatsAppLinkCodes`
+- `WhatsAppProcessedMessages`
 
-### C. Render is pointing to Supabase, not Neon
+### 3.4 Confirmar que não há migrations pendentes
 
-Confirm the Render connection string host is the Supabase host or pooler host.
+Validar de acordo com a estratégia da release:
 
-Expected examples:
+#### Se a estratégia é manual
 
-- `aws-1-us-west-2.pooler.supabase.com`
-- your Supabase PostgreSQL host
+- `dotnet ef database update` foi executado antes do deploy
+- a API subiu sem erro de migration pendente
 
-Do not leave old Neon values in production config.
+#### Se a estratégia é automática no startup
 
-## 4. Frontend checklist
+- logs da Render mostram aplicação bem-sucedida das migrations
+- a API sobe completamente depois da aplicação
 
-Open the production Vercel URL and validate:
+Importante:
 
-### Landing
+- `/health/ready` não substitui essa validação
+- conectividade com banco não significa schema correto
 
-- home page loads without `404`
-- hero section renders correctly
-- CTA buttons render and navigate correctly
-- pricing shows `Free` and `Pro em breve`
-- WhatsApp is presented as future/development, not active public integration
-- FAQ expands normally
+---
 
-### Routing
+## 4. Checklist de backend
 
-Test direct access in a new tab:
+### 4.1 Health checks
+
+Validar:
+
+- `GET /health`
+- `GET /health/live`
+- `GET /health/ready`
+
+Esperado:
+
+- `/health` retorna `200`
+- `/health/live` retorna `200`
+- `/health/ready` retorna `200` quando o banco está acessível
+
+Importante:
+
+- `/health/ready` verifica conectividade com PostgreSQL
+- `/health/ready` não garante ausência de migrations pendentes
+
+### 4.2 Swagger
+
+Em produção:
+
+- Swagger não deve estar disponível publicamente
+
+Validar:
+
+- acesso ao endpoint `/swagger`
+
+Esperado:
+
+- não exposto em `Production`
+
+### 4.3 Autenticação
+
+Validar:
+
+- `POST /api/auth/register` funciona
+- `POST /api/auth/login` funciona
+- `POST /api/auth/google` funciona quando configurado
+- `GET /api/auth/me` exige JWT válido
+
+### 4.4 Endpoints sensíveis protegidos
+
+Validar que continuam exigindo autenticação:
+
+- `/api/expense`
+- `/api/category`
+- `/api/goals`
+- `/api/notifications`
+- `/api/reports`
+- `/api/whatsapp/status`
+- `/api/whatsapp/link-code`
+
+Esperado:
+
+- usuário sem token não acessa dados
+- usuário autenticado acessa apenas os próprios dados
+
+### 4.5 Simulador WhatsApp fora de Development
+
+Validar comportamento em produção comum:
+
+- um usuário comum não autorizado não consegue usar `POST /api/dev/whatsapp/simulate`
+
+Esperado:
+
+- se o endpoint estiver desabilitado: `404`
+- se o endpoint estiver habilitado fora de Development:
+  - usuário não autenticado: `401`
+  - usuário autenticado mas não autorizado: `403`
+
+Esse teste é importante para garantir que esconder a UI no frontend não é a única proteção.
+
+---
+
+## 5. Checklist de frontend
+
+### 5.1 Landing page
+
+Validar:
+
+- home pública carrega
+- hero renderiza corretamente
+- CTAs principais aparecem
+- seções de benefícios, como funciona, pricing e FAQ carregam
+- pricing mostra `Free` e `Pro em breve`
+- WhatsApp é comunicado como futuro/desenvolvimento, não como feature pública já ativa
+
+### 5.2 Rotas públicas
+
+Testar acesso direto em nova aba:
 
 - `/`
 - `/login`
 - `/signup`
-- `/dashboard`
+- `/terms`
+- `/privacy`
 
-Expected:
+Esperado:
 
-- public routes load the SPA
-- protected routes redirect or load correctly according to auth state
-- Vercel does not return `404: NOT_FOUND` for SPA routes
+- todas carregam via SPA
+- sem `404: NOT_FOUND` da Vercel
 
-### Authentication
+### 5.3 Login tradicional
 
-#### Traditional login
+Validar:
 
-- sign up works
-- login works
-- invalid login shows safe error message
+- cadastro de usuário teste
+- login com email/senha
+- mensagem de erro segura para credencial inválida
 
-#### Google Sign-In
+### 5.4 Google Sign-In
 
-Only if enabled:
+Se habilitado:
 
-- Google button appears
-- Google login completes
-- user lands on dashboard
+- botão aparece
+- fluxo do Google conclui corretamente
+- usuário cai no dashboard autenticado
 
-### Dashboard
+### 5.5 Dashboard
 
-After login:
+Após login:
 
-- dashboard loads without `500`
-- month navigation works
-- summary cards render
-- cashflow chart renders or empty state is shown correctly
-- financial insights card renders
-- expenses by category card renders
-- latest income and latest expenses render
+- `/dashboard` abre
+- não aparece erro 500
+- KPIs carregam
+- gráfico de fluxo de caixa aparece ou mostra empty state coerente
+- card de insights aparece quando há dados
+- alertas/metas aparecem de forma coerente
 
-### Profile / Settings
+### 5.6 Profile / Settings
 
-- profile/settings page loads
-- profile fields load
-- security section loads
-- preferences section loads
-- WhatsApp section loads
+Validar:
 
-### WhatsApp simulator visibility
+- `/perfil` abre
+- dados de perfil carregam
+- seção de segurança carrega
+- seção de preferências carrega
+- seção de WhatsApp carrega
+- exportação de despesas está visível
 
-For a normal production user:
+### 5.7 Open Graph image
 
-- WhatsApp simulator panel should not appear
-- no dev-only simulator controls should be visible
+Validar:
 
-### Open Graph image
+- `/og-image.png` abre diretamente
+- o arquivo existe publicamente na Vercel
+- a página usa PNG nas meta tags sociais
 
-Verify:
+### 5.8 Simulador WhatsApp no frontend
 
-- `https://<your-vercel-domain>/og-image.png` loads
-- social tags in page source point to PNG, not SVG
-- sharing preview uses the current image
+Para usuário comum em produção:
 
-## 5. Backend behavior checklist
+- o painel do simulador não deve aparecer
+- campos técnicos como `from`, `messageId` e mensagem simulada não devem estar visíveis
 
-Verify after deploy:
+---
 
-- startup logs do not show connection string parsing errors
-- startup logs do not show pending migration failure unless intentionally blocked
-- Swagger is not publicly available in `Production`
-- protected endpoints still require auth
-- dev-only endpoints are not unintentionally exposed
+## 6. Smoke test manual
 
-Sensitive points to verify:
+Executar pelo menos este fluxo após o deploy:
 
-- `/api/dev/whatsapp/simulate` is not usable by an ordinary production user
-- normal user data endpoints require JWT
-- no public endpoint returns secrets or stack traces
+1. abrir a landing pública
+2. abrir `/terms`
+3. abrir `/privacy`
+4. criar um usuário teste
+5. fazer login
+6. confirmar que o dashboard abre
+7. adicionar uma renda
+8. adicionar uma despesa
+9. verificar se o dashboard atualiza
+10. criar uma meta
+11. acessar relatórios
+12. exportar CSV de despesas
+13. acessar Profile/Settings
+14. fazer logout
+15. fazer login novamente
+16. confirmar que os dados continuam acessíveis corretamente
 
-## 6. Migrations and startup flow
+Se Google Sign-In estiver ativo, complementar:
 
-Validate whichever strategy is currently active:
+17. testar login com Google em uma conta de teste
 
-### Manual migration mode
+---
 
-If `Database__ApplyMigrationsOnStartup=false`:
+## 7. Troubleshooting
 
-- `dotnet ef database update` was executed against production before deploy
-- startup succeeded
-- `__EFMigrationsHistory` contains all expected migrations
+### 7.1 Dashboard retorna 500
 
-### Startup migration mode
+Verificar:
 
-If `Database__ApplyMigrationsOnStartup=true`:
+- logs da Render
+- `/health/ready`
+- connection string em `SUPABASE_DB_CONNECTION`
+- migrations aplicadas
+- erro de datas UTC em endpoints de despesas, se houver regressão
 
-- Render startup logs show pending migrations being applied
-- startup completes successfully
-- `__EFMigrationsHistory` contains all expected migrations after boot
+### 7.2 Google Sign-In inválido
 
-## 7. Smoke test manual
+Verificar:
 
-Run this minimal end-to-end smoke test:
+- `VITE_GOOGLE_CLIENT_ID` na Vercel
+- `Authentication__Google__ClientId` na Render
+- se ambos apontam para o mesmo client correto
+- se o domínio/origem está configurado corretamente no Google
 
-1. Open the landing page
-2. Open `/login`
-3. Log in with a known test account
-4. Confirm dashboard loads
-5. Create one expense
-6. Create one income
-7. Open categories page
-8. Open goals page
-9. Open profile/settings
-10. Return to dashboard and confirm the new data appears
-11. Log out
-12. Confirm protected pages are no longer accessible without auth
+### 7.3 Migration pendente
 
-## 8. Failure checklist
+Sintomas típicos:
 
-If something failed, check in this order:
+- startup falha
+- tabela não existe
+- logs mostram pending migrations
 
-1. Render env vars
-2. Supabase connection string host and credentials
-3. `__EFMigrationsHistory`
-4. `/health` and `/health/ready`
-5. startup logs on Render
-6. Vercel env vars
-7. Google Sign-In config on both frontend and backend
-8. SPA fallback on Vercel
+Verificar:
 
-## 9. Sign-off checklist
+- `__EFMigrationsHistory`
+- estratégia da release (`manual` ou `startup`)
+- logs da Render
 
-Mark production deploy as healthy only when all of the following are true:
+### 7.4 Frontend chamando API errada
 
-- health endpoints respond as expected
-- migrations are confirmed
-- dashboard loads for a real user
-- login works
-- Google Sign-In works when enabled
-- WhatsApp simulator is hidden from ordinary production users
-- Open Graph image is reachable
-- Render is connected to Supabase, not Neon
+Sintomas típicos:
+
+- login falha sem razão aparente
+- dashboard vazio por erro de rede
+- CORS inesperado
+
+Verificar:
+
+- `VITE_API_URL`
+- se a URL aponta para a API correta da Render
+- se não ficou apontando para localhost ou API antiga
+
+### 7.5 CORS
+
+Sintomas típicos:
+
+- requests bloqueados no browser
+- preflight falhando
+
+Verificar:
+
+- `CORS_ORIGINS` na Render
+- domínio exato da Vercel
+- se há ambiente preview/domínio alternativo sendo usado
+
+### 7.6 Token antigo no localStorage
+
+Sintomas típicos:
+
+- UI logada mas backend responde `401`
+- comportamento inconsistente após mudança de auth/config
+
+Ação:
+
+- limpar storage local
+- fazer login novamente
+
+### 7.7 Render usando banco errado
+
+Sintomas típicos:
+
+- deploy sobe, mas dados somem
+- tabelas parecem faltar
+- usuário enxerga ambiente “zerado”
+
+Verificar:
+
+- host do `SUPABASE_DB_CONNECTION`
+- projeto correto no Supabase
+- `__EFMigrationsHistory`
+- presença dos dados esperados
+
+---
+
+## 8. Critério final de sign-off
+
+Um deploy só deve ser considerado saudável quando:
+
+- frontend carrega corretamente
+- `/terms` e `/privacy` funcionam
+- login tradicional funciona
+- Google Sign-In funciona, se ativo
+- dashboard abre após login
+- Profile/Settings carrega
+- `/health`, `/health/live` e `/health/ready` respondem como esperado
+- schema no Supabase está confirmado
+- Render aponta para Supabase, não Neon
+- Swagger não está exposto em `Production`
+- simulador WhatsApp não aparece para usuário comum
+- um usuário comum não autorizado não consegue usar o simulador WhatsApp fora de Development
+- smoke test manual principal foi concluído
+
