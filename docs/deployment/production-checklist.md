@@ -83,6 +83,14 @@ Confirmar:
 - `Authentication__Google__ClientId` quando Google Sign-In estiver ativo
 - `Database__ApplyMigrationsOnStartup`
 - `Database__ValidateSchemaOnStartup`
+- `PasswordReset__BaseUrl`
+- `PasswordReset__FromEmail`
+- `PasswordReset__FromName`
+- `PasswordReset__Smtp__Host`
+- `PasswordReset__Smtp__Port`
+- `PasswordReset__Smtp__Username`
+- `PasswordReset__Smtp__Password`
+- `PasswordReset__Smtp__EnableSsl`
 
 Somente para cenários controlados:
 
@@ -94,6 +102,8 @@ Observações:
 - `SUPABASE_DB_CONNECTION` deve apontar para Supabase, não Neon
 - `Jwt__Key` deve ser longo o bastante para HS512
 - `CORS_ORIGINS` deve incluir o domínio final da Vercel
+- `PasswordReset__BaseUrl` deve apontar para a URL pública do frontend, sem barra final
+- sem configuração válida de password reset fora de `Development`, a API deve responder indisponibilidade controlada no fluxo de recuperação
 - se `WhatsApp__EnableSimulationEndpoint` estiver ativo fora de Development, a allowlist deve existir e ser restrita
 
 ---
@@ -133,6 +143,7 @@ Confirmar a presença das migrations atuais:
 - `20260501194240_AddUserPhoneNumber`
 - `20260501204442_AddGoogleAuthFields`
 - `20260505230214_AddWhatsAppIntegrationFoundation`
+- `20260509004431_AddPasswordRecovery`
 
 ### 3.3 Confirmar schema esperado
 
@@ -155,6 +166,7 @@ Confirmar pelo menos as tabelas principais:
 - `BudgetGoals`
 - `NotificationPreferences`
 - `Notifications`
+- `PasswordResetTokens`
 - `UserWhatsAppAccounts`
 - `WhatsAppLinkCodes`
 - `WhatsAppProcessedMessages`
@@ -222,9 +234,29 @@ Validar:
 - `POST /api/auth/register` funciona
 - `POST /api/auth/login` funciona
 - `POST /api/auth/google` funciona quando configurado
+- `POST /api/auth/forgot-password` retorna mensagem genérica
+- `POST /api/auth/reset-password` funciona com token válido
 - `GET /api/auth/me` exige JWT válido
 
-### 4.4 Endpoints sensíveis protegidos
+### 4.4 Recuperação de senha em produção
+
+Validar:
+
+- uma conta tradicional recebe o fluxo de recuperação normalmente
+- uma conta Google sem senha local não entra no fluxo de reset
+- token expirado falha
+- token inválido falha
+- token já usado falha
+- em ambiente sem SMTP configurado, o recurso retorna indisponibilidade controlada
+
+Esperado:
+
+- `forgot-password` nunca revela se o email existe
+- `reset-password` só aceita token válido, dentro da janela de expiração e ainda não usado
+- sem SMTP e `PasswordReset__BaseUrl` fora de `Development`, a API responde indisponibilidade clara do recurso
+- com SMTP configurado, o email é enviado com link público para `/reset-password?token=...`
+
+### 4.5 Endpoints sensíveis protegidos
 
 Validar que continuam exigindo autenticação:
 
@@ -241,7 +273,7 @@ Esperado:
 - usuário sem token não acessa dados
 - usuário autenticado acessa apenas os próprios dados
 
-### 4.5 Simulador WhatsApp fora de Development
+### 4.6 Simulador WhatsApp fora de Development
 
 Validar comportamento em produção comum:
 
@@ -278,6 +310,7 @@ Testar acesso direto em nova aba:
 - `/`
 - `/login`
 - `/signup`
+- `/forgot-password`
 - `/terms`
 - `/privacy`
 
@@ -294,7 +327,24 @@ Validar:
 - login com email/senha
 - mensagem de erro segura para credencial inválida
 
-### 5.4 Google Sign-In
+### 5.4 Recuperação de senha
+
+Validar:
+
+- `/forgot-password` abre sem depender de autenticação
+- envio de email inexistente mostra feedback genérico
+- envio de email válido mostra feedback genérico equivalente
+- o link de recuperação aponta para `/reset-password?token=...`
+- `/reset-password` abre corretamente com token na URL
+- redefinição com token válido leva de volta ao login ou confirma sucesso com clareza
+- redefinição com token expirado/usado/inválido mostra erro seguro e compreensível
+
+Se o ambiente estiver sem SMTP configurado de propósito:
+
+- `forgot-password` deve falhar de forma controlada
+- a UI deve mostrar erro claro, sem stack trace nem detalhe interno
+
+### 5.5 Google Sign-In
 
 Se habilitado:
 
@@ -302,7 +352,7 @@ Se habilitado:
 - fluxo do Google conclui corretamente
 - usuário cai no dashboard autenticado
 
-### 5.5 Dashboard
+### 5.6 Dashboard
 
 Após login:
 
@@ -313,7 +363,7 @@ Após login:
 - card de insights aparece quando há dados
 - alertas/metas aparecem de forma coerente
 
-### 5.6 Profile / Settings
+### 5.7 Profile / Settings
 
 Validar:
 
@@ -325,7 +375,7 @@ Validar:
 - exportação de despesas está visível
 - exportação de rendas está visível
 
-### 5.7 Open Graph image
+### 5.8 Open Graph image
 
 Validar:
 
@@ -333,7 +383,7 @@ Validar:
 - o arquivo existe publicamente na Vercel
 - a página usa PNG nas meta tags sociais
 
-### 5.8 Simulador WhatsApp no frontend
+### 5.9 Simulador WhatsApp no frontend
 
 Para usuário comum em produção:
 
@@ -352,21 +402,28 @@ Executar pelo menos este fluxo após o deploy:
 4. criar um usuário teste
 5. fazer login
 6. confirmar que o dashboard abre
-7. adicionar uma renda
-8. adicionar uma despesa
-9. verificar se o dashboard atualiza
-10. criar uma meta
-11. acessar relatórios
-12. exportar CSV de despesas
-13. exportar CSV de rendas
-14. acessar Profile/Settings
-15. fazer logout
-16. fazer login novamente
-17. confirmar que os dados continuam acessíveis corretamente
+7. fazer logout
+8. abrir `/forgot-password` e solicitar recuperação para a conta teste
+9. confirmar recebimento do email ou evidência operacional equivalente do link
+10. abrir o link `/reset-password?token=...`
+11. redefinir a senha
+12. confirmar que token reaproveitado não funciona
+13. fazer login com a nova senha
+14. adicionar uma renda
+15. adicionar uma despesa
+16. verificar se o dashboard atualiza
+17. criar uma meta
+18. acessar relatórios
+19. exportar CSV de despesas
+20. exportar CSV de rendas
+21. acessar Profile/Settings
+22. fazer logout
+23. fazer login novamente
+24. confirmar que os dados continuam acessíveis corretamente
 
 Se Google Sign-In estiver ativo, complementar:
 
-18. testar login com Google em uma conta de teste
+25. testar login com Google em uma conta de teste
 
 ---
 
@@ -432,7 +489,31 @@ Verificar:
 - domínio exato da Vercel
 - se há ambiente preview/domínio alternativo sendo usado
 
-### 7.6 Token antigo no localStorage
+### 7.6 Recuperação de senha indisponível em Production
+
+Sintomas típicos:
+
+- `POST /api/auth/forgot-password` retorna indisponibilidade
+- nenhum email é enviado em produção
+- o fluxo funciona em `Development`, mas não no ambiente publicado
+
+Verificar:
+
+- `PasswordReset__BaseUrl`
+- `PasswordReset__FromEmail`
+- `PasswordReset__Smtp__Host`
+- `PasswordReset__Smtp__Port`
+- `PasswordReset__Smtp__Username`
+- `PasswordReset__Smtp__Password`
+- `PasswordReset__Smtp__EnableSsl`
+- se o provedor SMTP aceita conexões da Render
+
+Observação:
+
+- em `Development`, a API registra o link de reset no log
+- fora de `Development`, isso não substitui configuração real de envio
+
+### 7.7 Token antigo no localStorage
 
 Sintomas típicos:
 
@@ -444,7 +525,7 @@ Ação:
 - limpar storage local
 - fazer login novamente
 
-### 7.7 Render usando banco errado
+### 7.8 Render usando banco errado
 
 Sintomas típicos:
 
@@ -468,6 +549,7 @@ Um deploy só deve ser considerado saudável quando:
 - frontend carrega corretamente
 - `/terms` e `/privacy` funcionam
 - login tradicional funciona
+- recuperação de senha funciona ou está explicitamente desabilitada por decisão operacional conhecida
 - Google Sign-In funciona, se ativo
 - dashboard abre após login
 - Profile/Settings carrega

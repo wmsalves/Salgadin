@@ -134,6 +134,8 @@ Password recovery is available for traditional email/password accounts.
 - Google Sign-In continues to use the existing JWT flow and is not replaced by password recovery.
 - In local `Development`, the API logs the recovery link instead of sending a real email.
 - In non-development environments, password recovery requires the SMTP and base URL configuration listed above.
+- Without that configuration in `Production`, the API returns a controlled unavailability response instead of silently pretending to send an email.
+- The frontend routes involved are `/forgot-password` and `/reset-password?token=...`.
 
 ## 🔗 Prototype
 

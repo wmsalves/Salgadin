@@ -45,6 +45,7 @@ Recommended:
 - `Jwt__Audience`
 - `CORS_ORIGINS`
 - `Authentication__Google__ClientId` when Google sign-in is enabled
+- `PasswordReset__BaseUrl`, `PasswordReset__FromEmail`, `PasswordReset__FromName`, `PasswordReset__Smtp__Host`, `PasswordReset__Smtp__Port`, `PasswordReset__Smtp__Username`, `PasswordReset__Smtp__Password`, and `PasswordReset__Smtp__EnableSsl` when password recovery should work in production
 
 Optional:
 
@@ -238,6 +239,7 @@ Expected application tables:
 - `Incomes`
 - `NotificationPreferences`
 - `Notifications`
+- `PasswordResetTokens`
 - `Subcategories`
 - `Users`
 
@@ -258,6 +260,20 @@ Expected migrations today:
 - `20260501194240_AddUserPhoneNumber`
 - `20260501204442_AddGoogleAuthFields`
 - `20260505230214_AddWhatsAppIntegrationFoundation`
+- `20260509004431_AddPasswordRecovery`
+
+### Password recovery schema notes
+
+The password recovery migration adds:
+
+- `Users.HasLocalPassword`
+- `PasswordResetTokens`
+
+Operational implications:
+
+- local accounts can recover access with a short-lived, single-use token;
+- Google-authenticated users without a local password are marked with `HasLocalPassword = false`;
+- the API still requires explicit SMTP and base URL configuration outside `Development` to actually send reset links.
 
 ## Internal database health endpoint
 
@@ -348,6 +364,7 @@ That lets the container apply pending EF Core migrations before serving traffic.
 - the application tables exist in `public`
 - Render boot logs do not show pending migration or connection errors
 - login works
+- password recovery is validated or intentionally disabled with a documented operational decision
 - user registration works
 - creating an expense works
 - creating an income works
