@@ -34,6 +34,10 @@ public class ErrorHandlingMiddleware
         {
             await WriteProblem(context, (int)HttpStatusCode.BadRequest, ex.Message);
         }
+        catch (FeatureUnavailableException ex)
+        {
+            await WriteProblem(context, (int)HttpStatusCode.ServiceUnavailable, ex.Message);
+        }
         catch (Exception ex)
         {
             // Loga a exceção completa com nível de erro 'Error'.

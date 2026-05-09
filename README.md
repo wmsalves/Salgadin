@@ -55,6 +55,7 @@ Instructions on how to set up and run the project locally.
 4.  For deployed environments, set the same values as platform environment variables instead of committing them to `appsettings.json`.
     `SUPABASE_DB_CONNECTION`, `ConnectionStrings__DefaultConnection`, `SUPABASE_DATABASE_URL`, `SUPABASE_CONNECTION_STRING`, `DATABASE_URL`, and `POSTGRES_URL` are supported. PostgreSQL URLs such as `postgresql://user:password@host:5432/postgres?sslmode=require` are normalized automatically.
     Recommended production envs for the backend are `SUPABASE_DB_CONNECTION`, `Jwt__Key`, `ASPNETCORE_ENVIRONMENT`, `CORS_ORIGINS`, and `Authentication__Google__ClientId` when Google Sign-In is enabled.
+    If you want password recovery in production, also configure `PasswordReset__BaseUrl`, `PasswordReset__FromEmail`, `PasswordReset__FromName`, `PasswordReset__Smtp__Host`, `PasswordReset__Smtp__Port`, `PasswordReset__Smtp__Username`, `PasswordReset__Smtp__Password`, and `PasswordReset__Smtp__EnableSsl`.
 5.  Apply EF Core migrations to create the database:
     ```bash
     dotnet ef database update
@@ -103,6 +104,8 @@ A brief overview of the main API endpoints.
 - `POST /api/auth/register`: Register a new user.
 - `POST /api/auth/login`: Authenticate a user and receive a JWT.
 - `POST /api/auth/google`: Authenticate with Google and receive the Salgadin JWT.
+- `POST /api/auth/forgot-password`: Start the password recovery flow for local accounts.
+- `POST /api/auth/reset-password`: Reset the password with a valid recovery token.
 - `GET /api/expense`: Get a paginated list of expenses for the authenticated user.
 - `POST /api/expense`: Create a new expense.
 - `GET /api/expense/export`: Export authenticated user expenses.
@@ -121,6 +124,16 @@ The WhatsApp simulator is an internal testing surface, not a public WhatsApp int
 - Backend allowlist outside `Development`: `WhatsApp__SimulatorAllowedEmails=email1@example.com,email2@example.com`
 
 For the full internal flow, see [docs/integrations/whatsapp.md](docs/integrations/whatsapp.md).
+
+## Password Recovery
+
+Password recovery is available for traditional email/password accounts.
+
+- The API returns a generic response for `forgot-password`, whether the email exists or not.
+- Recovery tokens are short-lived, single-use, and stored as hashes in the database.
+- Google Sign-In continues to use the existing JWT flow and is not replaced by password recovery.
+- In local `Development`, the API logs the recovery link instead of sending a real email.
+- In non-development environments, password recovery requires the SMTP and base URL configuration listed above.
 
 ## 🔗 Prototype
 

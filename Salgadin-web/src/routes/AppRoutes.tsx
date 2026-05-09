@@ -6,6 +6,8 @@ import { AppShell } from "../components/AppShell";
 const HomePage = lazy(() => import("../pages/HomePage"));
 const SignupPage = lazy(() => import("../pages/SignupPage"));
 const LoginPage = lazy(() => import("../pages/LoginPage"));
+const ForgotPasswordPage = lazy(() => import("../pages/ForgotPasswordPage"));
+const ResetPasswordPage = lazy(() => import("../pages/ResetPasswordPage"));
 const TermsPage = lazy(() => import("../pages/TermsPage"));
 const PrivacyPage = lazy(() => import("../pages/PrivacyPage"));
 const DashboardPage = lazy(() => import("../pages/DashboardPage"));
@@ -34,6 +36,9 @@ export default function AppRoutes() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/forgot" element={<ForgotPasswordPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/termos" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />

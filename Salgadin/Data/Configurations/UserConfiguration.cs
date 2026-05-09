@@ -26,6 +26,9 @@ namespace Salgadin.Data.Configurations
             builder.Property(u => u.AvatarUrl)
                 .HasMaxLength(500);
 
+            builder.Property(u => u.HasLocalPassword)
+                .IsRequired();
+
             // Garante que o nome de usuário seja único em toda a tabela.
             builder.HasIndex(u => u.Username).IsUnique();
             builder.HasIndex(u => u.GoogleSubjectId).IsUnique();

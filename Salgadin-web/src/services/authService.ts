@@ -1,10 +1,19 @@
 import { api } from "./api";
-import { type LoginFormValues, type SignupFormValues } from "../lib/schemas";
+import {
+  type ForgotPasswordFormValues,
+  type LoginFormValues,
+  type ResetPasswordFormValues,
+  type SignupFormValues,
+} from "../lib/schemas";
 
 type RegisterPayload = SignupFormValues;
 
 interface AuthResponse {
   token: string;
+}
+
+interface MessageResponse {
+  message: string;
 }
 
 export interface UserProfile {
@@ -41,6 +50,18 @@ export const loginUser = async (data: LoginFormValues) => {
 
 export const loginWithGoogle = async (idToken: string) => {
   const response = await api.post<AuthResponse>("/auth/google", { idToken });
+  return response.data;
+};
+
+export const forgotPassword = async (data: ForgotPasswordFormValues) => {
+  const response = await api.post<MessageResponse>("/auth/forgot-password", data);
+  return response.data;
+};
+
+export const resetPassword = async (
+  data: ResetPasswordFormValues,
+) => {
+  const response = await api.post<MessageResponse>("/auth/reset-password", data);
   return response.data;
 };
 

@@ -16,6 +16,8 @@ namespace Salgadin.Models
 
         public string? AvatarUrl { get; set; }
 
+        public bool HasLocalPassword { get; set; } = true;
+
         public byte[] PasswordHash { get; set; } = null!;
 
         public byte[] PasswordSalt { get; set; } = null!;
@@ -31,5 +33,7 @@ namespace Salgadin.Models
         public ICollection<Income>? Incomes { get; set; }
 
         public NotificationPreference? NotificationPreference { get; set; }
+
+        public ICollection<PasswordResetToken>? PasswordResetTokens { get; set; }
     }
 }

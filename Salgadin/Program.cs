@@ -62,6 +62,7 @@ try
     builder.Services.AddScoped<IExportService, ExportService>();
     builder.Services.AddScoped<INotificationService, NotificationService>();
     builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<IPasswordResetLinkSender, PasswordResetLinkSender>();
     builder.Services.AddScoped<IUserContextService, UserContextService>();
     builder.Services.AddScoped<IGoogleTokenValidator, GoogleTokenValidator>();
     builder.Services.AddSingleton<IWhatsAppExpenseMessageParser, WhatsAppExpenseMessageParser>();

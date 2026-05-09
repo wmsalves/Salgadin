@@ -41,6 +41,22 @@ namespace Salgadin.Controllers
             return Ok(new { token });
         }
 
+        [HttpPost("forgot-password")]
+        [EnableRateLimiting("LoginPolicy")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDto dto, CancellationToken cancellationToken)
+        {
+            var message = await _authService.ForgotPasswordAsync(dto, cancellationToken);
+            return Ok(new { message });
+        }
+
+        [HttpPost("reset-password")]
+        [EnableRateLimiting("LoginPolicy")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto dto, CancellationToken cancellationToken)
+        {
+            await _authService.ResetPasswordAsync(dto, cancellationToken);
+            return Ok(new { message = "Sua senha foi redefinida com sucesso." });
+        }
+
         [Authorize]
         [HttpGet("me")]
         public async Task<IActionResult> Me()

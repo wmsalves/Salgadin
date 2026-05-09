@@ -1,4 +1,5 @@
 using Google.Apis.Auth;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Salgadin.DTOs;
@@ -15,10 +16,14 @@ namespace Salgadin.Services
     public class AuthService : IAuthService
     {
         private const int TokenExpiryDays = 7;
+        private const int PasswordResetExpiryMinutes = 60;
+        private const string ForgotPasswordGenericMessage = "Se o email estiver cadastrado, enviaremos instruções para recuperação.";
+
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
         private readonly IUserContextService _userContextService;
         private readonly IGoogleTokenValidator _googleTokenValidator;
+        private readonly IPasswordResetLinkSender _passwordResetLinkSender;
         private readonly ILogger<AuthService> _logger;
 
         public AuthService(
@@ -26,12 +31,14 @@ namespace Salgadin.Services
             IConfiguration configuration,
             IUserContextService userContextService,
             IGoogleTokenValidator googleTokenValidator,
+            IPasswordResetLinkSender passwordResetLinkSender,
             ILogger<AuthService> logger)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
             _userContextService = userContextService;
             _googleTokenValidator = googleTokenValidator;
+            _passwordResetLinkSender = passwordResetLinkSender;
             _logger = logger;
         }
 
@@ -54,6 +61,7 @@ namespace Salgadin.Services
             {
                 Name = dto.Name.Trim(),
                 Username = normalizedUsername,
+                HasLocalPassword = true,
                 PasswordHash = hash,
                 PasswordSalt = Array.Empty<byte>(),
                 ExternalProvider = "local"
@@ -73,7 +81,7 @@ namespace Salgadin.Services
                 .GetQueryable()
                 .FirstOrDefaultAsync(u => u.Username.ToLower() == normalizedUsername);
 
-            if (user == null || !VerifyPassword(dto.Password, user.PasswordHash, user.PasswordSalt))
+            if (user == null || !user.HasLocalPassword || !VerifyPassword(dto.Password, user.PasswordHash, user.PasswordSalt))
             {
                 throw new UnauthorizedAccessException("Usuário ou senha inválidos.");
             }
@@ -135,6 +143,7 @@ namespace Salgadin.Services
                     GoogleSubjectId = googleIdentity.Subject,
                     ExternalProvider = "google",
                     AvatarUrl = googleIdentity.Picture,
+                    HasLocalPassword = false,
                     PasswordHash = hash,
                     PasswordSalt = Array.Empty<byte>()
                 };
@@ -187,6 +196,85 @@ namespace Salgadin.Services
             _logger.LogInformation("Login Google concluído para o usuário {UserId}.", user.Id);
 
             return GenerateToken(user);
+        }
+
+        public async Task<string> ForgotPasswordAsync(ForgotPasswordRequestDto dto, CancellationToken cancellationToken = default)
+        {
+            if (!_passwordResetLinkSender.CanSendPasswordResetLinks)
+            {
+                throw new FeatureUnavailableException("A recuperação de senha não está disponível neste ambiente.");
+            }
+
+            var normalizedEmail = NormalizeUsername(dto.Email);
+            var user = await _unitOfWork.Users
+                .GetQueryable()
+                .FirstOrDefaultAsync(u => u.Username.ToLower() == normalizedEmail, cancellationToken);
+
+            if (user == null)
+            {
+                return ForgotPasswordGenericMessage;
+            }
+
+            if (!user.HasLocalPassword)
+            {
+                _logger.LogInformation(
+                    "Password recovery requested for user {UserId} without local password. Returning generic response.",
+                    user.Id);
+                return ForgotPasswordGenericMessage;
+            }
+
+            await InvalidateActivePasswordResetTokensAsync(user.Id, cancellationToken);
+
+            var rawToken = WebEncoders.Base64UrlEncode(RandomNumberGenerator.GetBytes(32));
+            var resetToken = new PasswordResetToken
+            {
+                UserId = user.Id,
+                TokenHash = ComputeTokenHash(rawToken),
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddMinutes(PasswordResetExpiryMinutes)
+            };
+
+            await _unitOfWork.PasswordResetTokens.AddAsync(resetToken);
+            await _unitOfWork.CompleteAsync();
+
+            await _passwordResetLinkSender.SendAsync(user, rawToken, cancellationToken);
+
+            _logger.LogInformation("Password recovery token generated for user {UserId}.", user.Id);
+
+            return ForgotPasswordGenericMessage;
+        }
+
+        public async Task ResetPasswordAsync(ResetPasswordRequestDto dto, CancellationToken cancellationToken = default)
+        {
+            var tokenHash = ComputeTokenHash(dto.Token);
+            var now = DateTime.UtcNow;
+
+            var resetToken = await _unitOfWork.PasswordResetTokens
+                .GetQueryable()
+                .Include(token => token.User)
+                .FirstOrDefaultAsync(token => token.TokenHash == tokenHash, cancellationToken);
+
+            if (resetToken == null ||
+                resetToken.UsedAt.HasValue ||
+                resetToken.ExpiresAt <= now ||
+                resetToken.User == null)
+            {
+                throw new BadInputException("O link de recuperação é inválido ou expirou.");
+            }
+
+            CreatePasswordHash(dto.NewPassword, out byte[] hash, out _);
+
+            resetToken.User.PasswordHash = hash;
+            resetToken.User.PasswordSalt = Array.Empty<byte>();
+            resetToken.User.HasLocalPassword = true;
+            resetToken.UsedAt = now;
+
+            await InvalidateActivePasswordResetTokensAsync(resetToken.UserId, cancellationToken, resetToken.Id);
+
+            _unitOfWork.Users.Update(resetToken.User);
+            await _unitOfWork.CompleteAsync();
+
+            _logger.LogInformation("Password reset completed for user {UserId}.", resetToken.UserId);
         }
 
         public async Task<UserProfileDto> GetProfileAsync()
@@ -242,6 +330,7 @@ namespace Salgadin.Services
                 CreatePasswordHash(dto.NewPassword!, out byte[] hash, out _);
                 user.PasswordHash = hash;
                 user.PasswordSalt = Array.Empty<byte>();
+                user.HasLocalPassword = true;
             }
 
             _unitOfWork.Users.Update(user);
@@ -312,6 +401,33 @@ namespace Salgadin.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
+        }
+
+        private async Task InvalidateActivePasswordResetTokensAsync(
+            int userId,
+            CancellationToken cancellationToken,
+            int? skipTokenId = null)
+        {
+            var now = DateTime.UtcNow;
+            var activeTokens = await _unitOfWork.PasswordResetTokens
+                .GetQueryable()
+                .Where(token =>
+                    token.UserId == userId &&
+                    !token.UsedAt.HasValue &&
+                    token.ExpiresAt > now &&
+                    (!skipTokenId.HasValue || token.Id != skipTokenId.Value))
+                .ToListAsync(cancellationToken);
+
+            foreach (var token in activeTokens)
+            {
+                token.UsedAt = now;
+            }
+        }
+
+        private static string ComputeTokenHash(string token)
+        {
+            var hash = SHA256.HashData(Encoding.UTF8.GetBytes(token));
+            return Convert.ToHexString(hash);
         }
 
         private static string CreateRandomPassword()

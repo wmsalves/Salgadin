@@ -7,6 +7,8 @@ namespace Salgadin.Services
         Task<string> RegisterAsync(UserRegisterDto dto);
         Task<string> LoginAsync(UserLoginDto dto);
         Task<string> LoginWithGoogleAsync(GoogleLoginRequest dto, CancellationToken cancellationToken = default);
+        Task<string> ForgotPasswordAsync(ForgotPasswordRequestDto dto, CancellationToken cancellationToken = default);
+        Task ResetPasswordAsync(ResetPasswordRequestDto dto, CancellationToken cancellationToken = default);
         Task<UserProfileDto> GetProfileAsync();
         Task<(string Token, UserProfileDto Profile)> UpdateProfileAsync(UpdateUserProfileDto dto);
     }
