@@ -80,6 +80,45 @@ const formatCurrency = (value: number) =>
     currency: "BRL",
   });
 
+const formatCurrencyAxis = (value: number) =>
+  value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    maximumFractionDigits: 0,
+  });
+
+const buildUtcDate = (value: string) => {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(Date.UTC(year, month - 1, day));
+};
+
+const normalizeDateKey = (value: string) => {
+  const match = /^(\d{4}-\d{2}-\d{2})/.exec(value);
+  return match ? match[1] : formatApiDate(new Date(value));
+};
+
+const formatChartDateLabel = (value: string) => {
+  const parts = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "UTC",
+    day: "2-digit",
+    month: "short",
+  }).formatToParts(buildUtcDate(value));
+
+  const day = parts.find((part) => part.type === "day")?.value ?? "";
+  const month = parts.find((part) => part.type === "month")?.value ?? "";
+
+  return `${day} ${month}`.trim();
+};
+
+const formatChartTooltipLabel = (value: string) => {
+  const weekday = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "UTC",
+    weekday: "short",
+  }).format(buildUtcDate(value));
+
+  return `${formatChartDateLabel(value)} · ${weekday}`;
+};
+
 type DashboardInsight = {
   title: string;
   detail: string;
@@ -91,11 +130,32 @@ type CategoryExpenseSlice = {
   value: number;
 };
 
+type CashflowPoint = {
+  date: string;
+  label: string;
+  tooltipLabel: string;
+  dailyIncome: number;
+  dailyExpense: number;
+  accumulatedIncome: number;
+  accumulatedExpense: number;
+  cashBalance: number;
+};
+
 type CategoryChartTooltipProps = {
   active?: boolean;
   payload?: Array<{
     value?: number | string;
     payload?: CategoryExpenseSlice;
+  }>;
+};
+
+type CashflowTooltipProps = {
+  active?: boolean;
+  payload?: Array<{
+    dataKey?: string;
+    value?: number | string;
+    color?: string;
+    payload?: CashflowPoint;
   }>;
 };
 
@@ -117,6 +177,47 @@ function CategoryChartTooltip({
       <p className="mt-1 font-mono text-sm font-semibold text-foreground tabular-nums">
         {formatCurrency(category.value)}
       </p>
+    </div>
+  );
+}
+
+function CashflowTooltip({ active, payload }: CashflowTooltipProps) {
+  const point = payload?.[0]?.payload;
+
+  if (!active || !point) {
+    return null;
+  }
+
+  return (
+    <div className="min-w-[188px] rounded-2xl border border-border/80 bg-[rgba(24,18,15,0.96)] px-3.5 py-3 shadow-[0_16px_36px_rgba(12,9,7,0.28)] backdrop-blur-sm">
+      <p className="text-xs font-medium text-foreground-muted">
+        {point.tooltipLabel}
+      </p>
+      <div className="mt-2 space-y-1.5">
+        <div className="flex items-center justify-between gap-4 text-sm">
+          <span className="text-foreground-muted">Entrada do dia</span>
+          <span className="font-mono font-semibold text-success tabular-nums">
+            {formatCurrency(point.dailyIncome)}
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-4 text-sm">
+          <span className="text-foreground-muted">Saida do dia</span>
+          <span className="font-mono font-semibold text-warning tabular-nums">
+            {formatCurrency(point.dailyExpense)}
+          </span>
+        </div>
+        <div className="flex items-center justify-between gap-4 border-t border-border/70 pt-1.5 text-sm">
+          <span className="text-foreground-muted">Saldo acumulado</span>
+          <span
+            className={clsx(
+              "font-mono font-semibold tabular-nums",
+              point.cashBalance >= 0 ? "text-foreground" : "text-warning",
+            )}
+          >
+            {formatCurrency(point.cashBalance)}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
@@ -219,7 +320,10 @@ export default function DashboardPage() {
       (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1),
     );
 
-  const totalExpenses = summary.reduce((acc, day) => acc + day.total, 0);
+  const totalExpenses = expenses.reduce(
+    (acc, expense) => acc + Math.abs(expense.amount),
+    0,
+  );
   const totalRevenue = incomes.reduce((acc, inc) => acc + inc.amount, 0);
   const balance = totalRevenue - totalExpenses;
   const hasFinancialData = expenses.length > 0 || incomes.length > 0;
@@ -239,26 +343,55 @@ export default function DashboardPage() {
     [currentDate],
   );
 
-  const chartGradient = useMemo(
+  const chartGradients = useMemo(
     () => ({
-      id: "cashflow",
-      from: "var(--color-primary)",
-      to: "rgba(242,139,91,0)",
+      balance: {
+        id: "cashflow-balance",
+        from: "var(--color-primary)",
+        to: "rgba(242,139,91,0)",
+      },
     }),
     [],
   );
 
-  const cashflowData = useMemo(
-    () =>
-      summary
-        .slice()
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-        .map((item) => ({
-          day: formatDisplayDate(String(item.date), { weekday: "short" }),
-          value: item.total,
-        })),
-    [summary],
-  );
+  const cashflowData = useMemo<CashflowPoint[]>(() => {
+    const groupedByDate = new Map<string, { income: number; expense: number }>();
+
+    expenses.forEach((expense) => {
+      const date = normalizeDateKey(expense.date);
+      const current = groupedByDate.get(date) ?? { income: 0, expense: 0 };
+      current.expense += Math.abs(expense.amount);
+      groupedByDate.set(date, current);
+    });
+
+    incomes.forEach((income) => {
+      const date = normalizeDateKey(income.date);
+      const current = groupedByDate.get(date) ?? { income: 0, expense: 0 };
+      current.income += income.amount;
+      groupedByDate.set(date, current);
+    });
+
+    let accumulatedIncome = 0;
+    let accumulatedExpense = 0;
+
+    return Array.from(groupedByDate.entries())
+      .sort(([dateA], [dateB]) => dateA.localeCompare(dateB))
+      .map(([date, values]) => {
+        accumulatedIncome += values.income;
+        accumulatedExpense += values.expense;
+
+        return {
+          date,
+          label: formatChartDateLabel(date),
+          tooltipLabel: formatChartTooltipLabel(date),
+          dailyIncome: values.income,
+          dailyExpense: values.expense,
+          accumulatedIncome,
+          accumulatedExpense,
+          cashBalance: accumulatedIncome - accumulatedExpense,
+        };
+      });
+  }, [expenses, incomes]);
 
   const expensesByCategory = useMemo<CategoryExpenseSlice[]>(() => {
     const map = new Map<string, number>();
@@ -790,23 +923,37 @@ export default function DashboardPage() {
           <div className="mb-6 flex shrink-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-lg font-semibold text-foreground">
-                Fluxo de Caixa Mensal
+                Evolucao do saldo mensal
               </h2>
               <p className="text-xs text-foreground-subtle">
-                Evolucao diaria de gastos vs receitas
+                Veja como entradas e saidas alteram seu saldo ao longo do mes.
               </p>
             </div>
-            <div className="flex items-center gap-2 text-[11px] font-mono text-foreground-subtle tabular-nums">
+            <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-foreground-subtle tabular-nums sm:justify-end">
               <span className="rounded-full bg-success/10 px-3 py-1 font-medium text-success">
-                Receita:{" "}
+                Entradas:{" "}
                 {totalRevenue.toLocaleString("pt-BR", {
                   style: "currency",
                   currency: "BRL",
                 })}
               </span>
               <span className="rounded-full bg-danger/10 px-3 py-1 font-medium text-danger">
-                Despesa:{" "}
+                Saidas:{" "}
                 {totalExpenses.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })}
+              </span>
+              <span
+                className={clsx(
+                  "rounded-full px-3 py-1 font-medium",
+                  balance >= 0
+                    ? "bg-primary/10 text-primary"
+                    : "bg-warning/12 text-warning",
+                )}
+              >
+                Saldo:{" "}
+                {balance.toLocaleString("pt-BR", {
                   style: "currency",
                   currency: "BRL",
                 })}
@@ -820,7 +967,7 @@ export default function DashboardPage() {
                   <AreaChart data={cashflowData}>
                     <defs>
                       <linearGradient
-                        id={chartGradient.id}
+                        id={chartGradients.balance.id}
                         x1="0"
                         y1="0"
                         x2="0"
@@ -828,13 +975,13 @@ export default function DashboardPage() {
                       >
                         <stop
                           offset="0%"
-                          stopColor={chartGradient.from}
+                          stopColor={chartGradients.balance.from}
                           stopOpacity={0.35}
                         />
                         <stop
                           offset="100%"
-                          stopColor={chartGradient.to}
-                          stopOpacity={0}
+                          stopColor={chartGradients.balance.to}
+                          stopOpacity={0.04}
                         />
                       </linearGradient>
                     </defs>
@@ -845,36 +992,38 @@ export default function DashboardPage() {
                       opacity={0.6}
                     />
                     <XAxis
-                      dataKey="day"
+                      dataKey="label"
                       tickLine={false}
                       axisLine={false}
                       tick={{ fill: "var(--chart-muted)", fontSize: 12 }}
                       dy={10}
+                      minTickGap={18}
+                      interval="preserveStartEnd"
                     />
                     <YAxis
-                      tickFormatter={(value) => `R$ ${value}`}
+                      tickFormatter={(value) =>
+                        formatCurrencyAxis(Number(value))
+                      }
                       tickLine={false}
                       axisLine={false}
                       tick={{ fill: "var(--chart-muted)", fontSize: 12 }}
                       dx={-10}
+                      width={62}
                     />
                     <Tooltip
-                      contentStyle={{
-                        background: "var(--color-surface)",
-                        border: "1px solid var(--color-border)",
-                        color: "var(--color-text)",
-                        borderRadius: "16px",
-                        fontFamily: "var(--font-mono, monospace)",
+                      cursor={{
+                        stroke: "rgba(242, 139, 91, 0.18)",
+                        strokeWidth: 1,
                       }}
-                      itemStyle={{
-                        fontFamily: "var(--font-mono, monospace)",
-                      }}
+                      content={<CashflowTooltip />}
+                      wrapperStyle={{ outline: "none" }}
                     />
                     <Area
-                      type="monotone"
-                      dataKey="value"
+                      type="linear"
+                      dataKey="cashBalance"
+                      name="Saldo acumulado"
                       stroke="var(--color-primary)"
-                      strokeWidth={3}
+                      strokeWidth={2.5}
                       dot={{
                         r: 4,
                         strokeWidth: 2,
@@ -887,7 +1036,8 @@ export default function DashboardPage() {
                         stroke: "var(--color-surface)",
                         strokeWidth: 2,
                       }}
-                      fill={`url(#${chartGradient.id})`}
+                      fill={`url(#${chartGradients.balance.id})`}
+                      fillOpacity={1}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
