@@ -265,6 +265,17 @@ body,
   animation: ui-fade-up var(--motion-fast) var(--ease-out) both;
 }
 
+.salgadin-chart :where(.recharts-wrapper, .recharts-surface, svg, [tabindex="-1"]):focus,
+.salgadin-chart :where(.recharts-wrapper, .recharts-surface, svg, [tabindex="-1"]):focus-visible,
+.salgadin-chart :where(.recharts-sector, .recharts-rectangle, .recharts-dot, .recharts-curve, .recharts-bar-rectangle, .recharts-pie-sector):focus,
+.salgadin-chart :where(.recharts-sector, .recharts-rectangle, .recharts-dot, .recharts-curve, .recharts-bar-rectangle, .recharts-pie-sector):focus-visible {
+  outline: none !important;
+}
+
+.salgadin-chart :where(.recharts-wrapper, .recharts-surface, svg) {
+  -webkit-tap-highlight-color: transparent;
+}
+
 @keyframes ui-fade-up {
   from {
     opacity: 0;

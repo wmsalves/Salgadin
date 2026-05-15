@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import {
   Area,
   AreaChart,
+  Bar,
+  BarChart,
   CartesianGrid,
   Cell,
   Pie,
@@ -74,6 +76,16 @@ const CHART_COLORS = [
   "var(--color-primary-strong)",
 ];
 
+const DASHBOARD_CATEGORY_LIMIT = 3;
+
+const cashflowViewOptions: Array<{
+  value: CashflowViewMode;
+  label: string;
+}> = [
+  { value: "balance", label: "Saldo" },
+  { value: "expense", label: "Gastos por dia" },
+];
+
 const formatCurrency = (value: number) =>
   value.toLocaleString("pt-BR", {
     style: "currency",
@@ -141,6 +153,8 @@ type CashflowPoint = {
   cashBalance: number;
 };
 
+type CashflowViewMode = "balance" | "expense";
+
 type CategoryChartTooltipProps = {
   active?: boolean;
   payload?: Array<{
@@ -150,6 +164,7 @@ type CategoryChartTooltipProps = {
 };
 
 type CashflowTooltipProps = {
+  mode: CashflowViewMode;
   active?: boolean;
   payload?: Array<{
     dataKey?: string;
@@ -181,7 +196,11 @@ function CategoryChartTooltip({
   );
 }
 
-function CashflowTooltip({ active, payload }: CashflowTooltipProps) {
+function CashflowTooltip({
+  mode,
+  active,
+  payload,
+}: CashflowTooltipProps) {
   const point = payload?.[0]?.payload;
 
   if (!active || !point) {
@@ -193,31 +212,42 @@ function CashflowTooltip({ active, payload }: CashflowTooltipProps) {
       <p className="text-xs font-medium text-foreground-muted">
         {point.tooltipLabel}
       </p>
-      <div className="mt-2 space-y-1.5">
-        <div className="flex items-center justify-between gap-4 text-sm">
-          <span className="text-foreground-muted">Entrada do dia</span>
-          <span className="font-mono font-semibold text-success tabular-nums">
-            {formatCurrency(point.dailyIncome)}
-          </span>
+      {mode === "balance" ? (
+        <div className="mt-2 space-y-1.5">
+          <div className="flex items-center justify-between gap-4 text-sm">
+            <span className="text-foreground-muted">Entrada do dia</span>
+            <span className="font-mono font-semibold text-success tabular-nums">
+              {formatCurrency(point.dailyIncome)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-4 text-sm">
+            <span className="text-foreground-muted">Saida do dia</span>
+            <span className="font-mono font-semibold text-warning tabular-nums">
+              {formatCurrency(point.dailyExpense)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between gap-4 border-t border-border/70 pt-1.5 text-sm">
+            <span className="text-foreground-muted">Saldo acumulado</span>
+            <span
+              className={clsx(
+                "font-mono font-semibold tabular-nums",
+                point.cashBalance >= 0 ? "text-foreground" : "text-warning",
+              )}
+            >
+              {formatCurrency(point.cashBalance)}
+            </span>
+          </div>
         </div>
-        <div className="flex items-center justify-between gap-4 text-sm">
-          <span className="text-foreground-muted">Saida do dia</span>
-          <span className="font-mono font-semibold text-warning tabular-nums">
-            {formatCurrency(point.dailyExpense)}
-          </span>
+      ) : (
+        <div className="mt-2">
+          <div className="flex items-center justify-between gap-4 text-sm">
+            <span className="text-foreground-muted">Gastos do dia</span>
+            <span className="font-mono font-semibold text-warning tabular-nums">
+              {formatCurrency(point.dailyExpense)}
+            </span>
+          </div>
         </div>
-        <div className="flex items-center justify-between gap-4 border-t border-border/70 pt-1.5 text-sm">
-          <span className="text-foreground-muted">Saldo acumulado</span>
-          <span
-            className={clsx(
-              "font-mono font-semibold tabular-nums",
-              point.cashBalance >= 0 ? "text-foreground" : "text-warning",
-            )}
-          >
-            {formatCurrency(point.cashBalance)}
-          </span>
-        </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -240,8 +270,9 @@ export default function DashboardPage() {
   const [isDeletingExpense, setIsDeletingExpense] = useState(false);
   const [isDeletingIncome, setIsDeletingIncome] = useState(false);
   const [isFabOpen, setIsFabOpen] = useState(false);
-  const [showAllCategories, setShowAllCategories] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [cashflowViewMode, setCashflowViewMode] =
+    useState<CashflowViewMode>("balance");
 
   const fetchData = useCallback(async () => {
     try {
@@ -405,10 +436,14 @@ export default function DashboardPage() {
       .sort((a, b) => b.value - a.value);
   }, [expenses]);
 
-  const visibleCategories = useMemo(
-    () =>
-      showAllCategories ? expensesByCategory : expensesByCategory.slice(0, 4),
-    [expensesByCategory, showAllCategories],
+  const topDashboardCategories = useMemo(
+    () => expensesByCategory.slice(0, DASHBOARD_CATEGORY_LIMIT),
+    [expensesByCategory],
+  );
+
+  const hiddenCategoryCount = Math.max(
+    expensesByCategory.length - topDashboardCategories.length,
+    0,
   );
 
   const summaryCards = useMemo(
@@ -921,13 +956,44 @@ export default function DashboardPage() {
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <div className="flex min-h-[540px] flex-col rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover sm:min-h-[620px] xl:col-span-2">
           <div className="mb-6 flex shrink-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+            <div className="space-y-3">
+              <div>
               <h2 className="text-lg font-semibold text-foreground">
-                Evolucao do saldo mensal
+                Evolucao financeira mensal
               </h2>
               <p className="text-xs text-foreground-subtle">
-                Veja como entradas e saidas alteram seu saldo ao longo do mes.
+                {cashflowViewMode === "balance"
+                  ? "Veja como entradas e saidas alteram seu saldo ao longo do mes."
+                  : "Veja em quais dias seus gastos se concentraram."}
               </p>
+              </div>
+              <div
+                className="inline-flex w-full flex-wrap items-center gap-2 rounded-2xl border border-border bg-surface-2/90 p-1 sm:w-auto"
+                role="tablist"
+                aria-label="Modo de visualizacao do grafico mensal"
+              >
+                {cashflowViewOptions.map((option) => {
+                  const isActive = cashflowViewMode === option.value;
+
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      role="tab"
+                      aria-selected={isActive}
+                      onClick={() => setCashflowViewMode(option.value)}
+                      className={clsx(
+                        "rounded-xl px-3 py-2 text-xs font-semibold transition sm:px-3.5",
+                        isActive
+                          ? "bg-primary text-white shadow-sm"
+                          : "text-foreground-muted hover:bg-surface-3 hover:text-foreground",
+                      )}
+                    >
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
             <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-foreground-subtle tabular-nums sm:justify-end">
               <span className="rounded-full bg-success/10 px-3 py-1 font-medium text-success">
@@ -962,84 +1028,135 @@ export default function DashboardPage() {
           </div>
           <div className="flex min-h-[360px] flex-1 sm:min-h-[420px]">
             {cashflowData.length > 0 ? (
-              <div className="min-h-[360px] flex-1 sm:min-h-[420px]">
+              <div className="salgadin-chart min-h-[360px] flex-1 sm:min-h-[420px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={cashflowData}>
-                    <defs>
-                      <linearGradient
-                        id={chartGradients.balance.id}
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
-                        <stop
-                          offset="0%"
-                          stopColor={chartGradients.balance.from}
-                          stopOpacity={0.35}
-                        />
-                        <stop
-                          offset="100%"
-                          stopColor={chartGradients.balance.to}
-                          stopOpacity={0.04}
-                        />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid
-                      stroke="var(--color-border)"
-                      strokeDasharray="4 4"
-                      vertical={false}
-                      opacity={0.6}
-                    />
-                    <XAxis
-                      dataKey="label"
-                      tickLine={false}
-                      axisLine={false}
-                      tick={{ fill: "var(--chart-muted)", fontSize: 12 }}
-                      dy={10}
-                      minTickGap={18}
-                      interval="preserveStartEnd"
-                    />
-                    <YAxis
-                      tickFormatter={(value) =>
-                        formatCurrencyAxis(Number(value))
-                      }
-                      tickLine={false}
-                      axisLine={false}
-                      tick={{ fill: "var(--chart-muted)", fontSize: 12 }}
-                      dx={-10}
-                      width={62}
-                    />
-                    <Tooltip
-                      cursor={{
-                        stroke: "rgba(242, 139, 91, 0.18)",
-                        strokeWidth: 1,
-                      }}
-                      content={<CashflowTooltip />}
-                      wrapperStyle={{ outline: "none" }}
-                    />
-                    <Area
-                      type="linear"
-                      dataKey="cashBalance"
-                      name="Saldo acumulado"
-                      stroke="var(--color-primary)"
-                      strokeWidth={2.5}
-                      dot={{
-                        r: 4,
-                        strokeWidth: 2,
-                        fill: "var(--color-surface)",
-                        stroke: "var(--color-primary)",
-                      }}
-                      activeDot={{
-                        r: 6,
-                        fill: "var(--color-primary)",
-                        stroke: "var(--color-surface)",
-                        strokeWidth: 2,
-                      }}
-                      fill={`url(#${chartGradients.balance.id})`}
-                      fillOpacity={1}
-                    />
-                  </AreaChart>
+                  {cashflowViewMode === "balance" ? (
+                    <AreaChart
+                      data={cashflowData}
+                      accessibilityLayer={false}
+                      tabIndex={-1}
+                    >
+                      <defs>
+                        <linearGradient
+                          id={chartGradients.balance.id}
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor={chartGradients.balance.from}
+                            stopOpacity={0.35}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor={chartGradients.balance.to}
+                            stopOpacity={0.04}
+                          />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid
+                        stroke="var(--color-border)"
+                        strokeDasharray="4 4"
+                        vertical={false}
+                        opacity={0.6}
+                      />
+                      <XAxis
+                        dataKey="label"
+                        tickLine={false}
+                        axisLine={false}
+                        tick={{ fill: "var(--chart-muted)", fontSize: 12 }}
+                        dy={10}
+                        minTickGap={18}
+                        interval="preserveStartEnd"
+                      />
+                      <YAxis
+                        tickFormatter={(value) =>
+                          formatCurrencyAxis(Number(value))
+                        }
+                        tickLine={false}
+                        axisLine={false}
+                        tick={{ fill: "var(--chart-muted)", fontSize: 12 }}
+                        dx={-10}
+                        width={62}
+                      />
+                      <Tooltip
+                        cursor={{
+                          stroke: "rgba(242, 139, 91, 0.18)",
+                          strokeWidth: 1,
+                        }}
+                        content={<CashflowTooltip mode="balance" />}
+                        wrapperStyle={{ outline: "none" }}
+                      />
+                      <Area
+                        type="linear"
+                        dataKey="cashBalance"
+                        name="Saldo acumulado"
+                        stroke="var(--color-primary)"
+                        strokeWidth={2.5}
+                        dot={{
+                          r: 4,
+                          strokeWidth: 2,
+                          fill: "var(--color-surface)",
+                          stroke: "var(--color-primary)",
+                        }}
+                        activeDot={{
+                          r: 6,
+                          fill: "var(--color-primary)",
+                          stroke: "var(--color-surface)",
+                          strokeWidth: 2,
+                        }}
+                        fill={`url(#${chartGradients.balance.id})`}
+                        fillOpacity={1}
+                      />
+                    </AreaChart>
+                  ) : (
+                    <BarChart
+                      data={cashflowData}
+                      barCategoryGap="28%"
+                      accessibilityLayer={false}
+                      tabIndex={-1}
+                    >
+                      <CartesianGrid
+                        stroke="var(--color-border)"
+                        strokeDasharray="4 4"
+                        vertical={false}
+                        opacity={0.6}
+                      />
+                      <XAxis
+                        dataKey="label"
+                        tickLine={false}
+                        axisLine={false}
+                        tick={{ fill: "var(--chart-muted)", fontSize: 12 }}
+                        dy={10}
+                        minTickGap={18}
+                        interval="preserveStartEnd"
+                      />
+                      <YAxis
+                        tickFormatter={(value) =>
+                          formatCurrencyAxis(Number(value))
+                        }
+                        tickLine={false}
+                        axisLine={false}
+                        tick={{ fill: "var(--chart-muted)", fontSize: 12 }}
+                        dx={-10}
+                        width={62}
+                      />
+                      <Tooltip
+                        cursor={{ fill: "rgba(242, 139, 91, 0.08)" }}
+                        content={<CashflowTooltip mode="expense" />}
+                        wrapperStyle={{ outline: "none" }}
+                      />
+                      <Bar
+                        dataKey="dailyExpense"
+                        name="Gastos do dia"
+                        fill="var(--color-warning)"
+                        radius={[10, 10, 4, 4]}
+                        maxBarSize={32}
+                      />
+                    </BarChart>
+                  )}
                 </ResponsiveContainer>
               </div>
             ) : (
@@ -1074,19 +1191,18 @@ export default function DashboardPage() {
                   gastos.
                 </p>
               </div>
-              {expensesByCategory.length > 4 && (
-                <button
-                  type="button"
-                  onClick={() => setShowAllCategories((prev) => !prev)}
-                  className="shrink-0 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-surface-3"
+              {expensesByCategory.length > 0 && (
+                <Link
+                  to="/categorias"
+                  className="shrink-0 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-semibold text-primary transition hover:border-primary/30 hover:bg-surface-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
                 >
-                  {showAllCategories ? "Ver menos" : "Ver mais"}
-                </button>
+                  {hiddenCategoryCount > 0 ? "Ver todas" : "Ver detalhes"}
+                </Link>
               )}
             </div>
             {expensesByCategory.length > 0 ? (
               <div className="space-y-4">
-                <div className="h-[220px]">
+                <div className="salgadin-chart h-[220px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart accessibilityLayer={false} tabIndex={-1}>
                       <Pie
@@ -1118,7 +1234,18 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="space-y-2">
-                  {visibleCategories.map((item, index) => (
+                  <div className="flex items-center justify-between gap-3 px-1">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+                      Top categorias
+                    </p>
+                    {hiddenCategoryCount > 0 && (
+                      <span className="text-xs text-foreground-subtle">
+                        + {hiddenCategoryCount} categorias
+                      </span>
+                    )}
+                  </div>
+
+                  {topDashboardCategories.map((item, index) => (
                     <div
                       key={item.name}
                       className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-surface-2 px-3 py-2.5"
@@ -1143,6 +1270,16 @@ export default function DashboardPage() {
                       </span>
                     </div>
                   ))}
+
+                  {hiddenCategoryCount > 0 && (
+                    <Link
+                      to="/categorias"
+                      className="inline-flex items-center gap-2 px-1 pt-2 text-sm font-medium text-primary transition hover:text-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+                    >
+                      Analisar categorias
+                      <ChevronRight size={16} />
+                    </Link>
+                  )}
                 </div>
               </div>
             ) : (
