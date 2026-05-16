@@ -52,6 +52,7 @@ export function AddExpenseModal({
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [isCategoryTouchedByUser, setIsCategoryTouchedByUser] = useState(false);
   const isEditing = expenseToEdit !== null;
 
   const {
@@ -82,6 +83,7 @@ export function AddExpenseModal({
     }
 
     if (expenseToEdit) {
+      setIsCategoryTouchedByUser(true);
       reset({
         description: expenseToEdit.description,
         amount: Math.abs(expenseToEdit.amount).toLocaleString("pt-BR", {
@@ -97,6 +99,7 @@ export function AddExpenseModal({
       return;
     }
 
+    setIsCategoryTouchedByUser(false);
     reset({
       description: "",
       amount: "",
@@ -110,7 +113,16 @@ export function AddExpenseModal({
   const descriptionValue = watch("description");
 
   useEffect(() => {
-    if (!descriptionValue || !categories.length || isSubmitting) return;
+    if (
+      isEditing ||
+      isCategoryTouchedByUser ||
+      !descriptionValue?.trim() ||
+      !categories.length ||
+      isSubmitting
+    ) {
+      return;
+    }
+
     const lowerDesc = descriptionValue.toLowerCase();
     let foundCategoryName: string | null = null;
     
@@ -125,9 +137,18 @@ export function AddExpenseModal({
       const matchCat = categories.find(c => c.name === foundCategoryName);
       if (matchCat && selectedCategory !== String(matchCat.id)) {
         setValue("categoryId", String(matchCat.id), { shouldValidate: true });
+        setValue("subcategoryId", "");
       }
     }
-  }, [descriptionValue, categories, setValue, selectedCategory, isSubmitting]);
+  }, [
+    categories,
+    descriptionValue,
+    isCategoryTouchedByUser,
+    isEditing,
+    isSubmitting,
+    selectedCategory,
+    setValue,
+  ]);
 
   useEffect(() => {
     if (!selectedCategory) {
@@ -169,6 +190,7 @@ export function AddExpenseModal({
   }
 
   const handleClose = () => {
+    setIsCategoryTouchedByUser(false);
     reset({
       description: "",
       amount: "",
@@ -298,18 +320,42 @@ export function AddExpenseModal({
                 >
                   Categoria <span className="text-danger">*</span>
                 </label>
-                <select
-                  {...register("categoryId")}
-                  id="categoryId"
-                  className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)]"
-                >
-                  <option value="">Selecione uma categoria</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
+                {(() => {
+                  const categoryField = register("categoryId");
+
+                  return (
+                    <select
+                      {...categoryField}
+                      id="categoryId"
+                      className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)]"
+                      onChange={(event) => {
+                        const nextCategoryId = event.target.value;
+                        const categoryChanged = nextCategoryId !== selectedCategory;
+
+                        categoryField.onChange(event);
+
+                        if (categoryChanged) {
+                          setValue("subcategoryId", "");
+                        }
+
+                        setIsCategoryTouchedByUser(true);
+                      }}
+                    >
+                      <option value="">Selecione uma categoria</option>
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  );
+                })()}
+                {!isEditing && !isCategoryTouchedByUser && selectedCategory && (
+                  <p className="mt-2 text-xs text-foreground-subtle">
+                    Categoria sugerida automaticamente. VocÃª pode alterar antes
+                    de salvar.
+                  </p>
+                )}
                 {errors.categoryId && (
                   <p className="mt-2 text-sm text-danger font-medium">
                     {errors.categoryId.message}
