@@ -4,6 +4,7 @@ import {
   ArrowUpRight,
   CheckCircle2,
   Flag,
+  Info,
   Shield,
   Sparkles,
   Target,
@@ -17,13 +18,27 @@ import { EmptyState } from "../components/EmptyState";
 
 const defaultAlertThreshold = 0.8;
 
-type GoalStatus = "healthy" | "near-limit" | "limit-reached" | "paused";
+type GoalStatus =
+  | "healthy"
+  | "near-limit"
+  | "limit-reached"
+  | "over-limit"
+  | "paused";
 
 const formatCurrency = (value: number) =>
   value.toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
   });
+
+const formatPercent = (value: number) =>
+  `${Math.max(0, Math.round(value)).toLocaleString("pt-BR")}%`;
+
+const toThresholdPercent = (value: number) =>
+  Math.max(1, Math.min(100, Math.round(value * 100)));
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value));
 
 const formatMonthLabel = (date: Date) =>
   date.toLocaleDateString("pt-BR", {
@@ -38,6 +53,10 @@ const getGoalStatus = (
 ): GoalStatus => {
   if (!goal.isActive) {
     return "paused";
+  }
+
+  if (percent > 100) {
+    return "over-limit";
   }
 
   if (percent >= 100) {
@@ -63,7 +82,7 @@ const statusConfig: Record<
   }
 > = {
   healthy: {
-    label: "Meta saudavel",
+    label: "Saudavel",
     description: "Seu ritmo segue dentro do planejado neste mes.",
     toneClass: "text-success",
     badgeClass: "border-success/20 bg-success/10 text-success",
@@ -71,16 +90,24 @@ const statusConfig: Record<
     icon: CheckCircle2,
   },
   "near-limit": {
-    label: "Proximo do limite",
+    label: "Atencao",
     description: "Vale acompanhar os proximos gastos para manter o controle.",
-    toneClass: "text-primary",
-    badgeClass: "border-primary/20 bg-primary/10 text-primary",
-    progressClass: "bg-primary",
+    toneClass: "text-warning",
+    badgeClass: "border-warning/20 bg-warning/10 text-warning",
+    progressClass: "bg-warning",
     icon: Flag,
   },
   "limit-reached": {
     label: "Limite atingido",
     description: "O limite mensal foi usado. Revise os proximos lancamentos com calma.",
+    toneClass: "text-danger",
+    badgeClass: "border-danger/20 bg-danger/10 text-danger",
+    progressClass: "bg-danger",
+    icon: TriangleAlert,
+  },
+  "over-limit": {
+    label: "Limite ultrapassado",
+    description: "O limite mensal passou do planejado. Vale ajustar os proximos gastos com calma.",
     toneClass: "text-danger",
     badgeClass: "border-danger/20 bg-danger/10 text-danger",
     progressClass: "bg-danger",
@@ -96,6 +123,71 @@ const statusConfig: Record<
   },
 };
 
+const getGoalStatusHeadline = (
+  status: GoalStatus,
+  categoryLabel: string,
+  percent: number,
+  overflow: number,
+) => {
+  if (status === "over-limit") {
+    return `A meta de ${categoryLabel} passou do limite em ${formatCurrency(overflow)}.`;
+  }
+
+  if (status === "limit-reached") {
+    return `A meta de ${categoryLabel} chegou a ${formatPercent(percent)} do limite.`;
+  }
+
+  if (status === "near-limit") {
+    return `Voce ja usou ${formatPercent(percent)} da meta de ${categoryLabel}.`;
+  }
+
+  if (status === "paused") {
+    return `A meta de ${categoryLabel} esta pausada neste momento.`;
+  }
+
+  return `A meta de ${categoryLabel} segue dentro do planejado neste mes.`;
+};
+
+const getGoalStatusDetail = (
+  status: GoalStatus,
+  remaining: number,
+  overflow: number,
+) => {
+  if (status === "over-limit") {
+    return `Voce passou ${formatCurrency(overflow)} do valor planejado neste mes.`;
+  }
+
+  if (status === "limit-reached") {
+    return "O limite mensal foi usado por completo. Vale acompanhar os proximos gastos com calma.";
+  }
+
+  if (status === "near-limit") {
+    return `Restam ${formatCurrency(remaining)} para manter a meta neste mes.`;
+  }
+
+  if (status === "paused") {
+    return "Essa meta nao gera alertas enquanto estiver pausada.";
+  }
+
+  return `Ainda restam ${formatCurrency(remaining)} para essa meta neste mes.`;
+};
+
+const getGoalPriorityLabel = (status: GoalStatus) => {
+  if (status === "over-limit" || status === "limit-reached") {
+    return "Ajustar";
+  }
+
+  if (status === "near-limit") {
+    return "Acompanhar";
+  }
+
+  if (status === "paused") {
+    return "Pausada";
+  }
+
+  return "Estavel";
+};
+
 export default function GoalsPage() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [alerts, setAlerts] = useState<GoalAlert[]>([]);
@@ -105,7 +197,7 @@ export default function GoalsPage() {
   const [form, setForm] = useState({
     categoryId: "",
     monthlyLimit: "",
-    alertThreshold: defaultAlertThreshold.toString(),
+    alertThreshold: toThresholdPercent(defaultAlertThreshold).toString(),
     isActive: true,
   });
 
@@ -145,20 +237,24 @@ export default function GoalsPage() {
       const spent = alert?.spent ?? 0;
       const percentRaw =
         goal.monthlyLimit > 0 ? (spent / goal.monthlyLimit) * 100 : 0;
-      const percent = Math.max(0, Math.min(Math.round(percentRaw), 100));
+      const percent = Math.max(0, Math.round(percentRaw));
       const status = getGoalStatus(goal, alert, percentRaw);
       const remaining = Math.max(goal.monthlyLimit - spent, 0);
       const overflow = Math.max(spent - goal.monthlyLimit, 0);
+      const thresholdPercent = toThresholdPercent(goal.alertThreshold);
+      const categoryLabel = goal.category || "Meta geral";
 
       return {
         goal,
         alert,
+        categoryLabel,
         spent,
         percent,
         percentRaw,
         remaining,
         overflow,
         status,
+        thresholdPercent,
       };
     });
   }, [alertsByGoal, goals]);
@@ -170,7 +266,7 @@ export default function GoalsPage() {
       ({ status }) => status === "near-limit",
     );
     const reachedGoals = goalCards.filter(
-      ({ status }) => status === "limit-reached",
+      ({ status }) => status === "limit-reached" || status === "over-limit",
     );
 
     return {
@@ -179,7 +275,9 @@ export default function GoalsPage() {
       attentionGoals: nearLimitGoals.length + reachedGoals.length,
       topAlerts: goalCards
         .filter(({ status }) =>
-          status === "near-limit" || status === "limit-reached",
+          status === "near-limit" ||
+          status === "limit-reached" ||
+          status === "over-limit",
         )
         .sort((a, b) => b.percentRaw - a.percentRaw)
         .slice(0, 3),
@@ -189,11 +287,15 @@ export default function GoalsPage() {
   const handleSubmit = async () => {
     if (!form.monthlyLimit) return;
 
+    const parsedThresholdPercent = Number(form.alertThreshold.replace(",", "."));
+
     const payload = {
       categoryId: form.categoryId ? Number(form.categoryId) : null,
       monthlyLimit: Number(form.monthlyLimit.replace(",", ".")),
       alertThreshold:
-        Number(form.alertThreshold.replace(",", ".")) || defaultAlertThreshold,
+        Number.isFinite(parsedThresholdPercent) && parsedThresholdPercent > 0
+          ? clamp(parsedThresholdPercent, 1, 100) / 100
+          : defaultAlertThreshold,
       isActive: form.isActive,
     };
 
@@ -201,7 +303,7 @@ export default function GoalsPage() {
     setForm({
       categoryId: "",
       monthlyLimit: "",
-      alertThreshold: defaultAlertThreshold.toString(),
+      alertThreshold: toThresholdPercent(defaultAlertThreshold).toString(),
       isActive: true,
     });
     setIsFormOpen(false);
@@ -262,7 +364,7 @@ export default function GoalsPage() {
             </div>
             <div>
               <label className="text-xs text-foreground-muted">
-                Limiar de alerta (0-1)
+                Avisar quando atingir
               </label>
               <input
                 value={form.alertThreshold}
@@ -272,9 +374,17 @@ export default function GoalsPage() {
                     alertThreshold: event.target.value,
                   }))
                 }
-                placeholder="0.8"
+                type="number"
+                min="1"
+                max="100"
+                step="1"
+                inputMode="numeric"
+                placeholder="80"
                 className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
               />
+              <p className="mt-2 text-xs text-foreground-subtle">
+                Avisar quando atingir {form.alertThreshold || "80"}% da meta.
+              </p>
             </div>
             <div className="flex items-end">
               <button
@@ -406,10 +516,20 @@ export default function GoalsPage() {
 
             {summary.topAlerts.length > 0 ? (
               <div className="mt-5 grid gap-4 lg:grid-cols-3">
-                {summary.topAlerts.map(({ goal, spent, percent, percentRaw, remaining, overflow, status }) => {
+                {summary.topAlerts.map(({
+                  goal,
+                  spent,
+                  percent,
+                  percentRaw,
+                  remaining,
+                  overflow,
+                  status,
+                  categoryLabel,
+                  thresholdPercent,
+                }) => {
                   const config = statusConfig[status];
                   const Icon = config.icon;
-                  const isOverLimit = status === "limit-reached";
+                  const progressWidth = clamp(percentRaw, 0, 100);
 
                   return (
                     <div
@@ -419,10 +539,15 @@ export default function GoalsPage() {
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <div className="text-sm font-semibold text-foreground">
-                            {goal.category || "Meta geral"}
+                            {categoryLabel}
                           </div>
                           <p className="mt-1 text-xs text-foreground-muted">
-                            {config.description}
+                            {getGoalStatusHeadline(
+                              status,
+                              categoryLabel,
+                              percent,
+                              overflow,
+                            )}
                           </p>
                         </div>
                         <span
@@ -458,21 +583,17 @@ export default function GoalsPage() {
                       <div className="mt-4 h-2 rounded-full bg-surface-3">
                         <div
                           className={clsx("h-2 rounded-full", config.progressClass)}
-                          style={{ width: `${Math.min(percentRaw, 100)}%` }}
+                          style={{ width: `${progressWidth}%` }}
                         />
                       </div>
 
                       <div className="mt-3 flex items-center justify-between text-xs text-foreground-subtle">
-                        <span>{percent}% usado</span>
-                        <span>
-                          Alerta em {(goal.alertThreshold * 100).toFixed(0)}%
-                        </span>
+                        <span>{formatPercent(percent)} usado</span>
+                        <span>Alerta em {thresholdPercent}%</span>
                       </div>
 
                       <div className="mt-4 rounded-2xl border border-border/70 bg-surface px-3.5 py-3 text-sm text-foreground-muted">
-                        {isOverLimit
-                          ? `Voce ultrapassou ${formatCurrency(overflow)} do limite planejado.`
-                          : `Ainda restam ${formatCurrency(remaining)} para esta meta neste mes.`}
+                        {getGoalStatusDetail(status, remaining, overflow)}
                       </div>
                     </div>
                   );
@@ -490,11 +611,21 @@ export default function GoalsPage() {
           </section>
 
           <section className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
-            {goalCards.map(({ goal, spent, percent, percentRaw, remaining, overflow, status }, index) => {
+            {goalCards.map(({
+              goal,
+              spent,
+              percent,
+              percentRaw,
+              remaining,
+              overflow,
+              status,
+              categoryLabel,
+              thresholdPercent,
+            }, index) => {
               const config = statusConfig[status];
               const Icon = config.icon;
-              const reward =
-                percentRaw >= 100 ? "Ajustar" : percentRaw >= 80 ? "Acompanhar" : "Estavel";
+              const reward = getGoalPriorityLabel(status);
+              const progressWidth = clamp(percentRaw, 0, 100);
 
               return (
                 <div
@@ -519,7 +650,7 @@ export default function GoalsPage() {
                   <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <h2 className="text-lg font-semibold text-foreground">
-                        {goal.category || "Meta geral"}
+                        {categoryLabel}
                       </h2>
                       <p className="mt-1 text-sm text-foreground-muted">
                         {formatCurrency(spent)} usados de {formatCurrency(goal.monthlyLimit)}
@@ -539,19 +670,19 @@ export default function GoalsPage() {
                   <div className="mt-5 h-2.5 rounded-full bg-surface-3">
                     <div
                       className={clsx("h-2.5 rounded-full", config.progressClass)}
-                      style={{ width: `${Math.min(percentRaw, 100)}%` }}
+                      style={{ width: `${progressWidth}%` }}
                     />
                   </div>
 
-                  <div className="mt-3 flex items-center justify-between text-xs text-foreground-subtle">
-                    <span>{percent}% do limite usado</span>
-                    <span>Meta em {(goal.alertThreshold * 100).toFixed(0)}%</span>
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-foreground-subtle">
+                    <span>{formatPercent(percent)} do limite usado</span>
+                    <span>Aviso em {thresholdPercent}%</span>
                   </div>
 
-                  <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                  <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                     <div className="rounded-2xl border border-border bg-surface/80 px-4 py-3">
                       <div className="text-[11px] uppercase tracking-[0.16em] text-foreground-subtle">
-                        Atual
+                        Usado
                       </div>
                       <div className="mt-1 text-sm font-semibold text-foreground">
                         {formatCurrency(spent)}
@@ -567,10 +698,18 @@ export default function GoalsPage() {
                     </div>
                     <div className="rounded-2xl border border-border bg-surface/80 px-4 py-3">
                       <div className="text-[11px] uppercase tracking-[0.16em] text-foreground-subtle">
-                        {overflow > 0 ? "Acima" : "Saldo"}
+                        {overflow > 0 ? "Ultrapassou" : "Restante"}
                       </div>
                       <div className="mt-1 text-sm font-semibold text-foreground">
                         {formatCurrency(overflow > 0 ? overflow : remaining)}
+                      </div>
+                    </div>
+                    <div className="rounded-2xl border border-border bg-surface/80 px-4 py-3">
+                      <div className="text-[11px] uppercase tracking-[0.16em] text-foreground-subtle">
+                        Consumo
+                      </div>
+                      <div className="mt-1 text-sm font-semibold text-foreground">
+                        {formatPercent(percent)}
                       </div>
                     </div>
                   </div>
@@ -586,8 +725,20 @@ export default function GoalsPage() {
                       <ArrowUpRight size={16} className={config.toneClass} />
                     </div>
                     <p className="mt-2 text-sm text-foreground-muted">
-                      {config.description}
+                      {getGoalStatusHeadline(
+                        status,
+                        categoryLabel,
+                        percent,
+                        overflow,
+                      )}
                     </p>
+                    <p className="mt-2 text-sm text-foreground-subtle">
+                      {getGoalStatusDetail(status, remaining, overflow)}
+                    </p>
+                    <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface px-3 py-1.5 text-xs text-foreground-muted">
+                      <Info size={12} />
+                      Aviso configurado para {thresholdPercent}% da meta.
+                    </div>
                   </div>
                 </div>
               );
