@@ -105,6 +105,9 @@ const formatDisplayDate = (value: string | null | undefined) => {
 const parseAmount = (value: string) =>
   Number(value.replace(/\./g, "").replace(",", "."));
 
+const formatBillingDay = (dayOfMonth: number) =>
+  dayOfMonth === 31 ? "Dia 31 ou ultimo dia do mes" : `Todo dia ${dayOfMonth}`;
+
 export default function RecurringSchedulesPage() {
   const [schedules, setSchedules] = useState<RecurringSchedule[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -243,7 +246,7 @@ export default function RecurringSchedulesPage() {
         setSuccessMessage("Recorrencia atualizada.");
       } else {
         await createRecurringSchedule(payload);
-        setSuccessMessage("Recorrencia criada.");
+        setSuccessMessage("Recorrencia criada. Ela sera registrada como lancamento quando estiver vencida.");
       }
 
       await fetchData();
@@ -264,7 +267,7 @@ export default function RecurringSchedulesPage() {
       setSuccessMessage(buildGenerateMessage(result));
       await fetchData();
     } catch {
-      setApiError("Nao foi possivel gerar as recorrencias pendentes.");
+      setApiError("Nao foi possivel registrar os lancamentos vencidos agora.");
     } finally {
       setIsGenerating(false);
     }
@@ -307,20 +310,26 @@ export default function RecurringSchedulesPage() {
             Recorrencias
           </h1>
           <p className="text-sm text-foreground-muted">
-            Gerencie receitas e despesas que se repetem todos os meses.
+            Organize receitas e despesas mensais antes de elas entrarem no seu fluxo.
           </p>
         </div>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={handleGenerateDue}
-            isLoading={isGenerating}
-          >
-            <RefreshCw size={16} />
-            Gerar pendentes
-          </Button>
-          <Button type="button" onClick={openCreateForm}>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="sm:text-right">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleGenerateDue}
+              isLoading={isGenerating}
+              className="w-full sm:w-auto"
+            >
+              <RefreshCw size={16} />
+              {isGenerating ? "Registrando..." : "Registrar vencidas"}
+            </Button>
+            <p className="mt-1 max-w-xs text-xs text-foreground-subtle">
+              Cria os lancamentos que ja chegaram na data combinada.
+            </p>
+          </div>
+          <Button type="button" onClick={openCreateForm} className="w-full sm:w-auto">
             <Plus size={16} />
             Nova recorrencia
           </Button>
@@ -359,10 +368,10 @@ export default function RecurringSchedulesPage() {
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>
               <h2 className="text-lg font-semibold text-foreground">
-                {editingSchedule ? "Editar recorrencia" : "Nova recorrencia"}
+                {editingSchedule ? "Editar recorrencia" : "Nova recorrencia mensal"}
               </h2>
               <p className="text-sm text-foreground-muted">
-                Frequencia mensal nesta primeira versao.
+                Defina o agendamento. O lancamento real sera criado quando voce registrar as vencidas.
               </p>
             </div>
             <button
@@ -376,7 +385,9 @@ export default function RecurringSchedulesPage() {
 
           <form onSubmit={handleSubmit} className="grid gap-4 lg:grid-cols-6">
             <div>
-              <label className="text-xs text-foreground-muted">Tipo</label>
+              <label className="text-xs text-foreground-muted">
+                Tipo de recorrencia
+              </label>
               <select
                 value={form.type}
                 onChange={(event) =>
@@ -405,7 +416,7 @@ export default function RecurringSchedulesPage() {
                   }))
                 }
                 className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm text-foreground"
-                placeholder="Ex: Netflix, aluguel, salario"
+                placeholder="Ex: internet, aluguel, salario"
                 required
               />
             </div>
@@ -437,6 +448,9 @@ export default function RecurringSchedulesPage() {
                 max={31}
                 required
               />
+              <p className="mt-1 text-xs text-foreground-subtle">
+                Se o mes tiver menos dias, usamos o ultimo dia.
+              </p>
             </div>
 
             <div>
@@ -444,6 +458,9 @@ export default function RecurringSchedulesPage() {
               <div className="mt-1 rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm font-medium text-foreground">
                 Mensal
               </div>
+              <p className="mt-1 text-xs text-foreground-subtle">
+                Outras frequencias entram depois.
+              </p>
             </div>
 
             {form.type === "Expense" && (
@@ -539,7 +556,7 @@ export default function RecurringSchedulesPage() {
                   }
                   className="h-4 w-4 rounded border-border text-primary focus:ring-primary/40"
                 />
-                Comecar ativa
+                Iniciar ativa
               </label>
             </div>
 
@@ -554,6 +571,7 @@ export default function RecurringSchedulesPage() {
 
       {(apiError || successMessage) && (
         <div
+          role={apiError ? "alert" : "status"}
           className={clsx(
             "rounded-2xl border px-4 py-3 text-sm font-medium",
             apiError
@@ -573,7 +591,7 @@ export default function RecurringSchedulesPage() {
               type="button"
               onClick={() => setFilter(option.value)}
               className={clsx(
-                "rounded-full px-4 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                "min-h-10 rounded-full px-4 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
                 filter === option.value
                   ? "bg-primary text-white"
                   : "border border-border text-foreground-muted hover:bg-surface-2 hover:text-foreground",
@@ -593,7 +611,7 @@ export default function RecurringSchedulesPage() {
         <EmptyState
           icon={Repeat}
           title="Organize o que se repete todo mes"
-          description="Use recorrencias para assinaturas, internet, academia, salario, aluguel e outras entradas ou saidas previsiveis."
+          description="Cadastre assinaturas, internet, academia, salario, aluguel e outras entradas ou saidas previsiveis. Depois, registre as vencidas como lancamentos reais."
           primaryAction={{
             label: "Criar primeira recorrencia",
             onClick: openCreateForm,
@@ -663,7 +681,7 @@ export default function RecurringSchedulesPage() {
                       Dia
                     </div>
                     <div className="mt-1 text-sm font-semibold text-foreground">
-                      Todo dia {schedule.dayOfMonth}
+                      {formatBillingDay(schedule.dayOfMonth)}
                     </div>
                   </div>
                   <div className="rounded-2xl border border-border bg-surface/80 px-4 py-3">
@@ -731,8 +749,8 @@ function buildGenerateMessage(result: GenerateRecurringSchedulesResult) {
   const total = result.generatedExpenses + result.generatedIncomes;
 
   if (total === 0) {
-    return "Nenhuma recorrencia pendente para gerar agora.";
+    return "Nenhum lancamento recorrente vencido para registrar agora.";
   }
 
-  return `${total} ocorrencia${total === 1 ? "" : "s"} gerada${total === 1 ? "" : "s"}: ${result.generatedExpenses} despesa${result.generatedExpenses === 1 ? "" : "s"} e ${result.generatedIncomes} receita${result.generatedIncomes === 1 ? "" : "s"}.`;
+  return `${total} lancamento${total === 1 ? "" : "s"} recorrente${total === 1 ? "" : "s"} registrado${total === 1 ? "" : "s"}: ${result.generatedExpenses} despesa${result.generatedExpenses === 1 ? "" : "s"} e ${result.generatedIncomes} receita${result.generatedIncomes === 1 ? "" : "s"}.`;
 }
