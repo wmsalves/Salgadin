@@ -171,6 +171,7 @@ export default function RecurringSchedulesPage() {
     }),
     [schedules],
   );
+  const hasSchedules = schedules.length > 0;
 
   const openCreateForm = () => {
     setEditingSchedule(null);
@@ -313,22 +314,24 @@ export default function RecurringSchedulesPage() {
             Organize receitas e despesas mensais antes de elas entrarem no seu fluxo.
           </p>
         </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <div className="sm:text-right">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleGenerateDue}
-              isLoading={isGenerating}
-              className="w-full sm:w-auto"
-            >
-              <RefreshCw size={16} />
-              {isGenerating ? "Registrando..." : "Registrar vencidas"}
-            </Button>
-            <p className="mt-1 max-w-xs text-xs text-foreground-subtle">
-              Cria os lancamentos que ja chegaram na data combinada.
-            </p>
-          </div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+          {hasSchedules && (
+            <div className="flex flex-col gap-1.5 sm:items-end">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleGenerateDue}
+                isLoading={isGenerating}
+                className="w-full sm:w-auto"
+              >
+                <RefreshCw size={16} />
+                {isGenerating ? "Registrando..." : "Registrar vencidas"}
+              </Button>
+              <p className="text-xs leading-snug text-foreground-subtle sm:max-w-none sm:whitespace-nowrap">
+                Gera os lancamentos das recorrencias que ja venceram.
+              </p>
+            </div>
+          )}
           <Button type="button" onClick={openCreateForm} className="w-full sm:w-auto">
             <Plus size={16} />
             Nova recorrencia
