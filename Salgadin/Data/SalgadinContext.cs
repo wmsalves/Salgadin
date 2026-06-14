@@ -19,6 +19,7 @@ namespace Salgadin.Data
         public DbSet<Notification> Notifications { get; set; } = null!;
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<Income> Incomes { get; set; } = null!;
+        public DbSet<RecurringSchedule> RecurringSchedules { get; set; } = null!;
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; } = null!;
         public DbSet<UserWhatsAppAccount> UserWhatsAppAccounts { get; set; } = null!;
         public DbSet<WhatsAppLinkCode> WhatsAppLinkCodes { get; set; } = null!;

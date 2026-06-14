@@ -29,6 +29,23 @@ namespace Salgadin.Data.Configurations
                 .WithMany(u => u.Incomes)
                 .HasForeignKey(i => i.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasIndex(i => i.UserId);
+
+            builder.HasOne(i => i.RecurringSchedule)
+                .WithMany()
+                .HasForeignKey(i => i.RecurringScheduleId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder.HasIndex(i => new
+                {
+                    i.UserId,
+                    i.RecurringScheduleId,
+                    i.RecurringPeriodYear,
+                    i.RecurringPeriodMonth
+                })
+                .IsUnique()
+                .HasFilter("\"RecurringScheduleId\" IS NOT NULL");
         }
     }
 }

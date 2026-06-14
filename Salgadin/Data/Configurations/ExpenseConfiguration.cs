@@ -40,8 +40,23 @@ namespace Salgadin.Data.Configurations
                 .HasForeignKey(e => e.SubcategoryId)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            builder.HasOne(e => e.RecurringSchedule)
+                .WithMany()
+                .HasForeignKey(e => e.RecurringScheduleId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             // Cria um índice na coluna UserId para otimizar consultas que filtram por usuário.
             builder.HasIndex(e => e.UserId);
+
+            builder.HasIndex(e => new
+                {
+                    e.UserId,
+                    e.RecurringScheduleId,
+                    e.RecurringPeriodYear,
+                    e.RecurringPeriodMonth
+                })
+                .IsUnique()
+                .HasFilter("\"RecurringScheduleId\" IS NOT NULL");
         }
     }
 }

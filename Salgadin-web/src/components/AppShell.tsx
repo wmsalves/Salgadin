@@ -16,6 +16,7 @@ import {
   LogOutIcon,
   Menu,
   Settings2,
+  Repeat,
 } from "lucide-react";
 import clsx from "clsx";
 import logo from "../assets/logo.svg";
@@ -33,6 +34,7 @@ const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutGrid },
   { to: "/categorias", label: "Categorias", icon: Tags },
   { to: "/metas", label: "Metas", icon: Target },
+  { to: "/recorrencias", label: "Recorrencias", icon: Repeat },
   { to: "/relatorios", label: "Relatorios", icon: BarChart3 },
   { to: "/notificacoes", label: "Notificacoes", icon: Bell },
   { to: "/perfil", label: "Perfil", icon: User },
@@ -461,11 +463,12 @@ export function AppShell() {
       </div>
 
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/70 bg-surface/98 shadow-[0_-8px_24px_rgba(60,42,32,0.12)] md:hidden">
-        <div className="mx-auto max-w-6xl px-4 py-2 flex items-center justify-between">
+        <div className="mx-auto flex max-w-6xl items-center gap-2 overflow-x-auto px-4 py-2">
           {[
             { to: "/dashboard", label: "Dashboard", icon: LayoutGrid },
             { to: "/categorias", label: "Categorias", icon: Tags },
             { to: "/metas", label: "Metas", icon: Target },
+            { to: "/recorrencias", label: "Recorrencias", icon: Repeat },
             { to: "/relatorios", label: "Relatorios", icon: BarChart3 },
             { to: "/notificacoes", label: "Notificacoes", icon: Bell },
             { to: "/perfil", label: "Perfil", icon: User },
@@ -477,7 +480,7 @@ export function AppShell() {
                 to={item.to}
                 className={({ isActive }) =>
                   clsx(
-                    "flex flex-col items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-xl transition",
+                    "flex min-w-[4.25rem] flex-col items-center gap-1 rounded-xl px-2 py-1 text-[11px] font-medium transition",
                     isActive
                       ? "text-primary"
                       : "text-foreground-muted hover:text-foreground"

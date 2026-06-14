@@ -12,6 +12,7 @@ namespace Salgadin.Repositories
         IRepository<Notification> Notifications { get; }
         IRepository<User> Users { get; }
         IRepository<Income> Incomes { get; }
+        IRepository<RecurringSchedule> RecurringSchedules { get; }
         IRepository<PasswordResetToken> PasswordResetTokens { get; }
         Task<int> CompleteAsync();
     }

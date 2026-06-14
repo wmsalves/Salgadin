@@ -39,6 +39,7 @@ namespace Salgadin.Repositories
         public IRepository<Notification> Notifications { get; }
         public IRepository<User> Users { get; }
         public IRepository<Income> Incomes { get; }
+        public IRepository<RecurringSchedule> RecurringSchedules { get; }
         public IRepository<PasswordResetToken> PasswordResetTokens { get; }
 
         public UnitOfWork(SalgadinContext context)
@@ -52,6 +53,7 @@ namespace Salgadin.Repositories
             Notifications = new Repository<Notification>(_context);
             Users = new Repository<User>(_context);
             Incomes = new Repository<Income>(_context);
+            RecurringSchedules = new Repository<RecurringSchedule>(_context);
             PasswordResetTokens = new Repository<PasswordResetToken>(_context);
         }
 

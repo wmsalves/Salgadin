@@ -110,6 +110,9 @@ A brief overview of the main API endpoints.
 - `POST /api/expense`: Create a new expense.
 - `GET /api/expense/export`: Export authenticated user expenses.
 - `GET /api/income/export`: Export authenticated user incomes.
+- `GET /api/recurring-schedules`: List authenticated user recurring schedules.
+- `POST /api/recurring-schedules`: Create a monthly recurring income or expense schedule.
+- `POST /api/recurring-schedules/generate-due`: Materialize due recurring schedules as real incomes or expenses.
 - `GET /api/category`: Get all categories for the authenticated user.
 - `GET /health`: Liveness endpoint for production health checks.
 

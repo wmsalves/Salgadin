@@ -59,6 +59,7 @@ try
     builder.Services.AddScoped<ISubcategoryService, SubcategoryService>();
     builder.Services.AddScoped<IReportService, ReportService>();
     builder.Services.AddScoped<IGoalService, GoalService>();
+    builder.Services.AddScoped<IRecurringScheduleService, RecurringScheduleService>();
     builder.Services.AddScoped<IExportService, ExportService>();
     builder.Services.AddScoped<INotificationService, NotificationService>();
     builder.Services.AddScoped<IAuthService, AuthService>();

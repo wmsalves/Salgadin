@@ -7,6 +7,9 @@ export interface Expense {
   subcategoryId?: number | null;
   subcategory?: string | null;
   date: string;
+  recurringScheduleId?: number | null;
+  recurringPeriodYear?: number | null;
+  recurringPeriodMonth?: number | null;
 }
 
 export interface DailySummary {
@@ -112,4 +115,58 @@ export interface Income {
   amount: number;
   date: string;
   isFixed: boolean;
+  recurringScheduleId?: number | null;
+  recurringPeriodYear?: number | null;
+  recurringPeriodMonth?: number | null;
+}
+
+export type RecurringScheduleType = "Income" | "Expense";
+export type RecurringScheduleFrequency = "Monthly";
+export type RecurringScheduleStatus =
+  | "Active"
+  | "Paused"
+  | "Finished"
+  | "Archived";
+
+export interface RecurringSchedule {
+  id: number;
+  type: RecurringScheduleType;
+  description: string;
+  amount: number;
+  categoryId?: number | null;
+  category?: string | null;
+  subcategoryId?: number | null;
+  subcategory?: string | null;
+  frequency: RecurringScheduleFrequency;
+  startDate: string;
+  endDate?: string | null;
+  dayOfMonth: number;
+  nextOccurrenceDate: string;
+  lastGeneratedOccurrenceDate?: string | null;
+  status: RecurringScheduleStatus;
+  source: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RecurringSchedulePayload {
+  type: RecurringScheduleType;
+  description: string;
+  amount: number;
+  categoryId?: number | null;
+  subcategoryId?: number | null;
+  frequency: RecurringScheduleFrequency;
+  startDate: string;
+  endDate?: string | null;
+  dayOfMonth: number;
+  isActive?: boolean;
+  status?: RecurringScheduleStatus;
+}
+
+export interface GenerateRecurringSchedulesResult {
+  generatedIncomes: number;
+  generatedExpenses: number;
+  skippedDuplicates: number;
+  finishedSchedules: number;
+  untilDate: string;
 }

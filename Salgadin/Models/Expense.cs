@@ -10,6 +10,10 @@
         public int? SubcategoryId { get; set; }
         public Subcategory? Subcategory { get; set; }
         public DateTime Date { get; set; }
+        public int? RecurringScheduleId { get; set; }
+        public RecurringSchedule? RecurringSchedule { get; set; }
+        public int? RecurringPeriodYear { get; set; }
+        public int? RecurringPeriodMonth { get; set; }
         public int UserId { get; set; }
         public User? User { get; set; }
     }
