@@ -6,6 +6,7 @@ export interface CreateIncomeData {
   amount: number;
   date: string;
   isFixed: boolean;
+  recurringScheduleId?: number | null;
 }
 
 export type UpdateIncomeData = CreateIncomeData;

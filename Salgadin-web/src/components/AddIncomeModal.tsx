@@ -4,11 +4,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { X } from "lucide-react";
 import { Button } from "./ui/Button";
-import { addIncome, updateIncome } from "../services/incomeService";
+import {
+  addIncome,
+  updateIncome,
+  type CreateIncomeData,
+} from "../services/incomeService";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import type { Income } from "../lib/types";
+import type { Income, RecurringSchedule } from "../lib/types";
 import { formatDateForInput, toDateInputValue } from "../lib/dates";
 import { getMotionProps, modalMotion, MOTION } from "../lib/motion";
+import { findMatchingRecurringSchedule } from "../lib/recurringSchedules";
 
 const incomeSchema = z.object({
   description: z.string().min(3, "A descrição deve ter no mínimo 3 caracteres."),
@@ -24,6 +29,7 @@ interface AddIncomeModalProps {
   onClose: () => void;
   onSuccess: () => void;
   incomeToEdit?: Income | null;
+  recurringSchedules?: RecurringSchedule[];
 }
 
 export function AddIncomeModal({
@@ -31,9 +37,16 @@ export function AddIncomeModal({
   onClose,
   onSuccess,
   incomeToEdit = null,
+  recurringSchedules = [],
 }: AddIncomeModalProps) {
   const shouldReduceMotion = Boolean(useReducedMotion());
   const [apiError, setApiError] = useState<string | null>(null);
+  const [matchingSchedule, setMatchingSchedule] =
+    useState<RecurringSchedule | null>(null);
+  const [pendingPayload, setPendingPayload] = useState<CreateIncomeData | null>(
+    null,
+  );
+  const [isLinkingRecurring, setIsLinkingRecurring] = useState(false);
   const isEditing = incomeToEdit !== null;
 
   const {
@@ -41,6 +54,7 @@ export function AddIncomeModal({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    watch,
   } = useForm<IncomeFormValues>({
     resolver: zodResolver(incomeSchema),
     defaultValues: {
@@ -75,10 +89,37 @@ export function AddIncomeModal({
     });
   }, [incomeToEdit, isOpen, reset]);
 
+  const descriptionValue = watch("description");
+  const amountValue = watch("amount");
+  const dateValue = watch("date");
+
+  useEffect(() => {
+    if (!matchingSchedule || !pendingPayload) {
+      return;
+    }
+
+    const currentAmount = parseFloat(amountValue.replace(/\./g, "").replace(",", "."));
+    const formChanged =
+      descriptionValue !== pendingPayload.description ||
+      dateValue !== pendingPayload.date ||
+      currentAmount !== pendingPayload.amount;
+
+    if (formChanged) {
+      setMatchingSchedule(null);
+      setPendingPayload(null);
+    }
+  }, [
+    amountValue,
+    dateValue,
+    descriptionValue,
+    matchingSchedule,
+    pendingPayload,
+  ]);
+
   async function onSubmit(data: IncomeFormValues) {
     setApiError(null);
     try {
-      const payload = {
+      const payload: CreateIncomeData = {
         ...data,
         amount: parseFloat(data.amount.replace(/\./g, "").replace(",", ".")),
       };
@@ -86,7 +127,21 @@ export function AddIncomeModal({
       if (incomeToEdit) {
         await updateIncome(incomeToEdit.id, payload);
       } else {
-        await addIncome(payload);
+        const match = findMatchingRecurringSchedule({
+          schedules: recurringSchedules,
+          type: "Income",
+          description: payload.description,
+          amount: payload.amount,
+          date: payload.date,
+        });
+
+        if (match) {
+          setMatchingSchedule(match);
+          setPendingPayload(payload);
+          return;
+        }
+
+        await saveNewIncome(payload);
       }
       onSuccess();
       handleClose();
@@ -96,6 +151,32 @@ export function AddIncomeModal({
     }
   }
 
+  const saveNewIncome = async (payload: CreateIncomeData) => {
+    await addIncome(payload);
+  };
+
+  const handleRecurringLinkChoice = async (shouldLink: boolean) => {
+    if (!pendingPayload) {
+      return;
+    }
+
+    setIsLinkingRecurring(true);
+    setApiError(null);
+    try {
+      await saveNewIncome({
+        ...pendingPayload,
+        recurringScheduleId: shouldLink ? matchingSchedule?.id : null,
+      });
+      onSuccess();
+      handleClose();
+    } catch (error) {
+      console.error("Falha ao vincular receita recorrente:", error);
+      setApiError("Nao foi possivel salvar a receita. Tente novamente.");
+    } finally {
+      setIsLinkingRecurring(false);
+    }
+  };
+
   const handleClose = () => {
     reset({
       description: "",
@@ -104,6 +185,9 @@ export function AddIncomeModal({
       isFixed: false,
     });
     setApiError(null);
+    setMatchingSchedule(null);
+    setPendingPayload(null);
+    setIsLinkingRecurring(false);
     onClose();
   };
 
@@ -232,6 +316,36 @@ export function AddIncomeModal({
                   Esta é uma renda fixa / recorrente
                 </label>
               </div>
+
+              {matchingSchedule && pendingPayload && (
+                <div className="rounded-2xl border border-success/24 bg-success/10 p-4">
+                  <p className="text-sm font-semibold text-foreground">
+                    Esta receita parece fazer parte de uma recorrencia.
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-foreground-muted">
+                    Deseja vincular este lancamento a "{matchingSchedule.description}"?
+                  </p>
+                  <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => handleRecurringLinkChoice(false)}
+                      disabled={isLinkingRecurring}
+                      size="sm"
+                    >
+                      Ignorar
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => handleRecurringLinkChoice(true)}
+                      isLoading={isLinkingRecurring}
+                      size="sm"
+                    >
+                      Vincular
+                    </Button>
+                  </div>
+                </div>
+              )}
 
               {apiError && (
                 <div className="p-3 rounded-xl bg-surface-2 border border-danger/30">

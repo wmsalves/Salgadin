@@ -84,6 +84,11 @@ namespace Salgadin.Services
             income.UserId = userId;
             income.Date = DateOnlyNormalizer.Normalize(income.Date);
 
+            if (incomeDto.RecurringScheduleId.HasValue)
+            {
+                await ApplyRecurringScheduleLinkAsync(userId, incomeDto, income);
+            }
+
             await _unitOfWork.Incomes.AddAsync(income);
             await _unitOfWork.CompleteAsync();
 
@@ -117,6 +122,38 @@ namespace Salgadin.Services
 
             _unitOfWork.Incomes.Delete(income);
             await _unitOfWork.CompleteAsync();
+        }
+
+        private async Task ApplyRecurringScheduleLinkAsync(int userId, CreateIncomeDto dto, Income income)
+        {
+            var schedule = await _unitOfWork.RecurringSchedules.GetQueryable()
+                .FirstOrDefaultAsync(item =>
+                    item.Id == dto.RecurringScheduleId.GetValueOrDefault() &&
+                    item.UserId == userId &&
+                    item.Status == RecurringScheduleStatus.Active);
+
+            if (schedule is null || schedule.Type != RecurringScheduleType.Income)
+            {
+                throw new BadInputException("Recorrência não encontrada para esta receita.");
+            }
+
+            var periodYear = income.Date.Year;
+            var periodMonth = income.Date.Month;
+            var existingOccurrence = await _unitOfWork.Incomes.GetQueryable()
+                .AnyAsync(item =>
+                    item.UserId == userId &&
+                    item.RecurringScheduleId == schedule.Id &&
+                    item.RecurringPeriodYear == periodYear &&
+                    item.RecurringPeriodMonth == periodMonth);
+
+            if (existingOccurrence)
+            {
+                throw new BadInputException("Esta recorrência já possui um lançamento neste mês.");
+            }
+
+            income.RecurringScheduleId = schedule.Id;
+            income.RecurringPeriodYear = periodYear;
+            income.RecurringPeriodMonth = periodMonth;
         }
     }
 }

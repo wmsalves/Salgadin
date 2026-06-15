@@ -240,6 +240,30 @@ public class RecurringScheduleServiceTests
         Assert.Null(await service.GetByIdAsync(99));
     }
 
+    [Fact]
+    public async Task GetSummaryAsync_ReturnsOperationalCounts()
+    {
+        await using var context = CreateContext();
+        SeedUsersAndCategories(context);
+        var today = DateTime.UtcNow.Date;
+        context.RecurringSchedules.AddRange(
+            CreateSchedule(1, RecurringScheduleStatus.Active, today.AddDays(-1), today.AddDays(-1)),
+            CreateSchedule(2, RecurringScheduleStatus.Active, today.AddDays(5), today.AddDays(-30)),
+            CreateSchedule(3, RecurringScheduleStatus.Paused, today.AddDays(3), null));
+        await context.SaveChangesAsync();
+
+        var service = CreateService(context);
+
+        var summary = await service.GetSummaryAsync();
+
+        Assert.Equal(3, summary.Total);
+        Assert.Equal(2, summary.Active);
+        Assert.Equal(1, summary.Paused);
+        Assert.Equal(1, summary.Due);
+        Assert.Equal(today.AddDays(-1), summary.NextOccurrenceDate);
+        Assert.Equal(today.AddDays(-1), summary.LastGenerationDate);
+    }
+
     private static async Task<RecurringScheduleDto> CreateExpenseSchedule(RecurringScheduleService service)
     {
         return await service.CreateAsync(new CreateRecurringScheduleDto
@@ -251,6 +275,34 @@ public class RecurringScheduleServiceTests
             StartDate = new DateTime(2026, 2, 10),
             DayOfMonth = 10
         });
+    }
+
+    private static RecurringSchedule CreateSchedule(
+        int id,
+        RecurringScheduleStatus status,
+        DateTime nextOccurrenceDate,
+        DateTime? lastGeneratedOccurrenceDate)
+    {
+        return new RecurringSchedule
+        {
+            Id = id,
+            UserId = 1,
+            Type = RecurringScheduleType.Expense,
+            Description = $"Recorrencia {id}",
+            Amount = 100m,
+            CategoryId = 1,
+            Frequency = RecurringScheduleFrequency.Monthly,
+            StartDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            DayOfMonth = 1,
+            NextOccurrenceDate = DateTime.SpecifyKind(nextOccurrenceDate, DateTimeKind.Utc),
+            LastGeneratedOccurrenceDate = lastGeneratedOccurrenceDate.HasValue
+                ? DateTime.SpecifyKind(lastGeneratedOccurrenceDate.Value, DateTimeKind.Utc)
+                : null,
+            Status = status,
+            Source = RecurringScheduleSource.Manual,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
     }
 
     private static RecurringScheduleService CreateService(SalgadinContext context)

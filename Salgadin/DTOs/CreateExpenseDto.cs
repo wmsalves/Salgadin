@@ -18,5 +18,7 @@ namespace Salgadin.DTOs
 
         [Required(ErrorMessage = "A data é obrigatória.")]
         public DateTime Date { get; set; }
+
+        public int? RecurringScheduleId { get; set; }
     }
 }

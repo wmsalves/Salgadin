@@ -6,5 +6,6 @@ namespace Salgadin.DTOs
         public decimal Amount { get; set; }
         public DateTime Date { get; set; }
         public bool IsFixed { get; set; }
+        public int? RecurringScheduleId { get; set; }
     }
 }

@@ -3,6 +3,7 @@ import type {
   GenerateRecurringSchedulesResult,
   RecurringSchedule,
   RecurringSchedulePayload,
+  RecurringScheduleSummary,
 } from "../lib/types";
 
 export const listRecurringSchedules = async (): Promise<RecurringSchedule[]> => {
@@ -16,6 +17,12 @@ export const getRecurringSchedule = async (
   const response = await api.get(`/recurring-schedules/${id}`);
   return response.data;
 };
+
+export const getRecurringScheduleSummary =
+  async (): Promise<RecurringScheduleSummary> => {
+    const response = await api.get("/recurring-schedules/summary");
+    return response.data;
+  };
 
 export const createRecurringSchedule = async (
   data: RecurringSchedulePayload,

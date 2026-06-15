@@ -21,6 +21,7 @@ import {
   archiveRecurringSchedule,
   createRecurringSchedule,
   generateDueRecurringSchedules,
+  getRecurringScheduleSummary,
   listRecurringSchedules,
   pauseRecurringSchedule,
   resumeRecurringSchedule,
@@ -30,6 +31,7 @@ import type {
   GenerateRecurringSchedulesResult,
   RecurringSchedule,
   RecurringSchedulePayload,
+  RecurringScheduleSummary,
   RecurringScheduleStatus,
   RecurringScheduleType,
   Subcategory,
@@ -102,6 +104,17 @@ const formatDisplayDate = (value: string | null | undefined) => {
   });
 };
 
+const formatSummaryDate = (value: string | null | undefined) => {
+  if (!value) {
+    return "Sem registro";
+  }
+
+  return new Date(value).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+  });
+};
+
 const parseAmount = (value: string) =>
   Number(value.replace(/\./g, "").replace(",", "."));
 
@@ -110,6 +123,8 @@ const formatBillingDay = (dayOfMonth: number) =>
 
 export default function RecurringSchedulesPage() {
   const [schedules, setSchedules] = useState<RecurringSchedule[]>([]);
+  const [backendSummary, setBackendSummary] =
+    useState<RecurringScheduleSummary | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [filter, setFilter] = useState<FilterMode>("all");
@@ -126,12 +141,14 @@ export default function RecurringSchedulesPage() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [scheduleData, categoryData] = await Promise.all([
+      const [scheduleData, categoryData, summaryData] = await Promise.all([
         listRecurringSchedules(),
         getCategories(),
+        getRecurringScheduleSummary(),
       ]);
       setSchedules(scheduleData);
       setCategories(categoryData);
+      setBackendSummary(summaryData);
     } finally {
       setIsLoading(false);
     }
@@ -164,12 +181,35 @@ export default function RecurringSchedulesPage() {
 
   const summary = useMemo(
     () => ({
-      total: schedules.length,
-      active: schedules.filter((item) => item.status === "Active").length,
+      total: backendSummary?.total ?? schedules.length,
+      active:
+        backendSummary?.active ??
+        schedules.filter((item) => item.status === "Active").length,
+      paused:
+        backendSummary?.paused ??
+        schedules.filter((item) => item.status === "Paused").length,
+      due:
+        backendSummary?.due ??
+        schedules.filter(
+          (item) =>
+            item.status === "Active" &&
+            new Date(item.nextOccurrenceDate) <= new Date(),
+        ).length,
+      nextOccurrenceDate:
+        backendSummary?.nextOccurrenceDate ??
+        schedules
+          .filter((item) => item.status === "Active")
+          .slice()
+          .sort(
+            (a, b) =>
+              new Date(a.nextOccurrenceDate).getTime() -
+              new Date(b.nextOccurrenceDate).getTime(),
+          )[0]?.nextOccurrenceDate,
+      lastGenerationDate: backendSummary?.lastGenerationDate ?? null,
       expense: schedules.filter((item) => item.type === "Expense").length,
       income: schedules.filter((item) => item.type === "Income").length,
     }),
-    [schedules],
+    [backendSummary, schedules],
   );
   const hasSchedules = schedules.length > 0;
 
@@ -339,12 +379,21 @@ export default function RecurringSchedulesPage() {
         </div>
       </header>
 
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-5">
         {[
-          { label: "Total", value: summary.total, icon: Repeat },
           { label: "Ativas", value: summary.active, icon: CalendarDays },
-          { label: "Despesas", value: summary.expense, icon: Receipt },
-          { label: "Receitas", value: summary.income, icon: Wallet },
+          { label: "Pausadas", value: summary.paused, icon: PauseCircle },
+          { label: "Vencidas", value: summary.due, icon: RefreshCw },
+          {
+            label: "Proxima",
+            value: formatSummaryDate(summary.nextOccurrenceDate),
+            icon: Repeat,
+          },
+          {
+            label: "Ultima gerada",
+            value: formatSummaryDate(summary.lastGenerationDate),
+            icon: Wallet,
+          },
         ].map((item) => {
           const Icon = item.icon;
           return (

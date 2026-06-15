@@ -170,3 +170,12 @@ export interface GenerateRecurringSchedulesResult {
   finishedSchedules: number;
   untilDate: string;
 }
+
+export interface RecurringScheduleSummary {
+  total: number;
+  active: number;
+  paused: number;
+  due: number;
+  nextOccurrenceDate?: string | null;
+  lastGenerationDate?: string | null;
+}

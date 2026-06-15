@@ -28,6 +28,8 @@ import {
   Pizza,
   Plus,
   Receipt,
+  RefreshCw,
+  Repeat,
   ShoppingCart,
   Sparkles,
   Target,
@@ -45,18 +47,27 @@ import {
 } from "../services/expenseService";
 import { deleteIncome, getIncomes } from "../services/incomeService";
 import { getGoalAlerts, getGoals } from "../services/goalService";
+import {
+  generateDueRecurringSchedules,
+  listRecurringSchedules,
+} from "../services/recurringScheduleService";
 import type {
   DailySummary,
   Expense,
   Goal,
   GoalAlert,
   Income,
+  RecurringSchedule,
 } from "../lib/types";
 import { AddExpenseModal } from "../components/AddExpenseModal";
 import { AddIncomeModal } from "../components/AddIncomeModal";
 import { ConfirmActionModal } from "../components/ConfirmActionModal";
 import { EmptyState } from "../components/EmptyState";
 import { formatApiDate, formatDisplayDate } from "../lib/dates";
+import {
+  getDueRecurringSchedules,
+  getUpcomingRecurringSchedules,
+} from "../lib/recurringSchedules";
 
 const categoryIcons: Record<string, React.ComponentType<{ size?: number }>> = {
   Alimentacao: Pizza,
@@ -129,6 +140,35 @@ const formatChartTooltipLabel = (value: string) => {
   }).format(buildUtcDate(value));
 
   return `${formatChartDateLabel(value)} · ${weekday}`;
+};
+
+const formatRecurringDateStatus = (value: string) => {
+  const occurrenceDate = buildUtcDate(normalizeDateKey(value));
+  const today = new Date();
+  const todayUtc = new Date(
+    Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()),
+  );
+  const diffDays = Math.round(
+    (occurrenceDate.getTime() - todayUtc.getTime()) / 86_400_000,
+  );
+
+  if (diffDays < 0) {
+    return "Vencida";
+  }
+
+  if (diffDays === 0) {
+    return "Vence hoje";
+  }
+
+  if (diffDays === 1) {
+    return "Vence amanha";
+  }
+
+  if (diffDays <= 7) {
+    return `Em ${diffDays} dias`;
+  }
+
+  return `Dia ${occurrenceDate.getUTCDate().toString().padStart(2, "0")}`;
 };
 
 type DashboardInsight = {
@@ -258,8 +298,15 @@ export default function DashboardPage() {
   const [summary, setSummary] = useState<DailySummary[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [alerts, setAlerts] = useState<GoalAlert[]>([]);
+  const [recurringSchedules, setRecurringSchedules] = useState<
+    RecurringSchedule[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [recurringActionError, setRecurringActionError] = useState<string | null>(
+    null,
+  );
+  const [isGeneratingRecurring, setIsGeneratingRecurring] = useState(false);
   const [isAddExpenseModalOpen, setIsAddExpenseModalOpen] = useState(false);
   const [isAddIncomeModalOpen, setIsAddIncomeModalOpen] = useState(false);
   const [expenseToEdit, setExpenseToEdit] = useState<Expense | null>(null);
@@ -282,13 +329,20 @@ export default function DashboardPage() {
       const startDate = formatApiDate(new Date(year, month, 1));
       const endDate = formatApiDate(new Date(year, month + 1, 0));
 
-      const [expensesData, summaryData, incomesData, goalsData, alertsData] =
-        await Promise.all([
+      const [
+        expensesData,
+        summaryData,
+        incomesData,
+        goalsData,
+        alertsData,
+        recurringData,
+      ] = await Promise.all([
           getExpenses(startDate, endDate),
           getDailySummary(startDate, endDate),
           getIncomes(startDate, endDate),
           getGoals(),
           getGoalAlerts(year, month + 1),
+          listRecurringSchedules(),
         ]);
 
       setExpenses(expensesData);
@@ -296,6 +350,7 @@ export default function DashboardPage() {
       setIncomes(incomesData);
       setGoals(goalsData);
       setAlerts(alertsData);
+      setRecurringSchedules(recurringData);
     } catch (err) {
       console.error("Falha ao buscar dados do dashboard:", err);
       setError(
@@ -341,6 +396,22 @@ export default function DashboardPage() {
     }
   };
 
+  const handleGenerateDueRecurring = async () => {
+    setIsGeneratingRecurring(true);
+    setRecurringActionError(null);
+    try {
+      await generateDueRecurringSchedules();
+      await fetchData();
+    } catch (err) {
+      console.error("Falha ao registrar recorrencias vencidas:", err);
+      setRecurringActionError(
+        "Nao foi possivel registrar as recorrencias vencidas agora.",
+      );
+    } finally {
+      setIsGeneratingRecurring(false);
+    }
+  };
+
   const handlePrevMonth = () =>
     setCurrentDate(
       (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1),
@@ -363,6 +434,14 @@ export default function DashboardPage() {
   const activeGoalsCount = useMemo(
     () => goals.filter((goal) => goal.isActive).length,
     [goals],
+  );
+  const dueRecurringSchedules = useMemo(
+    () => getDueRecurringSchedules(recurringSchedules),
+    [recurringSchedules],
+  );
+  const upcomingRecurringSchedules = useMemo(
+    () => getUpcomingRecurringSchedules(recurringSchedules, 3),
+    [recurringSchedules],
   );
 
   const currentMonthLabel = useMemo(
@@ -814,6 +893,39 @@ export default function DashboardPage() {
         </section>
       )}
 
+      {dueRecurringSchedules.length > 0 && (
+        <section className="flex flex-col gap-3 rounded-2xl border border-warning/24 bg-warning/10 px-4 py-3 text-sm shadow-[0_10px_24px_rgba(60,42,32,0.08)] sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="font-semibold text-foreground">
+              Voce possui {dueRecurringSchedules.length} recorrencia
+              {dueRecurringSchedules.length === 1 ? "" : "s"} pendente
+              {dueRecurringSchedules.length === 1 ? "" : "s"}.
+            </p>
+            <p className="mt-0.5 text-xs text-foreground-muted">
+              Registre para transformar as vencidas em lancamentos reais.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleGenerateDueRecurring}
+            disabled={isGeneratingRecurring}
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-warning/28 bg-surface px-4 py-2 text-xs font-semibold text-warning transition hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <RefreshCw
+              size={14}
+              className={clsx(isGeneratingRecurring && "animate-spin")}
+            />
+            {isGeneratingRecurring ? "Registrando..." : "Registrar agora"}
+          </button>
+        </section>
+      )}
+
+      {recurringActionError && (
+        <div className="rounded-2xl border border-danger/25 bg-danger/10 px-4 py-3 text-sm font-medium text-danger">
+          {recurringActionError}
+        </div>
+      )}
+
       <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {summaryCards.map((card, index) => {
           const Icon = card.icon;
@@ -1180,6 +1292,71 @@ export default function DashboardPage() {
         </div>
 
         <div className="space-y-6">
+          {upcomingRecurringSchedules.length > 0 && (
+            <div className="rounded-3xl border border-border/70 bg-surface/92 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover">
+              <div className="mb-4 flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground">
+                    <Repeat size={19} className="text-primary" />
+                    Proximas recorrencias
+                  </h2>
+                  <p className="mt-1 text-xs text-foreground-subtle">
+                    Entradas e saidas que ja fazem parte da sua rotina.
+                  </p>
+                </div>
+                <Link
+                  to="/recorrencias"
+                  className="shrink-0 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-semibold text-primary transition hover:border-primary/30 hover:bg-surface-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+                >
+                  Ver todas
+                </Link>
+              </div>
+
+              <div className="space-y-2.5">
+                {upcomingRecurringSchedules.map((schedule) => {
+                  const isExpense = schedule.type === "Expense";
+
+                  return (
+                    <div
+                      key={schedule.id}
+                      className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-surface-2 px-3.5 py-3"
+                    >
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={clsx(
+                              "h-2.5 w-2.5 shrink-0 rounded-full",
+                              isExpense ? "bg-warning" : "bg-success",
+                            )}
+                          />
+                          <p className="truncate text-sm font-semibold text-foreground">
+                            {schedule.description}
+                          </p>
+                        </div>
+                        <p className="mt-1 text-xs text-foreground-subtle">
+                          {formatRecurringDateStatus(schedule.nextOccurrenceDate)}
+                        </p>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p
+                          className={clsx(
+                            "font-mono text-sm font-semibold tabular-nums",
+                            isExpense ? "text-warning" : "text-success",
+                          )}
+                        >
+                          {isExpense ? "-" : "+"} {formatCurrency(schedule.amount)}
+                        </p>
+                        <span className="text-[11px] text-foreground-subtle">
+                          {isExpense ? "Despesa" : "Receita"}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover">
             <div className="mb-4 flex items-start justify-between gap-3">
               <div>
@@ -1585,6 +1762,7 @@ export default function DashboardPage() {
         }}
         onSuccess={fetchData}
         expenseToEdit={expenseToEdit}
+        recurringSchedules={recurringSchedules}
       />
       <AddIncomeModal
         isOpen={isAddIncomeModalOpen}
@@ -1594,6 +1772,7 @@ export default function DashboardPage() {
         }}
         onSuccess={fetchData}
         incomeToEdit={incomeToEdit}
+        recurringSchedules={recurringSchedules}
       />
       <ConfirmActionModal
         isOpen={expenseToDelete !== null}

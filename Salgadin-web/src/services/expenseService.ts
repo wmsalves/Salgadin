@@ -7,6 +7,7 @@ export interface CreateExpenseData {
   date: string;
   categoryId: number;
   subcategoryId?: number | null;
+  recurringScheduleId?: number | null;
 }
 
 export type UpdateExpenseData = CreateExpenseData;

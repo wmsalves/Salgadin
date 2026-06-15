@@ -5,12 +5,17 @@ import { z } from "zod";
 import { X } from "lucide-react";
 import { Button } from "./ui/Button";
 import { getCategories, type Category } from "../services/categoryService";
-import { addExpense, updateExpense } from "../services/expenseService";
+import {
+  addExpense,
+  updateExpense,
+  type CreateExpenseData,
+} from "../services/expenseService";
 import { getSubcategories } from "../services/subcategoryService";
-import type { Expense, Subcategory } from "../lib/types";
+import type { Expense, RecurringSchedule, Subcategory } from "../lib/types";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { formatDateForInput, toDateInputValue } from "../lib/dates";
 import { getMotionProps, modalMotion, MOTION } from "../lib/motion";
+import { findMatchingRecurringSchedule } from "../lib/recurringSchedules";
 
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
   "Alimentação": ['ifood', 'uber eats', 'rappi', 'restaurante', 'mercado', 'padaria', 'açougue', 'supermercado', 'hortifruti', 'mcdonalds', "mcdonald's", 'burguer king', 'habibs', 'pizza', 'sushi', 'lanche', 'café', 'padoca', 'extra', 'carrefour', 'pão de açúcar', 'assaí', 'atacadão'],
@@ -40,6 +45,7 @@ interface AddExpenseModalProps {
   onClose: () => void;
   onSuccess: () => void;
   expenseToEdit?: Expense | null;
+  recurringSchedules?: RecurringSchedule[];
 }
 
 export function AddExpenseModal({
@@ -47,12 +53,18 @@ export function AddExpenseModal({
   onClose,
   onSuccess,
   expenseToEdit = null,
+  recurringSchedules = [],
 }: AddExpenseModalProps) {
   const shouldReduceMotion = Boolean(useReducedMotion());
   const [categories, setCategories] = useState<Category[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
   const [apiError, setApiError] = useState<string | null>(null);
   const [isCategoryTouchedByUser, setIsCategoryTouchedByUser] = useState(false);
+  const [matchingSchedule, setMatchingSchedule] =
+    useState<RecurringSchedule | null>(null);
+  const [pendingPayload, setPendingPayload] =
+    useState<CreateExpenseData | null>(null);
+  const [isLinkingRecurring, setIsLinkingRecurring] = useState(false);
   const isEditing = expenseToEdit !== null;
 
   const {
@@ -111,6 +123,8 @@ export function AddExpenseModal({
 
   const selectedCategory = watch("categoryId");
   const descriptionValue = watch("description");
+  const amountValue = watch("amount");
+  const dateValue = watch("date");
 
   useEffect(() => {
     if (
@@ -164,10 +178,35 @@ export function AddExpenseModal({
       });
   }, [selectedCategory]);
 
+  useEffect(() => {
+    if (!matchingSchedule || !pendingPayload) {
+      return;
+    }
+
+    const currentAmount = parseFloat(amountValue.replace(/\./g, "").replace(",", "."));
+    const formChanged =
+      descriptionValue !== pendingPayload.description ||
+      dateValue !== pendingPayload.date ||
+      selectedCategory !== String(pendingPayload.categoryId) ||
+      currentAmount !== pendingPayload.amount;
+
+    if (formChanged) {
+      setMatchingSchedule(null);
+      setPendingPayload(null);
+    }
+  }, [
+    amountValue,
+    dateValue,
+    descriptionValue,
+    matchingSchedule,
+    pendingPayload,
+    selectedCategory,
+  ]);
+
   async function onSubmit(data: ExpenseFormValues) {
     setApiError(null);
     try {
-      const payload = {
+      const payload: CreateExpenseData = {
         ...data,
         amount: parseFloat(data.amount.replace(/\./g, "").replace(",", ".")),
         categoryId: parseInt(data.categoryId, 10),
@@ -179,7 +218,22 @@ export function AddExpenseModal({
       if (expenseToEdit) {
         await updateExpense(expenseToEdit.id, payload);
       } else {
-        await addExpense(payload);
+        const match = findMatchingRecurringSchedule({
+          schedules: recurringSchedules,
+          type: "Expense",
+          description: payload.description,
+          amount: payload.amount,
+          categoryId: payload.categoryId,
+          date: payload.date,
+        });
+
+        if (match) {
+          setMatchingSchedule(match);
+          setPendingPayload(payload);
+          return;
+        }
+
+        await saveNewExpense(payload);
       }
       onSuccess();
       handleClose();
@@ -188,6 +242,32 @@ export function AddExpenseModal({
       setApiError("Não foi possível salvar a despesa. Tente novamente.");
     }
   }
+
+  const saveNewExpense = async (payload: CreateExpenseData) => {
+    await addExpense(payload);
+  };
+
+  const handleRecurringLinkChoice = async (shouldLink: boolean) => {
+    if (!pendingPayload) {
+      return;
+    }
+
+    setIsLinkingRecurring(true);
+    setApiError(null);
+    try {
+      await saveNewExpense({
+        ...pendingPayload,
+        recurringScheduleId: shouldLink ? matchingSchedule?.id : null,
+      });
+      onSuccess();
+      handleClose();
+    } catch (error) {
+      console.error("Falha ao vincular despesa recorrente:", error);
+      setApiError("Nao foi possivel salvar a despesa. Tente novamente.");
+    } finally {
+      setIsLinkingRecurring(false);
+    }
+  };
 
   const handleClose = () => {
     setIsCategoryTouchedByUser(false);
@@ -199,6 +279,9 @@ export function AddExpenseModal({
       subcategoryId: "",
     });
     setApiError(null);
+    setMatchingSchedule(null);
+    setPendingPayload(null);
+    setIsLinkingRecurring(false);
     onClose();
   };
 
@@ -390,6 +473,36 @@ export function AddExpenseModal({
                   ))}
                 </select>
               </div>
+
+              {matchingSchedule && pendingPayload && (
+                <div className="rounded-2xl border border-primary/24 bg-primary/10 p-4">
+                  <p className="text-sm font-semibold text-foreground">
+                    Esta despesa parece fazer parte de uma recorrencia.
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-foreground-muted">
+                    Deseja vincular este lancamento a "{matchingSchedule.description}"?
+                  </p>
+                  <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => handleRecurringLinkChoice(false)}
+                      disabled={isLinkingRecurring}
+                      size="sm"
+                    >
+                      Ignorar
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => handleRecurringLinkChoice(true)}
+                      isLoading={isLinkingRecurring}
+                      size="sm"
+                    >
+                      Vincular
+                    </Button>
+                  </div>
+                </div>
+              )}
 
               {apiError && (
                 <div className="p-3 rounded-xl bg-surface-2 border border-danger/30">

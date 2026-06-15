@@ -2,6 +2,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Salgadin.DTOs;
+using Salgadin.Exceptions;
 using Salgadin.Models;
 using Salgadin.Repositories;
 
@@ -85,8 +86,12 @@ namespace Salgadin.Services
 
             var expense = _mapper.Map<Expense>(dto);
             expense.UserId = userId;
-
             expense.Date = NormalizeToUtc(dto.Date);
+
+            if (dto.RecurringScheduleId.HasValue)
+            {
+                await ApplyRecurringScheduleLinkAsync(userId, dto, expense);
+            }
 
             await _unitOfWork.Expenses.AddAsync(expense);
             await _unitOfWork.CompleteAsync();
@@ -240,6 +245,40 @@ namespace Salgadin.Services
             {
                 throw new KeyNotFoundException("Subcategoria não encontrada ou inválida para a categoria informada.");
             }
+        }
+
+        private async Task ApplyRecurringScheduleLinkAsync(int userId, CreateExpenseDto dto, Expense expense)
+        {
+            var schedule = await _unitOfWork.RecurringSchedules.GetQueryable()
+                .FirstOrDefaultAsync(item =>
+                    item.Id == dto.RecurringScheduleId.GetValueOrDefault() &&
+                    item.UserId == userId &&
+                    item.Status == RecurringScheduleStatus.Active);
+
+            if (schedule is null ||
+                schedule.Type != RecurringScheduleType.Expense ||
+                schedule.CategoryId != dto.CategoryId)
+            {
+                throw new BadInputException("Recorrência não encontrada para esta despesa.");
+            }
+
+            var periodYear = expense.Date.Year;
+            var periodMonth = expense.Date.Month;
+            var existingOccurrence = await _unitOfWork.Expenses.GetQueryable()
+                .AnyAsync(item =>
+                    item.UserId == userId &&
+                    item.RecurringScheduleId == schedule.Id &&
+                    item.RecurringPeriodYear == periodYear &&
+                    item.RecurringPeriodMonth == periodMonth);
+
+            if (existingOccurrence)
+            {
+                throw new BadInputException("Esta recorrência já possui um lançamento neste mês.");
+            }
+
+            expense.RecurringScheduleId = schedule.Id;
+            expense.RecurringPeriodYear = periodYear;
+            expense.RecurringPeriodMonth = periodMonth;
         }
 
         private static DateTime NormalizeToUtc(DateTime value)

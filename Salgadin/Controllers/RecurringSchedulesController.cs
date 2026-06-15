@@ -24,6 +24,13 @@ namespace Salgadin.Controllers
             return Ok(result);
         }
 
+        [HttpGet("summary")]
+        public async Task<IActionResult> GetSummary()
+        {
+            var result = await _service.GetSummaryAsync();
+            return Ok(result);
+        }
+
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {

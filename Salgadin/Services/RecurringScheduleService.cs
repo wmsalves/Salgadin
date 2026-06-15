@@ -33,6 +33,35 @@ namespace Salgadin.Services
             return schedules.Select(Map);
         }
 
+        public async Task<RecurringScheduleSummaryDto> GetSummaryAsync()
+        {
+            var userId = _userContext.GetUserId();
+            var today = AsUtcStartOfDay(DateTime.UtcNow);
+            var schedules = await _unitOfWork.RecurringSchedules.GetQueryable()
+                .Where(item => item.UserId == userId && item.Status != RecurringScheduleStatus.Archived)
+                .ToListAsync();
+
+            return new RecurringScheduleSummaryDto
+            {
+                Total = schedules.Count,
+                Active = schedules.Count(item => item.Status == RecurringScheduleStatus.Active),
+                Paused = schedules.Count(item => item.Status == RecurringScheduleStatus.Paused),
+                Due = schedules.Count(item =>
+                    item.Status == RecurringScheduleStatus.Active &&
+                    item.NextOccurrenceDate <= today),
+                NextOccurrenceDate = schedules
+                    .Where(item => item.Status == RecurringScheduleStatus.Active)
+                    .OrderBy(item => item.NextOccurrenceDate)
+                    .Select(item => (DateTime?)item.NextOccurrenceDate)
+                    .FirstOrDefault(),
+                LastGenerationDate = schedules
+                    .Where(item => item.LastGeneratedOccurrenceDate.HasValue)
+                    .OrderByDescending(item => item.LastGeneratedOccurrenceDate)
+                    .Select(item => item.LastGeneratedOccurrenceDate)
+                    .FirstOrDefault()
+            };
+        }
+
         public async Task<RecurringScheduleDto?> GetByIdAsync(int id)
         {
             var userId = _userContext.GetUserId();

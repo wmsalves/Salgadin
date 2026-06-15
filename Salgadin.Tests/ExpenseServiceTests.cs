@@ -96,6 +96,48 @@ public class ExpenseServiceTests
         Assert.Equal(new DateTime(2026, 5, 1, 0, 0, 0, DateTimeKind.Utc), saved.Date);
     }
 
+    [Fact]
+    public async Task AddExpenseAsync_CanLinkManualExpenseToRecurringSchedule()
+    {
+        await using var context = CreateContext();
+        SeedCategory(context);
+        context.RecurringSchedules.Add(new RecurringSchedule
+        {
+            Id = 10,
+            UserId = 1,
+            Type = RecurringScheduleType.Expense,
+            Description = "Internet",
+            Amount = 99m,
+            CategoryId = 1,
+            Frequency = RecurringScheduleFrequency.Monthly,
+            StartDate = new DateTime(2026, 5, 1, 0, 0, 0, DateTimeKind.Utc),
+            DayOfMonth = 5,
+            NextOccurrenceDate = new DateTime(2026, 5, 5, 0, 0, 0, DateTimeKind.Utc),
+            Status = RecurringScheduleStatus.Active,
+            Source = RecurringScheduleSource.Manual,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        });
+        await context.SaveChangesAsync();
+
+        using var unitOfWork = new UnitOfWork(context);
+        var service = CreateService(unitOfWork);
+
+        var created = await service.AddExpenseAsync(new CreateExpenseDto
+        {
+            Description = "Internet",
+            Amount = 99m,
+            CategoryId = 1,
+            Date = new DateTime(2026, 5, 5),
+            RecurringScheduleId = 10
+        });
+
+        var saved = await context.Expenses.SingleAsync(e => e.Id == created.Id);
+        Assert.Equal(10, saved.RecurringScheduleId);
+        Assert.Equal(2026, saved.RecurringPeriodYear);
+        Assert.Equal(5, saved.RecurringPeriodMonth);
+    }
+
     private static ExpenseService CreateService(IUnitOfWork unitOfWork)
     {
         var mapper = new MapperConfiguration(
