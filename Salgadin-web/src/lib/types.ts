@@ -179,3 +179,49 @@ export interface RecurringScheduleSummary {
   nextOccurrenceDate?: string | null;
   lastGenerationDate?: string | null;
 }
+
+export type CalendarEntryType = "Income" | "Expense";
+export type CalendarRecurringStatus = "Predicted" | "Registered";
+
+export interface CalendarEntry {
+  id: number;
+  type: CalendarEntryType;
+  description: string;
+  amount: number;
+  category?: string | null;
+  subcategory?: string | null;
+  isRecurring: boolean;
+  recurringScheduleId?: number | null;
+}
+
+export interface CalendarRecurringItem {
+  id: number;
+  type: CalendarEntryType;
+  description: string;
+  amount: number;
+  category?: string | null;
+  subcategory?: string | null;
+  occurrenceDate: string;
+  status: CalendarRecurringStatus;
+}
+
+export interface CalendarDay {
+  date: string;
+  incomeTotal: number;
+  expenseTotal: number;
+  balance: number;
+  incomes: CalendarEntry[];
+  expenses: CalendarEntry[];
+  recurrences: CalendarRecurringItem[];
+}
+
+export interface CalendarMonth {
+  year: number;
+  month: number;
+  startDate: string;
+  endDate: string;
+  predictedIncome: number;
+  predictedExpense: number;
+  predictedBalance: number;
+  days: CalendarDay[];
+}

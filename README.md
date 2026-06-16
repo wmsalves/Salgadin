@@ -114,6 +114,7 @@ A brief overview of the main API endpoints.
 - `GET /api/recurring-schedules/summary`: Summarize recurring schedule counts and occurrence dates.
 - `POST /api/recurring-schedules`: Create a monthly recurring income or expense schedule.
 - `POST /api/recurring-schedules/generate-due`: Materialize due recurring schedules as real incomes or expenses.
+- `GET /api/calendar?year=YYYY&month=M`: Return an authenticated monthly financial calendar with incomes, expenses, recurring schedules, and predicted balance grouped by day.
 - `GET /api/category`: Get all categories for the authenticated user.
 - `GET /health`: Liveness endpoint for production health checks.
 

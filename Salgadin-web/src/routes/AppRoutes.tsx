@@ -19,6 +19,9 @@ const NotificationsPage = lazy(() => import("../pages/NotificationsPage"));
 const RecurringSchedulesPage = lazy(
   () => import("../pages/RecurringSchedulesPage"),
 );
+const FinancialCalendarPage = lazy(
+  () => import("../pages/FinancialCalendarPage"),
+);
 
 function RouteFallback() {
   return (
@@ -53,6 +56,7 @@ export default function AppRoutes() {
               <Route path="/categorias" element={<CategoriesPage />} />
               <Route path="/metas" element={<GoalsPage />} />
               <Route path="/recorrencias" element={<RecurringSchedulesPage />} />
+              <Route path="/calendario" element={<FinancialCalendarPage />} />
               <Route path="/relatorios" element={<ReportsPage />} />
               <Route path="/notificacoes" element={<NotificationsPage />} />
               <Route path="/perfil" element={<ProfilePage />} />

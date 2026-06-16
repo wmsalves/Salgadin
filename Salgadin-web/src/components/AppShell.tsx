@@ -17,6 +17,7 @@ import {
   Menu,
   Settings2,
   Repeat,
+  CalendarDays,
 } from "lucide-react";
 import clsx from "clsx";
 import logo from "../assets/logo.svg";
@@ -35,6 +36,7 @@ const navItems = [
   { to: "/categorias", label: "Categorias", icon: Tags },
   { to: "/metas", label: "Metas", icon: Target },
   { to: "/recorrencias", label: "Recorrencias", icon: Repeat },
+  { to: "/calendario", label: "Calendario", icon: CalendarDays },
   { to: "/relatorios", label: "Relatorios", icon: BarChart3 },
   { to: "/notificacoes", label: "Notificacoes", icon: Bell },
   { to: "/perfil", label: "Perfil", icon: User },
@@ -469,6 +471,7 @@ export function AppShell() {
             { to: "/categorias", label: "Categorias", icon: Tags },
             { to: "/metas", label: "Metas", icon: Target },
             { to: "/recorrencias", label: "Recorrencias", icon: Repeat },
+            { to: "/calendario", label: "Calendario", icon: CalendarDays },
             { to: "/relatorios", label: "Relatorios", icon: BarChart3 },
             { to: "/notificacoes", label: "Notificacoes", icon: Bell },
             { to: "/perfil", label: "Perfil", icon: User },
