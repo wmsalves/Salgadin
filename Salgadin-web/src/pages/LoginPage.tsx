@@ -51,19 +51,17 @@ export default function LoginPage() {
     <div className="min-h-screen bg-background flex flex-col overflow-y-scroll">
       <Header />
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md rounded-2xl border border-border bg-surface backdrop-blur-xl p-6 sm:p-8">
-          <header className="text-center mb-6">
-            <h1 className="text-2xl sm:text-3xl font-medium text-foreground">
-              Bem vindo de volta!
-            </h1>
+        <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 sm:p-8">
+          <header className="mb-6">
+            <h1 className="text-2xl font-medium text-foreground">Que bom te ver de novo</h1>
             <p className="mt-1 text-sm text-foreground-muted">
-              Acesse sua conta para continuar
+              Entre para ver quanto ainda dá para gastar hoje.
             </p>
           </header>
 
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="mt-8 space-y-5"
+            className="space-y-5"
             noValidate
           >
             <Input
@@ -107,11 +105,9 @@ export default function LoginPage() {
             </Button>
 
             {apiError && (
-              <div className="p-3 rounded-lg bg-surface-2 border border-danger/30">
-                <p className="text-sm text-danger font-medium text-center">
-                  {apiError}
-                </p>
-              </div>
+              <p role="alert" className="text-center text-ui text-danger">
+                {apiError}
+              </p>
             )}
 
             {hasDevLogin && devLogin && (
@@ -141,13 +137,13 @@ export default function LoginPage() {
             )}
           </form>
 
-          <p className="mt-4 text-center text-xs text-foreground-muted">
+          <p className="mt-5 text-center text-ui text-foreground-muted">
             Não possui conta?{" "}
             <Link
               to="/signup"
               className="font-medium text-primary hover:text-primary-strong transition-colors"
             >
-              Registre-se agora!
+              Criar conta grátis
             </Link>
           </p>
         </div>

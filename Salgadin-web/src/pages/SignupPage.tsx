@@ -1,4 +1,4 @@
-import { Mail, Lock, User } from "lucide-react";
+import { Check, Mail, Lock, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,12 +11,13 @@ import { Button } from "../components/ui/Button";
 import { PasswordStrength } from "../components/ui/PasswordStrength";
 import { signupSchema, type SignupFormValues } from "../lib/schemas";
 import { registerUser } from "../services/authService";
+import { useAuth } from "../hooks/useAuth";
 import { AxiosError } from "axios";
 
 export default function SignupPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [apiError, setApiError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const hasGoogleAuth = Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim());
 
   const {
@@ -36,14 +37,17 @@ export default function SignupPage() {
     try {
       const { ...payload } = data;
 
-      await registerUser(payload);
-      setSuccessMessage("Conta criada com sucesso! Redirecionando para o login...");
-      setTimeout(() => navigate("/login"), 2500);
+      const { token } = await registerUser(payload);
+      login(token);
+      navigate("/dashboard");
     } catch (error) {
       console.error("Falha no cadastro:", error);
 
-      if (error instanceof AxiosError && error.response?.status === 400) {
-        setApiError("Este email já está em uso. Tente outro ou faça login.");
+      const detail = error instanceof AxiosError ? error.response?.data?.detail : null;
+      if (typeof detail === "string" && detail.trim()) {
+        setApiError(detail);
+      } else if (error instanceof AxiosError && error.response?.status === 400) {
+        setApiError("Não foi possível criar a conta com esses dados. Confira os campos e tente de novo.");
       } else {
         setApiError("Ocorreu um erro inesperado. Tente novamente mais tarde.");
       }
@@ -54,33 +58,34 @@ export default function SignupPage() {
     <div className="min-h-screen bg-background flex flex-col overflow-y-scroll">
       <Header />
       <main className="flex-1">
-        <div className="mx-auto max-w-7xl min-h-[calc(100svh-80px)] grid gap-6 md:gap-8 md:grid-cols-2 items-center px-4 py-6 md:py-4">
-          {/* Branding Column - Hidden on smaller resolutions */}
-          <section className="hidden lg:flex flex-col items-start text-left">
-            <div className="space-y-4">
-              <h1 className="text-4xl lg:text-5xl font-medium leading-tight">
-                <span className="bg-gradient-to-r from-[var(--brand-from-strong)] to-[var(--brand-to-strong)] bg-clip-text text-transparent">
-                  Transforme suas
-                </span>
-                <br />
-                <span className="text-foreground">finanças</span>
-              </h1>
-              <p className="max-w-sm text-base text-foreground-muted leading-relaxed">
-                Gerencie despesas, acompanhe investimentos e alcance seus
-                objetivos financeiros.
-              </p>
-            </div>
+        <div className="mx-auto max-w-7xl min-h-[calc(100svh-80px)] grid items-center gap-10 px-4 py-8 lg:grid-cols-2">
+          <section className="hidden flex-col items-start text-left lg:flex">
+            <h1 className="max-w-md text-4xl font-medium text-foreground">
+              Seus pequenos gastos, <span className="text-primary">finalmente à vista.</span>
+            </h1>
+            <ul className="mt-6 space-y-3 text-base text-foreground-muted">
+              {[
+                "Registre um café em dois segundos",
+                "Saiba quanto ainda dá para gastar por dia",
+                "Sem conectar a conta do banco",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-3">
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-success/12 text-success">
+                    <Check size={14} />
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
           </section>
 
           {/* Form Column */}
-          <section className="flex justify-center md:justify-end">
-            <div className="w-full max-w-md rounded-2xl border border-border bg-surface backdrop-blur-xl p-6 sm:p-8">
-              <header className="text-center md:text-left mb-6">
-                <h2 className="text-2xl sm:text-3xl font-medium text-foreground">
-                  Crie sua Conta
-                </h2>
+          <section className="flex justify-center lg:justify-end">
+            <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 sm:p-8">
+              <header className="mb-6">
+                <h2 className="text-2xl font-medium text-foreground">Crie sua conta</h2>
                 <p className="mt-1 text-sm text-foreground-muted">
-                  Preencha os dados para começar.
+                  Grátis. Em seguida, montamos o seu mês em três passos.
                 </p>
               </header>
 
@@ -120,7 +125,7 @@ export default function SignupPage() {
                 </div>
 
                 <Input
-                  label="Confirme sua Senha"
+                  label="Confirme a senha"
                   type="password"
                   placeholder="••••••••"
                   icon={<Lock />}
@@ -131,26 +136,15 @@ export default function SignupPage() {
                 <Button
                   type="submit"
                   isLoading={isSubmitting}
-                  disabled={!!successMessage}
                   className="w-full mt-4"
                 >
                   {isSubmitting ? "Criando conta..." : "Criar conta"}
                 </Button>
 
                 {apiError && (
-                  <div className="p-3 rounded-xl bg-surface-2 border border-danger/30">
-                    <p className="text-sm text-danger font-medium text-center">
-                      {apiError}
-                    </p>
-                  </div>
-                )}
-                
-                {successMessage && (
-                  <div className="p-3 rounded-xl bg-success/10 border border-success/30">
-                    <p className="text-sm text-success font-medium text-center">
-                      {successMessage}
-                    </p>
-                  </div>
+                  <p role="alert" className="text-center text-ui text-danger">
+                    {apiError}
+                  </p>
                 )}
 
                 {hasGoogleAuth && (
@@ -168,13 +162,13 @@ export default function SignupPage() {
                 )}
               </form>
 
-              <p className="mt-4 text-center text-xs text-foreground-muted">
+              <p className="mt-5 text-center text-ui text-foreground-muted">
                 Já tem uma conta?{" "}
                 <Link
                   to="/login"
                   className="font-medium text-primary hover:text-primary-strong transition-colors"
                 >
-                  Faça o login!
+                  Entrar
                 </Link>
               </p>
             </div>
