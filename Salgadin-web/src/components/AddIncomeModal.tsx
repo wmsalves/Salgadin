@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -191,13 +191,27 @@ export function AddIncomeModal({
     onClose();
   };
 
+  const titleId = useId();
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") handleClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  });
+
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
           {...modalMotion.backdrop}
           transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/35 p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) handleClose();
+          }}
         >
           <motion.div
             {...getMotionProps(shouldReduceMotion, modalMotion.panel, {
@@ -206,48 +220,35 @@ export function AddIncomeModal({
               exit: { opacity: 0 },
             })}
             transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
-            className="bg-surface rounded-xl w-full max-w-md overflow-hidden shadow-[var(--shadow-overlay)]"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            className="max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-t-2xl border border-border bg-surface pb-[env(safe-area-inset-bottom)] shadow-[var(--shadow-overlay)] sm:rounded-2xl sm:pb-0"
           >
-            <div className="bg-success px-6 py-4 flex justify-between items-center">
-              <h2 className="text-lg font-medium text-[var(--color-on-primary)]">
-                {isEditing ? "Editar Receita" : "Nova Receita"}
-              </h2>
+            <div className="flex items-start justify-between gap-4 border-b border-border px-6 pb-4 pt-5">
+              <div>
+                <h2 id="{titleId}" className="text-lg font-medium text-foreground">
+                  {isEditing ? "Editar receita" : "Nova receita"}
+                </h2>
+                <p className="mt-0.5 text-ui text-foreground-muted">{isEditing ? "Ajuste os dados da receita." : "Salário, freela ou qualquer dinheiro que entrou."}</p>
+              </div>
               <button
+                type="button"
                 onClick={handleClose}
-                className="ui-surface-interactive rounded-full p-1 text-[var(--color-on-primary)] hover:bg-black/10"
+                aria-label="Fechar"
+                className="-mr-2 -mt-1 grid h-9 w-9 place-items-center rounded-lg text-foreground-subtle transition-colors hover:bg-surface-2 hover:text-foreground"
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
-            <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
-              <div>
-                <label
-                  htmlFor="descriptionIncome"
-                  className="block text-sm font-medium text-foreground-muted mb-2"
-                >
-                  Descrição da Receita <span className="text-danger">*</span>
-                </label>
-                <input
-                  {...register("description")}
-                  id="descriptionIncome"
-                  type="text"
-                  className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-success/40 focus:border-success placeholder:text-foreground-subtle"
-                  placeholder="Ex: Salário, Rendimentos, Pix..."
-                />
-                {errors.description && (
-                  <p className="mt-2 text-sm text-danger font-medium">
-                    {errors.description.message}
-                  </p>
-                )}
-              </div>
-
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 px-6 pb-6 pt-5">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label
                     htmlFor="amountIncome"
-                    className="block text-sm font-medium text-foreground-muted mb-2"
+                    className="mb-1.5 block text-ui text-foreground-muted"
                   >
-                    Valor (R$) <span className="text-danger">*</span>
+                    Valor (R$) <span className="text-danger" aria-hidden>*</span>
                   </label>
                   <input
                     {...(() => {
@@ -272,7 +273,7 @@ export function AddIncomeModal({
                     id="amountIncome"
                     type="text"
                     inputMode="decimal"
-                    className="w-full tabular-nums rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-success/40 focus:border-success placeholder:text-foreground-subtle"
+                    className="w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 py-2 text-2xl font-medium tabular-nums text-foreground outline-none transition-colors focus:border-success focus:ring-2 focus:ring-success/25 placeholder:text-foreground-subtle"
                     placeholder="0,00"
                   />
                   {errors.amount && (
@@ -284,15 +285,15 @@ export function AddIncomeModal({
                 <div>
                   <label
                     htmlFor="dateIncome"
-                    className="block text-sm font-medium text-foreground-muted mb-2"
+                    className="mb-1.5 block text-ui text-foreground-muted"
                   >
-                    Data <span className="text-danger">*</span>
+                    Data <span className="text-danger" aria-hidden>*</span>
                   </label>
                   <input
                     {...register("date")}
                     id="dateIncome"
                     type="date"
-                    className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-success/40 focus:border-success"
+                    className="w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:ring-2 focus:ring-success/40 focus:border-success"
                   />
                   {errors.date && (
                     <p className="mt-2 text-sm text-danger font-medium">
@@ -301,6 +302,27 @@ export function AddIncomeModal({
                   )}
                 </div>
               </div>
+              <div>
+                <label
+                  htmlFor="descriptionIncome"
+                  className="mb-1.5 block text-ui text-foreground-muted"
+                >
+                  Descrição <span className="text-danger" aria-hidden>*</span>
+                </label>
+                <input
+                  {...register("description")}
+                  id="descriptionIncome"
+                  type="text"
+                  className="w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-success focus:ring-2 focus:ring-success/25 placeholder:text-foreground-subtle"
+                  placeholder="Ex.: Salário, Rendimentos, Pix..."
+                />
+                {errors.description && (
+                  <p className="mt-2 text-sm text-danger font-medium">
+                    {errors.description.message}
+                  </p>
+                )}
+              </div>
+
 
               <div className="flex items-center gap-3 py-2">
                 <input
@@ -355,16 +377,16 @@ export function AddIncomeModal({
                 </div>
               )}
 
-              <div className="pt-2 flex justify-end gap-3">
+              <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
                 <Button type="button" variant="secondary" onClick={handleClose}>
                   Cancelar
                 </Button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex items-center justify-center rounded-xl bg-success px-6 py-2.5 text-sm font-medium text-[var(--color-on-primary)] shadow-success/30 transition-all hover:bg-success/90 disabled:opacity-70"
+                  className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-success px-6 py-2.5 text-sm font-medium text-[var(--color-on-primary)] transition-colors hover:bg-success/90 disabled:opacity-70"
                 >
-                  {isSubmitting ? "Salvando..." : isEditing ? "Salvar Alterações" : "Salvar Receita"}
+                  {isSubmitting ? "Salvando..." : isEditing ? "Salvar alterações" : "Salvar receita"}
                 </button>
               </div>
             </form>

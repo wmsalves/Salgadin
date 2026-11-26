@@ -90,7 +90,7 @@ export default function SignupPage() {
                 noValidate
               >
                 <Input
-                  label="Nome Completo"
+                  label="Nome completo"
                   type="text"
                   placeholder="Seu nome"
                   icon={<User />}
@@ -134,7 +134,7 @@ export default function SignupPage() {
                   disabled={!!successMessage}
                   className="w-full mt-4"
                 >
-                  {isSubmitting ? "Criando conta..." : "Criar Conta"}
+                  {isSubmitting ? "Criando conta..." : "Criar conta"}
                 </Button>
 
                 {apiError && (
