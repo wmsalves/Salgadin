@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import {
   Archive,
-  CalendarDays,
   CircleDollarSign,
   PauseCircle,
   Pencil,
@@ -11,7 +10,6 @@ import {
   Receipt,
   RefreshCw,
   Repeat,
-  Wallet,
 } from "lucide-react";
 import { EmptyState } from "../components/EmptyState";
 import { Button } from "../components/ui/Button";
@@ -37,6 +35,7 @@ import type {
   Subcategory,
 } from "../lib/types";
 import { formatDateForInput, toDateInputValue } from "../lib/dates";
+import { PageHeader, StatRow } from "../components/PageHeader";
 
 type FilterMode = "all" | "income" | "expense" | "active" | "paused";
 
@@ -344,83 +343,43 @@ export default function RecurringSchedulesPage() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <header className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h1 className="text-2xl font-medium text-foreground">
-            Recorrências
-          </h1>
-          <p className="text-sm text-foreground-muted">
-            Organize receitas e despesas mensais antes de elas entrarem no seu fluxo.
-          </p>
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
-          {hasSchedules && (
-            <div className="flex flex-col gap-1.5 sm:items-end">
-              <Button
+    <div className="space-y-6">
+      <PageHeader
+        title="Recorrências"
+        description="Receitas e despesas que se repetem todo mês, como salário, aluguel e assinaturas."
+        actions={
+          <>
+            {hasSchedules && (
+              <button
                 type="button"
-                variant="secondary"
                 onClick={handleGenerateDue}
-                isLoading={isGenerating}
-                className="w-full sm:w-auto"
+                disabled={isGenerating}
+                title="Gera os lançamentos das recorrências que já venceram"
+                className="inline-flex min-h-10 items-center gap-2 whitespace-nowrap rounded-[var(--radius-control)] border border-border bg-surface px-3.5 text-ui font-medium text-foreground transition-colors hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <RefreshCw size={16} />
+                <RefreshCw size={15} className={isGenerating ? "animate-spin" : undefined} />
                 {isGenerating ? "Registrando..." : "Registrar vencidas"}
-              </Button>
-              <p className="text-xs leading-snug text-foreground-subtle sm:max-w-none sm:whitespace-nowrap">
-                Gera os lançamentos das recorrências que já venceram.
-              </p>
-            </div>
-          )}
-          <Button type="button" onClick={openCreateForm} className="w-full sm:w-auto">
-            <Plus size={16} />
-            Nova recorrência
-          </Button>
-        </div>
-      </header>
+              </button>
+            )}
+            <button type="button" onClick={openCreateForm} className="inline-flex min-h-10 items-center gap-2 whitespace-nowrap rounded-[var(--radius-control)] bg-primary px-3.5 text-ui font-medium text-[var(--color-on-primary)] transition-colors hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-50">
+              <Plus size={15} />
+              Nova recorrência
+            </button>
+          </>
+        }
+      />
 
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-        {[
-          { label: "Ativas", value: summary.active, icon: CalendarDays },
-          { label: "Pausadas", value: summary.paused, icon: PauseCircle },
-          { label: "Vencidas", value: summary.due, icon: RefreshCw },
-          {
-            label: "Próxima",
-            value: formatSummaryDate(summary.nextOccurrenceDate),
-            icon: Repeat,
-          },
-          {
-            label: "Última gerada",
-            value: formatSummaryDate(summary.lastGenerationDate),
-            icon: Wallet,
-          },
-        ].map((item) => {
-          const Icon = item.icon;
-          return (
-            <div
-              key={item.label}
-              className="rounded-2xl border border-border bg-surface p-4"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-xs text-foreground-subtle">
-                  {item.label}
-                </span>
-                <Icon size={16} className="text-primary" />
-              </div>
-              <div
-                className={clsx(
-                  "mt-2 truncate font-medium tabular-nums",
-                  typeof item.value === "number"
-                    ? "text-2xl text-foreground"
-                    : "text-lg text-foreground",
-                )}
-              >
-                {item.value}
-              </div>
-            </div>
-          );
-        })}
-      </section>
+      {hasSchedules && (
+        <StatRow
+          items={[
+            { label: "Ativas", value: summary.active },
+            { label: "Pausadas", value: summary.paused },
+            { label: "Vencidas", value: summary.due, tone: summary.due > 0 ? "warning" : "default" },
+            { label: "Próxima", value: formatSummaryDate(summary.nextOccurrenceDate) },
+            { label: "Última gerada", value: formatSummaryDate(summary.lastGenerationDate) },
+          ]}
+        />
+      )}
 
       {isFormOpen && (
         <section className="rounded-2xl border border-border bg-surface p-5">

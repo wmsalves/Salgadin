@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -17,6 +17,7 @@ import type {
   CalendarMonth,
   CalendarRecurringItem,
 } from "../lib/types";
+import { PageHeader, StatRow } from "../components/PageHeader";
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -115,6 +116,20 @@ export default function FinancialCalendarPage() {
     );
   };
 
+  const detailsRef = useRef<HTMLDivElement>(null);
+
+  // Quando o painel do dia fica abaixo da grade (telas menores que 2xl),
+  // rola ate ele para o clique ter efeito visivel.
+  const selectDayAndReveal = (dateKey: string) => {
+    setSelectedDateKey(dateKey);
+    const panel = detailsRef.current;
+    if (!panel || window.matchMedia("(min-width: 1536px)").matches) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    requestAnimationFrame(() =>
+      panel.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }),
+    );
+  };
+
   const goToToday = () => {
     const today = new Date();
     setCurrentMonth(new Date(Date.UTC(today.getFullYear(), today.getMonth(), 1)));
@@ -122,71 +137,60 @@ export default function FinancialCalendarPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
-      <section className="rounded-2xl border border-border bg-surface p-5 md:p-6">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          <div>
-            <h1 className="text-2xl font-medium text-foreground">
-              Calendário financeiro
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm text-foreground-muted">
-              Veja o que entra, o que sai e quais recorrências estão previstas
-              nos próximos dias.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:justify-end">
-            <div className="inline-flex items-center rounded-full border border-border bg-surface-2 p-1">
-              <button
-                type="button"
-                onClick={goToPreviousMonth}
-                className="grid h-9 w-9 place-items-center rounded-full text-foreground-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                aria-label="Mês anterior"
-              >
-                <ChevronLeft size={18} />
-              </button>
-              <button
-                type="button"
-                onClick={goToToday}
-                className="rounded-full px-4 py-2 text-sm font-medium text-foreground-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-              >
-                Hoje
-              </button>
-              <button
-                type="button"
-                onClick={goToNextMonth}
-                className="grid h-9 w-9 place-items-center rounded-full text-foreground-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                aria-label="Próximo mês"
-              >
-                <ChevronRight size={18} />
-              </button>
-            </div>
-            <div className="rounded-2xl border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium sentence-case whitespace-nowrap text-primary">
+      <PageHeader
+        title="Calendário financeiro"
+        description="O que entra, o que sai e as recorrências previstas, dia a dia."
+        actions={
+          <div className="flex items-center gap-1 rounded-[var(--radius-control)] border border-border bg-surface p-1">
+            <button
+              type="button"
+              onClick={goToPreviousMonth}
+              className="grid h-8 w-8 place-items-center rounded-md text-foreground-muted transition-colors hover:bg-surface-2 hover:text-foreground"
+              aria-label="Mês anterior"
+            >
+              <ChevronLeft size={17} />
+            </button>
+            <span className="sentence-case min-w-32 px-1 text-center text-ui font-medium text-foreground">
               {monthFormatter.format(currentMonth)}
-            </div>
+            </span>
+            <button
+              type="button"
+              onClick={goToNextMonth}
+              className="grid h-8 w-8 place-items-center rounded-md text-foreground-muted transition-colors hover:bg-surface-2 hover:text-foreground"
+              aria-label="Próximo mês"
+            >
+              <ChevronRight size={17} />
+            </button>
+            <button
+              type="button"
+              onClick={goToToday}
+              className="ml-1 rounded-md border-l border-border px-3 py-1.5 text-ui font-medium text-foreground-muted transition-colors hover:bg-surface-2 hover:text-foreground"
+            >
+              Hoje
+            </button>
           </div>
-        </div>
+        }
+      />
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-3">
-          <SummaryCard
-            label="Entradas previstas"
-            value={calendar?.predictedIncome ?? 0}
-            tone="positive"
-            isLoading={isLoading}
-          />
-          <SummaryCard
-            label="Saídas previstas"
-            value={calendar?.predictedExpense ?? 0}
-            tone="negative"
-            isLoading={isLoading}
-          />
-          <SummaryCard
-            label="Saldo previsto"
-            value={calendar?.predictedBalance ?? 0}
-            tone={(calendar?.predictedBalance ?? 0) >= 0 ? "positive" : "negative"}
-            isLoading={isLoading}
-          />
-        </div>
-      </section>
+      <StatRow
+        items={[
+          {
+            label: "Entradas previstas",
+            value: isLoading ? "—" : formatCurrency(calendar?.predictedIncome ?? 0),
+            tone: "success",
+          },
+          {
+            label: "Saídas previstas",
+            value: isLoading ? "—" : formatCurrency(calendar?.predictedExpense ?? 0),
+            tone: "danger",
+          },
+          {
+            label: "Saldo previsto",
+            value: isLoading ? "—" : formatCurrency(calendar?.predictedBalance ?? 0),
+            tone: (calendar?.predictedBalance ?? 0) >= 0 ? "default" : "danger",
+          },
+        ]}
+      />
 
       {error && (
         <div className="rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
@@ -197,20 +201,20 @@ export default function FinancialCalendarPage() {
       {isLoading ? (
         <CalendarSkeleton />
       ) : calendar ? (
-        <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
+        <section className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_22rem]">
           <div className="rounded-2xl border border-border bg-surface p-4 md:p-5">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-base font-medium text-foreground">
                   Visão do mês
                 </h2>
-                <p className="text-sm text-foreground-muted">
+                <p className="text-ui text-foreground-muted">
                   Clique em um dia para ver entradas, saídas e recorrências.
                 </p>
               </div>
               <Link
                 to="/lancamentos/recorrentes"
-                className="hidden rounded-full border border-border px-3 py-2 text-sm font-medium text-foreground-muted transition hover:border-primary/30 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 sm:inline-flex"
+                className="hidden shrink-0 items-center whitespace-nowrap rounded-[var(--radius-control)] border border-border px-3 py-1.5 text-ui font-medium text-foreground-muted transition-colors hover:bg-surface-2 hover:text-foreground sm:inline-flex"
               >
                 Ver recorrências
               </Link>
@@ -220,7 +224,7 @@ export default function FinancialCalendarPage() {
               days={calendar.days}
               leadingBlankDays={leadingBlankDays}
               selectedDateKey={selectedDateKey}
-              onSelectDay={setSelectedDateKey}
+              onSelectDay={selectDayAndReveal}
             />
             <MobileCalendarTimeline
               days={calendar.days}
@@ -229,41 +233,11 @@ export default function FinancialCalendarPage() {
             />
           </div>
 
-          <DayDetailsPanel day={selectedDay} />
+          <div ref={detailsRef} className="scroll-mt-24">
+            <DayDetailsPanel day={selectedDay} />
+          </div>
         </section>
       ) : null}
-    </div>
-  );
-}
-
-function SummaryCard({
-  label,
-  value,
-  tone,
-  isLoading,
-}: {
-  label: string;
-  value: number;
-  tone: "positive" | "negative";
-  isLoading: boolean;
-}) {
-  return (
-    <div className="rounded-2xl border border-border bg-surface-2/80 px-4 py-3">
-      <p className="text-xs font-medium text-foreground-muted">
-        {label}
-      </p>
-      {isLoading ? (
-        <div className="mt-2 h-7 w-28 animate-pulse rounded-full bg-surface-3/60" />
-      ) : (
-        <p
-          className={clsx(
-            "mt-2 text-xl font-medium",
-            tone === "positive" ? "text-success" : "text-danger",
-          )}
-        >
-          {formatCurrency(value)}
-        </p>
-      )}
     </div>
   );
 }
@@ -713,7 +687,7 @@ function StatusBadge({ status }: { status: CalendarRecurringItem["status"] }) {
 
 function CalendarSkeleton() {
   return (
-    <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
+    <section className="grid gap-6 2xl:grid-cols-[minmax(0,1fr)_22rem]">
       <div className="rounded-2xl border border-border bg-surface p-5">
         <div className="grid grid-cols-7 gap-2">
           {Array.from({ length: 35 }).map((_, index) => (

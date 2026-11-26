@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import {
+  Plus,
   CheckCircle2,
   Flag,
   Shield,
-  Sparkles,
   Target,
   TriangleAlert,
 } from "lucide-react";
@@ -12,6 +12,7 @@ import { getGoals, createGoal, getGoalAlerts } from "../services/goalService";
 import { getCategories, type Category } from "../services/categoryService";
 import type { Goal, GoalAlert } from "../lib/types";
 import { EmptyState } from "../components/EmptyState";
+import { PageHeader, StatRow } from "../components/PageHeader";
 
 const defaultAlertThreshold = 0.8;
 
@@ -292,23 +293,17 @@ export default function GoalsPage() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-medium text-foreground">Metas</h1>
-          <p className="text-sm text-foreground-muted">
-            Acompanhe limites mensais com leitura simples e alertas claros para{" "}
-            {currentMonthLabel}.
-          </p>
-        </div>
-        <button
-          onClick={() => setIsFormOpen((prev) => !prev)}
-          className="flex items-center gap-2 whitespace-nowrap rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground transition hover:border-surface-3 hover:bg-surface-2"
-        >
-          <Sparkles size={16} />
-          Nova meta
-        </button>
-      </header>
+    <div className="space-y-6">
+      <PageHeader
+        title="Metas"
+        description={<>Limites mensais por categoria, com aviso antes de estourar em {currentMonthLabel}.</>}
+        actions={
+          <button type="button" onClick={() => setIsFormOpen((prev) => !prev)} className="inline-flex min-h-10 items-center gap-2 whitespace-nowrap rounded-[var(--radius-control)] bg-primary px-3.5 text-ui font-medium text-[var(--color-on-primary)] transition-colors hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-50">
+            <Plus size={15} />
+            Nova meta
+          </button>
+        }
+      />
 
       {isFormOpen && (
         <section className="rounded-2xl border border-border bg-surface p-6">
@@ -380,7 +375,7 @@ export default function GoalsPage() {
       )}
 
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-border bg-surface p-12 text-center text-foreground-subtle animate-in fade-in duration-500">
+        <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-border bg-surface p-12 text-center text-foreground-subtle">
           <div className="h-10 w-10 animate-spin text-primary">
             <svg
               className="h-full w-full"
@@ -438,47 +433,18 @@ export default function GoalsPage() {
         </EmptyState>
       ) : (
         <>
-          <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div className="rounded-2xl border border-border bg-surface p-5">
-              <div className="text-xs text-foreground-subtle">
-                Metas ativas
-              </div>
-              <div className="mt-2 text-2xl font-medium text-foreground">
-                {summary.activeGoals}
-              </div>
-              <p className="mt-1 text-sm text-foreground-muted">
-                Limites acompanhados neste ciclo mensal.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-border bg-surface p-5">
-              <div className="text-xs text-foreground-subtle">
-                Saúde financeira
-              </div>
-              <div className="mt-2 text-2xl font-medium text-foreground">
-                {summary.healthyGoals}
-              </div>
-              <p className="mt-1 text-sm text-foreground-muted">
-                {summary.healthyGoals === 1
-                  ? "meta segue com folga neste mês."
-                  : "metas seguem com folga neste mês."}
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-border bg-surface p-5">
-              <div className="text-xs text-foreground-subtle">
-                Pedem atenção
-              </div>
-              <div className="mt-2 text-2xl font-medium text-foreground">
-                {summary.attentionGoals}
-              </div>
-              <p className="mt-1 text-sm text-foreground-muted">
-                {summary.attentionGoals > 0
-                  ? "Acompanhe os próximos gastos para manter o planejamento."
-                  : "Nenhuma meta exige ajuste agora."}
-              </p>
-            </div>
-          </section>
+          <StatRow
+            items={[
+              { label: "Metas ativas", value: summary.activeGoals },
+              { label: "Com folga", value: summary.healthyGoals, tone: summary.healthyGoals > 0 ? "success" : "default" },
+              {
+                label: "Pedem atenção",
+                value: summary.attentionGoals,
+                tone: summary.attentionGoals > 0 ? "warning" : "default",
+                hint: summary.attentionGoals > 0 ? "Acompanhe os próximos gastos" : "Nenhuma precisa de ajuste",
+              },
+            ]}
+          />
 
           <section className="rounded-2xl border border-border bg-surface p-6">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -599,7 +565,7 @@ export default function GoalsPage() {
               status,
               categoryLabel,
               thresholdPercent,
-            }, index) => {
+            }) => {
               const config = statusConfig[status];
               const Icon = config.icon;
               const progressWidth = clamp(percentRaw, 0, 100);
@@ -607,8 +573,7 @@ export default function GoalsPage() {
               return (
                 <div
                   key={goal.id}
-                  style={{ animationDelay: `${index * 80}ms` }}
-                  className="animate-fade-in rounded-2xl border border-border bg-surface p-6 opacity-0 [animation-fill-mode:forwards]"
+                  className=" rounded-2xl border border-border bg-surface p-6"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">

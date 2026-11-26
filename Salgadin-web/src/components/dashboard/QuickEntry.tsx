@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { AxiosError } from "axios";
 import { Loader2, Plus } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { statusMotion } from "../../lib/motion";
 
 import { formatApiDate } from "../../lib/dates";
 import type { Expense } from "../../lib/types";
@@ -30,8 +32,8 @@ function readError(error: unknown, fallback: string) {
 }
 
 interface QuickEntryProps {
-  /** Chamado depois de registrar ou desfazer, para atualizar o painel. */
-  onChange: () => void;
+  /** Chamado depois de registrar (com o gasto criado) ou desfazer, para atualizar o painel. */
+  onChange: (created?: Expense) => void;
 }
 
 /**
@@ -57,7 +59,7 @@ export function QuickEntry({ onChange }: QuickEntryProps) {
 
   const afterSave = (expense: Expense) => {
     setStatus({ kind: "saved", expense });
-    onChange();
+    onChange(expense);
     loadFrequent();
   };
 
@@ -168,8 +170,13 @@ export function QuickEntry({ onChange }: QuickEntryProps) {
       )}
 
       <div aria-live="polite" className="min-h-0">
+        <AnimatePresence mode="wait" initial={false}>
         {status.kind === "saved" && (
-          <p className="mt-3 flex flex-wrap items-center gap-x-2 text-ui text-foreground-muted">
+          <motion.p
+            key={`saved-${status.expense.id}`}
+            {...statusMotion}
+            className="mt-3 flex flex-wrap items-center gap-x-2 text-ui text-foreground-muted"
+          >
             <span>
               <span className="font-medium text-foreground">{status.expense.description}</span>{" "}
               <span className="tabular-nums">{currency(Math.abs(status.expense.amount))}</span> registrado em{" "}
@@ -182,18 +189,19 @@ export function QuickEntry({ onChange }: QuickEntryProps) {
             >
               Desfazer
             </button>
-          </p>
+          </motion.p>
         )}
         {status.kind === "undone" && (
-          <p className="mt-3 text-ui text-foreground-muted">
+          <motion.p key="undone" {...statusMotion} className="mt-3 text-ui text-foreground-muted">
             {status.description} foi removido.
-          </p>
+          </motion.p>
         )}
         {status.kind === "error" && (
-          <p role="alert" className="mt-3 text-ui text-danger">
+          <motion.p key={`error-${status.message}`} {...statusMotion} role="alert" className="mt-3 text-ui text-danger">
             {status.message}
-          </p>
+          </motion.p>
         )}
+        </AnimatePresence>
       </div>
     </section>
   );

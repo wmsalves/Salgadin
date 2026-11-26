@@ -1,6 +1,8 @@
 import { ArrowRight, Pencil, Receipt, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import clsx from "clsx";
+import { AnimatePresence, motion } from "framer-motion";
+import { listItemMotion } from "../../lib/motion";
 
 import { EmptyState } from "../EmptyState";
 import { formatDisplayDate } from "../../lib/dates";
@@ -22,6 +24,8 @@ interface RecentActivityProps {
   onDeleteExpense: (expense: Expense) => void;
   onDeleteIncome: (income: Income) => void;
   onAddExpense: () => void;
+  /** Chave ("e-12" ou "i-3") do lancamento recem-criado, para destaca-lo. */
+  highlightKey?: string | null;
 }
 
 export function RecentActivity({
@@ -33,6 +37,7 @@ export function RecentActivity({
   onDeleteExpense,
   onDeleteIncome,
   onAddExpense,
+  highlightKey = null,
 }: RecentActivityProps) {
   const items: Item[] = [
     ...expenses.map((item) => ({ kind: "expense" as const, key: `e-${item.id}`, date: item.date.slice(0, 10), item })),
@@ -65,7 +70,8 @@ export function RecentActivity({
           />
         </div>
       ) : (
-        <ul className="divide-y divide-border px-5 pb-2">
+        <ul className="px-5 pb-2">
+          <AnimatePresence initial={false}>
           {items.map((entry) => {
             const isExpense = entry.kind === "expense";
             const meta = isExpense
@@ -74,7 +80,15 @@ export function RecentActivity({
                 ? "Receita fixa"
                 : "Receita extra";
             return (
-              <li key={entry.key} className="group flex items-center gap-3 py-3">
+              <motion.li
+                key={entry.key}
+                layout="position"
+                {...listItemMotion}
+                className={clsx(
+                  "group -mx-2 flex items-center gap-3 overflow-hidden rounded-lg border-t border-border px-2 py-3 first:border-t-0",
+                  entry.key === highlightKey && "salgadin-highlight",
+                )}
+              >
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm text-foreground">{entry.item.description}</p>
                   <p className="mt-0.5 truncate text-xs text-foreground-subtle">
@@ -112,9 +126,10 @@ export function RecentActivity({
                     <Trash2 size={15} />
                   </button>
                 </div>
-              </li>
+              </motion.li>
             );
           })}
+          </AnimatePresence>
         </ul>
       )}
     </section>

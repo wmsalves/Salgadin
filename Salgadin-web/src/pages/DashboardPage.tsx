@@ -55,6 +55,7 @@ import { MonthOverview } from "../components/dashboard/MonthOverview";
 import { QuickEntry } from "../components/dashboard/QuickEntry";
 import { RecentActivity } from "../components/dashboard/RecentActivity";
 import { buildMonthSummary } from "../lib/monthSummary";
+import { chartCursor, chartGrid, chartTick } from "../lib/chartTheme";
 import { formatApiDate } from "../lib/dates";
 import {
   getDueRecurringSchedules,
@@ -293,6 +294,7 @@ export default function DashboardPage() {
   const [isDeletingExpense, setIsDeletingExpense] = useState(false);
   const [isDeletingIncome, setIsDeletingIncome] = useState(false);
   const [isFabOpen, setIsFabOpen] = useState(false);
+  const [highlightKey, setHighlightKey] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [cashflowViewMode, setCashflowViewMode] =
     useState<CashflowViewMode>("balance");
@@ -556,10 +558,10 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20 sm:pb-0">
+    <div className="space-y-6 pb-20 sm:pb-0">
       <div className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-4 z-40 flex flex-col items-end gap-3 sm:hidden">
         {isFabOpen && (
-          <div className="mb-2 flex flex-col items-end gap-3 animate-in slide-in-from-bottom-5 fade-in duration-200">
+          <div className="mb-2 flex flex-col items-end gap-3">
             <button
               onClick={() => {
                 setIncomeToEdit(null);
@@ -784,7 +786,12 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <QuickEntry onChange={fetchData} />
+      <QuickEntry
+        onChange={(created) => {
+          setHighlightKey(created ? `e-${created.id}` : null);
+          void fetchData();
+        }}
+      />
 
       <MonthOverview
         summary={monthSummary}
@@ -812,7 +819,7 @@ export default function DashboardPage() {
               </p>
               </div>
               <div
-                className="inline-flex w-full flex-wrap items-center gap-2 rounded-2xl border border-border bg-surface-2/90 p-1 sm:w-auto"
+                className="inline-flex w-fit items-center rounded-[var(--radius-control)] border border-border bg-background p-1"
                 role="tablist"
                 aria-label="Modo de visualização do gráfico mensal"
               >
@@ -827,10 +834,10 @@ export default function DashboardPage() {
                       aria-selected={isActive}
                       onClick={() => setCashflowViewMode(option.value)}
                       className={clsx(
-                        "rounded-xl px-3 py-2 text-xs font-medium transition sm:px-3.5",
+                        "rounded-md px-3 py-1.5 text-ui font-medium transition-colors",
                         isActive
-                          ? "bg-primary text-[var(--color-on-primary)]"
-                          : "text-foreground-muted hover:bg-surface-3 hover:text-foreground",
+                          ? "bg-surface text-foreground shadow-[var(--shadow-card)]"
+                          : "text-foreground-muted hover:text-foreground",
                       )}
                     >
                       {option.label}
@@ -900,17 +907,12 @@ export default function DashboardPage() {
                           />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid
-                        stroke="var(--color-border)"
-                        strokeDasharray="4 4"
-                        vertical={false}
-                        opacity={0.6}
-                      />
+                      <CartesianGrid {...chartGrid} />
                       <XAxis
                         dataKey="label"
                         tickLine={false}
                         axisLine={false}
-                        tick={{ fill: "var(--chart-muted)", fontSize: 12 }}
+                        tick={chartTick}
                         dy={10}
                         minTickGap={18}
                         interval="preserveStartEnd"
@@ -921,15 +923,12 @@ export default function DashboardPage() {
                         }
                         tickLine={false}
                         axisLine={false}
-                        tick={{ fill: "var(--chart-muted)", fontSize: 12 }}
+                        tick={chartTick}
                         dx={-10}
                         width={62}
                       />
                       <Tooltip
-                        cursor={{
-                          stroke: "rgba(242, 139, 91, 0.18)",
-                          strokeWidth: 1,
-                        }}
+                        cursor={chartCursor}
                         content={<CashflowTooltip mode="balance" />}
                         wrapperStyle={{ outline: "none" }}
                       />
@@ -939,12 +938,7 @@ export default function DashboardPage() {
                         name="Saldo acumulado"
                         stroke="var(--color-primary)"
                         strokeWidth={2.5}
-                        dot={{
-                          r: 4,
-                          strokeWidth: 2,
-                          fill: "var(--color-surface)",
-                          stroke: "var(--color-primary)",
-                        }}
+                        dot={false}
                         activeDot={{
                           r: 6,
                           fill: "var(--color-primary)",
@@ -962,17 +956,12 @@ export default function DashboardPage() {
                       accessibilityLayer={false}
                       tabIndex={-1}
                     >
-                      <CartesianGrid
-                        stroke="var(--color-border)"
-                        strokeDasharray="4 4"
-                        vertical={false}
-                        opacity={0.6}
-                      />
+                      <CartesianGrid {...chartGrid} />
                       <XAxis
                         dataKey="label"
                         tickLine={false}
                         axisLine={false}
-                        tick={{ fill: "var(--chart-muted)", fontSize: 12 }}
+                        tick={chartTick}
                         dy={10}
                         minTickGap={18}
                         interval="preserveStartEnd"
@@ -983,12 +972,12 @@ export default function DashboardPage() {
                         }
                         tickLine={false}
                         axisLine={false}
-                        tick={{ fill: "var(--chart-muted)", fontSize: 12 }}
+                        tick={chartTick}
                         dx={-10}
                         width={62}
                       />
                       <Tooltip
-                        cursor={{ fill: "rgba(242, 139, 91, 0.08)" }}
+                        cursor={{ fill: "rgb(var(--ring-color) / 0.06)" }}
                         content={<CashflowTooltip mode="expense" />}
                         wrapperStyle={{ outline: "none" }}
                       />
@@ -1093,7 +1082,7 @@ export default function DashboardPage() {
             <div className="mb-4 flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-base font-medium text-foreground">
-                  Despesas por Categoria
+                  Despesas por categoria
                 </h2>
                 <p className="mt-1 text-xs text-foreground-subtle">
                   Veja o gráfico e a lista logo abaixo para entender melhor seus
@@ -1213,7 +1202,7 @@ export default function DashboardPage() {
           <div className="rounded-2xl border border-border bg-surface p-6 soft-hover">
             <h2 className="mb-4 flex items-center gap-2 text-base font-medium text-foreground">
               <Target size={20} className="text-info" />
-              Alertas de Metas
+              Alertas de metas
             </h2>
             <div className="space-y-4">
               {alerts.length > 0 ? (
@@ -1287,6 +1276,7 @@ export default function DashboardPage() {
       <RecentActivity
         expenses={expenses}
         incomes={incomes}
+        highlightKey={highlightKey}
         onEditExpense={(expense) => {
           setExpenseToEdit(expense);
           setIsAddExpenseModalOpen(true);

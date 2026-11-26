@@ -1,5 +1,7 @@
 import clsx from "clsx";
-import { NavLink, Outlet } from "react-router-dom";
+import { motion } from "framer-motion";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { indicatorTransition, pageMotion } from "../lib/motion";
 
 export interface SectionTab {
   to: string;
@@ -14,6 +16,7 @@ interface SectionLayoutProps {
 
 /** Abas de uma secao do app (ex.: Lancamentos > Recorrencias > Categorias). */
 export function SectionLayout({ label, tabs }: SectionLayoutProps) {
+  const { pathname } = useLocation();
   return (
     <div className="space-y-6">
       <nav aria-label={label} className="-mx-1 overflow-x-auto px-1">
@@ -25,20 +28,32 @@ export function SectionLayout({ label, tabs }: SectionLayoutProps) {
                 end={tab.end}
                 className={({ isActive }) =>
                   clsx(
-                    "relative -mb-px inline-flex min-h-10 items-center whitespace-nowrap border-b-2 px-3 text-ui font-medium transition-colors",
-                    isActive
-                      ? "border-primary text-foreground"
-                      : "border-transparent text-foreground-muted hover:text-foreground",
+                    "relative inline-flex min-h-10 items-center whitespace-nowrap px-3 text-ui font-medium transition-colors",
+                    isActive ? "text-foreground" : "text-foreground-muted hover:text-foreground",
                   )
                 }
               >
-                {tab.label}
+                {({ isActive }) => (
+                  <>
+                    {tab.label}
+                    {isActive && (
+                      <motion.span
+                        layoutId={`${label}-tab`}
+                        transition={indicatorTransition}
+                        className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-primary"
+                        aria-hidden
+                      />
+                    )}
+                  </>
+                )}
               </NavLink>
             </li>
           ))}
         </ul>
       </nav>
-      <Outlet />
+      <motion.div key={pathname} {...pageMotion}>
+        <Outlet />
+      </motion.div>
     </div>
   );
 }

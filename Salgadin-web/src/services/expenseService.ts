@@ -78,3 +78,11 @@ export const getFrequentExpenses = async (limit = 6): Promise<FrequentExpense[]>
   const response = await api.get<FrequentExpense[]>("/expense/frequent", { params: { limit } });
   return response.data;
 };
+
+/** Quantidade total de despesas (uma requisição leve, sem baixar a lista). */
+export const countExpenses = async (): Promise<number> => {
+  const response = await api.get<{ totalCount: number }>("/expense", {
+    params: { page: 1, pageSize: 1 },
+  });
+  return response.data.totalCount ?? 0;
+};

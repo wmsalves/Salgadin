@@ -27,7 +27,7 @@ import {
   markNotificationRead,
 } from "../services/notificationService";
 import type { NotificationItem } from "../lib/types";
-import { dropdownMotion, MOTION } from "../lib/motion";
+import { dropdownMotion, indicatorTransition, MOTION, pageMotion } from "../lib/motion";
 
 // Cinco destinos principais. Categorias e Recorrentes ficam dentro de
 // Lançamentos; Calendário fica dentro de Relatórios; Notificações no sino.
@@ -150,14 +150,29 @@ export function AppShell() {
                   to={item.to}
                   className={({ isActive }) =>
                     clsx(
-                      "w-full flex items-center gap-3 rounded-2xl px-3 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] soft-hover-sm",
+                      "relative flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors duration-200",
                       isActive
-                        ? "bg-surface-2 text-primary translate-x-1"
-                        : "text-foreground-muted hover:text-foreground hover:bg-surface-2 hover:translate-x-1",
+                        ? "text-foreground"
+                        : "text-foreground-muted hover:bg-surface-2/70 hover:text-foreground",
                     )
                   }
                 >
-                  <span className="h-9 w-9 rounded-full bg-surface-2 text-primary grid place-items-center">
+                  {({ isActive }) => (
+                  <>
+                  {isActive && (
+                    <motion.span
+                      layoutId="sidebar-active"
+                      transition={indicatorTransition}
+                      className="absolute inset-0 -z-0 rounded-xl bg-surface-2"
+                      aria-hidden
+                    />
+                  )}
+                  <span
+                    className={clsx(
+                      "relative grid h-9 w-9 place-items-center rounded-full transition-colors",
+                      isActive ? "text-primary" : "text-foreground-subtle",
+                    )}
+                  >
                     <Icon size={18} />
                   </span>
                   <AnimatePresence mode="wait">
@@ -168,11 +183,14 @@ export function AppShell() {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -6 }}
                         transition={MOTION.micro}
+                        className="relative"
                       >
                         {item.label}
                       </motion.span>
                     )}
                   </AnimatePresence>
+                  </>
+                  )}
                 </NavLink>
               );
             })}
@@ -459,17 +477,29 @@ export function AppShell() {
                 to={item.to}
                 className={({ isActive }) =>
                   clsx(
-                    "flex min-w-0 flex-col items-center gap-0.5 rounded-xl py-1 text-xs font-medium tracking-[-0.01em] transition-colors",
+                    "relative flex min-w-0 flex-col items-center gap-0.5 rounded-xl py-1 text-xs font-medium tracking-[-0.01em] transition-colors",
                     isActive
                       ? "text-primary"
                       : "text-foreground-muted hover:text-foreground"
                   )
                 }
               >
-                <span className="grid h-8 w-8 place-items-center">
-                  <Icon size={20} />
-                </span>
-                <span className="whitespace-nowrap text-center">{item.label}</span>
+                {({ isActive }) => (
+                  <>
+                    {isActive && (
+                      <motion.span
+                        layoutId="bottom-nav-active"
+                        transition={indicatorTransition}
+                        className="absolute -top-1.5 h-0.5 w-8 rounded-full bg-primary"
+                        aria-hidden
+                      />
+                    )}
+                    <span className="grid h-8 w-8 place-items-center">
+                      <Icon size={20} />
+                    </span>
+                    <span className="whitespace-nowrap text-center">{item.label}</span>
+                  </>
+                )}
               </NavLink>
             );
           })}
@@ -480,9 +510,15 @@ export function AppShell() {
 }
 
 const ShellOutlet = memo(function ShellOutlet() {
+  const { pathname } = useLocation();
+  // Abas da mesma secao (ex.: /lancamentos e /lancamentos/categorias) nao
+  // reanimam o layout inteiro; so a troca de secao anima a entrada.
+  const sectionKey = pathname.split("/")[1] ?? "";
   return (
     <section className="p-6 lg:p-8 pb-24 md:pb-8">
-      <Outlet />
+      <motion.div key={sectionKey} {...pageMotion}>
+        <Outlet />
+      </motion.div>
     </section>
   );
 });

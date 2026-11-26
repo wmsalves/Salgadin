@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
@@ -17,8 +18,10 @@ import { AddExpenseModal } from "../components/AddExpenseModal";
 import { AddIncomeModal } from "../components/AddIncomeModal";
 import { ConfirmActionModal } from "../components/ConfirmActionModal";
 import { EmptyState } from "../components/EmptyState";
+import { PageHeader } from "../components/PageHeader";
 import { formatApiDate, formatDisplayDate } from "../lib/dates";
 import type { Expense, Income, RecurringSchedule } from "../lib/types";
+import { listItemMotion, MOTION_EASE } from "../lib/motion";
 import { getCategories, type Category } from "../services/categoryService";
 import { deleteExpense, getExpenses } from "../services/expenseService";
 import { exportExpenses, exportIncomes } from "../services/exportService";
@@ -264,38 +267,36 @@ export default function TransactionsPage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
-      <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <h1 className="text-2xl font-medium text-foreground">Lançamentos</h1>
-          <p className="mt-1 text-sm text-foreground-muted">
-            Todas as receitas e despesas do mês, com busca e filtros.
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              setIncomeToEdit(null);
-              setIsIncomeModalOpen(true);
-            }}
-            className="inline-flex min-h-10 items-center gap-2 whitespace-nowrap rounded-[var(--radius-control)] border border-border bg-surface px-3.5 text-ui font-medium text-foreground transition-colors hover:bg-surface-2"
-          >
-            <Plus size={15} />
-            Nova receita
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setExpenseToEdit(null);
-              setIsExpenseModalOpen(true);
-            }}
-            className="inline-flex min-h-10 items-center gap-2 whitespace-nowrap rounded-[var(--radius-control)] bg-primary px-3.5 text-ui font-medium text-[var(--color-on-primary)] transition-colors hover:bg-primary-strong"
-          >
-            <Plus size={15} />
-            Nova despesa
-          </button>
-        </div>
-      </header>
+      <PageHeader
+        title="Lançamentos"
+        description="Todas as receitas e despesas do mês, com busca e filtros."
+        actions={
+          <>
+              <button
+                type="button"
+                onClick={() => {
+                  setIncomeToEdit(null);
+                  setIsIncomeModalOpen(true);
+                }}
+                className="inline-flex min-h-10 items-center gap-2 whitespace-nowrap rounded-[var(--radius-control)] border border-border bg-surface px-3.5 text-ui font-medium text-foreground transition-colors hover:bg-surface-2"
+              >
+                <Plus size={15} />
+                Nova receita
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setExpenseToEdit(null);
+                  setIsExpenseModalOpen(true);
+                }}
+                className="inline-flex min-h-10 items-center gap-2 whitespace-nowrap rounded-[var(--radius-control)] bg-primary px-3.5 text-ui font-medium text-[var(--color-on-primary)] transition-colors hover:bg-primary-strong"
+              >
+                <Plus size={15} />
+                Nova despesa
+              </button>
+          </>
+        }
+      />
 
       <section className="rounded-2xl border border-border bg-surface">
         <div className="flex flex-col gap-3 border-b border-border p-4 lg:flex-row lg:items-center lg:justify-between">
@@ -464,9 +465,15 @@ export default function TransactionsPage() {
         </div>
       ) : (
         <div className="space-y-4">
+          <AnimatePresence initial={false} mode="popLayout">
           {groups.map((group) => (
-            <section
+            <motion.section
               key={group.date}
+              layout="position"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.22, ease: MOTION_EASE }}
               aria-label={relativeDayLabel(group.date)}
               className="overflow-hidden rounded-2xl border border-border bg-surface"
             >
@@ -484,7 +491,8 @@ export default function TransactionsPage() {
                   {currency(Math.abs(group.net))}
                 </span>
               </header>
-              <ul className="divide-y divide-border">
+              <ul>
+                <AnimatePresence initial={false}>
                 {group.items.map((entry) => {
                   const isExpense = entry.kind === "expense";
                   const meta = isExpense
@@ -493,9 +501,11 @@ export default function TransactionsPage() {
                       ? "Receita fixa"
                       : "Receita extra";
                   return (
-                    <li
+                    <motion.li
                       key={entry.key}
-                      className="group flex items-center gap-3 px-4 py-3"
+                      layout="position"
+                      {...listItemMotion}
+                      className="group flex items-center gap-3 overflow-hidden border-t border-border px-4 py-3 first:border-t-0"
                     >
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm text-foreground">
@@ -538,12 +548,14 @@ export default function TransactionsPage() {
                           <Trash2 size={15} />
                         </button>
                       </div>
-                    </li>
+                    </motion.li>
                   );
                 })}
+                </AnimatePresence>
               </ul>
-            </section>
+            </motion.section>
           ))}
+          </AnimatePresence>
 
           <div className="flex flex-col items-start gap-2 pt-2 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-ui text-foreground-subtle">

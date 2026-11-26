@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   AreaChart,
   Area,
@@ -8,7 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Download, CalendarRange, LineChart, PieChart } from "lucide-react";
+import { Download, LineChart, PieChart, SlidersHorizontal } from "lucide-react";
 import {
   getMonthlyReport,
   getWeeklyReport,
@@ -25,6 +25,39 @@ import type {
 import { getCategories, type Category } from "../services/categoryService";
 import { getSubcategories } from "../services/subcategoryService";
 import { EmptyState } from "../components/EmptyState";
+import { PageHeader, StatRow } from "../components/PageHeader";
+import { AnimatePresence, motion } from "framer-motion";
+import { collapseMotion, MOTION, MOTION_EASE } from "../lib/motion";
+import {
+  chartAxis,
+  chartCursor,
+  chartGrid,
+  chartTooltipLabelStyle,
+  chartTooltipStyle,
+  formatAxisCurrency,
+} from "../lib/chartTheme";
+
+const filterInputClass =
+  "h-10 w-full rounded-[var(--radius-control)] border border-border bg-background px-3 text-sm text-foreground outline-none transition-colors focus:border-primary disabled:opacity-50";
+
+function FilterField({
+  label,
+  htmlFor,
+  children,
+}: {
+  label: string;
+  htmlFor: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="min-w-0 lg:w-44">
+      <label htmlFor={htmlFor} className="mb-1 block text-xs text-foreground-subtle">
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
 
 const formatCurrency = (value: number) =>
   value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -77,6 +110,7 @@ export default function ReportsPage() {
   const [minAmount, setMinAmount] = useState("");
   const [maxAmount, setMaxAmount] = useState("");
   const [compareEnabled, setCompareEnabled] = useState(false);
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [compareMonthValue, setCompareMonthValue] = useState(
     new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 7),
   );
@@ -200,127 +234,131 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-medium text-foreground">Relatórios</h1>
-          <p className="text-sm text-foreground-muted">
-            Visualize tendências e acompanhe sua evolução financeira.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => handleExport("csv")}
-            className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
-          >
-            <Download size={16} />
-            CSV
-          </button>
-          <button
-            onClick={() => handleExport("pdf")}
-            className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
-          >
-            <Download size={16} />
-            PDF
-          </button>
-        </div>
-      </header>
-
-      <section className="rounded-2xl border border-border bg-surface p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-2 text-sm text-foreground-muted">
-            <CalendarRange size={16} />
-            Período
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setMode("monthly")}
-              className={`rounded-full px-4 py-2 text-xs font-medium ${
-                mode === "monthly"
-                  ? "bg-primary text-[var(--color-on-primary)]"
-                  : "border border-border text-foreground-muted"
-              }`}
-            >
-              Mensal
+    <div className="space-y-6">
+      <PageHeader
+        title="Relatórios"
+        description="Tendências do período, comparação com o anterior e exportação."
+        actions={
+          <>
+            <button type="button" onClick={() => handleExport("csv")} className="inline-flex min-h-10 items-center gap-2 whitespace-nowrap rounded-[var(--radius-control)] border border-border bg-surface px-3.5 text-ui font-medium text-foreground transition-colors hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-50">
+              <Download size={15} />
+              CSV
             </button>
-            <button
-              onClick={() => setMode("weekly")}
-              className={`rounded-full px-4 py-2 text-xs font-medium ${
-                mode === "weekly"
-                  ? "bg-primary text-[var(--color-on-primary)]"
-                  : "border border-border text-foreground-muted"
-              }`}
-            >
-              Semanal
+            <button type="button" onClick={() => handleExport("pdf")} className="inline-flex min-h-10 items-center gap-2 whitespace-nowrap rounded-[var(--radius-control)] border border-border bg-surface px-3.5 text-ui font-medium text-foreground transition-colors hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-50">
+              <Download size={15} />
+              PDF
             </button>
-          </div>
-        </div>
+          </>
+        }
+      />
 
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <section aria-label="Filtros do relatório" className="rounded-2xl border border-border bg-surface">
+        <div className="flex flex-col gap-3 p-4 lg:flex-row lg:flex-wrap lg:items-end">
+          <div
+            role="radiogroup"
+            aria-label="Tipo de período"
+            className="inline-flex h-10 w-fit items-center rounded-[var(--radius-control)] border border-border bg-background p-1"
+          >
+            {(
+              [
+                ["monthly", "Mensal"],
+                ["weekly", "Semanal"],
+              ] as const
+            ).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                role="radio"
+                aria-checked={mode === value}
+                onClick={() => setMode(value)}
+                className={`h-full rounded-md px-3 text-ui font-medium transition-colors ${
+                  mode === value
+                    ? "bg-surface text-foreground shadow-[var(--shadow-card)]"
+                    : "text-foreground-muted hover:text-foreground"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
           {mode === "monthly" ? (
             <>
-              <div>
-                <label className="text-xs text-foreground-muted">Mês</label>
+              <FilterField label="Mês" htmlFor="report-month">
                 <input
+                  id="report-month"
                   type="month"
                   value={monthlyValue}
                   onChange={(event) => setMonthlyValue(event.target.value)}
-                  className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  className={filterInputClass}
                 />
-              </div>
-              <div className="flex items-end gap-2">
-                <button
-                  onClick={() => setCompareEnabled((prev) => !prev)}
-                  className={`w-full rounded-xl border px-4 py-2 text-sm font-medium transition ${
-                    compareEnabled
-                      ? "border-primary text-primary"
-                      : "border-border text-foreground-muted"
-                  }`}
-                >
-                  Comparar mês
-                </button>
-              </div>
-              {compareEnabled ? (
-                <div>
-                  <label className="text-xs text-foreground-muted">
-                    Comparar com
-                  </label>
+              </FilterField>
+              {compareEnabled && (
+                <FilterField label="Comparar com" htmlFor="report-compare">
                   <input
+                    id="report-compare"
                     type="month"
                     value={compareMonthValue}
                     onChange={(event) => setCompareMonthValue(event.target.value)}
-                    className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className={filterInputClass}
                   />
-                </div>
-              ) : (
-                <div className="hidden md:block"></div>
+                </FilterField>
               )}
             </>
           ) : (
             <>
-              <div>
-                <label className="text-xs text-foreground-muted">Início</label>
+              <FilterField label="Início" htmlFor="report-start">
                 <input
+                  id="report-start"
                   type="date"
                   value={startDate}
                   onChange={(event) => setStartDate(event.target.value)}
-                  className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  className={filterInputClass}
                 />
-              </div>
-              <div>
-                <label className="text-xs text-foreground-muted">Fim</label>
+              </FilterField>
+              <FilterField label="Fim" htmlFor="report-end">
                 <input
+                  id="report-end"
                   type="date"
                   value={endDate}
                   onChange={(event) => setEndDate(event.target.value)}
-                  className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
+                  className={filterInputClass}
                 />
-              </div>
-              <div className="hidden md:block"></div>
+              </FilterField>
             </>
           )}
-          <div className="flex items-end">
+
+          <FilterField label="Categoria" htmlFor="report-category">
+            <select
+              id="report-category"
+              value={categoryId}
+              onChange={(event) =>
+                setCategoryId(event.target.value ? Number(event.target.value) : "")
+              }
+              className={filterInputClass}
+            >
+              <option value="">Todas</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </FilterField>
+
+          <div className="flex items-center gap-2 lg:ml-auto">
             <button
+              type="button"
+              onClick={() => setShowMoreFilters((prev) => !prev)}
+              aria-expanded={showMoreFilters}
+              aria-controls="report-more-filters"
+              className="inline-flex h-10 items-center gap-1.5 rounded-[var(--radius-control)] border border-border px-3 text-ui font-medium text-foreground-muted transition-colors hover:bg-surface-2 hover:text-foreground"
+            >
+              <SlidersHorizontal size={14} />
+              {showMoreFilters ? "Menos filtros" : "Mais filtros"}
+            </button>
+            <button
+              type="button"
               onClick={() => {
                 const nextFilters = JSON.stringify(draftFilterParams);
                 const currentFilters = JSON.stringify(appliedFilters);
@@ -330,81 +368,81 @@ export default function ReportsPage() {
                 }
                 fetchReport(draftFilterParams);
               }}
-              className="w-full rounded-xl border border-border bg-surface-2 px-4 py-2 text-sm font-medium text-foreground hover:bg-surface-3 transition-colors active:scale-[0.98]"
+              className="inline-flex h-10 items-center rounded-[var(--radius-control)] bg-primary px-4 text-ui font-medium text-[var(--color-on-primary)] transition-colors hover:bg-primary-strong"
             >
-              Atualizar
+              Aplicar
             </button>
           </div>
         </div>
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div>
-            <label className="text-xs text-foreground-muted">Categoria</label>
-            <select
-              value={categoryId}
-              onChange={(event) =>
-                setCategoryId(
-                  event.target.value ? Number(event.target.value) : "",
-                )
-              }
-              className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
+
+        <AnimatePresence initial={false}>
+          {showMoreFilters && (
+            <motion.div
+              id="report-more-filters"
+              {...collapseMotion}
+              transition={MOTION.smooth}
+              className="overflow-hidden"
             >
-              <option value="">Todas</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="text-xs text-foreground-muted">Subcategoria</label>
-            <select
-              value={subcategoryId}
-              onChange={(event) =>
-                setSubcategoryId(
-                  event.target.value ? Number(event.target.value) : "",
-                )
-              }
-              className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
-              disabled={categoryId === ""}
-            >
-              <option value="">Todas</option>
-              {subcategories.map((sub) => (
-                <option key={sub.id} value={sub.id}>
-                  {sub.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="text-xs text-foreground-muted">
-              Valor mínimo
-            </label>
-            <input
-              type="number"
-              value={minAmount}
-              onChange={(event) => setMinAmount(event.target.value)}
-              className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
-              placeholder="0"
-            />
-          </div>
-          <div>
-            <label className="text-xs text-foreground-muted">
-              Valor máximo
-            </label>
-            <input
-              type="number"
-              value={maxAmount}
-              onChange={(event) => setMaxAmount(event.target.value)}
-              className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
-              placeholder="5000"
-            />
-          </div>
-        </div>
+              <div className="grid gap-3 border-t border-border p-4 sm:grid-cols-2 lg:grid-cols-4">
+                {mode === "monthly" && (
+                  <label className="flex h-10 items-center gap-2 self-end text-ui text-foreground">
+                    <input
+                      type="checkbox"
+                      checked={compareEnabled}
+                      onChange={() => setCompareEnabled((prev) => !prev)}
+                      className="h-4 w-4 accent-[var(--color-primary)]"
+                    />
+                    Comparar com outro mês
+                  </label>
+                )}
+                <FilterField label="Subcategoria" htmlFor="report-subcategory">
+                  <select
+                    id="report-subcategory"
+                    value={subcategoryId}
+                    onChange={(event) =>
+                      setSubcategoryId(event.target.value ? Number(event.target.value) : "")
+                    }
+                    className={filterInputClass}
+                    disabled={categoryId === ""}
+                  >
+                    <option value="">Todas</option>
+                    {subcategories.map((sub) => (
+                      <option key={sub.id} value={sub.id}>
+                        {sub.name}
+                      </option>
+                    ))}
+                  </select>
+                </FilterField>
+                <FilterField label="Valor mínimo (R$)" htmlFor="report-min">
+                  <input
+                    id="report-min"
+                    type="number"
+                    inputMode="decimal"
+                    value={minAmount}
+                    onChange={(event) => setMinAmount(event.target.value)}
+                    className={filterInputClass}
+                    placeholder="0"
+                  />
+                </FilterField>
+                <FilterField label="Valor máximo (R$)" htmlFor="report-max">
+                  <input
+                    id="report-max"
+                    type="number"
+                    inputMode="decimal"
+                    value={maxAmount}
+                    onChange={(event) => setMaxAmount(event.target.value)}
+                    className={filterInputClass}
+                    placeholder="Sem limite"
+                  />
+                </FilterField>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
 
       {!report ? (
-        <div className="rounded-2xl border border-border bg-surface p-12 text-center text-foreground-subtle flex flex-col items-center justify-center gap-4 animate-in fade-in duration-500">
+        <div className="rounded-2xl border border-border bg-surface p-12 text-center text-foreground-subtle flex flex-col items-center justify-center gap-4">
           <div className="h-10 w-10 text-primary animate-spin">
             <svg
               className="h-full w-full"
@@ -434,41 +472,34 @@ export default function ReportsPage() {
           className={`grid grid-cols-1 xl:grid-cols-3 gap-6 transition-all ${isLoading ? "opacity-40 grayscale-[0.2] pointer-events-none blur-[1px]" : ""}`}
         >
           {summary && (
-            <div className="xl:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="rounded-2xl border border-border bg-surface-2 p-4">
-                <p className="text-xs text-foreground-subtle">Total</p>
-                <p className="text-lg font-medium text-foreground tabular-nums">
-                  {formatCurrency(summary.total)}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border bg-surface-2 p-4">
-                <p className="text-xs text-foreground-subtle">Média diária</p>
-                <p className="text-lg font-medium text-foreground tabular-nums">
-                  {formatCurrency(summary.averageDaily)}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border bg-surface-2 p-4">
-                <p className="text-xs text-foreground-subtle">Maior dia</p>
-                <p className="text-sm font-medium text-foreground">
-                  {formatDayLabel(summary.biggestDay)}
-                </p>
-                <p className="text-xs text-foreground-muted">
-                  {formatCurrency(summary.biggestDayTotal)}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border bg-surface-2 p-4">
-                <p className="text-xs text-foreground-subtle">
-                  Tendência vs período anterior
-                </p>
-                <p
-                  className={`text-lg font-medium ${
-                    summary.trendPercent >= 0 ? "text-danger" : "text-primary"
-                  }`}
-                >
-                  {summary.trendPercent > 0 ? "+" : ""}
-                  {formatPercent(summary.trendPercent)}
-                </p>
-              </div>
+            <div className="xl:col-span-3">
+              <StatRow
+                items={[
+                  { label: "Total", value: formatCurrency(summary.total) },
+                  { label: "Média diária", value: formatCurrency(summary.averageDaily) },
+                  {
+                    label: "Maior dia",
+                    value: formatDayLabel(summary.biggestDay),
+                    hint: formatCurrency(summary.biggestDayTotal),
+                  },
+                  {
+                    label: "Vs. período anterior",
+                    value: `${summary.trendPercent > 0 ? "+" : ""}${formatPercent(summary.trendPercent)}`,
+                    tone:
+                      summary.trendPercent > 0.005
+                        ? "danger"
+                        : summary.trendPercent < -0.005
+                          ? "success"
+                          : "default",
+                    hint:
+                      summary.trendPercent > 0.005
+                        ? "Gastou mais"
+                        : summary.trendPercent < -0.005
+                          ? "Gastou menos"
+                          : "Estável",
+                  },
+                ]}
+              />
             </div>
           )}
           {summary && summary.insights.length > 0 && (
@@ -502,8 +533,7 @@ export default function ReportsPage() {
             </div>
           )}
           <div
-            className="xl:col-span-2 rounded-2xl border border-border bg-surface p-6 soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
-            style={{ animationDelay: "0ms" }}
+            className="xl:col-span-2 rounded-2xl border border-border bg-surface p-6 soft-hover"
           >
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -554,31 +584,14 @@ export default function ReportsPage() {
                         />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid
-                      stroke="var(--color-border)"
-                      strokeDasharray="4 4"
-                      vertical={false}
-                      opacity={0.6}
-                    />
-                    <XAxis
-                      dataKey="day"
-                      tickLine={false}
-                      axisLine={false}
-                      tick={{ fill: "var(--chart-muted)" }}
-                    />
-                    <YAxis
-                      tickFormatter={(value: number) => `R$ ${value.toLocaleString("pt-BR")}`}
-                      tickLine={false}
-                      axisLine={false}
-                      tick={{ fill: "var(--chart-muted)" }}
-                    />
+                    <CartesianGrid {...chartGrid} />
+                    <XAxis dataKey="day" {...chartAxis} minTickGap={16} />
+                    <YAxis {...chartAxis} width={72} tickFormatter={formatAxisCurrency} />
                     <Tooltip
-                      contentStyle={{
-                        background: "var(--color-surface)",
-                        border: "1px solid var(--color-border)",
-                        color: "var(--color-text)",
-                        borderRadius: "16px",
-                      }}
+                      contentStyle={chartTooltipStyle}
+                      labelStyle={chartTooltipLabelStyle}
+                      cursor={chartCursor}
+                      formatter={(value) => [formatCurrency(Number(value)), "Gasto"]}
                     />
                     <Area
                       type="monotone"
@@ -605,26 +618,38 @@ export default function ReportsPage() {
           </div>
 
           <div
-            className="rounded-2xl border border-border bg-surface p-6 soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
-            style={{ animationDelay: "150ms" }}
+            className="rounded-2xl border border-border bg-surface p-6"
           >
             <h2 className="text-base font-medium text-foreground mb-4">
               Por categoria
             </h2>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {report.byCategory.length > 0 ? (
-                report.byCategory.map((item, index) => (
-                  <div
-                    key={item.category}
-                    style={{ animationDelay: `${600 + index * 100}ms` }}
-                    className="flex items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm tabular-nums animate-fade-in opacity-0 [animation-fill-mode:forwards]"
-                  >
-                    <span className="text-foreground">{item.category}</span>
-                    <span className="text-foreground-muted">
-                      {formatCurrency(item.total)}
-                    </span>
-                  </div>
-                ))
+                report.byCategory.map((item) => {
+                  const max = Math.max(...report.byCategory.map((c) => c.total), 1);
+                  const share = report.total > 0 ? item.total / report.total : 0;
+                  return (
+                    <div key={item.category}>
+                      <div className="flex items-baseline justify-between gap-3 text-sm">
+                        <span className="truncate text-foreground">{item.category}</span>
+                        <span className="shrink-0 tabular-nums text-foreground">
+                          {formatCurrency(item.total)}
+                          <span className="ml-2 text-xs text-foreground-subtle">
+                            {Math.round(share * 100)}%
+                          </span>
+                        </span>
+                      </div>
+                      <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-surface-2">
+                        <motion.div
+                          className="h-full rounded-full bg-primary"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${(item.total / max) * 100}%` }}
+                          transition={{ duration: 0.5, ease: MOTION_EASE }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })
               ) : (
                 <EmptyState
                   icon={PieChart}

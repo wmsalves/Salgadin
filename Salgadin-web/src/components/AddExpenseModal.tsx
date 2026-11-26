@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -285,13 +285,27 @@ export function AddExpenseModal({
     onClose();
   };
 
+  const titleId = useId();
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") handleClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  });
+
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
           {...modalMotion.backdrop}
           transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/35 p-0 backdrop-blur-[2px] sm:items-center sm:p-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) handleClose();
+          }}
         >
           <motion.div
             {...getMotionProps(shouldReduceMotion, modalMotion.panel, {
@@ -300,48 +314,35 @@ export function AddExpenseModal({
               exit: { opacity: 0 },
             })}
             transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
-            className="bg-surface rounded-xl w-full max-w-md overflow-hidden shadow-[var(--shadow-overlay)]"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            className="max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-t-2xl border border-border bg-surface pb-[env(safe-area-inset-bottom)] shadow-[var(--shadow-overlay)] sm:rounded-2xl sm:pb-0"
           >
-            <div className="bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-6 py-4 flex justify-between items-center">
-              <h2 className="text-lg font-medium text-[var(--color-on-primary)]">
-                {isEditing ? "Editar Despesa" : "Adicionar Nova Despesa"}
-              </h2>
+            <div className="flex items-start justify-between gap-4 border-b border-border px-6 pb-4 pt-5">
+              <div>
+                <h2 id="{titleId}" className="text-lg font-medium text-foreground">
+                  {isEditing ? "Editar despesa" : "Nova despesa"}
+                </h2>
+                <p className="mt-0.5 text-ui text-foreground-muted">{isEditing ? "Ajuste os dados do lançamento." : "Café, lanche, mercado ou qualquer gasto do dia."}</p>
+              </div>
               <button
+                type="button"
                 onClick={handleClose}
-                className="ui-surface-interactive rounded-full p-1 text-[var(--color-on-primary)] hover:bg-black/10"
+                aria-label="Fechar"
+                className="-mr-2 -mt-1 grid h-9 w-9 place-items-center rounded-lg text-foreground-subtle transition-colors hover:bg-surface-2 hover:text-foreground"
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
-            <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
-              <div>
-                <label
-                  htmlFor="description"
-                  className="block text-sm font-medium text-foreground-muted mb-2"
-                >
-                  Descrição <span className="text-danger">*</span>
-                </label>
-                <input
-                  {...register("description")}
-                  id="description"
-                  type="text"
-                  className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary placeholder:text-foreground-subtle"
-                  placeholder="Ex: Almoço no restaurante"
-                />
-                {errors.description && (
-                  <p className="mt-2 text-sm text-danger font-medium">
-                    {errors.description.message}
-                  </p>
-                )}
-              </div>
-
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 px-6 pb-6 pt-5">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label
                     htmlFor="amount"
-                    className="block text-sm font-medium text-foreground-muted mb-2"
+                    className="mb-1.5 block text-ui text-foreground-muted"
                   >
-                    Valor (R$) <span className="text-danger">*</span>
+                    Valor (R$) <span className="text-danger" aria-hidden>*</span>
                   </label>
                   <input
                     {...(() => {
@@ -366,7 +367,7 @@ export function AddExpenseModal({
                     id="amount"
                     type="text"
                     inputMode="decimal"
-                    className="w-full tabular-nums rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary placeholder:text-foreground-subtle"
+                    className="w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 py-2 text-2xl font-medium tabular-nums text-foreground outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/25 placeholder:text-foreground-subtle"
                     placeholder="0,00"
                   />
                   {errors.amount && (
@@ -378,15 +379,15 @@ export function AddExpenseModal({
                 <div>
                   <label
                     htmlFor="date"
-                    className="block text-sm font-medium text-foreground-muted mb-2"
+                    className="mb-1.5 block text-ui text-foreground-muted"
                   >
-                    Data <span className="text-danger">*</span>
+                    Data <span className="text-danger" aria-hidden>*</span>
                   </label>
                   <input
                     {...register("date")}
                     id="date"
                     type="date"
-                    className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary"
+                    className="w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:ring-2 focus:ring-primary/40 focus:border-primary"
                   />
                   {errors.date && (
                     <p className="mt-2 text-sm text-danger font-medium">
@@ -395,13 +396,34 @@ export function AddExpenseModal({
                   )}
                 </div>
               </div>
+              <div>
+                <label
+                  htmlFor="description"
+                  className="mb-1.5 block text-ui text-foreground-muted"
+                >
+                  Descrição <span className="text-danger" aria-hidden>*</span>
+                </label>
+                <input
+                  {...register("description")}
+                  id="description"
+                  type="text"
+                  className="w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/25 placeholder:text-foreground-subtle"
+                  placeholder="Ex.: café na padaria"
+                />
+                {errors.description && (
+                  <p className="mt-2 text-sm text-danger font-medium">
+                    {errors.description.message}
+                  </p>
+                )}
+              </div>
+
 
               <div>
                 <label
                   htmlFor="categoryId"
-                  className="block text-sm font-medium text-foreground-muted mb-2"
+                  className="mb-1.5 block text-ui text-foreground-muted"
                 >
-                  Categoria <span className="text-danger">*</span>
+                  Categoria <span className="text-danger" aria-hidden>*</span>
                 </label>
                 {(() => {
                   const categoryField = register("categoryId");
@@ -410,7 +432,7 @@ export function AddExpenseModal({
                     <select
                       {...categoryField}
                       id="categoryId"
-                      className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary"
+                      className="w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:ring-2 focus:ring-primary/40 focus:border-primary"
                       onChange={(event) => {
                         const nextCategoryId = event.target.value;
                         const categoryChanged = nextCategoryId !== selectedCategory;
@@ -449,14 +471,14 @@ export function AddExpenseModal({
               <div>
                 <label
                   htmlFor="subcategoryId"
-                  className="block text-sm font-medium text-foreground-muted mb-2"
+                  className="mb-1.5 block text-ui text-foreground-muted"
                 >
                   Subcategoria
                 </label>
                 <select
                   {...register("subcategoryId")}
                   id="subcategoryId"
-                  className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary"
+                  className="w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:ring-2 focus:ring-primary/40 focus:border-primary"
                   disabled={!selectedCategory || subcategories.length === 0}
                 >
                   <option value="">
@@ -512,12 +534,12 @@ export function AddExpenseModal({
                 </div>
               )}
 
-              <div className="pt-2 flex justify-end gap-3">
+              <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
                 <Button type="button" variant="secondary" onClick={handleClose}>
                   Cancelar
                 </Button>
                 <Button type="submit" isLoading={isSubmitting}>
-                  {isSubmitting ? "Salvando..." : isEditing ? "Salvar Alterações" : "Salvar Despesa"}
+                  {isSubmitting ? "Salvando..." : isEditing ? "Salvar alterações" : "Salvar despesa"}
                 </Button>
               </div>
             </form>
