@@ -51,3 +51,11 @@ export const updateIncome = async (
 export const deleteIncome = async (id: number): Promise<void> => {
   await api.delete(`/income/${id}`);
 };
+
+/** Quantidade total de receitas (uma requisição leve, sem baixar a lista). */
+export const countIncomes = async (): Promise<number> => {
+  const response = await api.get<{ totalCount: number }>("/income", {
+    params: { page: 1, pageSize: 1 },
+  });
+  return response.data.totalCount ?? 0;
+};

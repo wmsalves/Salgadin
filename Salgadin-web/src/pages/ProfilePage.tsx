@@ -1,49 +1,35 @@
 import {
   useCallback,
   useEffect,
-  useMemo,
   useState,
   type ComponentType,
   type ReactNode,
 } from "react";
 import {
-  Bell,
   Database,
   Download,
-  Globe2,
   Lock,
   Mail,
   MessageCircle,
   Palette,
   Phone,
-  Shield,
   User,
 } from "lucide-react";
 import { EmptyState } from "../components/EmptyState";
 import { WhatsAppSimulationPanel } from "../components/settings/WhatsAppSimulationPanel";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
-import type {
-  Expense,
-  GoalAlert,
-  Income,
-  NotificationItem,
-  NotificationPreference,
-} from "../lib/types";
+import type { NotificationPreference } from "../lib/types";
 import {
   getMyProfile,
   updateMyProfile,
   type UserProfile,
 } from "../services/authService";
 import { exportExpenses, exportIncomes } from "../services/exportService";
-import { getExpenses } from "../services/expenseService";
-import { getIncomes } from "../services/incomeService";
+import { countExpenses } from "../services/expenseService";
+import { countIncomes } from "../services/incomeService";
 import {
-  getNotificationAlerts,
   getNotificationPreferences,
-  getNotifications,
-  markAllNotificationsRead,
-  markNotificationRead,
   updateNotificationPreferences,
 } from "../services/notificationService";
 import {
@@ -92,27 +78,29 @@ function downloadBlob(file: Blob, fileName: string) {
 }
 
 function SettingsCard({
+  id,
   title,
   description,
   icon: Icon,
   children,
 }: {
+  id?: string;
   title: string;
   description: string;
   icon: ComponentType<{ size?: number; className?: string }>;
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+    <section id={id} className="scroll-mt-24 rounded-2xl border border-border bg-surface p-5 sm:p-6">
       <div className="mb-5 flex items-start gap-3">
-        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-primary/12 text-primary">
-          <Icon size={18} />
+        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-surface-2 text-primary">
+          <Icon size={17} />
         </div>
         <div>
           <h2 className="text-base font-medium text-foreground">
             {title}
           </h2>
-          <p className="mt-1 text-sm text-foreground-muted">{description}</p>
+          <p className="mt-0.5 text-ui text-foreground-muted">{description}</p>
         </div>
       </div>
       {children}
@@ -129,13 +117,10 @@ export default function ProfilePage() {
     pushEnabled: false,
     minimumThreshold: 0,
   });
-  const [alerts, setAlerts] = useState<GoalAlert[]>([]);
-  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  const [recentExpenses, setRecentExpenses] = useState<Expense[]>([]);
-  const [recentIncomes, setRecentIncomes] = useState<Income[]>([]);
+  const [expenseCount, setExpenseCount] = useState(0);
+  const [incomeCount, setIncomeCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [isNotifying, setIsNotifying] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [isExportingExpenses, setIsExportingExpenses] = useState(false);
   const [isExportingIncomes, setIsExportingIncomes] = useState(false);
@@ -163,14 +148,10 @@ export default function ProfilePage() {
     confirmNewPassword: "",
   });
 
-  const now = useMemo(() => new Date(), []);
   const displayName = profile?.name ?? user?.name ?? "Usuário";
-  const hasExpenses = recentExpenses.length > 0;
-  const hasIncomes = recentIncomes.length > 0;
+  const hasExpenses = expenseCount > 0;
+  const hasIncomes = incomeCount > 0;
   const hasExportableData = hasExpenses || hasIncomes;
-  const unreadNotifications = notifications.filter(
-    (item) => !item.isRead,
-  ).length;
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -180,18 +161,14 @@ export default function ProfilePage() {
       const [
         profileData,
         prefs,
-          alertsData,
-          notificationsData,
-          expensesData,
-          incomesData,
+          expenseCountData,
+          incomeCountData,
           whatsAppStatusData,
         ] = await Promise.all([
           getMyProfile(),
           getNotificationPreferences(),
-          getNotificationAlerts(now.getFullYear(), now.getMonth() + 1),
-          getNotifications(),
-          getExpenses(),
-          getIncomes(),
+          countExpenses(),
+          countIncomes(),
           getWhatsAppStatus().catch(() => ({
             connected: false,
             phoneNumber: null,
@@ -208,10 +185,8 @@ export default function ProfilePage() {
         confirmNewPassword: "",
       });
         setPreferences(prefs);
-        setAlerts(alertsData);
-        setNotifications(notificationsData);
-        setRecentExpenses(expensesData);
-        setRecentIncomes(incomesData);
+        setExpenseCount(expenseCountData);
+        setIncomeCount(incomeCountData);
         setWhatsAppStatus(whatsAppStatusData);
     } catch (error) {
       console.error("Falha ao carregar configurações:", error);
@@ -221,7 +196,7 @@ export default function ProfilePage() {
     } finally {
       setIsLoading(false);
     }
-  }, [now]);
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -397,20 +372,6 @@ export default function ProfilePage() {
     }
   };
 
-  const handleMarkRead = async (id: number) => {
-    await markNotificationRead(id);
-    setNotifications((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, isRead: true } : item)),
-    );
-  };
-
-  const handleMarkAllRead = async () => {
-    setIsNotifying(true);
-    await markAllNotificationsRead();
-    setNotifications((prev) => prev.map((item) => ({ ...item, isRead: true })));
-    setIsNotifying(false);
-  };
-
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -478,10 +439,32 @@ export default function ProfilePage() {
         </div>
       </section>
 
+      <nav aria-label="Seções da conta" className="-mx-1 overflow-x-auto px-1">
+        <ul className="flex w-max gap-1.5">
+          {[
+            ["perfil", "Perfil"],
+            ["seguranca", "Segurança"],
+            ["preferencias", "Preferências"],
+            ["dados", "Seus dados"],
+            ["whatsapp", "WhatsApp"],
+          ].map(([id, label]) => (
+            <li key={id}>
+              <a
+                href={`#${id}`}
+                className="inline-flex min-h-9 items-center rounded-full border border-border bg-surface px-3.5 text-ui font-medium text-foreground-muted transition-colors hover:text-foreground"
+              >
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
       <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)]">
         <div className="space-y-5 xl:space-y-6">
           <SettingsCard
             icon={User}
+            id="perfil"
             title="Perfil"
             description="Dados básicos usados no Salgadin e nas próximas integrações."
           >
@@ -563,6 +546,7 @@ export default function ProfilePage() {
 
           <SettingsCard
             icon={Lock}
+            id="seguranca"
             title="Segurança"
             description="Altere senha e email com confirmação da senha atual."
           >
@@ -652,7 +636,7 @@ export default function ProfilePage() {
               <button
                 onClick={handleSaveProfile}
                 disabled={isSavingProfile}
-                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-[var(--color-on-primary)] transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
+                className="inline-flex min-h-10 w-full items-center justify-center rounded-[var(--radius-control)] bg-primary px-4 text-ui font-medium text-[var(--color-on-primary)] transition-colors hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-2 sm:w-auto sm:justify-self-end"
               >
                 {isSavingProfile ? "Salvando..." : "Salvar conta"}
               </button>
@@ -661,84 +645,104 @@ export default function ProfilePage() {
 
           <SettingsCard
             icon={Palette}
+            id="preferencias"
             title="Preferências"
             description="Preferências básicas do app e alertas financeiros."
           >
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <button
-                onClick={toggleTheme}
-                className="flex w-full items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm transition hover:bg-surface-3"
-              >
-                <span className="flex items-center gap-2 text-foreground-muted">
-                  <Palette size={16} />
+              <div className="flex items-center justify-between gap-3 sm:col-span-2">
+                <span className="flex items-center gap-2 text-sm text-foreground">
+                  <Palette size={16} className="text-foreground-subtle" />
                   Tema
                 </span>
-                <span className="font-medium text-foreground">
-                  {theme === "light" ? "Claro" : "Escuro"}
-                </span>
-              </button>
-              <div className="flex items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm">
-                <span className="flex items-center gap-2 text-foreground-muted">
-                  <Globe2 size={16} />
-                  Idioma
-                </span>
-                <span className="font-medium text-foreground">pt-BR</span>
+                <div
+                  role="radiogroup"
+                  aria-label="Tema"
+                  className="inline-flex rounded-[var(--radius-control)] border border-border bg-background p-1"
+                >
+                  {(
+                    [
+                      ["light", "Claro"],
+                      ["dark", "Escuro"],
+                    ] as const
+                  ).map(([value, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      role="radio"
+                      aria-checked={theme === value}
+                      onClick={() => {
+                        if (theme !== value) toggleTheme();
+                      }}
+                      className={`rounded-md px-3 py-1.5 text-ui font-medium transition-colors ${
+                        theme === value
+                          ? "bg-surface text-foreground shadow-[var(--shadow-card)]"
+                          : "text-foreground-muted hover:text-foreground"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <label className="flex items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm">
-                <span className="flex items-center gap-2 text-foreground-muted">
-                  <Bell size={16} />
-                  Alertas por email
-                </span>
-                <input
-                  type="checkbox"
-                  checked={preferences.emailEnabled}
-                  onChange={(event) =>
-                    setPreferences((prev) => ({
-                      ...prev,
-                      emailEnabled: event.target.checked,
-                    }))
-                  }
-                />
-              </label>
-              <label className="flex items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm">
-                <span className="flex items-center gap-2 text-foreground-muted">
-                  <Bell size={16} />
-                  Alertas push
-                </span>
-                <input
-                  type="checkbox"
-                  checked={preferences.pushEnabled}
-                  onChange={(event) =>
-                    setPreferences((prev) => ({
-                      ...prev,
-                      pushEnabled: event.target.checked,
-                    }))
-                  }
-                />
-              </label>
-              <div className="rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm sm:col-span-2">
-                <label className="flex items-center gap-2 text-foreground-muted">
-                  <Shield size={16} />
-                  Limiar mínimo (0-1)
+
+              {(
+                [
+                  ["emailEnabled", "Alertas por e-mail", "Receba um e-mail quando uma meta chegar perto do limite."],
+                  ["pushEnabled", "Alertas no navegador", "Mostra um aviso no navegador quando algo pedir atenção."],
+                ] as const
+              ).map(([key, label, hint]) => (
+                <label
+                  key={key}
+                  className="flex cursor-pointer items-start justify-between gap-4 border-t border-border pt-3 sm:col-span-2"
+                >
+                  <span>
+                    <span className="block text-sm text-foreground">{label}</span>
+                    <span className="block text-xs text-foreground-subtle">{hint}</span>
+                  </span>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    checked={preferences[key]}
+                    onChange={(event) =>
+                      setPreferences((prev) => ({ ...prev, [key]: event.target.checked }))
+                    }
+                    className="salgadin-switch mt-0.5"
+                  />
+                </label>
+              ))}
+
+              <div className="border-t border-border pt-3 sm:col-span-2">
+                <label htmlFor="threshold" className="flex items-center justify-between text-sm text-foreground">
+                  <span>Avisar quando a meta chegar a</span>
+                  <span className="font-medium tabular-nums">
+                    {preferences.minimumThreshold > 0
+                      ? `${Math.round(preferences.minimumThreshold * 100)}%`
+                      : "Não definido"}
+                  </span>
                 </label>
                 <input
-                  type="number"
-                  step="0.05"
-                  min={0}
-                  max={1}
-                  value={preferences.minimumThreshold}
+                  id="threshold"
+                  type="range"
+                  min={50}
+                  max={100}
+                  step={5}
+                  value={Math.round(preferences.minimumThreshold * 100) || 80}
                   onChange={(event) =>
                     setPreferences((prev) => ({
                       ...prev,
-                      minimumThreshold: Number(event.target.value),
+                      minimumThreshold: Number(event.target.value) / 100,
                     }))
                   }
-                  className="mt-2 w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm"
+                  className="mt-3 w-full accent-[var(--color-primary)]"
                 />
+                <p className="mt-1 text-xs text-foreground-subtle">
+                  Vale para as metas que não têm um aviso próprio.
+                </p>
               </div>
               <button
                 onClick={handleSavePreferences}
-                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-[var(--color-on-primary)] transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
+                className="inline-flex min-h-10 w-full items-center justify-center rounded-[var(--radius-control)] bg-primary px-4 text-ui font-medium text-[var(--color-on-primary)] transition-colors hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-60 sm:col-span-2 sm:w-auto sm:justify-self-end"
                 disabled={isSaving}
               >
                 {isSaving ? "Salvando..." : "Salvar preferências"}
@@ -750,6 +754,7 @@ export default function ProfilePage() {
         <div className="space-y-5 xl:space-y-6">
           <SettingsCard
             icon={Database}
+            id="dados"
             title="Seus dados"
             description="Seus lançamentos pertencem a você e podem ser baixados."
           >
@@ -766,7 +771,7 @@ export default function ProfilePage() {
                     <button
                       onClick={handleExportExpenses}
                       disabled={isExportingExpenses || !hasExpenses}
-                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-[var(--color-on-primary)] transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                      className="mt-3 inline-flex min-h-10 items-center justify-center gap-2 rounded-[var(--radius-control)] border border-border bg-surface px-3.5 text-ui font-medium text-foreground transition-colors hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <Download size={16} />
                       {isExportingExpenses
@@ -787,7 +792,7 @@ export default function ProfilePage() {
                     <button
                       onClick={handleExportIncomes}
                       disabled={isExportingIncomes || !hasIncomes}
-                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-medium text-foreground transition hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-70"
+                      className="mt-3 inline-flex min-h-10 items-center justify-center gap-2 rounded-[var(--radius-control)] border border-border bg-surface px-3.5 text-ui font-medium text-foreground transition-colors hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       <Download size={16} />
                       {isExportingIncomes
@@ -814,6 +819,7 @@ export default function ProfilePage() {
 
           <SettingsCard
             icon={MessageCircle}
+            id="whatsapp"
             title="WhatsApp"
             description="Prepare o registro rápido de pequenos gastos por mensagem."
           >
@@ -969,124 +975,6 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-base font-medium text-foreground">
-              Alertas e notificações
-            </h2>
-            <p className="text-sm text-foreground-muted">
-              {unreadNotifications > 0
-                ? `${unreadNotifications} notificacao(oes) não lida(s).`
-                : "Tudo lido por aqui."}
-            </p>
-          </div>
-          <button
-            onClick={handleMarkAllRead}
-            disabled={isNotifying || notifications.length === 0}
-            className="rounded-full border border-border bg-surface-2 px-4 py-2 text-xs font-medium text-foreground-muted transition hover:bg-surface-3 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isNotifying ? "Atualizando..." : "Marcar tudo como lido"}
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <div className="rounded-2xl border border-border bg-surface-2 p-4">
-            <h3 className="text-sm font-medium text-foreground">
-              Alertas do mês
-            </h3>
-            {alerts.length > 0 ? (
-              <div className="mt-3 space-y-3">
-                {alerts.map((alert) => (
-                  <div
-                    key={alert.goalId}
-                    className="rounded-xl border border-border bg-surface px-4 py-3"
-                  >
-                    <div className="text-sm font-medium text-foreground">
-                      {alert.category || "Meta geral"}
-                    </div>
-                    <div className="mt-1 text-xs text-foreground-subtle">
-                      R$ {alert.spent.toFixed(2)} de R${" "}
-                      {alert.monthlyLimit.toFixed(2)}
-                    </div>
-                    <div
-                      className={`mt-2 text-xs font-medium ${
-                        alert.thresholdReached ? "text-danger" : "text-primary"
-                      }`}
-                    >
-                      {alert.thresholdReached
-                        ? "Limiar atingido"
-                        : "Dentro do limite"}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <EmptyState
-                icon={Shield}
-                title="Nenhum alerta neste mês"
-                description="Crie metas para receber avisos quando os pequenos gastos se aproximarem do limite."
-                primaryAction={{ label: "Criar meta", href: "/metas" }}
-                compact
-                className="mt-3"
-              />
-            )}
-          </div>
-
-          <div className="rounded-2xl border border-border bg-surface-2 p-4">
-            <h3 className="text-sm font-medium text-foreground">
-              Notificações automáticas
-            </h3>
-            {notifications.length > 0 ? (
-              <div className="mt-3 space-y-3">
-                {notifications.slice(0, 4).map((notification) => (
-                  <div
-                    key={notification.id}
-                    className="flex flex-col gap-3 rounded-xl border border-border bg-surface px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-foreground">
-                          {notification.title}
-                        </span>
-                        {!notification.isRead && (
-                          <span className="rounded-full bg-primary/20 px-2 py-0.5 text-xs text-primary">
-                            Novo
-                          </span>
-                        )}
-                      </div>
-                      <p className="mt-1 text-xs text-foreground-subtle">
-                        {notification.message}
-                      </p>
-                      <p className="mt-2 text-xs text-foreground-muted">
-                        {new Date(notification.createdAt).toLocaleString(
-                          "pt-BR",
-                        )}
-                      </p>
-                    </div>
-                    {!notification.isRead && (
-                      <button
-                        onClick={() => handleMarkRead(notification.id)}
-                        className="rounded-full border border-border bg-surface-2 px-4 py-2 text-xs font-medium text-foreground-muted transition hover:bg-surface-3 hover:text-foreground"
-                      >
-                        Marcar como lido
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <EmptyState
-                icon={Bell}
-                title="Sem notificações ainda"
-                description="Quando uma meta ou alerta precisar da sua atenção, ele aparece aqui."
-                compact
-                className="mt-3"
-              />
-            )}
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
