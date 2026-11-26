@@ -20,31 +20,18 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
-  HandCoins,
-  Laptop,
-  Pencil,
   PieChart as PieChartIcon,
-  PiggyBank,
-  Pizza,
-  Home,
-  Popcorn,
   Plus,
   Receipt,
   RefreshCw,
   Repeat,
-  ShoppingCart,
-  Sparkles,
   Target,
-  Trash2,
   TrendingDown,
-  TrendingUp,
-  Bus,
   Wallet,
 } from "lucide-react";
 import clsx from "clsx";
 import {
   deleteExpense,
-  getDailySummary,
   getExpenses,
 } from "../services/expenseService";
 import { deleteIncome, getIncomes } from "../services/incomeService";
@@ -54,7 +41,6 @@ import {
   listRecurringSchedules,
 } from "../services/recurringScheduleService";
 import type {
-  DailySummary,
   Expense,
   Goal,
   GoalAlert,
@@ -65,20 +51,14 @@ import { AddExpenseModal } from "../components/AddExpenseModal";
 import { AddIncomeModal } from "../components/AddIncomeModal";
 import { ConfirmActionModal } from "../components/ConfirmActionModal";
 import { EmptyState } from "../components/EmptyState";
-import { formatApiDate, formatDisplayDate } from "../lib/dates";
+import { MonthOverview } from "../components/dashboard/MonthOverview";
+import { RecentActivity } from "../components/dashboard/RecentActivity";
+import { buildMonthSummary } from "../lib/monthSummary";
+import { formatApiDate } from "../lib/dates";
 import {
   getDueRecurringSchedules,
   getUpcomingRecurringSchedules,
 } from "../lib/recurringSchedules";
-
-const categoryIcons: Record<string, React.ComponentType<{ size?: number }>> = {
-  "Alimentação": Pizza,
-  Transporte: Bus,
-  Moradia: Home,
-  Lazer: Popcorn,
-  Compras: ShoppingCart,
-  "Educação": Laptop,
-};
 
 const CHART_COLORS = [
   "var(--color-primary)",
@@ -171,12 +151,6 @@ const formatRecurringDateStatus = (value: string) => {
   }
 
   return `Dia ${occurrenceDate.getUTCDate().toString().padStart(2, "0")}`;
-};
-
-type DashboardInsight = {
-  title: string;
-  detail: string;
-  tone: "positive" | "neutral" | "attention";
 };
 
 type CategoryExpenseSlice = {
@@ -297,7 +271,6 @@ function CashflowTooltip({
 export default function DashboardPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [incomes, setIncomes] = useState<Income[]>([]);
-  const [summary, setSummary] = useState<DailySummary[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [alerts, setAlerts] = useState<GoalAlert[]>([]);
   const [recurringSchedules, setRecurringSchedules] = useState<
@@ -333,14 +306,12 @@ export default function DashboardPage() {
 
       const [
         expensesData,
-        summaryData,
         incomesData,
         goalsData,
         alertsData,
         recurringData,
       ] = await Promise.all([
           getExpenses(startDate, endDate),
-          getDailySummary(startDate, endDate),
           getIncomes(startDate, endDate),
           getGoals(),
           getGoalAlerts(year, month + 1),
@@ -348,7 +319,6 @@ export default function DashboardPage() {
         ]);
 
       setExpenses(expensesData);
-      setSummary(summaryData);
       setIncomes(incomesData);
       setGoals(goalsData);
       setAlerts(alertsData);
@@ -433,10 +403,6 @@ export default function DashboardPage() {
   const hasFinancialData = expenses.length > 0 || incomes.length > 0;
   const shouldShowGuidedStart =
     !hasFinancialData && goals.length === 0 && alerts.length === 0;
-  const activeGoalsCount = useMemo(
-    () => goals.filter((goal) => goal.isActive).length,
-    [goals],
-  );
   const dueRecurringSchedules = useMemo(
     () => getDueRecurringSchedules(recurringSchedules),
     [recurringSchedules],
@@ -444,6 +410,22 @@ export default function DashboardPage() {
   const upcomingRecurringSchedules = useMemo(
     () => getUpcomingRecurringSchedules(recurringSchedules, 3),
     [recurringSchedules],
+  );
+
+  const monthSummary = useMemo(
+    () =>
+      buildMonthSummary({
+        month: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
+        expenses,
+        incomes,
+        recurringSchedules,
+      }),
+    [currentDate, expenses, incomes, recurringSchedules],
+  );
+
+  const currentMonthName = useMemo(
+    () => currentDate.toLocaleDateString("pt-BR", { month: "long" }),
+    [currentDate],
   );
 
   const currentMonthLabel = useMemo(
@@ -526,118 +508,6 @@ export default function DashboardPage() {
     expensesByCategory.length - topDashboardCategories.length,
     0,
   );
-
-  const summaryCards = useMemo(
-    () => [
-      {
-        title: "Saldo do mês",
-        helper: "Receitas menos despesas",
-        value: balance.toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        }),
-        icon: Wallet,
-        tone: balance >= 0 ? "success" : "danger",
-      },
-      {
-        title: "Metas ativas",
-        helper: "Limites acompanhados no mês",
-        value: `${activeGoalsCount} ${activeGoalsCount === 1 ? "meta" : "metas"}`,
-        icon: Target,
-        tone: "info",
-      },
-      {
-        title: "Gastos do mês",
-        helper: "Total de despesas registradas",
-        value: totalExpenses.toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        }),
-        icon: TrendingDown,
-        tone: "danger",
-      },
-    ],
-    [activeGoalsCount, balance, totalExpenses],
-  );
-
-  const financialInsights = useMemo<DashboardInsight[]>(() => {
-    if (expenses.length === 0 || totalExpenses <= 0) {
-      return [];
-    }
-
-    const insights: DashboardInsight[] = [];
-
-    const topCategory = expensesByCategory[0];
-    if (topCategory) {
-      const share = Math.round((topCategory.value / totalExpenses) * 100);
-      insights.push({
-        title: `${topCategory.name} lidera seus gastos`,
-        detail:
-          share >= 1
-            ? `${topCategory.name} representa ${share}% das despesas de ${currentMonthLabel}.`
-            : `${topCategory.name} foi a categoria com maior peso neste período.`,
-        tone: share >= 45 ? "attention" : "neutral",
-      });
-    }
-
-    const sortedSummary = summary
-      .slice()
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    const currentWeek = sortedSummary.slice(-7);
-    const previousWeek = sortedSummary.slice(-14, -7);
-    const currentWeekTotal = currentWeek.reduce((acc, day) => acc + day.total, 0);
-    const previousWeekTotal = previousWeek.reduce(
-      (acc, day) => acc + day.total,
-      0,
-    );
-
-    if (currentWeek.length >= 2 && previousWeek.length > 0) {
-      const delta = currentWeekTotal - previousWeekTotal;
-
-      if (Math.abs(delta) < 0.01) {
-        insights.push({
-          title: "Seu ritmo ficou estável",
-          detail:
-            "O volume gasto nesta semana ficou muito próximo da semana anterior.",
-          tone: "neutral",
-        });
-      } else if (delta > 0) {
-        insights.push({
-          title: "Você gastou mais do que na semana anterior",
-          detail: `${formatCurrency(delta)} acima da semana passada dentro do período atual.`,
-          tone: "attention",
-        });
-      } else {
-        insights.push({
-          title: "Você reduziu o ritmo da semana",
-          detail: `${formatCurrency(Math.abs(delta))} abaixo da semana anterior dentro do período atual.`,
-          tone: "positive",
-        });
-      }
-    }
-
-    const latestExpense = expenses
-      .slice()
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-    const highestExpense = expenses
-      .slice()
-      .sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount))[0];
-
-    if (highestExpense) {
-      const insightTitle =
-        latestExpense && latestExpense.id === highestExpense.id
-          ? "Seu maior lançamento recente"
-          : "Seu maior lançamento do período";
-
-      insights.push({
-        title: insightTitle,
-        detail: `${formatCurrency(Math.abs(highestExpense.amount))} em ${highestExpense.category || "Outros"}${highestExpense.description ? `, registrado como "${highestExpense.description}".` : "."}`,
-        tone: "neutral",
-      });
-    }
-
-    return insights.slice(0, 3);
-  }, [currentMonthLabel, expenses, expensesByCategory, summary, totalExpenses]);
 
   if (isLoading) {
     return (
@@ -732,7 +602,7 @@ export default function DashboardPage() {
             </h1>
           </div>
 
-          <div className="flex w-full items-center justify-center gap-2 rounded-full border border-border bg-surface-2 px-4 py-2 sm:w-auto">
+          <div className="flex w-full items-center justify-center gap-2 rounded-full border border-border bg-surface px-4 py-2 sm:w-auto sm:self-start lg:self-auto">
             <button
               onClick={handlePrevMonth}
               className="rounded-full p-1 text-foreground-muted transition hover:bg-surface-3 hover:text-foreground"
@@ -913,133 +783,16 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {summaryCards.map((card, index) => {
-          const Icon = card.icon;
-          const toneClass =
-            card.tone === "success"
-              ? "text-success"
-              : card.tone === "danger"
-                ? "text-danger"
-                : "text-primary";
-
-          return (
-            <div
-              key={card.title}
-              style={{ animationDelay: `${index * 100}ms` }}
-              className="rounded-2xl border border-border bg-surface p-5 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-sm font-medium text-foreground">
-                    {card.title}
-                  </h2>
-                  <p className="text-xs text-foreground-subtle">
-                    {card.helper}
-                  </p>
-                </div>
-                <div
-                  className={clsx(
-                    "grid h-10 w-10 place-items-center rounded-full bg-surface-2",
-                    toneClass,
-                  )}
-                >
-                  <Icon size={18} />
-                </div>
-              </div>
-              <div className="mt-4 text-2xl font-medium text-foreground tabular-nums">
-                {card.value}
-              </div>
-            </div>
-          );
-        })}
-      </section>
-
-      <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="flex items-center gap-2 text-base font-medium text-foreground">
-              <Sparkles size={18} className="text-primary" />
-              Insights financeiros
-            </h2>
-            <p className="mt-1 text-sm leading-6 text-foreground-muted">
-              Leituras simples do período atual para apoiar suas próximas decisões.
-            </p>
-          </div>
-        </div>
-
-        {financialInsights.length > 0 ? (
-          <div className="mt-5 grid gap-3 md:grid-cols-3">
-            {financialInsights.map((insight) => {
-              const toneClasses =
-                insight.tone === "positive"
-                  ? {
-                      border: "border-success/20",
-                      bg: "bg-success/10",
-                      text: "text-success",
-                      icon: TrendingUp,
-                    }
-                  : insight.tone === "attention"
-                    ? {
-                        border: "border-warning/25",
-                        bg: "bg-warning/10",
-                        text: "text-warning",
-                        icon: TrendingDown,
-                      }
-                    : {
-                        border: "border-primary/18",
-                        bg: "bg-primary/10",
-                        text: "text-primary",
-                        icon: Sparkles,
-                      };
-              const InsightIcon = toneClasses.icon;
-
-              return (
-                <article
-                  key={`${insight.title}-${insight.detail}`}
-                  className={clsx(
-                    "rounded-2xl border bg-surface p-4",
-                    toneClasses.border,
-                  )}
-                >
-                  <div
-                    className={clsx(
-                      "grid h-10 w-10 place-items-center rounded-xl",
-                      toneClasses.bg,
-                      toneClasses.text,
-                    )}
-                  >
-                    <InsightIcon size={18} />
-                  </div>
-                  <h3 className="mt-4 text-sm font-medium text-foreground">
-                    {insight.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-foreground-muted">
-                    {insight.detail}
-                  </p>
-                </article>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="mt-5">
-            <EmptyState
-              icon={Sparkles}
-              title="Você ainda não tem dados suficientes para gerar insights"
-              description="Registre algumas despesas e receitas para o dashboard identificar padrões simples do seu período."
-              primaryAction={{
-                label: "Adicionar despesa",
-                onClick: () => setIsAddExpenseModalOpen(true),
-              }}
-              secondaryAction={{
-                label: "Adicionar renda",
-                onClick: () => setIsAddIncomeModalOpen(true),
-              }}
-              compact
-            />
-          </div>
-        )}
-      </section>
+      <MonthOverview
+        summary={monthSummary}
+        monthName={currentMonthName}
+        goals={goals}
+        alerts={alerts}
+        onAddIncome={() => {
+          setIncomeToEdit(null);
+          setIsAddIncomeModalOpen(true);
+        }}
+      />
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <div className="flex min-h-[540px] flex-col rounded-2xl border border-border bg-surface p-6 soft-hover sm:min-h-[620px] xl:col-span-2">
@@ -1487,8 +1240,8 @@ export default function DashboardPage() {
                         </span>
                       </div>
                       <div className="mt-1 mb-2 flex justify-between text-xs text-foreground-subtle tabular-nums">
-                        <span>Gasto: R$ {alert.spent}</span>
-                        <span>Limite: R$ {alert.monthlyLimit}</span>
+                        <span>Gasto: {formatCurrency(alert.spent)}</span>
+                        <span>Limite: {formatCurrency(alert.monthlyLimit)}</span>
                       </div>
                       <div className="h-2 rounded-full bg-surface-3">
                         <div
@@ -1528,207 +1281,30 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <div className="rounded-2xl border border-border bg-surface p-6 soft-hover flex flex-col">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-base font-medium text-foreground">
-              Últimas receitas
-            </h2>
-          </div>
-          <div className="space-y-3 flex-1 flex flex-col">
-            {incomes.length > 0 ? (
-              incomes.slice(0, 5).map((inc) => {
-                const amountLabel = inc.amount.toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                });
-
-                return (
-                  <div
-                    key={inc.id}
-                    className="group rounded-2xl border border-border bg-surface-2 p-3.5 transition-colors hover:bg-surface-3/30 sm:flex sm:items-center sm:gap-3"
-                  >
-                    <div className="flex min-w-0 items-start gap-3 sm:flex-1 sm:items-center">
-                      <div className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-full bg-success/10 text-success">
-                        <Wallet size={18} />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-foreground">
-                          {inc.description}
-                        </p>
-                        <p className="hidden text-xs text-foreground-subtle sm:mt-0.5 sm:block">
-                          {inc.isFixed ? "Renda Fixa" : "Renda Extra"} •{" "}
-                          {formatDisplayDate(inc.date, {
-                            day: "2-digit",
-                            month: "short",
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-3 sm:hidden">
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-foreground-subtle">
-                        <span className="rounded-full bg-surface px-2 py-0.5">
-                          {inc.isFixed ? "Renda fixa" : "Renda extra"}
-                        </span>
-                        <span>
-                          {formatDisplayDate(inc.date, {
-                            day: "2-digit",
-                            month: "short",
-                          })}
-                        </span>
-                      </div>
-                      <div className="text-sm font-medium text-success tabular-nums">
-                        + {amountLabel}
-                      </div>
-                    </div>
-                    <div className="hidden items-center gap-2 sm:flex">
-                      <div className="text-sm font-medium text-success tabular-nums">
-                        + {amountLabel}
-                      </div>
-                      <button
-                        onClick={() => {
-                          setIncomeToEdit(inc);
-                          setIsAddIncomeModalOpen(true);
-                        }}
-                        className="rounded-lg p-1.5 text-foreground-muted transition-colors hover:bg-primary/10 hover:text-primary"
-                        title="Editar receita"
-                      >
-                        <Pencil size={15} />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setDeleteError(null);
-                          setIncomeToDelete(inc);
-                        }}
-                        className="rounded-lg p-1.5 text-foreground-muted transition-colors hover:bg-danger/10 hover:text-danger"
-                        title="Excluir receita"
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <EmptyState
-                icon={HandCoins}
-                title="Registre sua primeira renda"
-                description="Com a renda cadastrada, o saldo mensal e a leitura dos gastos ficam mais claros."
-                primaryAction={{
-                  label: "Adicionar renda",
-                  onClick: () => setIsAddIncomeModalOpen(true),
-                }}
-                className="flex-1"
-                compact
-              />
-            )}
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-border bg-surface p-6 soft-hover flex flex-col">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-base font-medium text-foreground">
-              Últimas despesas
-            </h2>
-          </div>
-          <div className="space-y-3 flex-1 flex flex-col">
-            {expenses.length > 0 ? (
-              expenses.slice(0, 5).map((exp) => {
-                const Icon = categoryIcons[exp.category] || PiggyBank;
-                const amountLabel = Math.abs(exp.amount).toLocaleString(
-                  "pt-BR",
-                  {
-                    style: "currency",
-                    currency: "BRL",
-                  },
-                );
-
-                return (
-                  <div
-                    key={exp.id}
-                    className="group rounded-2xl border border-border bg-surface-2 p-3.5 transition-colors hover:bg-surface-3/30 sm:flex sm:items-center sm:gap-3"
-                  >
-                    <div className="flex min-w-0 items-start gap-3 sm:flex-1 sm:items-center">
-                      <div className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-full bg-surface-3 text-primary">
-                        <Icon size={18} />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-foreground transition-colors group-hover:text-primary">
-                          {exp.description}
-                        </p>
-                        <p className="hidden text-xs text-foreground-subtle sm:mt-0.5 sm:block">
-                          {exp.category}
-                          {exp.subcategory
-                            ? ` / ${exp.subcategory}`
-                            : ""} •{" "}
-                          {formatDisplayDate(exp.date, {
-                            day: "2-digit",
-                            month: "short",
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-3 sm:hidden">
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-foreground-subtle">
-                        <span className="rounded-full bg-surface px-2 py-0.5">
-                          {exp.category}
-                          {exp.subcategory ? ` / ${exp.subcategory}` : ""}
-                        </span>
-                        <span>
-                          {formatDisplayDate(exp.date, {
-                            day: "2-digit",
-                            month: "short",
-                          })}
-                        </span>
-                      </div>
-                      <div className="text-sm font-medium text-danger tabular-nums">
-                        - {amountLabel}
-                      </div>
-                    </div>
-                    <div className="hidden items-center gap-2 sm:flex">
-                      <div className="text-sm font-medium text-danger tabular-nums">
-                        - {amountLabel}
-                      </div>
-                      <button
-                        onClick={() => {
-                          setExpenseToEdit(exp);
-                          setIsAddExpenseModalOpen(true);
-                        }}
-                        className="rounded-lg p-1.5 text-foreground-muted transition-colors hover:bg-primary/10 hover:text-primary"
-                        title="Editar despesa"
-                      >
-                        <Pencil size={15} />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setDeleteError(null);
-                          setExpenseToDelete(exp);
-                        }}
-                        className="rounded-lg p-1.5 text-foreground-muted transition-colors hover:bg-danger/10 hover:text-danger"
-                        title="Excluir despesa"
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <EmptyState
-                icon={Receipt}
-                title="Adicione seu primeiro gasto"
-                description="Comece por algo pequeno, como café, lanche ou transporte. E isso que revela seus hábitos."
-                primaryAction={{
-                  label: "Adicionar despesa",
-                  onClick: () => setIsAddExpenseModalOpen(true),
-                }}
-                className="flex-1"
-                compact
-              />
-            )}
-          </div>
-        </div>
-      </section>
+      <RecentActivity
+        expenses={expenses}
+        incomes={incomes}
+        onEditExpense={(expense) => {
+          setExpenseToEdit(expense);
+          setIsAddExpenseModalOpen(true);
+        }}
+        onEditIncome={(income) => {
+          setIncomeToEdit(income);
+          setIsAddIncomeModalOpen(true);
+        }}
+        onDeleteExpense={(expense) => {
+          setDeleteError(null);
+          setExpenseToDelete(expense);
+        }}
+        onDeleteIncome={(income) => {
+          setDeleteError(null);
+          setIncomeToDelete(income);
+        }}
+        onAddExpense={() => {
+          setExpenseToEdit(null);
+          setIsAddExpenseModalOpen(true);
+        }}
+      />
 
       <AddExpenseModal
         isOpen={isAddExpenseModalOpen}
