@@ -53,6 +53,7 @@ import {
   type WhatsAppLinkCode,
   type WhatsAppStatus,
 } from "../services/whatsAppService";
+import { PageHeader } from "../components/PageHeader";
 
 const phonePattern = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
 const strongPasswordPattern =
@@ -412,7 +413,7 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-medium text-foreground">
             Conta e configurações
@@ -434,17 +435,11 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <h1 className="text-2xl font-medium text-foreground">
-            Conta e configurações
-          </h1>
-          <p className="mt-1 max-w-2xl text-sm text-foreground-muted">
-            Controle seus dados, segurança e preferências em um único lugar.
-          </p>
-        </div>
-      </header>
+    <div className="space-y-6">
+      <PageHeader
+        title="Conta e configurações"
+        description="Seus dados, segurança, preferências e exportação em um só lugar."
+      />
 
       {settingsError && (
         <div className="rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">

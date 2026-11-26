@@ -25,6 +25,7 @@ import type {
 import { getCategories, type Category } from "../services/categoryService";
 import { getSubcategories } from "../services/subcategoryService";
 import { EmptyState } from "../components/EmptyState";
+import { PageHeader } from "../components/PageHeader";
 
 const formatCurrency = (value: number) =>
   value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -200,31 +201,23 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-medium text-foreground">Relatórios</h1>
-          <p className="text-sm text-foreground-muted">
-            Visualize tendências e acompanhe sua evolução financeira.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => handleExport("csv")}
-            className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
-          >
-            <Download size={16} />
-            CSV
-          </button>
-          <button
-            onClick={() => handleExport("pdf")}
-            className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
-          >
-            <Download size={16} />
-            PDF
-          </button>
-        </div>
-      </header>
+    <div className="space-y-6">
+      <PageHeader
+        title="Relatórios"
+        description="Tendências do período, comparação com o anterior e exportação."
+        actions={
+          <>
+            <button type="button" onClick={() => handleExport("csv")} className="inline-flex min-h-10 items-center gap-2 whitespace-nowrap rounded-[var(--radius-control)] border border-border bg-surface px-3.5 text-ui font-medium text-foreground transition-colors hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-50">
+              <Download size={15} />
+              CSV
+            </button>
+            <button type="button" onClick={() => handleExport("pdf")} className="inline-flex min-h-10 items-center gap-2 whitespace-nowrap rounded-[var(--radius-control)] border border-border bg-surface px-3.5 text-ui font-medium text-foreground transition-colors hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-50">
+              <Download size={15} />
+              PDF
+            </button>
+          </>
+        }
+      />
 
       <section className="rounded-2xl border border-border bg-surface p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -404,7 +397,7 @@ export default function ReportsPage() {
       </section>
 
       {!report ? (
-        <div className="rounded-2xl border border-border bg-surface p-12 text-center text-foreground-subtle flex flex-col items-center justify-center gap-4 animate-in fade-in duration-500">
+        <div className="rounded-2xl border border-border bg-surface p-12 text-center text-foreground-subtle flex flex-col items-center justify-center gap-4">
           <div className="h-10 w-10 text-primary animate-spin">
             <svg
               className="h-full w-full"
@@ -502,8 +495,7 @@ export default function ReportsPage() {
             </div>
           )}
           <div
-            className="xl:col-span-2 rounded-2xl border border-border bg-surface p-6 soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
-            style={{ animationDelay: "0ms" }}
+            className="xl:col-span-2 rounded-2xl border border-border bg-surface p-6 soft-hover"
           >
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -605,19 +597,17 @@ export default function ReportsPage() {
           </div>
 
           <div
-            className="rounded-2xl border border-border bg-surface p-6 soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
-            style={{ animationDelay: "150ms" }}
+            className="rounded-2xl border border-border bg-surface p-6 soft-hover"
           >
             <h2 className="text-base font-medium text-foreground mb-4">
               Por categoria
             </h2>
             <div className="space-y-3">
               {report.byCategory.length > 0 ? (
-                report.byCategory.map((item, index) => (
+                report.byCategory.map((item) => (
                   <div
                     key={item.category}
-                    style={{ animationDelay: `${600 + index * 100}ms` }}
-                    className="flex items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm tabular-nums animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+                    className="flex items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm tabular-nums"
                   >
                     <span className="text-foreground">{item.category}</span>
                     <span className="text-foreground-muted">

@@ -38,6 +38,7 @@ import {
   deleteSubcategory,
 } from "../services/subcategoryService";
 import type { Subcategory } from "../lib/types";
+import { PageHeader, StatRow } from "../components/PageHeader";
 
 const CHART_COLORS = [
   "var(--color-primary)",
@@ -337,7 +338,7 @@ export default function CategoriesPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center animate-in fade-in duration-500">
+      <div className="min-h-[60vh] flex items-center justify-center">
         <div className="text-center flex flex-col items-center gap-4">
           <div className="h-10 w-10 text-primary animate-spin">
             <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -363,53 +364,51 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <header className="flex flex-col gap-4">
-        <div>
-          <h1 className="text-2xl font-medium text-foreground">Categorias</h1>
-          <p className="text-sm text-foreground-muted">
-            Monitore seus gastos por categoria e ajuste seus limites.
-          </p>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
-          <input
-            ref={categoryInputRef}
-            value={newCategoryName}
-            onChange={(event) => {
-              setNewCategoryName(event.target.value);
-              if (createError) {
-                setCreateError(null);
-              }
-            }}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                event.preventDefault();
-                handleCreateCategory();
-              }
-            }}
-            placeholder="Nova categoria"
-            aria-invalid={createError ? "true" : "false"}
-            className={clsx(
-              "flex-1 rounded-xl border bg-surface px-4 py-2 text-sm text-foreground outline-none focus:border-primary/50",
-              createError ? "border-danger/60" : "border-border",
-            )}
-          />
-          <button
-            type="button"
-            onClick={handleCreateCategory}
-            disabled={isCreating}
-            className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground hover:border-surface-3 hover:bg-surface-2 transition disabled:opacity-60"
-          >
-            <Plus size={16} />
-            {isCreating ? "Salvando..." : "Criar categoria"}
-          </button>
-        </div>
-        {createError && (
-          <div className="rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
-            {createError}
+    <div className="space-y-6">
+      <PageHeader
+        title="Categorias"
+        description="Veja onde o dinheiro do mês se concentra e organize suas categorias."
+        actions={
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+                <input
+                  ref={categoryInputRef}
+                  value={newCategoryName}
+                  onChange={(event) => {
+                    setNewCategoryName(event.target.value);
+                    if (createError) {
+                      setCreateError(null);
+                    }
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      handleCreateCategory();
+                    }
+                  }}
+                  placeholder="Nova categoria"
+                  aria-invalid={createError ? "true" : "false"}
+                  className={clsx(
+                    "h-10 min-w-0 rounded-[var(--radius-control)] border bg-surface px-3.5 text-sm text-foreground outline-none focus:border-primary sm:w-56",
+                    createError ? "border-danger/60" : "border-border",
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={handleCreateCategory}
+                  disabled={isCreating}
+                  className="inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-control)] bg-primary px-3.5 text-ui font-medium text-[var(--color-on-primary)] transition-colors hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Plus size={15} />
+                  {isCreating ? "Salvando..." : "Criar categoria"}
+                </button>
           </div>
-        )}
-      </header>
+        }
+      />
+      {createError && (
+        <p role="alert" className="-mt-3 text-ui text-danger md:text-right">
+          {createError}
+        </p>
+      )}
 
       {categoryCards.length === 0 ? (
         <EmptyState
@@ -428,6 +427,15 @@ export default function CategoriesPage() {
       ) : (
         <div className="space-y-6">
           {categoryDistribution.length > 0 && (
+            <StatRow
+              items={[
+                { label: "Total gasto no mês", value: formatCurrency(totalSpent) },
+                { label: "Categorias com gastos", value: categoryDistribution.length },
+                { label: "Maior categoria", value: topSpendingCategory?.name ?? "—" },
+              ]}
+            />
+          )}
+          {categoryDistribution.length > 0 && (
             <section className="rounded-2xl border border-border bg-surface p-6">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
@@ -438,28 +446,6 @@ export default function CategoriesPage() {
                     Veja o peso de cada categoria no total do mês e encontre
                     onde os pequenos gastos mais se concentram.
                   </p>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <div className="rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs text-foreground-subtle">
-                    Total gasto:{" "}
-                    <span className="font-medium text-foreground">
-                      {formatCurrency(totalSpent)}
-                    </span>
-                  </div>
-                  <div className="rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs text-foreground-subtle">
-                    Categorias ativas:{" "}
-                    <span className="font-medium text-foreground">
-                      {categoryDistribution.length}
-                    </span>
-                  </div>
-                  {topSpendingCategory && (
-                    <div className="rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs text-foreground-subtle">
-                      Maior categoria:{" "}
-                      <span className="font-medium text-foreground">
-                        {topSpendingCategory.name}
-                      </span>
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -553,14 +539,13 @@ export default function CategoriesPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {categoryCards.map((cat, index) => {
+              {categoryCards.map((cat) => {
                 const Icon = iconMap[normalizeKey(cat.name)] || LayoutFallback;
                 const isHigh = cat.percent >= 80;
                 return (
                   <div
                     key={cat.id}
-                    style={{ animationDelay: `${index * 100}ms` }}
-                    className="rounded-2xl border border-border bg-surface p-6 soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+                    className="rounded-2xl border border-border bg-surface p-6 soft-hover"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">

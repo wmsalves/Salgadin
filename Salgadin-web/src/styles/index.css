@@ -340,3 +340,24 @@ body,
 span.sentence-case {
   display: inline-block;
 }
+
+/* Destaque breve de um lancamento recem-criado. */
+.salgadin-highlight {
+  animation: salgadin-highlight 1.6s var(--ease-out) both;
+}
+
+@keyframes salgadin-highlight {
+  0%,
+  35% {
+    background-color: rgb(var(--ring-color) / 0.1);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .salgadin-highlight {
+    animation: none;
+  }
+}

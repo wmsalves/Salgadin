@@ -1,4 +1,7 @@
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { AnimatedNumber } from "../motion/AnimatedNumber";
+import { MOTION_EASE } from "../../lib/motion";
 import type { Goal, GoalAlert } from "../../lib/types";
 import { SMALL_EXPENSE_LIMIT, type MonthSummary } from "../../lib/monthSummary";
 
@@ -82,13 +85,16 @@ function Headline({ summary, monthName, onAddIncome }: Omit<MonthOverviewProps, 
         {timing === "future" ? `Previsto para ${monthName}` : "Você ainda pode gastar"}
       </p>
       <p className="mt-1 flex items-baseline gap-2 text-foreground">
-        <span className="text-4xl font-medium tabular-nums sm:text-5xl">
-          {wholeCurrency(perDay ?? 0)}
-        </span>
+        <AnimatedNumber
+          value={perDay ?? 0}
+          format={wholeCurrency}
+          className="text-4xl font-medium tabular-nums sm:text-5xl"
+        />
         <span className="text-base text-foreground-muted">por dia</span>
       </p>
       <p className="mt-3 max-w-lg text-sm text-foreground-muted">
-        Sobram <span className="font-medium text-foreground tabular-nums">{currency(free)}</span>{" "}
+        Sobram{" "}
+        <AnimatedNumber value={free} format={currency} className="font-medium text-foreground tabular-nums" />{" "}
         {timing === "future" ? `para os ${lastDay} dias do mês` : daysLeft === 1 ? "até hoje à noite" : `até o dia ${lastDay}`}
         {fixedPending > 0 ? (
           <>
@@ -125,10 +131,12 @@ function CompositionBar({ summary }: { summary: MonthSummary }) {
         aria-label={segments.map((s) => `${s.label}: ${currency(s.value)}`).join(", ")}
       >
         {segments.map((segment) => (
-          <span
+          <motion.span
             key={segment.key}
             className={`block h-full ${segment.className}`}
-            style={{ width: `${(segment.value / base) * 100}%` }}
+            initial={{ width: 0 }}
+            animate={{ width: `${(segment.value / base) * 100}%` }}
+            transition={{ duration: 0.6, ease: MOTION_EASE }}
           />
         ))}
       </div>
@@ -168,7 +176,7 @@ export function MonthOverview({ summary, monthName, goals, alerts, onAddIncome }
             Pequenos gastos <span className="sr-only">(até {currency(SMALL_EXPENSE_LIMIT)})</span>
           </dt>
           <dd className="mt-1 text-lg font-medium text-foreground tabular-nums">
-            {currency(summary.smallExpenses)}
+            <AnimatedNumber value={summary.smallExpenses} format={currency} />
           </dd>
           <dd className="text-xs text-foreground-muted">
             {summary.smallExpensesCount === 0

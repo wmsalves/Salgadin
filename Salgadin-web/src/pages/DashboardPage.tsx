@@ -293,6 +293,7 @@ export default function DashboardPage() {
   const [isDeletingExpense, setIsDeletingExpense] = useState(false);
   const [isDeletingIncome, setIsDeletingIncome] = useState(false);
   const [isFabOpen, setIsFabOpen] = useState(false);
+  const [highlightKey, setHighlightKey] = useState<string | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [cashflowViewMode, setCashflowViewMode] =
     useState<CashflowViewMode>("balance");
@@ -556,10 +557,10 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20 sm:pb-0">
+    <div className="space-y-6 pb-20 sm:pb-0">
       <div className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-4 z-40 flex flex-col items-end gap-3 sm:hidden">
         {isFabOpen && (
-          <div className="mb-2 flex flex-col items-end gap-3 animate-in slide-in-from-bottom-5 fade-in duration-200">
+          <div className="mb-2 flex flex-col items-end gap-3">
             <button
               onClick={() => {
                 setIncomeToEdit(null);
@@ -784,7 +785,12 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <QuickEntry onChange={fetchData} />
+      <QuickEntry
+        onChange={(created) => {
+          setHighlightKey(created ? `e-${created.id}` : null);
+          void fetchData();
+        }}
+      />
 
       <MonthOverview
         summary={monthSummary}
@@ -1287,6 +1293,7 @@ export default function DashboardPage() {
       <RecentActivity
         expenses={expenses}
         incomes={incomes}
+        highlightKey={highlightKey}
         onEditExpense={(expense) => {
           setExpenseToEdit(expense);
           setIsAddExpenseModalOpen(true);

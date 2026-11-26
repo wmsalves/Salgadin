@@ -56,7 +56,7 @@ export default function SignupPage() {
       <main className="flex-1">
         <div className="mx-auto max-w-7xl min-h-[calc(100svh-80px)] grid gap-6 md:gap-8 md:grid-cols-2 items-center px-4 py-6 md:py-4">
           {/* Branding Column - Hidden on smaller resolutions */}
-          <section className="hidden lg:flex flex-col items-start text-left animate-in slide-in-from-left-8 fade-in duration-700">
+          <section className="hidden lg:flex flex-col items-start text-left">
             <div className="space-y-4">
               <h1 className="text-4xl lg:text-5xl font-medium leading-tight">
                 <span className="bg-gradient-to-r from-[var(--brand-from-strong)] to-[var(--brand-to-strong)] bg-clip-text text-transparent">
@@ -74,7 +74,7 @@ export default function SignupPage() {
 
           {/* Form Column */}
           <section className="flex justify-center md:justify-end">
-            <div className="w-full max-w-md rounded-2xl border border-border bg-surface backdrop-blur-xl p-6 sm:p-8 animate-in slide-in-from-right-8 fade-in duration-700 delay-150 [animation-fill-mode:backwards]">
+            <div className="w-full max-w-md rounded-2xl border border-border bg-surface backdrop-blur-xl p-6 sm:p-8">
               <header className="text-center md:text-left mb-6">
                 <h2 className="text-2xl sm:text-3xl font-medium text-foreground">
                   Crie sua Conta
@@ -138,7 +138,7 @@ export default function SignupPage() {
                 </Button>
 
                 {apiError && (
-                  <div className="p-3 rounded-xl bg-surface-2 border border-danger/30 animate-in fade-in slide-in-from-bottom-2">
+                  <div className="p-3 rounded-xl bg-surface-2 border border-danger/30">
                     <p className="text-sm text-danger font-medium text-center">
                       {apiError}
                     </p>
@@ -146,7 +146,7 @@ export default function SignupPage() {
                 )}
                 
                 {successMessage && (
-                  <div className="p-3 rounded-xl bg-success/10 border border-success/30 animate-in fade-in slide-in-from-bottom-2">
+                  <div className="p-3 rounded-xl bg-success/10 border border-success/30">
                     <p className="text-sm text-success font-medium text-center">
                       {successMessage}
                     </p>
