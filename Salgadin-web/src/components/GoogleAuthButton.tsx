@@ -69,7 +69,7 @@ export function GoogleAuthButton({
     <div className="space-y-3">
       <div
         ref={containerRef}
-        className="rounded-2xl border border-border/70 bg-gradient-to-br from-[var(--brand-from)]/6 via-surface to-[var(--brand-to)]/8 p-3 sm:p-4 shadow-[0_12px_28px_rgba(60,42,32,0.08)]"
+        className="rounded-2xl border border-border bg-surface-2 p-3 sm:p-4"
       >
         <div
           className={isLoading ? "pointer-events-none opacity-70" : undefined}
@@ -92,7 +92,7 @@ export function GoogleAuthButton({
       </div>
 
       {isLoading && (
-        <div className="flex items-center justify-center gap-2 rounded-xl border border-border/70 bg-surface-2 px-3 py-2 text-sm text-foreground-muted">
+        <div className="flex items-center justify-center gap-2 rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm text-foreground-muted">
           <LogIn size={16} className="text-primary" />
           Validando sua conta Google...
         </div>

@@ -26,14 +26,14 @@ const reveal: Variants = {
 export default function HomePage() {
   return (
     <MotionConfig reducedMotion="user">
-      <div className="min-h-screen overflow-x-hidden bg-gradient-to-b from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] text-foreground">
+      <div className="min-h-screen overflow-x-hidden bg-background text-foreground">
         <Header />
         <main>
           <motion.div variants={reveal} initial="hidden" animate="show">
             <HeroSection />
           </motion.div>
 
-          <div className="border-y border-border/70 bg-surface/45">
+          <div className="border-y border-border bg-surface">
             <motion.div
               variants={reveal}
               initial="hidden"
@@ -53,7 +53,7 @@ export default function HomePage() {
             <HowItWorksSection />
           </motion.div>
 
-          <div className="border-y border-border/60 bg-surface-2/45">
+          <div className="border-y border-border bg-surface-2/45">
             <motion.div
               variants={reveal}
               initial="hidden"
@@ -82,7 +82,7 @@ export default function HomePage() {
             <FaqSection />
           </motion.div>
 
-          <div className="border-t border-border/60 bg-surface/45">
+          <div className="border-t border-border bg-surface">
             <motion.div
               variants={reveal}
               initial="hidden"

@@ -115,7 +115,7 @@ export function HeroChartPreview({
   }, []);
 
   return (
-    <div className="grid h-full grid-rows-[1fr_auto] rounded-2xl border border-border/60 bg-gradient-to-b from-surface to-surface-2/50 p-4 sm:p-5">
+    <div className="grid h-full grid-rows-[1fr_auto] rounded-2xl border border-border bg-surface/50 p-4 sm:p-5">
       <div className="grid h-full min-h-0 grid-cols-[56px_1fr] gap-4">
         <div className="flex h-full min-h-0 flex-col justify-between text-xs text-foreground-subtle">
           {axisMarks.map((mark) => (
@@ -128,7 +128,7 @@ export function HeroChartPreview({
             {[0, 1, 2, 3, 4].map((line) => (
               <div
                 key={line}
-                className="border-t border-dashed border-border/70"
+                className="border-t border-dashed border-border"
               />
             ))}
           </div>
@@ -139,7 +139,7 @@ export function HeroChartPreview({
                 key={day.name}
                 className="group relative flex h-full min-h-0 min-w-0 flex-1 flex-col items-center gap-2"
               >
-                <div className="pointer-events-none absolute -top-2 left-1/2 z-10 w-44 -translate-x-1/2 -translate-y-full rounded-xl border border-border/70 bg-surface px-3 py-2 text-left opacity-0 shadow-[0_18px_36px_rgba(60,42,32,0.14)] transition duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
+                <div className="pointer-events-none absolute -top-2 left-1/2 z-10 w-44 -translate-x-1/2 -translate-y-full rounded-xl border border-border bg-surface px-3 py-2 text-left opacity-0 transition duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
                   <p className="text-xs font-medium text-foreground">
                     {day.name} - {formatCurrency(day.total)}
                   </p>
@@ -169,7 +169,7 @@ export function HeroChartPreview({
                     title={`${day.name}: ${formatCurrency(day.total)} em ${day.detalhe}`}
                   >
                     <div
-                      className="flex h-full w-full origin-bottom flex-col justify-end overflow-hidden rounded-t-[10px] rounded-b-[4px] border border-white/15 shadow-[0_12px_26px_rgba(60,42,32,0.14)] transition-[transform] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                      className="flex h-full w-full origin-bottom flex-col justify-end overflow-hidden rounded-t-[10px] rounded-b-[4px] border border-white/15 transition-[transform] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
                       style={{
                         transform: isAnimatedIn ? "scaleY(1)" : "scaleY(0.04)",
                         transitionDelay: `${normalizedData.findIndex((item) => item.name === day.name) * 90}ms`,
@@ -193,7 +193,7 @@ export function HeroChartPreview({
                             <div
                               key={`${day.name}-${item.label}`}
                               style={{ height, backgroundColor: fill }}
-                              className="w-full border-t border-white/20 first:border-t-0 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]"
+                              className="w-full border-t border-white/20 first:border-t-0"
                             />
                           );
                         })}
@@ -210,7 +210,7 @@ export function HeroChartPreview({
         </div>
       </div>
 
-      <div className="mt-4 rounded-xl border border-border/70 bg-surface/80 px-3 py-3 text-xs text-foreground-muted">
+      <div className="mt-4 rounded-xl border border-border bg-surface px-3 py-3 text-xs text-foreground-muted">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <span>Ritmo do dia: R$ 40</span>
           <span className="font-medium text-foreground">

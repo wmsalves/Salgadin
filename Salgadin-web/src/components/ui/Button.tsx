@@ -9,13 +9,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-[var(--color-on-primary)] shadow-lg hover:shadow-xl hover:from-[var(--brand-from-strong)] hover:to-[var(--brand-to-strong)]",
+          "bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-[var(--color-on-primary)] hover:from-[var(--brand-from-strong)] hover:to-[var(--brand-to-strong)]",
         secondary:
           "border border-border bg-surface text-foreground-muted hover:text-foreground hover:bg-surface-2 hover:border-surface-3",
         ghost:
           "text-foreground-muted hover:text-foreground hover:bg-surface-2",
         danger:
-          "bg-danger text-[#fffaf6] hover:bg-danger-strong shadow-lg",
+          "bg-danger text-[#fffaf6] hover:bg-danger-strong",
       },
       size: {
         default: "px-6 py-3 text-sm",

@@ -42,7 +42,7 @@ export function EmptyState({
       "inline-flex items-center justify-center gap-2 rounded-full text-ui font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ui-pressable motion-reduce:transition-none",
       isSpacious ? "px-5 py-2.5" : "px-4 py-2",
       variant === "primary"
-        ? "bg-primary text-white shadow-[0_10px_24px_rgba(242,139,91,0.22)] hover:bg-primary-strong"
+        ? "bg-primary text-[var(--color-on-primary)] hover:bg-primary-strong"
         : "border border-border bg-surface-2 text-foreground hover:bg-surface-3",
     );
 
@@ -66,7 +66,7 @@ export function EmptyState({
   return (
     <div
       className={clsx(
-        "ui-fade-up rounded-3xl border border-dashed border-primary/24 bg-gradient-to-br from-surface/92 via-surface/84 to-surface-2/72 text-center shadow-[0_14px_30px_rgba(60,42,32,0.08)] motion-reduce:animate-none",
+        "ui-fade-up rounded-2xl border border-dashed border-primary/24 bg-surface text-center motion-reduce:animate-none",
         isSpacious
           ? "px-6 py-10 sm:px-10 sm:py-12"
           : compact

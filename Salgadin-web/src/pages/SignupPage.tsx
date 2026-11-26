@@ -51,7 +51,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] flex flex-col overflow-y-scroll">
+    <div className="min-h-screen bg-background flex flex-col overflow-y-scroll">
       <Header />
       <main className="flex-1">
         <div className="mx-auto max-w-7xl min-h-[calc(100svh-80px)] grid gap-6 md:gap-8 md:grid-cols-2 items-center px-4 py-6 md:py-4">
@@ -74,7 +74,7 @@ export default function SignupPage() {
 
           {/* Form Column */}
           <section className="flex justify-center md:justify-end">
-            <div className="w-full max-w-md rounded-3xl border border-border/70 bg-surface/90 backdrop-blur-xl shadow-[0_20px_60px_rgba(60,42,32,0.12)] p-6 sm:p-8 animate-in slide-in-from-right-8 fade-in duration-700 delay-150 [animation-fill-mode:backwards]">
+            <div className="w-full max-w-md rounded-2xl border border-border bg-surface backdrop-blur-xl p-6 sm:p-8 animate-in slide-in-from-right-8 fade-in duration-700 delay-150 [animation-fill-mode:backwards]">
               <header className="text-center md:text-left mb-6">
                 <h2 className="text-2xl sm:text-3xl font-medium text-foreground">
                   Crie sua Conta

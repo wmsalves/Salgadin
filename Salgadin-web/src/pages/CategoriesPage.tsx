@@ -107,7 +107,7 @@ function CategoryDistributionTooltip({
   const item = payload[0].payload;
 
   return (
-    <div className="min-w-[180px] rounded-2xl border border-border/80 bg-[rgba(24,20,18,0.96)] px-3 py-2.5 shadow-[0_18px_38px_rgba(0,0,0,0.34)] backdrop-blur-sm">
+    <div className="min-w-[180px] rounded-2xl border border-border bg-[rgba(24,20,18,0.96)] px-3 py-2.5 backdrop-blur-sm">
       <p className="text-sm font-medium text-foreground">{item.name}</p>
       <p className="mt-2 text-xs text-foreground-subtle">Gastos no mês</p>
       <p className="text-sm font-medium text-foreground">
@@ -390,7 +390,7 @@ export default function CategoriesPage() {
             placeholder="Nova categoria"
             aria-invalid={createError ? "true" : "false"}
             className={clsx(
-              "flex-1 rounded-xl border bg-surface/70 px-4 py-2 text-sm text-foreground outline-none focus:border-primary/50",
+              "flex-1 rounded-xl border bg-surface px-4 py-2 text-sm text-foreground outline-none focus:border-primary/50",
               createError ? "border-danger/60" : "border-border",
             )}
           />
@@ -398,7 +398,7 @@ export default function CategoriesPage() {
             type="button"
             onClick={handleCreateCategory}
             disabled={isCreating}
-            className="flex items-center gap-2 rounded-xl border border-border bg-surface/70 px-4 py-2 text-sm font-medium text-foreground hover:border-surface-3 hover:bg-surface-2 transition disabled:opacity-60"
+            className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground hover:border-surface-3 hover:bg-surface-2 transition disabled:opacity-60"
           >
             <Plus size={16} />
             {isCreating ? "Salvando..." : "Criar categoria"}
@@ -428,7 +428,7 @@ export default function CategoriesPage() {
       ) : (
         <div className="space-y-6">
           {categoryDistribution.length > 0 && (
-            <section className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)]">
+            <section className="rounded-2xl border border-border bg-surface p-6">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <h2 className="text-base font-medium text-foreground">
@@ -464,7 +464,7 @@ export default function CategoriesPage() {
               </div>
 
               <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(280px,0.9fr)_minmax(0,1.1fr)] xl:items-start">
-                <div className="salgadin-chart h-[280px] rounded-3xl border border-border/60 bg-surface/55 p-3">
+                <div className="salgadin-chart h-[280px] rounded-2xl border border-border bg-surface p-3">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart accessibilityLayer={false} tabIndex={-1}>
                       <Pie
@@ -560,7 +560,7 @@ export default function CategoriesPage() {
                   <div
                     key={cat.id}
                     style={{ animationDelay: `${index * 100}ms` }}
-                    className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+                    className="rounded-2xl border border-border bg-surface p-6 soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
@@ -631,7 +631,7 @@ export default function CategoriesPage() {
                       </div>
                     )}
 
-                    <div className="mt-4 border-t border-border/60 pt-4">
+                    <div className="mt-4 border-t border-border pt-4">
                       <button
                         onClick={() => toggleSubcategories(cat.id)}
                         className="flex w-full items-center justify-between text-xs font-medium text-foreground-muted transition hover:text-foreground"
@@ -701,7 +701,7 @@ export default function CategoriesPage() {
                               ))}
                             </div>
                           ) : (
-                            <div className="rounded-xl border border-dashed border-border bg-surface/60 px-3 py-2 text-xs leading-5 text-foreground-subtle">
+                            <div className="rounded-xl border border-dashed border-border bg-surface px-3 py-2 text-xs leading-5 text-foreground-subtle">
                               Use subcategorias para separar detalhes como café,
                               aplicativo, mercado ou lanche.
                             </div>

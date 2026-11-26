@@ -88,12 +88,12 @@ export function AppShell() {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] text-foreground">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="flex">
         <motion.aside
           animate={{ width: collapsed ? 80 : 256 }}
           transition={MOTION.panel}
-          className="sticky top-0 h-screen border-r border-border/70 bg-surface/95 shadow-[10px_0_24px_rgba(60,42,32,0.06)] hidden md:flex md:flex-col relative"
+          className="sticky top-0 h-screen border-r border-border bg-surface hidden md:flex md:flex-col relative"
         >
           <div className="relative flex items-center justify-center px-4 py-5">
             <NavLink
@@ -127,7 +127,7 @@ export function AppShell() {
 
           <button
             className={clsx(
-              "absolute right-0 top-1/2 z-20 hidden h-16 w-8 -translate-y-1/2 translate-x-1/2 rounded-full border border-border bg-surface text-foreground-muted shadow-[0_12px_28px_rgba(60,42,32,0.12)] transition md:grid place-items-center soft-press",
+              "absolute right-0 top-1/2 z-20 hidden h-16 w-8 -translate-y-1/2 translate-x-1/2 rounded-full border border-border bg-surface text-foreground-muted transition md:grid place-items-center soft-press",
               "hover:text-foreground hover:border-surface-3 hover:bg-surface-2",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
             )}
@@ -135,7 +135,7 @@ export function AppShell() {
             aria-label={collapsed ? "Expandir sidebar" : "Recolher sidebar"}
             title={collapsed ? "Expandir sidebar" : "Recolher sidebar"}
           >
-            <span className="pointer-events-none flex h-10 w-5 items-center justify-center rounded-full border border-border/60 bg-surface-2/80">
+            <span className="pointer-events-none flex h-10 w-5 items-center justify-center rounded-full border border-border bg-surface-2/80">
               {collapsed ? (
                 <ChevronRight size={16} />
               ) : (
@@ -155,7 +155,7 @@ export function AppShell() {
                     clsx(
                       "w-full flex items-center gap-3 rounded-2xl px-3 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] soft-hover-sm",
                       isActive
-                        ? "bg-surface-2 text-primary shadow-[0_10px_20px_rgba(60,42,32,0.08)] translate-x-1"
+                        ? "bg-surface-2 text-primary translate-x-1"
                         : "text-foreground-muted hover:text-foreground hover:bg-surface-2 hover:translate-x-1",
                     )
                   }
@@ -184,7 +184,7 @@ export function AppShell() {
         </motion.aside>
 
         <main className="flex-1 min-w-0">
-          <header className="sticky top-0 z-30 border-b border-border/70 bg-surface/95 shadow-[0_8px_24px_rgba(60,42,32,0.08)]">
+          <header className="sticky top-0 z-30 border-b border-border bg-surface">
             <div className="px-6 lg:px-8 py-3 flex items-center gap-3">
               <NavLink
                 to={homePath}
@@ -226,7 +226,7 @@ export function AppShell() {
                   >
                     <Bell size={18} />
                     {unreadCount > 0 && (
-                      <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 rounded-full bg-danger text-white text-xs font-medium grid place-items-center">
+                      <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 rounded-full bg-danger text-[var(--color-on-primary)] text-xs font-medium grid place-items-center">
                         {unreadCount > 9 ? "9+" : unreadCount}
                       </span>
                     )}
@@ -236,9 +236,9 @@ export function AppShell() {
                     <motion.div
                       {...dropdownMotion}
                       transition={MOTION.smooth}
-                      className="ui-popover-panel absolute left-1/2 z-50 mt-3 max-h-[360px] w-[min(22rem,calc(100vw-1.5rem))] -translate-x-1/2 overflow-auto rounded-2xl border border-border bg-surface shadow-[0_18px_36px_rgba(0,0,0,0.18)] md:left-auto md:right-0 md:w-80 md:translate-x-0"
+                      className="ui-popover-panel absolute left-1/2 z-50 mt-3 max-h-[360px] w-[min(22rem,calc(100vw-1.5rem))] -translate-x-1/2 overflow-auto rounded-2xl border border-border bg-surface md:left-auto md:right-0 md:w-80 md:translate-x-0 shadow-[var(--shadow-overlay)]"
                     >
-                      <div className="p-4 border-b border-border/60 flex items-center justify-between">
+                      <div className="p-4 border-b border-border flex items-center justify-between">
                         <span className="text-sm font-medium text-foreground">
                           Notificações
                         </span>
@@ -324,7 +324,7 @@ export function AppShell() {
                     className="ui-surface-interactive flex items-center gap-2 rounded-full border border-border bg-surface-2 px-2.5 py-2 text-foreground hover:bg-surface-3 soft-press"
                     aria-label="Abrir menu da conta"
                   >
-                    <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-xs font-medium text-white">
+                    <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-xs font-medium text-[var(--color-on-primary)]">
                       {userInitial}
                     </span>
                     <span className="grid h-8 w-8 place-items-center rounded-full bg-primary/12 text-primary">
@@ -344,9 +344,9 @@ export function AppShell() {
                     <motion.div
                       {...dropdownMotion}
                       transition={MOTION.smooth}
-                      className="ui-popover-panel absolute right-0 z-50 mt-3 w-[min(21rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_18px_36px_rgba(0,0,0,0.18)]"
+                      className="ui-popover-panel absolute right-0 z-50 mt-3 w-[min(21rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-overlay)]"
                     >
-                      <div className="border-b border-border/70 bg-surface-2 px-4 py-3">
+                      <div className="border-b border-border bg-surface-2 px-4 py-3">
                         <div className="text-xs text-foreground-muted">Conta</div>
                         <div className="mt-1 text-sm font-medium text-foreground">
                           {firstName}
@@ -370,7 +370,7 @@ export function AppShell() {
                             <Bell size={16} className="text-foreground-muted" />
                             Notificações
                           </span>
-                          <span className="rounded-full bg-danger px-2 py-0.5 text-xs font-medium text-white">
+                          <span className="rounded-full bg-danger px-2 py-0.5 text-xs font-medium text-[var(--color-on-primary)]">
                             {unreadCount > 9 ? "9+" : unreadCount}
                           </span>
                         </button>
@@ -390,7 +390,7 @@ export function AppShell() {
                                 {notifications.map((item) => (
                                   <div
                                     key={item.id}
-                                    className="rounded-xl border border-border/70 bg-surface px-3 py-2.5"
+                                    className="rounded-xl border border-border bg-surface px-3 py-2.5"
                                   >
                                     <div className="flex items-center justify-between gap-2">
                                       <span className="text-xs font-medium text-foreground">
@@ -452,7 +452,7 @@ export function AppShell() {
         </main>
       </div>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/70 bg-surface/98 shadow-[0_-8px_24px_rgba(60,42,32,0.12)] md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-surface md:hidden">
         <div className="mx-auto flex max-w-6xl items-center gap-2 overflow-x-auto px-4 py-2">
           {[
             { to: "/dashboard", label: "Dashboard", icon: LayoutGrid },

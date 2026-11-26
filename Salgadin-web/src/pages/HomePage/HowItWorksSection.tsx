@@ -60,7 +60,7 @@ export function HowItWorksSection() {
         {steps.map((step, index) => (
           <li
             key={step.title}
-            className="rounded-[var(--radius-card)] border border-border bg-surface/90 p-5 shadow-[var(--shadow-card)]"
+            className="rounded-[var(--radius-card)] border border-border bg-surface p-5"
           >
             <div className="flex items-start gap-4">
               <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-surface-2 text-primary">
@@ -86,7 +86,7 @@ export function HowItWorksSection() {
         <div
           role="tablist"
           aria-label="Como funciona - abas"
-          className="relative inline-flex flex-wrap justify-center gap-2 rounded-2xl border border-border bg-surface/80 px-2 py-2 text-sm shadow-[0_12px_30px_rgba(60,42,32,0.08)] backdrop-blur-md sm:gap-3"
+          className="relative inline-flex flex-wrap justify-center gap-2 rounded-2xl border border-border bg-surface px-2 py-2 text-sm backdrop-blur-md sm:gap-3"
         >
           {TABS.map((t) => (
             <button
@@ -153,7 +153,7 @@ export function HowItWorksSection() {
             id={`panel-${activeTab}`}
             role="tabpanel"
             aria-labelledby={`tab-${activeTab}`}
-            className="flex min-h-[380px] items-start justify-center rounded-[var(--radius-card)] border border-border/70 bg-surface/80 p-3 shadow-[var(--shadow-card)] backdrop-blur-xl sm:p-4 md:min-h-[460px]"
+            className="flex min-h-[380px] items-start justify-center rounded-[var(--radius-card)] border border-border bg-surface p-3 backdrop-blur-xl sm:p-4 md:min-h-[460px]"
           >
             <div className="h-full w-full max-w-[520px]">
               <Suspense

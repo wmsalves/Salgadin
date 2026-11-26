@@ -206,15 +206,15 @@ export function AddIncomeModal({
               exit: { opacity: 0 },
             })}
             transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
-            className="bg-surface rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
+            className="bg-surface rounded-xl w-full max-w-md overflow-hidden shadow-[var(--shadow-overlay)]"
           >
-            <div className="bg-gradient-to-r from-emerald-500 to-teal-400 px-6 py-4 flex justify-between items-center">
-              <h2 className="text-lg font-medium text-white">
+            <div className="bg-success px-6 py-4 flex justify-between items-center">
+              <h2 className="text-lg font-medium text-[var(--color-on-primary)]">
                 {isEditing ? "Editar Receita" : "Nova Receita"}
               </h2>
               <button
                 onClick={handleClose}
-                className="ui-surface-interactive rounded-full p-1 text-white hover:bg-white/20"
+                className="ui-surface-interactive rounded-full p-1 text-[var(--color-on-primary)] hover:bg-black/10"
               >
                 <X size={20} />
               </button>
@@ -231,7 +231,7 @@ export function AddIncomeModal({
                   {...register("description")}
                   id="descriptionIncome"
                   type="text"
-                  className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 focus:shadow-lg placeholder:text-foreground-subtle"
+                  className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-success/40 focus:border-success placeholder:text-foreground-subtle"
                   placeholder="Ex: Salário, Rendimentos, Pix..."
                 />
                 {errors.description && (
@@ -272,7 +272,7 @@ export function AddIncomeModal({
                     id="amountIncome"
                     type="text"
                     inputMode="decimal"
-                    className="w-full tabular-nums rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 focus:shadow-lg placeholder:text-foreground-subtle"
+                    className="w-full tabular-nums rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-success/40 focus:border-success placeholder:text-foreground-subtle"
                     placeholder="0,00"
                   />
                   {errors.amount && (
@@ -292,7 +292,7 @@ export function AddIncomeModal({
                     {...register("date")}
                     id="dateIncome"
                     type="date"
-                    className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 focus:shadow-lg"
+                    className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-success/40 focus:border-success"
                   />
                   {errors.date && (
                     <p className="mt-2 text-sm text-danger font-medium">
@@ -307,7 +307,7 @@ export function AddIncomeModal({
                   type="checkbox"
                   id="isFixed"
                   {...register("isFixed")}
-                  className="h-5 w-5 rounded border-border text-emerald-500 focus:ring-emerald-500/40"
+                  className="h-5 w-5 rounded border-border text-success focus:ring-success/40"
                 />
                 <label
                   htmlFor="isFixed"
@@ -362,7 +362,7 @@ export function AddIncomeModal({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex items-center justify-center rounded-xl bg-emerald-500 px-6 py-2.5 text-sm font-medium text-white shadow-lg shadow-emerald-500/30 transition-all hover:bg-emerald-600 disabled:opacity-70"
+                  className="inline-flex items-center justify-center rounded-xl bg-success px-6 py-2.5 text-sm font-medium text-[var(--color-on-primary)] shadow-success/30 transition-all hover:bg-success/90 disabled:opacity-70"
                 >
                   {isSubmitting ? "Salvando..." : isEditing ? "Salvar Alterações" : "Salvar Receita"}
                 </button>

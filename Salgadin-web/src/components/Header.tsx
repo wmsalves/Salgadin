@@ -32,7 +32,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/70 bg-gradient-to-r from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] shadow-[0_12px_35px_rgba(60,42,32,0.12)] relative">
+    <header className="sticky top-0 z-50 border-b border-border bg-background relative">
       <div className="mx-auto flex min-h-[76px] max-w-7xl items-center gap-4 px-4 py-3 relative">
         <Link
           to="/"
@@ -55,7 +55,7 @@ export function Header() {
           </span>
         </Link>
 
-        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-2 text-sm font-medium md:flex">
+        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-2 text-sm font-medium lg:flex">
           {navLinks.map((link) => (
             <button
               key={link.id}
@@ -68,7 +68,7 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="ml-auto hidden md:flex items-center gap-3">
+        <div className="ml-auto hidden lg:flex items-center gap-3">
           <button
             type="button"
             onClick={toggleTheme}
@@ -104,7 +104,7 @@ export function Header() {
               </Link>
               <Link
                 to="/signup"
-                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-4 py-2 text-sm font-medium text-[var(--color-on-primary)] shadow-[0_10px_24px_rgba(60,42,32,0.16)] ui-pressable focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-4 py-2 text-sm font-medium text-[var(--color-on-primary)] ui-pressable focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
               >
                 Começar grátis
               </Link>
@@ -112,7 +112,7 @@ export function Header() {
           )}
         </div>
 
-        <div className="ml-auto md:hidden flex items-center gap-2">
+        <div className="ml-auto lg:hidden flex items-center gap-2">
           <button
             type="button"
             onClick={toggleTheme}
@@ -144,7 +144,7 @@ export function Header() {
               exit: { opacity: 0 },
             })}
             transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
-            className="ui-popover-panel absolute left-0 right-0 top-full border-t border-border bg-surface/95 shadow-[0_18px_42px_rgba(60,42,32,0.14)] md:hidden"
+            className="ui-popover-panel absolute left-0 right-0 top-full border-t border-border bg-surface lg:hidden shadow-[var(--shadow-overlay)]"
             id="mobile-navigation"
           >
             <nav className="flex flex-col items-stretch gap-2 px-4 py-4">
@@ -187,7 +187,7 @@ export function Header() {
                     <Link
                       to="/signup"
                       onClick={() => handleLinkClick()}
-                      className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-4 py-2 text-center text-sm font-medium text-[var(--color-on-primary)] shadow-[0_10px_24px_rgba(60,42,32,0.14)] ui-pressable focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                      className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-4 py-2 text-center text-sm font-medium text-[var(--color-on-primary)] ui-pressable focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                     >
                       Começar grátis
                     </Link>

@@ -57,7 +57,7 @@ function adjustHex(hex: string, amount: number) {
 function MockupShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="w-full h-[600px] bg-surface-2 p-3 rounded-2xl">
-      <div className="w-full h-full bg-surface border border-border rounded-2xl shadow-lg p-4 flex flex-col">
+      <div className="w-full h-full bg-surface border border-border rounded-2xl p-4 flex flex-col">
         {children}
       </div>
     </div>
@@ -74,14 +74,14 @@ export const DashboardMockup = () => {
         </span>
       </div>
       <div className="mt-3 grid grid-cols-2 gap-2">
-        <div className="bg-surface-2 p-2 rounded-xl border border-border/60">
+        <div className="bg-surface-2 p-2 rounded-xl border border-border">
           <div className="flex items-center text-xs text-foreground-subtle">
             <ArrowUpRight size={12} className="mr-1 text-success" />
             Receita Total
           </div>
           <p className="font-medium text-base text-primary">R$ 3.500,00</p>
         </div>
-        <div className="bg-surface-2 p-2 rounded-xl border border-border/60">
+        <div className="bg-surface-2 p-2 rounded-xl border border-border">
           <div className="flex items-center text-xs text-foreground-subtle">
             <ArrowDownLeft size={12} className="mr-1 text-danger" />
             Despesa Total
@@ -90,7 +90,7 @@ export const DashboardMockup = () => {
         </div>
       </div>
 
-      <div className="bg-gradient-to-b from-[var(--bg-via)] to-[var(--bg-to)]/60 p-3 rounded-2xl shadow-sm flex flex-col mt-3 border border-border/70 h-[200px]">
+      <div className="bg-surface-2 p-3 rounded-2xl flex flex-col mt-3 border border-border h-[200px]">
         <div className="flex items-center justify-between">
           <p className="text-xs font-medium text-foreground-muted">
             Fluxo de caixa
@@ -259,17 +259,17 @@ export const ExpensesMockup = () => (
     </div>
 
     <div className="mt-3 grid grid-cols-2 gap-2">
-      <div className="bg-surface-2 rounded-xl p-2 border border-border/60">
+      <div className="bg-surface-2 rounded-xl p-2 border border-border">
         <p className="text-xs text-foreground-subtle">Total</p>
         <p className="text-sm font-medium text-danger">- R$ 1.980,00</p>
       </div>
-      <div className="bg-surface-2 rounded-xl p-2 border border-border/60">
+      <div className="bg-surface-2 rounded-xl p-2 border border-border">
         <p className="text-xs text-foreground-subtle">Maior categoria</p>
         <p className="text-sm font-medium text-primary">Alimentação</p>
       </div>
     </div>
 
-    <div className="bg-gradient-to-b from-[var(--bg-via)] to-[var(--bg-to)]/60 rounded-2xl border border-border/70 p-3 mt-3 h-[140px]">
+    <div className="bg-surface-2 rounded-2xl border border-border p-3 mt-3 h-[140px]">
       <div className="flex items-center justify-between">
         <p className="text-xs font-medium text-foreground-muted">
           Tendência semanal
@@ -312,7 +312,7 @@ export const ExpensesMockup = () => (
       {mockExpenses.slice(0, 4).map((item) => (
         <div
           key={item.title}
-          className="bg-surface p-2 rounded-xl shadow-sm flex items-center gap-3 transition-colors hover:bg-surface-2 soft-hover-sm"
+          className="bg-surface p-2 rounded-xl flex items-center gap-3 transition-colors hover:bg-surface-2 soft-hover-sm"
         >
           <div
             className={clsx(
@@ -445,7 +445,7 @@ export const GoalsMockup = () => {
         {mockGoals.map((goal) => (
           <div
             key={goal.title}
-            className="bg-surface p-3 rounded-xl shadow-sm transition-colors hover:bg-surface-2 soft-hover-sm"
+            className="bg-surface p-3 rounded-xl transition-colors hover:bg-surface-2 soft-hover-sm"
           >
             <div className="flex items-center justify-between text-sm font-medium">
               <div className="flex items-center gap-2">

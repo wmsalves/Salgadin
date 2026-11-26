@@ -18,7 +18,7 @@ export function FeaturesSection() {
         {features.map((feature) => (
           <div
             key={feature.title}
-            className="rounded-[var(--radius-card)] border border-border bg-surface p-5 shadow-[var(--shadow-card)] sm:p-6"
+            className="rounded-[var(--radius-card)] border border-border bg-surface p-5 sm:p-6"
           >
             <div className="flex items-start gap-4">
               <div
@@ -50,7 +50,7 @@ export function FeaturesSection() {
         ))}
       </div>
 
-      <div className="mt-12 rounded-[var(--radius-card)] border border-border/70 bg-surface/85 p-6 shadow-[var(--shadow-card)] sm:p-8">
+      <div className="mt-12 rounded-[var(--radius-card)] border border-border bg-surface p-6 sm:p-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-2xl">
             <h3 className="text-xl font-medium text-foreground sm:text-2xl">
@@ -67,9 +67,9 @@ export function FeaturesSection() {
           {differentiators.map((item) => (
             <div
               key={item.title}
-              className="rounded-2xl border border-border/70 bg-surface-2/55 p-4 sm:p-5"
+              className="rounded-2xl border border-border bg-surface-2/55 p-4 sm:p-5"
             >
-              <div className="grid h-11 w-11 place-items-center rounded-xl bg-surface text-primary shadow-[0_8px_18px_rgba(60,42,32,0.08)]">
+              <div className="grid h-11 w-11 place-items-center rounded-xl bg-surface text-primary">
                 <item.icon className="h-5 w-5" aria-hidden="true" />
               </div>
               <h4 className="mt-4 text-sm font-medium text-foreground">{item.title}</h4>

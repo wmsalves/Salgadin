@@ -9,75 +9,87 @@
   --motion-slow: 360ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-  --ring-color: 184 88 47;
-  --motion-hover: 220ms;
+  --motion-hover: 200ms;
   --motion-enter: 280ms;
-  --radius-control: 14px;
-  --radius-card: 24px;
-  --shadow-card: 0 18px 45px rgb(var(--shadow-color) / 0.12);
-  --shadow-card-hover: 0 24px 60px rgb(var(--shadow-color) / 0.18);
-  --color-bg: #fff7f1;
-  --color-surface: #fffdf9;
-  --color-surface-2: #fff0e6;
-  --color-surface-3: #f9e2d3;
-  --color-border: #f0d5c2;
-  --color-text: #3b2a20;
-  --color-text-muted: #5f4739;
-  --color-text-subtle: #7f6251;
-  --color-primary: #b8582f;
-  --color-primary-strong: #94401f;
-  --color-accent: #a9651e;
-  --color-accent-strong: #854b15;
-  --color-on-primary: #fffaf6;
-  --color-danger: #e35d6a;
-  --color-danger-strong: #c84b56;
-  --color-success: #2f8b6d;
-  --color-warning: #b87919;
-  --brand-from: #f5b36b;
-  --brand-to: #dc7241;
-  --brand-from-strong: #b86a1d;
-  --brand-to-strong: #a94722;
-  --bg-from: #fff7f1;
-  --bg-via: #fff0e6;
-  --bg-to: #f9e2d3;
-  --chart-muted: #765948;
-  --chart-small-expense: #d96536;
-  --chart-high-expense: #a9651e;
-  --chart-reference: #9d745c;
-  --shadow-color: 60 42 32;
+
+  /* Forma: raio menor, borda no lugar de sombra. */
+  --radius-control: 10px;
+  --radius-card: 16px;
+  --shadow-color: 28 25 23;
+  --shadow-card: 0 1px 2px rgb(var(--shadow-color) / 0.04);
+  --shadow-card-hover: 0 4px 14px rgb(var(--shadow-color) / 0.07);
+  --shadow-overlay: 0 24px 64px rgb(var(--shadow-color) / 0.18),
+    0 2px 8px rgb(var(--shadow-color) / 0.08);
+
+  /* Superficies neutras (levemente quentes). O laranja da coxinha e o
+     unico acento: acao principal e numero principal da tela. */
+  --color-bg: #f7f6f3;
+  --color-surface: #ffffff;
+  --color-surface-2: #f3f1ed;
+  --color-surface-3: #e9e6e1;
+  --color-border: #e5e1db;
+  --color-text: #1c1917;
+  --color-text-muted: #57534e;
+  --color-text-subtle: #736c66;
+  --color-primary: #c2521c;
+  --color-primary-strong: #9c4114;
+  --color-accent: #9c4114;
+  --color-accent-strong: #7c3410;
+  --color-on-primary: #ffffff;
+
+  /* Cores semanticas: so para entrada, saida e alertas. */
+  --color-danger: #c8354a;
+  --color-danger-strong: #a72a3c;
+  --color-success: #1d7a55;
+  --color-warning: #a16207;
+
+  /* Compatibilidade: gradientes antigos viram cor solida. */
+  --brand-from: var(--color-primary);
+  --brand-to: var(--color-primary);
+  --brand-from-strong: var(--color-primary-strong);
+  --brand-to-strong: var(--color-primary-strong);
+  --bg-from: var(--color-bg);
+  --bg-via: var(--color-bg);
+  --bg-to: var(--color-bg);
+
+  --ring-color: 194 82 28;
+  --chart-muted: #a8a29e;
+  --chart-small-expense: #c2521c;
+  --chart-high-expense: #7c3410;
+  --chart-reference: #a8a29e;
 }
 
 .dark {
   color-scheme: dark;
-  --color-bg: #2a1e1a;
-  --color-surface: #332420;
-  --color-surface-2: #3b2a26;
-  --color-surface-3: #4a342f;
-  --color-border: #5a3f37;
-  --color-text: #f7ece5;
-  --color-text-muted: #d3bfb2;
-  --color-text-subtle: #c2a696;
-  --color-primary: #ff9d6c;
-  --color-primary-strong: #ffb28a;
-  --color-accent: #f6bf73;
-  --color-accent-strong: #ffd093;
-  --color-on-primary: #2a1e1a;
-  --color-danger: #e07a84;
-  --color-danger-strong: #c9656f;
-  --color-success: #75d3b0;
-  --color-warning: #f4ca6f;
-  --brand-from: #f5b36b;
-  --brand-to: #f28b5b;
-  --brand-from-strong: #e89a4f;
-  --brand-to-strong: #e76a3c;
-  --bg-from: #2a1e1a;
-  --bg-via: #332420;
-  --bg-to: #2a1e1a;
-  --chart-muted: #d7c2b4;
-  --chart-small-expense: #ff9d6c;
-  --chart-high-expense: #f6bf73;
-  --chart-reference: #caa18c;
-  --shadow-color: 28 18 14;
+  --shadow-color: 0 0 0;
+  --shadow-card: 0 0 0 transparent;
+  --shadow-card-hover: 0 4px 14px rgb(0 0 0 / 0.35);
+  --shadow-overlay: 0 24px 64px rgb(0 0 0 / 0.55), 0 0 0 1px rgb(255 255 255 / 0.04);
+
+  --color-bg: #100f0e;
+  --color-surface: #191817;
+  --color-surface-2: #211f1d;
+  --color-surface-3: #2b2826;
+  --color-border: #2e2b28;
+  --color-text: #f5f3f0;
+  --color-text-muted: #bcb5ae;
+  --color-text-subtle: #948d86;
+  --color-primary: #f28a4f;
+  --color-primary-strong: #f7a372;
+  --color-accent: #f7a372;
+  --color-accent-strong: #fbbd93;
+  --color-on-primary: #1a0e07;
+
+  --color-danger: #f17c8b;
+  --color-danger-strong: #e2647a;
+  --color-success: #5cc79b;
+  --color-warning: #e5b45a;
+
+  --ring-color: 242 138 79;
+  --chart-muted: #8f8981;
+  --chart-small-expense: #f28a4f;
+  --chart-high-expense: #fbbd93;
+  --chart-reference: #8f8981;
 }
 
 body {
@@ -208,8 +220,7 @@ body,
 
 @media (hover: hover) and (pointer: fine) {
   .ui-pressable:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 32px rgb(var(--shadow-color) / 0.16);
+    transform: translateY(-1px);
   }
 }
 
@@ -218,8 +229,7 @@ body,
 }
 
 .ui-pressable:focus-visible {
-  box-shadow: 0 0 0 3px rgb(var(--ring-color) / 0.35),
-    0 16px 32px rgb(var(--shadow-color) / 0.18);
+  box-shadow: 0 0 0 3px rgb(var(--ring-color) / 0.35);
 }
 
 .ui-card {
@@ -266,8 +276,7 @@ body,
 
 @media (hover: hover) and (pointer: fine) {
   .ui-surface-interactive:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 14px 28px rgb(var(--shadow-color) / 0.1);
+    background-color: var(--color-surface-2);
   }
 }
 

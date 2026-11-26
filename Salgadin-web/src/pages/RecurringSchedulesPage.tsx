@@ -399,7 +399,7 @@ export default function RecurringSchedulesPage() {
           return (
             <div
               key={item.label}
-              className="rounded-2xl border border-border/70 bg-surface/92 p-4 shadow-[0_14px_30px_rgba(60,42,32,0.08)]"
+              className="rounded-2xl border border-border bg-surface p-4"
             >
               <div className="flex items-center justify-between gap-3">
                 <span className="text-xs text-foreground-subtle">
@@ -423,7 +423,7 @@ export default function RecurringSchedulesPage() {
       </section>
 
       {isFormOpen && (
-        <section className="rounded-3xl border border-border/70 bg-surface/92 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)]">
+        <section className="rounded-2xl border border-border bg-surface p-5">
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>
               <h2 className="text-base font-medium text-foreground">
@@ -642,7 +642,7 @@ export default function RecurringSchedulesPage() {
         </div>
       )}
 
-      <section className="rounded-2xl border border-border bg-surface/70 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.10)]">
+      <section className="rounded-2xl border border-border bg-surface p-4">
         <div className="flex flex-wrap items-center gap-2">
           {filterOptions.map((option) => (
             <button
@@ -652,7 +652,7 @@ export default function RecurringSchedulesPage() {
               className={clsx(
                 "min-h-10 rounded-full px-4 py-2 text-xs font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
                 filter === option.value
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-[var(--color-on-primary)]"
                   : "border border-border text-foreground-muted hover:bg-surface-2 hover:text-foreground",
               )}
             >
@@ -663,7 +663,7 @@ export default function RecurringSchedulesPage() {
       </section>
 
       {isLoading ? (
-        <div className="rounded-3xl border border-border/70 bg-surface/92 p-8 text-sm text-foreground-subtle">
+        <div className="rounded-2xl border border-border bg-surface p-8 text-sm text-foreground-subtle">
           Carregando recorrências...
         </div>
       ) : schedules.length === 0 ? (
@@ -693,7 +693,7 @@ export default function RecurringSchedulesPage() {
             return (
               <article
                 key={schedule.id}
-                className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover"
+                className="rounded-2xl border border-border bg-surface p-5 soft-hover"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div className="flex min-w-0 items-start gap-3">
@@ -735,7 +735,7 @@ export default function RecurringSchedulesPage() {
                 </div>
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-border bg-surface/80 px-4 py-3">
+                  <div className="rounded-2xl border border-border bg-surface px-4 py-3">
                     <div className="text-xs text-foreground-subtle">
                       Dia
                     </div>
@@ -743,7 +743,7 @@ export default function RecurringSchedulesPage() {
                       {formatBillingDay(schedule.dayOfMonth)}
                     </div>
                   </div>
-                  <div className="rounded-2xl border border-border bg-surface/80 px-4 py-3">
+                  <div className="rounded-2xl border border-border bg-surface px-4 py-3">
                     <div className="text-xs text-foreground-subtle">
                       Próxima
                     </div>
@@ -751,7 +751,7 @@ export default function RecurringSchedulesPage() {
                       {formatDisplayDate(schedule.nextOccurrenceDate)}
                     </div>
                   </div>
-                  <div className="rounded-2xl border border-border bg-surface/80 px-4 py-3">
+                  <div className="rounded-2xl border border-border bg-surface px-4 py-3">
                     <div className="text-xs text-foreground-subtle">
                       Fim
                     </div>

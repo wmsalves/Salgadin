@@ -4,7 +4,7 @@ import { trustItems } from "./content";
 export function TrustSection() {
   return (
     <section id="trust" className="mx-auto max-w-6xl px-4 py-20 sm:py-28">
-      <div className="rounded-[var(--radius-card)] border border-border/70 bg-surface/90 p-6 shadow-[var(--shadow-card)] sm:p-8">
+      <div className="rounded-[var(--radius-card)] border border-border bg-surface p-6 sm:p-8">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)]">
           <div>
             <h2 className="text-3xl font-medium text-foreground sm:text-4xl">
@@ -15,7 +15,7 @@ export function TrustSection() {
               próprios lançamentos. Nada de senha de banco ou acesso automático
               às suas contas.
             </p>
-            <div className="mt-6 rounded-2xl border border-border/70 bg-surface-2/55 p-4 text-ui text-foreground-muted">
+            <div className="mt-6 rounded-2xl border border-border bg-surface-2/55 p-4 text-ui text-foreground-muted">
               <div className="flex items-start gap-3">
                 <LockKeyhole size={18} className="mt-0.5 shrink-0 text-accent" aria-hidden="true" />
                 <p>
@@ -30,9 +30,9 @@ export function TrustSection() {
             {trustItems.map((item) => (
               <div
                 key={item.title}
-                className="rounded-2xl border border-border/70 bg-surface-2/50 p-5"
+                className="rounded-2xl border border-border bg-surface-2/50 p-5"
               >
-                <div className="grid h-11 w-11 place-items-center rounded-xl bg-surface text-primary shadow-[0_8px_18px_rgba(60,42,32,0.08)]">
+                <div className="grid h-11 w-11 place-items-center rounded-xl bg-surface text-primary">
                   <item.icon className="h-5 w-5" aria-hidden="true" />
                 </div>
                 <h3 className="mt-4 text-sm font-medium text-foreground">{item.title}</h3>

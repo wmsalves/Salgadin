@@ -211,14 +211,14 @@ export default function ReportsPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => handleExport("csv")}
-            className="flex items-center gap-2 rounded-xl border border-border bg-surface/70 px-4 py-2 text-sm font-medium text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
+            className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
           >
             <Download size={16} />
             CSV
           </button>
           <button
             onClick={() => handleExport("pdf")}
-            className="flex items-center gap-2 rounded-xl border border-border bg-surface/70 px-4 py-2 text-sm font-medium text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
+            className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
           >
             <Download size={16} />
             PDF
@@ -226,7 +226,7 @@ export default function ReportsPage() {
         </div>
       </header>
 
-      <section className="rounded-2xl border border-border bg-surface/70 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
+      <section className="rounded-2xl border border-border bg-surface p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2 text-sm text-foreground-muted">
             <CalendarRange size={16} />
@@ -237,7 +237,7 @@ export default function ReportsPage() {
               onClick={() => setMode("monthly")}
               className={`rounded-full px-4 py-2 text-xs font-medium ${
                 mode === "monthly"
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-[var(--color-on-primary)]"
                   : "border border-border text-foreground-muted"
               }`}
             >
@@ -247,7 +247,7 @@ export default function ReportsPage() {
               onClick={() => setMode("weekly")}
               className={`rounded-full px-4 py-2 text-xs font-medium ${
                 mode === "weekly"
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-[var(--color-on-primary)]"
                   : "border border-border text-foreground-muted"
               }`}
             >
@@ -404,7 +404,7 @@ export default function ReportsPage() {
       </section>
 
       {!report ? (
-        <div className="rounded-3xl border border-border/70 bg-surface/92 p-12 text-center text-foreground-subtle flex flex-col items-center justify-center gap-4 animate-in fade-in duration-500">
+        <div className="rounded-2xl border border-border bg-surface p-12 text-center text-foreground-subtle flex flex-col items-center justify-center gap-4 animate-in fade-in duration-500">
           <div className="h-10 w-10 text-primary animate-spin">
             <svg
               className="h-full w-full"
@@ -472,7 +472,7 @@ export default function ReportsPage() {
             </div>
           )}
           {summary && summary.insights.length > 0 && (
-            <div className="xl:col-span-3 rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)]">
+            <div className="xl:col-span-3 rounded-2xl border border-border bg-surface p-6">
               <h2 className="text-base font-medium text-foreground mb-4">
                 Insights automáticos
               </h2>
@@ -502,7 +502,7 @@ export default function ReportsPage() {
             </div>
           )}
           <div
-            className="xl:col-span-2 rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+            className="xl:col-span-2 rounded-2xl border border-border bg-surface p-6 soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
             style={{ animationDelay: "0ms" }}
           >
             <div className="flex items-center justify-between mb-4">
@@ -605,7 +605,7 @@ export default function ReportsPage() {
           </div>
 
           <div
-            className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+            className="rounded-2xl border border-border bg-surface p-6 soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
             style={{ animationDelay: "150ms" }}
           >
             <h2 className="text-base font-medium text-foreground mb-4">

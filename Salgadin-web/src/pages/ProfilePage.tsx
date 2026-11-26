@@ -102,7 +102,7 @@ function SettingsCard({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] sm:p-6">
+    <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
       <div className="mb-5 flex items-start gap-3">
         <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-primary/12 text-primary">
           <Icon size={18} />
@@ -425,7 +425,7 @@ export default function ProfilePage() {
           {[0, 1, 2].map((item) => (
             <div
               key={item}
-              className="h-48 animate-pulse rounded-3xl border border-border/70 bg-surface-2"
+              className="h-48 animate-pulse rounded-2xl border border-border bg-surface-2"
             />
           ))}
         </div>
@@ -457,10 +457,10 @@ export default function ProfilePage() {
         </div>
       )}
 
-      <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] sm:p-6">
+      <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-full bg-primary text-xl font-medium text-white">
+            <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-full bg-primary text-xl font-medium text-[var(--color-on-primary)]">
               {profile?.avatarUrl ? (
                 <img
                   src={profile.avatarUrl}
@@ -657,7 +657,7 @@ export default function ProfilePage() {
               <button
                 onClick={handleSaveProfile}
                 disabled={isSavingProfile}
-                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
+                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-[var(--color-on-primary)] transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
               >
                 {isSavingProfile ? "Salvando..." : "Salvar conta"}
               </button>
@@ -743,7 +743,7 @@ export default function ProfilePage() {
               </div>
               <button
                 onClick={handleSavePreferences}
-                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
+                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-[var(--color-on-primary)] transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
                 disabled={isSaving}
               >
                 {isSaving ? "Salvando..." : "Salvar preferências"}
@@ -771,7 +771,7 @@ export default function ProfilePage() {
                     <button
                       onClick={handleExportExpenses}
                       disabled={isExportingExpenses || !hasExpenses}
-                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-[var(--color-on-primary)] transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       <Download size={16} />
                       {isExportingExpenses
@@ -869,7 +869,7 @@ export default function ProfilePage() {
                     <button
                       onClick={handleGenerateWhatsAppCode}
                       disabled={isGeneratingWhatsAppCode}
-                      className="rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                      className="rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-[var(--color-on-primary)] transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       {isGeneratingWhatsAppCode
                         ? "Gerando..."
@@ -974,7 +974,7 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] sm:p-6">
+      <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-base font-medium text-foreground">

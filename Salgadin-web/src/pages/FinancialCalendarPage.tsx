@@ -122,7 +122,7 @@ export default function FinancialCalendarPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
-      <section className="rounded-3xl border border-border/70 bg-surface/90 p-5 shadow-[0_18px_42px_rgba(60,42,32,0.08)] md:p-6">
+      <section className="rounded-2xl border border-border bg-surface p-5 md:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h1 className="text-2xl font-medium text-foreground">
@@ -198,7 +198,7 @@ export default function FinancialCalendarPage() {
         <CalendarSkeleton />
       ) : calendar ? (
         <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
-          <div className="rounded-3xl border border-border/70 bg-surface/90 p-4 shadow-[0_18px_42px_rgba(60,42,32,0.08)] md:p-5">
+          <div className="rounded-2xl border border-border bg-surface p-4 md:p-5">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-base font-medium text-foreground">
@@ -248,7 +248,7 @@ function SummaryCard({
   isLoading: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-border/70 bg-surface-2/80 px-4 py-3">
+    <div className="rounded-2xl border border-border bg-surface-2/80 px-4 py-3">
       <p className="text-xs font-medium text-foreground-muted">
         {label}
       </p>
@@ -294,7 +294,7 @@ function DesktopCalendarGrid({
         {Array.from({ length: leadingBlankDays }).map((_, index) => (
           <div
             key={`blank-${index}`}
-            className="min-h-32 rounded-2xl border border-dashed border-border/40 bg-surface-2/20"
+            className="min-h-32 rounded-2xl border border-dashed border-border bg-surface-2/20"
           />
         ))}
 
@@ -334,8 +334,8 @@ function CalendarDayCell({
       className={clsx(
         "min-h-28 min-w-0 rounded-2xl border p-2.5 text-left transition-colors hover:border-primary/30 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
         isSelected
-          ? "border-primary/45 bg-primary/10 shadow-[0_12px_28px_rgba(198,125,63,0.14)]"
-          : "border-border/70 bg-surface-2/55",
+          ? "border-primary/45 bg-primary/10"
+          : "border-border bg-surface-2/55",
       )}
     >
       <div className="flex items-start justify-between gap-2">
@@ -401,7 +401,7 @@ function MobileCalendarTimeline({
               "w-full rounded-2xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
               isSelected
                 ? "border-primary/45 bg-primary/10"
-                : "border-border/70 bg-surface-2/55",
+                : "border-border bg-surface-2/55",
             )}
           >
             <div className="flex items-start justify-between gap-3">
@@ -446,14 +446,14 @@ function MobileCalendarTimeline({
 function DayDetailsPanel({ day }: { day: CalendarDay | null }) {
   if (!day) {
     return (
-      <aside className="rounded-3xl border border-border/70 bg-surface/90 p-5 text-sm text-foreground-muted shadow-[0_18px_42px_rgba(60,42,32,0.08)]">
+      <aside className="rounded-2xl border border-border bg-surface p-5 text-sm text-foreground-muted">
         Selecione um dia para ver os detalhes.
       </aside>
     );
   }
 
   return (
-    <aside className="h-fit rounded-3xl border border-border/70 bg-surface/90 p-5 shadow-[0_18px_42px_rgba(60,42,32,0.08)] xl:sticky xl:top-24">
+    <aside className="h-fit rounded-2xl border border-border bg-surface p-5 xl:sticky xl:top-24">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-medium text-foreground-muted">
@@ -534,7 +534,7 @@ function EntrySection({
       </div>
 
       {items.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-border/70 bg-surface-2/40 px-3 py-3 text-sm text-foreground-subtle">
+        <p className="rounded-2xl border border-dashed border-border bg-surface-2/40 px-3 py-3 text-sm text-foreground-subtle">
           {emptyText}
         </p>
       ) : (
@@ -542,7 +542,7 @@ function EntrySection({
           {items.map((item) => (
             <div
               key={`${item.type}-${item.id}`}
-              className="rounded-2xl border border-border/70 bg-surface-2/55 px-3 py-3"
+              className="rounded-2xl border border-border bg-surface-2/55 px-3 py-3"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -582,7 +582,7 @@ function RecurringSection({ items }: { items: CalendarRecurringItem[] }) {
       </div>
 
       {items.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border/70 bg-surface-2/40 px-3 py-3 text-sm text-foreground-subtle">
+        <div className="rounded-2xl border border-dashed border-border bg-surface-2/40 px-3 py-3 text-sm text-foreground-subtle">
           Nenhuma recorrência prevista para este dia.
         </div>
       ) : (
@@ -590,7 +590,7 @@ function RecurringSection({ items }: { items: CalendarRecurringItem[] }) {
           {items.map((item) => (
             <div
               key={`${item.type}-${item.id}`}
-              className="rounded-2xl border border-border/70 bg-surface-2/55 px-3 py-3"
+              className="rounded-2xl border border-border bg-surface-2/55 px-3 py-3"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -681,7 +681,7 @@ function MobileAmount({
   tone: "positive" | "negative";
 }) {
   return (
-    <div className="rounded-xl border border-border/70 bg-surface px-3 py-2">
+    <div className="rounded-xl border border-border bg-surface px-3 py-2">
       <p className="text-xs text-foreground-subtle">{label}</p>
       <p
         className={clsx(
@@ -714,7 +714,7 @@ function StatusBadge({ status }: { status: CalendarRecurringItem["status"] }) {
 function CalendarSkeleton() {
   return (
     <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
-      <div className="rounded-3xl border border-border/70 bg-surface/90 p-5">
+      <div className="rounded-2xl border border-border bg-surface p-5">
         <div className="grid grid-cols-7 gap-2">
           {Array.from({ length: 35 }).map((_, index) => (
             <div
@@ -724,7 +724,7 @@ function CalendarSkeleton() {
           ))}
         </div>
       </div>
-      <div className="rounded-3xl border border-border/70 bg-surface/90 p-5">
+      <div className="rounded-2xl border border-border bg-surface p-5">
         <div className="h-6 w-40 animate-pulse rounded-full bg-surface-2/80" />
         <div className="mt-5 space-y-3">
           <div className="h-20 animate-pulse rounded-2xl bg-surface-2/80" />

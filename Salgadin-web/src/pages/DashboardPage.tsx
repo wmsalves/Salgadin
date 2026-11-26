@@ -227,7 +227,7 @@ function CategoryChartTooltip({
   }
 
   return (
-    <div className="min-w-[148px] rounded-2xl border border-border/80 bg-[rgba(24,18,15,0.96)] px-3.5 py-3 shadow-[0_16px_36px_rgba(12,9,7,0.28)] backdrop-blur-sm">
+    <div className="min-w-[148px] rounded-2xl border border-border bg-[rgba(24,18,15,0.96)] px-3.5 py-3 backdrop-blur-sm">
       <p className="text-xs font-medium text-foreground-muted">
         {category.name}
       </p>
@@ -250,7 +250,7 @@ function CashflowTooltip({
   }
 
   return (
-    <div className="min-w-[188px] rounded-2xl border border-border/80 bg-[rgba(24,18,15,0.96)] px-3.5 py-3 shadow-[0_16px_36px_rgba(12,9,7,0.28)] backdrop-blur-sm">
+    <div className="min-w-[188px] rounded-2xl border border-border bg-[rgba(24,18,15,0.96)] px-3.5 py-3 backdrop-blur-sm">
       <p className="text-xs font-medium text-foreground-muted">
         {point.tooltipLabel}
       </p>
@@ -268,7 +268,7 @@ function CashflowTooltip({
               {formatCurrency(point.dailyExpense)}
             </span>
           </div>
-          <div className="flex items-center justify-between gap-4 border-t border-border/70 pt-1.5 text-sm">
+          <div className="flex items-center justify-between gap-4 border-t border-border pt-1.5 text-sm">
             <span className="text-foreground-muted">Saldo acumulado</span>
             <span
               className={clsx(
@@ -654,7 +654,7 @@ export default function DashboardPage() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-[140px] rounded-3xl border border-border/40 bg-surface/50 p-5 flex flex-col justify-between"
+              className="h-[140px] rounded-2xl border border-border bg-surface p-5 flex flex-col justify-between"
             >
               <div className="flex justify-between">
                 <div>
@@ -695,7 +695,7 @@ export default function DashboardPage() {
                 setIsAddIncomeModalOpen(true);
                 setIsFabOpen(false);
               }}
-              className="flex items-center gap-2 rounded-full bg-success px-5 py-3 text-sm font-medium text-white shadow-lg"
+              className="flex items-center gap-2 rounded-full bg-success px-5 py-3 text-sm font-medium text-[var(--color-on-primary)]"
             >
               Nova Receita <ArrowUpRight size={18} />
             </button>
@@ -705,7 +705,7 @@ export default function DashboardPage() {
                 setIsAddExpenseModalOpen(true);
                 setIsFabOpen(false);
               }}
-              className="flex items-center gap-2 rounded-full bg-danger-strong px-5 py-3 text-sm font-medium text-white shadow-lg"
+              className="flex items-center gap-2 rounded-full bg-danger-strong px-5 py-3 text-sm font-medium text-[var(--color-on-primary)]"
             >
               Nova Despesa <ArrowDownRight size={18} />
             </button>
@@ -714,10 +714,10 @@ export default function DashboardPage() {
         <button
           onClick={() => setIsFabOpen(!isFabOpen)}
           className={clsx(
-            "flex h-14 w-14 items-center justify-center rounded-full shadow-[0_8px_30px_rgb(var(--shadow-color)/0.3)] transition-transform",
+            "flex h-14 w-14 items-center justify-center rounded-full transition-transform",
             isFabOpen
               ? "rotate-45 bg-surface-3 text-foreground"
-              : "bg-primary text-white",
+              : "bg-primary text-[var(--color-on-primary)]",
           )}
         >
           <Plus size={26} />
@@ -725,14 +725,14 @@ export default function DashboardPage() {
       </div>
 
       <header className="flex flex-col gap-3">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="hidden sm:block">
             <h1 className="text-2xl font-medium text-foreground">
               Seu painel financeiro
             </h1>
           </div>
 
-          <div className="flex w-full items-center justify-center gap-2 rounded-full border border-border bg-surface-2 px-4 py-2 shadow-sm sm:w-auto">
+          <div className="flex w-full items-center justify-center gap-2 rounded-full border border-border bg-surface-2 px-4 py-2 sm:w-auto">
             <button
               onClick={handlePrevMonth}
               className="rounded-full p-1 text-foreground-muted transition hover:bg-surface-3 hover:text-foreground"
@@ -753,13 +753,13 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          <div className="hidden items-center gap-3 sm:flex">
+          <div className="hidden flex-wrap items-center gap-3 sm:flex">
             <button
               onClick={() => {
                 setIncomeToEdit(null);
                 setIsAddIncomeModalOpen(true);
               }}
-              className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-success/40 bg-success/10 px-4 py-2 text-ui font-medium text-success transition-colors hover:bg-success hover:text-white"
+              className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-success/40 bg-success/10 px-4 py-2 text-ui font-medium text-success transition-colors hover:bg-success hover:text-[var(--color-on-primary)]"
             >
               <Plus size={16} />
               Nova receita
@@ -769,7 +769,7 @@ export default function DashboardPage() {
                 setExpenseToEdit(null);
                 setIsAddExpenseModalOpen(true);
               }}
-              className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-border bg-surface/80 px-4 py-2 text-ui font-medium text-foreground transition-colors hover:border-surface-3 hover:bg-surface-2"
+              className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-border bg-surface px-4 py-2 text-ui font-medium text-foreground transition-colors hover:border-surface-3 hover:bg-surface-2"
             >
               <Plus size={16} />
               Nova despesa
@@ -779,7 +779,7 @@ export default function DashboardPage() {
       </header>
 
       {shouldShowGuidedStart && (
-        <section className="rounded-3xl border border-primary/24 bg-gradient-to-br from-primary/12 via-surface/92 to-surface-2/82 p-5 shadow-[0_18px_42px_rgba(60,42,32,0.12)] sm:p-7">
+        <section className="rounded-2xl border border-border bg-surface p-5 sm:p-7">
           <div className="grid gap-6 lg:grid-cols-[1.05fr_1.3fr] lg:items-center">
             <div>
               <h2 className="text-xl font-medium text-foreground">
@@ -830,7 +830,7 @@ export default function DashboardPage() {
                   <Link
                     key={item.title}
                     to={item.href}
-                    className="rounded-2xl border border-border/70 bg-surface/78 p-4 transition hover:border-primary/30 hover:bg-surface-2"
+                    className="rounded-2xl border border-border bg-surface p-4 transition hover:border-primary/30 hover:bg-surface-2"
                   >
                     <div className="flex items-start gap-3">
                       <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
@@ -854,7 +854,7 @@ export default function DashboardPage() {
                     key={item.title}
                     type="button"
                     onClick={item.action}
-                    className="rounded-2xl border border-border/70 bg-surface/78 p-4 text-left transition hover:border-primary/30 hover:bg-surface-2"
+                    className="rounded-2xl border border-border bg-surface p-4 text-left transition hover:border-primary/30 hover:bg-surface-2"
                   >
                     <div className="flex items-start gap-3">
                       <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
@@ -881,7 +881,7 @@ export default function DashboardPage() {
       )}
 
       {dueRecurringSchedules.length > 0 && (
-        <section className="flex flex-col gap-3 rounded-2xl border border-warning/24 bg-warning/10 px-4 py-3 text-sm shadow-[0_10px_24px_rgba(60,42,32,0.08)] sm:flex-row sm:items-center sm:justify-between">
+        <section className="flex flex-col gap-3 rounded-2xl border border-warning/24 bg-warning/10 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="font-medium text-foreground">
               Você possui {dueRecurringSchedules.length} recorrência
@@ -927,7 +927,7 @@ export default function DashboardPage() {
             <div
               key={card.title}
               style={{ animationDelay: `${index * 100}ms` }}
-              className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+              className="rounded-2xl border border-border bg-surface p-5 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -940,7 +940,7 @@ export default function DashboardPage() {
                 </div>
                 <div
                   className={clsx(
-                    "grid h-10 w-10 place-items-center rounded-full bg-surface-2 shadow-sm",
+                    "grid h-10 w-10 place-items-center rounded-full bg-surface-2",
                     toneClass,
                   )}
                 >
@@ -955,7 +955,7 @@ export default function DashboardPage() {
         })}
       </section>
 
-      <section className="rounded-3xl border border-border/70 bg-surface/92 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] sm:p-6">
+      <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="flex items-center gap-2 text-base font-medium text-foreground">
@@ -998,7 +998,7 @@ export default function DashboardPage() {
                 <article
                   key={`${insight.title}-${insight.detail}`}
                   className={clsx(
-                    "rounded-2xl border bg-surface/82 p-4",
+                    "rounded-2xl border bg-surface p-4",
                     toneClasses.border,
                   )}
                 >
@@ -1042,7 +1042,7 @@ export default function DashboardPage() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="flex min-h-[540px] flex-col rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover sm:min-h-[620px] xl:col-span-2">
+        <div className="flex min-h-[540px] flex-col rounded-2xl border border-border bg-surface p-6 soft-hover sm:min-h-[620px] xl:col-span-2">
           <div className="mb-6 flex shrink-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-3">
               <div>
@@ -1073,7 +1073,7 @@ export default function DashboardPage() {
                       className={clsx(
                         "rounded-xl px-3 py-2 text-xs font-medium transition sm:px-3.5",
                         isActive
-                          ? "bg-primary text-white shadow-sm"
+                          ? "bg-primary text-[var(--color-on-primary)]"
                           : "text-foreground-muted hover:bg-surface-3 hover:text-foreground",
                       )}
                     >
@@ -1269,7 +1269,7 @@ export default function DashboardPage() {
 
         <div className="space-y-6">
           {upcomingRecurringSchedules.length > 0 && (
-            <div className="rounded-3xl border border-border/70 bg-surface/92 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover">
+            <div className="rounded-2xl border border-border bg-surface p-5 soft-hover">
               <div className="mb-4 flex items-start justify-between gap-3">
                 <div>
                   <h2 className="flex items-center gap-2 text-base font-medium text-foreground">
@@ -1333,7 +1333,7 @@ export default function DashboardPage() {
             </div>
           )}
 
-          <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover">
+          <div className="rounded-2xl border border-border bg-surface p-6 soft-hover">
             <div className="mb-4 flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-base font-medium text-foreground">
@@ -1454,7 +1454,7 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover">
+          <div className="rounded-2xl border border-border bg-surface p-6 soft-hover">
             <h2 className="mb-4 flex items-center gap-2 text-base font-medium text-foreground">
               <Target size={20} className="text-info" />
               Alertas de Metas
@@ -1529,7 +1529,7 @@ export default function DashboardPage() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover flex flex-col">
+        <div className="rounded-2xl border border-border bg-surface p-6 soft-hover flex flex-col">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-medium text-foreground">
               Últimas receitas
@@ -1549,7 +1549,7 @@ export default function DashboardPage() {
                     className="group rounded-2xl border border-border bg-surface-2 p-3.5 transition-colors hover:bg-surface-3/30 sm:flex sm:items-center sm:gap-3"
                   >
                     <div className="flex min-w-0 items-start gap-3 sm:flex-1 sm:items-center">
-                      <div className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-full bg-success/10 text-success shadow-sm">
+                      <div className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-full bg-success/10 text-success">
                         <Wallet size={18} />
                       </div>
                       <div className="min-w-0 flex-1">
@@ -1565,7 +1565,7 @@ export default function DashboardPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="mt-3 flex items-center justify-between gap-3 border-t border-border/70 pt-3 sm:hidden">
+                    <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-3 sm:hidden">
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-foreground-subtle">
                         <span className="rounded-full bg-surface px-2 py-0.5">
                           {inc.isFixed ? "Renda fixa" : "Renda extra"}
@@ -1625,7 +1625,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover flex flex-col">
+        <div className="rounded-2xl border border-border bg-surface p-6 soft-hover flex flex-col">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-medium text-foreground">
               Últimas despesas
@@ -1649,7 +1649,7 @@ export default function DashboardPage() {
                     className="group rounded-2xl border border-border bg-surface-2 p-3.5 transition-colors hover:bg-surface-3/30 sm:flex sm:items-center sm:gap-3"
                   >
                     <div className="flex min-w-0 items-start gap-3 sm:flex-1 sm:items-center">
-                      <div className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-full bg-surface-3 text-primary shadow-sm">
+                      <div className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-full bg-surface-3 text-primary">
                         <Icon size={18} />
                       </div>
                       <div className="min-w-0 flex-1">
@@ -1668,7 +1668,7 @@ export default function DashboardPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="mt-3 flex items-center justify-between gap-3 border-t border-border/70 pt-3 sm:hidden">
+                    <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-3 sm:hidden">
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-foreground-subtle">
                         <span className="rounded-full bg-surface px-2 py-0.5">
                           {exp.category}

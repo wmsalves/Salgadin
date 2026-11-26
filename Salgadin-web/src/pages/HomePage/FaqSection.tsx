@@ -30,7 +30,7 @@ export function FaqSection() {
             <div
               key={item.q}
               className={clsx(
-                "overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface shadow-[var(--shadow-card)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                "overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
                 isOpen && "border-primary/35"
               )}
             >

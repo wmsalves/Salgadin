@@ -49,9 +49,9 @@ export function DeleteCategoryModal({
               exit: { opacity: 0 },
             })}
             transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
-            className="relative w-full max-w-md overflow-hidden rounded-3xl bg-surface border border-border/70 shadow-2xl"
+            className="relative w-full max-w-md overflow-hidden rounded-2xl bg-surface border border-border shadow-[var(--shadow-overlay)]"
           >
-            <div className="flex items-center justify-between border-b border-border/60 p-6">
+            <div className="flex items-center justify-between border-b border-border p-6">
               <h2 className="text-xl font-medium text-foreground">
                 Excluir Categoria
               </h2>
@@ -96,7 +96,7 @@ export function DeleteCategoryModal({
                    onClick={onConfirm}
                    disabled={isDeleting}
                    className={clsx(
-                     "ui-pressable px-5 py-2.5 rounded-full text-sm font-medium text-white shadow-xl flex items-center gap-2",
+                     "ui-pressable px-5 py-2.5 rounded-full text-sm font-medium text-[var(--color-on-primary)] flex items-center gap-2",
                      isDeleting ? "bg-danger/70 cursor-not-allowed" : "bg-danger hover:bg-danger-strong hover:shadow-danger/30"
                    )}
                  >

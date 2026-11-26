@@ -98,9 +98,9 @@ export function EditCategoryModal({
               exit: { opacity: 0 },
             })}
             transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
-            className="relative w-full max-w-md overflow-hidden rounded-3xl bg-surface border border-border shadow-2xl"
+            className="relative w-full max-w-md overflow-hidden rounded-2xl bg-surface border border-border shadow-[var(--shadow-overlay)]"
           >
-            <div className="flex items-center justify-between border-b border-border/60 bg-surface-2/50 px-6 py-4">
+            <div className="flex items-center justify-between border-b border-border bg-surface-2/50 px-6 py-4">
               <h2 className="text-lg font-medium text-foreground">
                 Editar Categoria
               </h2>

@@ -45,8 +45,8 @@ export function ConfirmActionModal({
 
   const accentClass =
     tone === "danger"
-      ? "bg-danger text-white hover:bg-danger-strong"
-      : "bg-primary text-white hover:bg-primary/90";
+      ? "bg-danger text-[var(--color-on-primary)] hover:bg-danger-strong"
+      : "bg-primary text-[var(--color-on-primary)] hover:bg-primary/90";
 
   return (
     <AnimatePresence>
@@ -66,9 +66,9 @@ export function ConfirmActionModal({
               exit: { opacity: 0 },
             })}
             transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
-            className="relative w-full max-w-md overflow-hidden rounded-3xl border border-border/70 bg-surface shadow-2xl"
+            className="relative w-full max-w-md overflow-hidden rounded-2xl border border-border bg-surface shadow-[var(--shadow-overlay)]"
           >
-            <div className="flex items-center justify-between border-b border-border/60 p-6">
+            <div className="flex items-center justify-between border-b border-border p-6">
               <h2 className="text-xl font-medium text-foreground">{title}</h2>
                 <button
                   onClick={onClose}
@@ -106,7 +106,7 @@ export function ConfirmActionModal({
                   onClick={onConfirm}
                   disabled={isConfirming}
                   className={clsx(
-                    "ui-pressable flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium shadow-xl",
+                    "ui-pressable flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium",
                     accentClass,
                     isConfirming && "cursor-not-allowed opacity-70",
                   )}

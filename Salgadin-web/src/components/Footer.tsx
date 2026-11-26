@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 
 export function Footer() {
   return (
-    <footer className="bg-gradient-to-b from-[var(--bg-via)] to-[var(--bg-to)] border-t border-border/70">
+    <footer className="bg-background border-t border-border">
       <div className="mx-auto max-w-6xl px-4 py-8">
         <div className="flex flex-col items-center gap-6 text-center">
-          <div className="flex items-center gap-3 rounded-full bg-surface-2 px-4 py-2 shadow-[0_12px_30px_rgba(60,42,32,0.08)]">
+          <div className="flex items-center gap-3 rounded-full bg-surface-2 px-4 py-2">
             <a
               href="#"
               aria-label="Twitter"
@@ -39,7 +39,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 border-t border-border/70 pt-6 text-center text-xs text-foreground-subtle">
+        <div className="mt-8 border-t border-border pt-6 text-center text-xs text-foreground-subtle">
           © {new Date().getFullYear()} Salgadin. Todos os direitos reservados.
         </div>
       </div>

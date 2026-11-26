@@ -18,9 +18,9 @@ const trustCues = [
 
 const buttonStyles = {
   primary:
-    "inline-flex min-h-12 items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-6 py-3 text-sm font-medium text-[var(--color-on-primary)] shadow-[0_14px_30px_rgba(60,42,32,0.18)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:from-[var(--brand-from-strong)] hover:to-[var(--brand-to-strong)] hover:shadow-[0_18px_38px_rgba(60,42,32,0.22)] active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 soft-press ui-pressable",
+    "inline-flex min-h-12 items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-6 py-3 text-sm font-medium text-[var(--color-on-primary)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:from-[var(--brand-from-strong)] hover:to-[var(--brand-to-strong)] active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 soft-press ui-pressable",
   secondary:
-    "inline-flex min-h-12 items-center justify-center rounded-xl border border-primary/35 bg-surface px-6 py-3 text-sm font-medium text-primary-strong shadow-[0_10px_24px_rgba(60,42,32,0.08)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:border-primary hover:bg-surface-2 hover:text-primary-strong active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 soft-press ui-pressable",
+    "inline-flex min-h-12 items-center justify-center rounded-xl border border-primary/35 bg-surface px-6 py-3 text-sm font-medium text-primary-strong transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:border-primary hover:bg-surface-2 hover:text-primary-strong active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 soft-press ui-pressable",
 };
 
 export function HeroSection() {
@@ -54,19 +54,19 @@ export function HeroSection() {
       </p>
 
       <div className="mx-auto mt-7 grid max-w-5xl gap-3 text-left md:grid-cols-3">
-        <div className="rounded-2xl border border-border/70 bg-surface/80 px-4 py-4">
+        <div className="rounded-2xl border border-border bg-surface px-4 py-4">
           <h2 className="text-sm font-medium text-foreground">Registro rápido</h2>
           <p className="mt-1.5 text-ui text-foreground-muted">
             Lance café, lanche, delivery, mercado ou transporte sem depender de planilhas.
           </p>
         </div>
-        <div className="rounded-2xl border border-border/70 bg-surface/80 px-4 py-4">
+        <div className="rounded-2xl border border-border bg-surface px-4 py-4">
           <h2 className="text-sm font-medium text-foreground">Leitura clara</h2>
           <p className="mt-1.5 text-ui text-foreground-muted">
             Veja o que pesa no mês com categorias, gráficos e resumos feitos para decisões práticas.
           </p>
         </div>
-        <div className="rounded-2xl border border-border/70 bg-surface/80 px-4 py-4">
+        <div className="rounded-2xl border border-border bg-surface px-4 py-4">
           <h2 className="text-sm font-medium text-foreground">Metas que avisam</h2>
           <p className="mt-1.5 text-ui text-foreground-muted">
             Defina um limite por categoria e receba um aviso antes de estourar o mês.
@@ -100,7 +100,7 @@ export function HeroSection() {
 
       <div className="relative mt-14 sm:mt-16">
         <figure
-          className="mx-auto w-full max-w-[22rem] min-w-0 overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface/95 p-4 shadow-[var(--shadow-card)] sm:max-w-5xl sm:p-6"
+          className="mx-auto w-full max-w-[22rem] min-w-0 overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface p-4 sm:max-w-5xl sm:p-6"
           aria-labelledby="weekly-chart-title"
           aria-describedby="weekly-chart-description weekly-chart-summary"
         >
@@ -124,14 +124,14 @@ export function HeroSection() {
               aria-label="Legenda do gráfico"
               className="grid min-w-0 gap-2 text-ui text-foreground-muted sm:grid-cols-2 md:min-w-[310px]"
             >
-              <li className="flex items-center gap-2 rounded-xl border border-border/70 bg-surface-2/70 px-3 py-2">
+              <li className="flex items-center gap-2 rounded-xl border border-border bg-surface-2/70 px-3 py-2">
                 <span
                   className="h-3 w-3 rounded-full bg-[var(--chart-small-expense)]"
                   aria-hidden
                 />
                 Gasto dentro do ritmo
               </li>
-              <li className="flex items-center gap-2 rounded-xl border border-border/70 bg-surface-2/70 px-3 py-2">
+              <li className="flex items-center gap-2 rounded-xl border border-border bg-surface-2/70 px-3 py-2">
                 <span
                   className="h-3 w-3 rounded-full bg-[var(--chart-high-expense)]"
                   aria-hidden
@@ -163,7 +163,7 @@ export function HeroSection() {
             </div>
           </div>
 
-          <figcaption className="mt-3 flex flex-col gap-2 rounded-2xl border border-border/70 bg-surface-2/60 px-4 py-3 text-ui text-foreground-muted sm:flex-row sm:items-center sm:justify-between">
+          <figcaption className="mt-3 flex flex-col gap-2 rounded-2xl border border-border bg-surface-2/60 px-4 py-3 text-ui text-foreground-muted sm:flex-row sm:items-center sm:justify-between">
             <span>Terça: alimentação e transporte. Sexta: delivery e mercado no pico da semana.</span>
             <span className="font-medium text-primary">
               Total do exemplo: R$ 337,70

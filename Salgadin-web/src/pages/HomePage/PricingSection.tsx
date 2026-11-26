@@ -28,7 +28,7 @@ export function PricingSection() {
       </div>
 
       <div className="mx-auto mt-10 grid max-w-5xl gap-6 lg:grid-cols-2">
-        <div className="flex flex-col rounded-[var(--radius-card)] border border-border bg-surface p-6 shadow-[var(--shadow-card)] sm:p-8">
+        <div className="flex flex-col rounded-[var(--radius-card)] border border-border bg-surface p-6 sm:p-8">
           <div className="flex items-start justify-between gap-4">
             <div>
               <h3 className="text-xl font-medium text-foreground">Free</h3>
@@ -54,13 +54,13 @@ export function PricingSection() {
 
           <Link
             to="/signup"
-            className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-5 py-3 text-center text-sm font-medium text-[var(--color-on-primary)] shadow-[0_14px_30px_rgba(60,42,32,0.18)] transition-all hover:from-[var(--brand-from-strong)] hover:to-[var(--brand-to-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ui-pressable"
+            className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-5 py-3 text-center text-sm font-medium text-[var(--color-on-primary)] transition-all hover:from-[var(--brand-from-strong)] hover:to-[var(--brand-to-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ui-pressable"
           >
             Criar conta grátis
           </Link>
         </div>
 
-        <div className="relative flex flex-col rounded-[var(--radius-card)] border border-dashed border-primary/30 bg-surface/78 p-6 shadow-[var(--shadow-card)] sm:p-8">
+        <div className="relative flex flex-col rounded-[var(--radius-card)] border border-dashed border-primary/30 bg-surface p-6 sm:p-8">
           <div className="pointer-events-none absolute inset-0 rounded-[var(--radius-card)] bg-[linear-gradient(135deg,rgba(184,88,47,0.04),rgba(255,255,255,0))]" />
           <div className="flex items-start justify-between gap-4">
             <div>

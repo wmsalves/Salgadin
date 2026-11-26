@@ -300,15 +300,15 @@ export function AddExpenseModal({
               exit: { opacity: 0 },
             })}
             transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
-            className="bg-surface rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
+            className="bg-surface rounded-xl w-full max-w-md overflow-hidden shadow-[var(--shadow-overlay)]"
           >
             <div className="bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-6 py-4 flex justify-between items-center">
-              <h2 className="text-lg font-medium text-white">
+              <h2 className="text-lg font-medium text-[var(--color-on-primary)]">
                 {isEditing ? "Editar Despesa" : "Adicionar Nova Despesa"}
               </h2>
               <button
                 onClick={handleClose}
-                className="ui-surface-interactive rounded-full p-1 text-white hover:bg-white/20"
+                className="ui-surface-interactive rounded-full p-1 text-[var(--color-on-primary)] hover:bg-black/10"
               >
                 <X size={20} />
               </button>
@@ -325,7 +325,7 @@ export function AddExpenseModal({
                   {...register("description")}
                   id="description"
                   type="text"
-                  className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)] placeholder:text-foreground-subtle"
+                  className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary placeholder:text-foreground-subtle"
                   placeholder="Ex: Almoço no restaurante"
                 />
                 {errors.description && (
@@ -366,7 +366,7 @@ export function AddExpenseModal({
                     id="amount"
                     type="text"
                     inputMode="decimal"
-                    className="w-full tabular-nums rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)] placeholder:text-foreground-subtle"
+                    className="w-full tabular-nums rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary placeholder:text-foreground-subtle"
                     placeholder="0,00"
                   />
                   {errors.amount && (
@@ -386,7 +386,7 @@ export function AddExpenseModal({
                     {...register("date")}
                     id="date"
                     type="date"
-                    className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)]"
+                    className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary"
                   />
                   {errors.date && (
                     <p className="mt-2 text-sm text-danger font-medium">
@@ -410,7 +410,7 @@ export function AddExpenseModal({
                     <select
                       {...categoryField}
                       id="categoryId"
-                      className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)]"
+                      className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary"
                       onChange={(event) => {
                         const nextCategoryId = event.target.value;
                         const categoryChanged = nextCategoryId !== selectedCategory;
@@ -456,7 +456,7 @@ export function AddExpenseModal({
                 <select
                   {...register("subcategoryId")}
                   id="subcategoryId"
-                  className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)]"
+                  className="w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary"
                   disabled={!selectedCategory || subcategories.length === 0}
                 >
                   <option value="">
