@@ -13,6 +13,8 @@ import { getCategories, type Category } from "../services/categoryService";
 import type { Goal, GoalAlert } from "../lib/types";
 import { EmptyState } from "../components/EmptyState";
 import { PageHeader, StatRow } from "../components/PageHeader";
+import { Modal } from "../components/ui/Modal";
+import { parseAmount } from "../lib/money";
 
 const defaultAlertThreshold = 0.8;
 
@@ -267,13 +269,13 @@ export default function GoalsPage() {
   }, [goalCards]);
 
   const handleSubmit = async () => {
-    if (!form.monthlyLimit) return;
+    if (parseAmount(form.monthlyLimit) <= 0) return;
 
     const parsedThresholdPercent = Number(form.alertThreshold.replace(",", "."));
 
     const payload = {
       categoryId: form.categoryId ? Number(form.categoryId) : null,
-      monthlyLimit: Number(form.monthlyLimit.replace(",", ".")),
+      monthlyLimit: parseAmount(form.monthlyLimit),
       alertThreshold:
         Number.isFinite(parsedThresholdPercent) && parsedThresholdPercent > 0
           ? clamp(parsedThresholdPercent, 1, 100) / 100
@@ -305,74 +307,83 @@ export default function GoalsPage() {
         }
       />
 
-      {isFormOpen && (
-        <section className="rounded-2xl border border-border bg-surface p-6">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-            <div>
-              <label className="text-xs text-foreground-muted">Categoria</label>
-              <select
-                value={form.categoryId}
-                onChange={(event) =>
-                  setForm((prev) => ({ ...prev, categoryId: event.target.value }))
-                }
-                className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
-              >
-                <option value="">Meta geral</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="text-xs text-foreground-muted">
-                Limite mensal (R$)
-              </label>
-              <input
-                value={form.monthlyLimit}
-                onChange={(event) =>
-                  setForm((prev) => ({ ...prev, monthlyLimit: event.target.value }))
-                }
-                placeholder="2000"
-                className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="text-xs text-foreground-muted">
-                Avisar quando atingir
-              </label>
-              <input
-                value={form.alertThreshold}
-                onChange={(event) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    alertThreshold: event.target.value,
-                  }))
-                }
-                type="number"
-                min="1"
-                max="100"
-                step="1"
-                inputMode="numeric"
-                placeholder="80"
-                className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm"
-              />
-              <p className="mt-2 text-xs text-foreground-subtle">
-                Avisar quando atingir {form.alertThreshold || "80"}% da meta.
-              </p>
-            </div>
-            <div className="flex items-end">
-              <button
-                onClick={handleSubmit}
-                className="w-full rounded-xl bg-primary/90 px-4 py-2 text-sm font-medium text-[var(--color-on-primary)] hover:bg-primary"
-              >
-                Salvar meta
-              </button>
-            </div>
+      <Modal
+        open={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        title="Nova meta"
+        description="Um limite mensal para uma categoria, com aviso antes de estourar."
+      >
+        <form
+          className="grid gap-4"
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleSubmit();
+          }}
+        >
+          <div>
+            <label htmlFor="goal-category" className="text-ui text-foreground-muted">
+              Categoria
+            </label>
+            <select
+              id="goal-category"
+              value={form.categoryId}
+              onChange={(event) => setForm((prev) => ({ ...prev, categoryId: event.target.value }))}
+              className="mt-1.5 h-10 w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/25 disabled:opacity-60"
+            >
+              <option value="">Todos os gastos (meta geral)</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
           </div>
-        </section>
-      )}
+          <div>
+            <label htmlFor="goal-limit" className="text-ui text-foreground-muted">
+              Limite por mês (R$)
+            </label>
+            <input
+              id="goal-limit"
+              inputMode="decimal"
+              value={form.monthlyLimit}
+              onChange={(event) => setForm((prev) => ({ ...prev, monthlyLimit: event.target.value }))}
+              placeholder="600"
+              className="mt-1.5 h-10 w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/25 disabled:opacity-60 text-lg font-medium tabular-nums"
+            />
+          </div>
+          <div>
+            <label htmlFor="goal-threshold" className="flex items-center justify-between text-ui text-foreground-muted">
+              <span>Avisar quando chegar a</span>
+              <span className="font-medium text-foreground tabular-nums">{form.alertThreshold || "80"}%</span>
+            </label>
+            <input
+              id="goal-threshold"
+              type="range"
+              min={50}
+              max={100}
+              step={5}
+              value={Number(form.alertThreshold) || 80}
+              onChange={(event) => setForm((prev) => ({ ...prev, alertThreshold: event.target.value }))}
+              className="mt-3 w-full accent-[var(--color-primary)]"
+            />
+          </div>
+          <div className="flex flex-col-reverse gap-2 pt-1 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              onClick={() => setIsFormOpen(false)}
+              className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] px-4 text-sm font-medium text-foreground-muted transition-colors hover:bg-surface-2 hover:text-foreground"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              className="inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] bg-primary px-5 text-sm font-medium text-[var(--color-on-primary)] transition-colors hover:bg-primary-strong"
+            >
+              Salvar meta
+            </button>
+          </div>
+        </form>
+      </Modal>
 
       {isLoading ? (
         <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-border bg-surface p-12 text-center text-foreground-subtle">

@@ -22,12 +22,10 @@ import {
   ChevronRight,
   PieChart as PieChartIcon,
   Plus,
-  Receipt,
   RefreshCw,
   Repeat,
   Target,
   TrendingDown,
-  Wallet,
 } from "lucide-react";
 import clsx from "clsx";
 import {
@@ -53,6 +51,7 @@ import { ConfirmActionModal } from "../components/ConfirmActionModal";
 import { EmptyState } from "../components/EmptyState";
 import { MonthOverview } from "../components/dashboard/MonthOverview";
 import { QuickEntry } from "../components/dashboard/QuickEntry";
+import { OnboardingFlow } from "../components/dashboard/OnboardingFlow";
 import { RecentActivity } from "../components/dashboard/RecentActivity";
 import { buildMonthSummary } from "../lib/monthSummary";
 import { chartCursor, chartGrid, chartTick } from "../lib/chartTheme";
@@ -61,6 +60,7 @@ import {
   getDueRecurringSchedules,
   getUpcomingRecurringSchedules,
 } from "../lib/recurringSchedules";
+import { useAuth } from "../hooks/useAuth";
 
 const CHART_COLORS = [
   "var(--color-primary)",
@@ -271,6 +271,7 @@ function CashflowTooltip({
 }
 
 export default function DashboardPage() {
+  const { user } = useAuth();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [incomes, setIncomes] = useState<Income[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -404,8 +405,25 @@ export default function DashboardPage() {
   const totalRevenue = incomes.reduce((acc, inc) => acc + inc.amount, 0);
   const balance = totalRevenue - totalExpenses;
   const hasFinancialData = expenses.length > 0 || incomes.length > 0;
-  const shouldShowGuidedStart =
-    !hasFinancialData && goals.length === 0 && alerts.length === 0;
+  const onboardingKey = `salgadin:onboarding-done:${user?.id ?? "anon"}`;
+  const [onboardingDismissed, setOnboardingDismissed] = useState(() => {
+    try {
+      return localStorage.getItem(onboardingKey) === "1";
+    } catch {
+      return false;
+    }
+  });
+  const isNewAccount =
+    !hasFinancialData && recurringSchedules.length === 0 && goals.length === 0;
+  const finishOnboarding = () => {
+    try {
+      localStorage.setItem(onboardingKey, "1");
+    } catch {
+      // armazenamento indisponivel: o onboarding pode voltar a aparecer, sem prejuizo
+    }
+    setOnboardingDismissed(true);
+    void fetchData();
+  };
   const dueRecurringSchedules = useMemo(
     () => getDueRecurringSchedules(recurringSchedules),
     [recurringSchedules],
@@ -557,6 +575,14 @@ export default function DashboardPage() {
     );
   }
 
+  if (isNewAccount && !onboardingDismissed) {
+    return (
+      <div className="py-2 sm:py-6">
+        <OnboardingFlow userName={user?.name} onFinish={finishOnboarding} />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 pb-20 sm:pb-0">
       <div className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-4 z-40 flex flex-col items-end gap-3 sm:hidden">
@@ -650,108 +676,6 @@ export default function DashboardPage() {
           </div>
         </div>
       </header>
-
-      {shouldShowGuidedStart && (
-        <section className="rounded-2xl border border-border bg-surface p-5 sm:p-7">
-          <div className="grid gap-6 lg:grid-cols-[1.05fr_1.3fr] lg:items-center">
-            <div>
-              <h2 className="text-xl font-medium text-foreground">
-                Seu painel ainda está vazio
-              </h2>
-              <p className="mt-2 max-w-xl text-sm leading-6 text-foreground-muted">
-                Comece com um lançamento real. O Salgadin fica mais útil quando
-                você registra renda, pequenos gastos e uma meta simples para o
-                mês.
-              </p>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              {[
-                {
-                  title: "Registre sua renda",
-                  description: "Defina a base do seu saldo mensal.",
-                  icon: Wallet,
-                  action: () => setIsAddIncomeModalOpen(true),
-                  label: "Adicionar renda",
-                },
-                {
-                  title: "Adicione um pequeno gasto",
-                  description:
-                    "Cafés, lanches e transporte começam a mostrar padrões.",
-                  icon: Receipt,
-                  action: () => setIsAddExpenseModalOpen(true),
-                  label: "Adicionar gasto",
-                },
-                {
-                  title: "Organize categorias",
-                  description: "Deixe os gastos claros por tipo de consumo.",
-                  icon: PieChartIcon,
-                  href: "/lancamentos/categorias",
-                  label: "Criar categorias",
-                },
-                {
-                  title: "Crie uma meta",
-                  description:
-                    "Controle os pequenos gastos antes que eles cresçam.",
-                  icon: Target,
-                  href: "/metas",
-                  label: "Criar meta",
-                },
-              ].map((item) => {
-                const Icon = item.icon;
-                return item.href ? (
-                  <Link
-                    key={item.title}
-                    to={item.href}
-                    className="rounded-2xl border border-border bg-surface p-4 transition hover:border-primary/30 hover:bg-surface-2"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-                        <Icon size={18} />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium text-foreground">
-                          {item.title}
-                        </h3>
-                        <p className="mt-1 text-xs leading-5 text-foreground-muted">
-                          {item.description}
-                        </p>
-                        <span className="mt-3 inline-flex text-xs font-medium text-primary">
-                          {item.label}
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                ) : (
-                  <button
-                    key={item.title}
-                    type="button"
-                    onClick={item.action}
-                    className="rounded-2xl border border-border bg-surface p-4 text-left transition hover:border-primary/30 hover:bg-surface-2"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
-                        <Icon size={18} />
-                      </div>
-                      <div>
-                        <h3 className="text-sm font-medium text-foreground">
-                          {item.title}
-                        </h3>
-                        <p className="mt-1 text-xs leading-5 text-foreground-muted">
-                          {item.description}
-                        </p>
-                        <span className="mt-3 inline-flex text-xs font-medium text-primary">
-                          {item.label}
-                        </span>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
 
       {dueRecurringSchedules.length > 0 && (
         <section className="flex flex-col gap-3 rounded-2xl border border-warning/24 bg-warning/10 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">

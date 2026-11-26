@@ -33,6 +33,11 @@ export function PasswordStrength({ password = "" }: PasswordStrengthProps) {
       text: "Pelo menos um número",
       isValid: /[0-9]/.test(password),
     },
+    {
+      id: "special",
+      text: "Um símbolo (ex.: ! @ #)",
+      isValid: /[^a-zA-Z0-9]/.test(password),
+    },
   ];
 
   return (

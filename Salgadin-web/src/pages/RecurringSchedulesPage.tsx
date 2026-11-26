@@ -36,6 +36,8 @@ import type {
 } from "../lib/types";
 import { formatDateForInput, toDateInputValue } from "../lib/dates";
 import { PageHeader, StatRow } from "../components/PageHeader";
+import { Modal } from "../components/ui/Modal";
+import { parseAmount } from "../lib/money";
 
 type FilterMode = "all" | "income" | "expense" | "active" | "paused";
 
@@ -113,9 +115,6 @@ const formatSummaryDate = (value: string | null | undefined) => {
     month: "short",
   });
 };
-
-const parseAmount = (value: string) =>
-  Number(value.replace(/\./g, "").replace(",", "."));
 
 const formatBillingDay = (dayOfMonth: number) =>
   dayOfMonth === 31 ? "Dia 31 ou último dia do mês" : `Todo dia ${dayOfMonth}`;
@@ -381,29 +380,16 @@ export default function RecurringSchedulesPage() {
         />
       )}
 
-      {isFormOpen && (
-        <section className="rounded-2xl border border-border bg-surface p-5">
-          <div className="mb-4 flex items-start justify-between gap-3">
+      <Modal
+        open={isFormOpen}
+        onClose={closeForm}
+        size="lg"
+        title={editingSchedule ? "Editar recorrência" : "Nova recorrência"}
+        description="Contas e receitas que se repetem todo mês. Elas entram no cálculo do mês antes de vencer."
+      >
+          <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2">
             <div>
-              <h2 className="text-base font-medium text-foreground">
-                {editingSchedule ? "Editar recorrência" : "Nova recorrência mensal"}
-              </h2>
-              <p className="text-sm text-foreground-muted">
-                Defina o agendamento. O lançamento real será criado quando você registrar as vencidas.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={closeForm}
-              className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground-muted transition hover:bg-surface-2 hover:text-foreground"
-            >
-              Fechar
-            </button>
-          </div>
-
-          <form onSubmit={handleSubmit} className="grid gap-4 lg:grid-cols-6">
-            <div>
-              <label className="text-xs text-foreground-muted">
+              <label className="text-ui text-foreground-muted">
                 Tipo de recorrência
               </label>
               <select
@@ -416,15 +402,15 @@ export default function RecurringSchedulesPage() {
                     subcategoryId: "",
                   }))
                 }
-                className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm text-foreground"
+                className="mt-1.5 h-10 w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/25 disabled:opacity-60 text-foreground"
               >
                 <option value="Expense">Despesa</option>
                 <option value="Income">Receita</option>
               </select>
             </div>
 
-            <div className="lg:col-span-2">
-              <label className="text-xs text-foreground-muted">Descrição</label>
+            <div className="sm:col-span-2">
+              <label className="text-ui text-foreground-muted">Descrição</label>
               <input
                 value={form.description}
                 onChange={(event) =>
@@ -433,20 +419,20 @@ export default function RecurringSchedulesPage() {
                     description: event.target.value,
                   }))
                 }
-                className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm text-foreground"
+                className="mt-1.5 h-10 w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/25 disabled:opacity-60 text-foreground"
                 placeholder="Ex: internet, aluguel, salario"
                 required
               />
             </div>
 
             <div>
-              <label className="text-xs text-foreground-muted">Valor</label>
+              <label className="text-ui text-foreground-muted">Valor</label>
               <input
                 value={form.amount}
                 onChange={(event) =>
                   setForm((prev) => ({ ...prev, amount: event.target.value }))
                 }
-                className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm text-foreground"
+                className="mt-1.5 h-10 w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/25 disabled:opacity-60 text-foreground"
                 placeholder="0,00"
                 inputMode="decimal"
                 required
@@ -454,13 +440,13 @@ export default function RecurringSchedulesPage() {
             </div>
 
             <div>
-              <label className="text-xs text-foreground-muted">Dia do mês</label>
+              <label className="text-ui text-foreground-muted">Dia do mês</label>
               <input
                 value={form.dayOfMonth}
                 onChange={(event) =>
                   setForm((prev) => ({ ...prev, dayOfMonth: event.target.value }))
                 }
-                className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm text-foreground"
+                className="mt-1.5 h-10 w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/25 disabled:opacity-60 text-foreground"
                 type="number"
                 min={1}
                 max={31}
@@ -472,7 +458,7 @@ export default function RecurringSchedulesPage() {
             </div>
 
             <div>
-              <label className="text-xs text-foreground-muted">Frequência</label>
+              <label className="text-ui text-foreground-muted">Frequência</label>
               <div className="mt-1 rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm font-medium text-foreground">
                 Mensal
               </div>
@@ -483,8 +469,8 @@ export default function RecurringSchedulesPage() {
 
             {form.type === "Expense" && (
               <>
-                <div className="lg:col-span-2">
-                  <label className="text-xs text-foreground-muted">
+                <div className="sm:col-span-2">
+                  <label className="text-ui text-foreground-muted">
                     Categoria
                   </label>
                   <select
@@ -496,7 +482,7 @@ export default function RecurringSchedulesPage() {
                         subcategoryId: "",
                       }))
                     }
-                    className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm text-foreground"
+                    className="mt-1.5 h-10 w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/25 disabled:opacity-60 text-foreground"
                     required
                   >
                     <option value="">Selecione</option>
@@ -508,8 +494,8 @@ export default function RecurringSchedulesPage() {
                   </select>
                 </div>
 
-                <div className="lg:col-span-2">
-                  <label className="text-xs text-foreground-muted">
+                <div className="sm:col-span-2">
+                  <label className="text-ui text-foreground-muted">
                     Subcategoria
                   </label>
                   <select
@@ -520,7 +506,7 @@ export default function RecurringSchedulesPage() {
                         subcategoryId: event.target.value,
                       }))
                     }
-                    className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm text-foreground"
+                    className="mt-1.5 h-10 w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/25 disabled:opacity-60 text-foreground"
                     disabled={!form.categoryId || subcategories.length === 0}
                   >
                     <option value="">Opcional</option>
@@ -535,7 +521,7 @@ export default function RecurringSchedulesPage() {
             )}
 
             <div>
-              <label className="text-xs text-foreground-muted">
+              <label className="text-ui text-foreground-muted">
                 Data inicial
               </label>
               <input
@@ -543,20 +529,20 @@ export default function RecurringSchedulesPage() {
                 onChange={(event) =>
                   setForm((prev) => ({ ...prev, startDate: event.target.value }))
                 }
-                className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm text-foreground"
+                className="mt-1.5 h-10 w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/25 disabled:opacity-60 text-foreground"
                 type="date"
                 required
               />
             </div>
 
             <div>
-              <label className="text-xs text-foreground-muted">Data final</label>
+              <label className="text-ui text-foreground-muted">Data final</label>
               <input
                 value={form.endDate}
                 onChange={(event) =>
                   setForm((prev) => ({ ...prev, endDate: event.target.value }))
                 }
-                className="mt-1 w-full rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm text-foreground"
+                className="mt-1.5 h-10 w-full rounded-[var(--radius-control)] border border-border bg-background px-3.5 text-sm text-foreground outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/25 disabled:opacity-60 text-foreground"
                 type="date"
               />
             </div>
@@ -578,14 +564,13 @@ export default function RecurringSchedulesPage() {
               </label>
             </div>
 
-            <div className="flex items-end lg:col-span-2">
-              <Button type="submit" isLoading={isSaving} className="w-full">
+            <div className="flex justify-end sm:col-span-2">
+              <Button type="submit" isLoading={isSaving} className="w-full sm:w-auto">
                 {editingSchedule ? "Salvar recorrência" : "Criar recorrência"}
               </Button>
             </div>
           </form>
-        </section>
-      )}
+      </Modal>
 
       {(apiError || successMessage) && (
         <div
