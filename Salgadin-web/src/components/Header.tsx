@@ -9,7 +9,7 @@ import { dropdownMotion, getMotionProps, MOTION } from "../lib/motion";
 
 const navLinks = [
   { id: "features", label: "Recursos" },
-  { id: "how", label: "Como funciona" },
+  { id: "efeito", label: "Efeito coxinha" },
   { id: "pricing", label: "Preços" },
   { id: "faq", label: "FAQ" },
 ];

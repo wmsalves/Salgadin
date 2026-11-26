@@ -4,8 +4,8 @@ import { trustItems } from "./content";
 export function TrustSection() {
   return (
     <section id="trust" className="mx-auto max-w-6xl px-4 py-20 sm:py-28">
-      <div className="rounded-[var(--radius-card)] border border-border bg-surface p-6 sm:p-8">
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)]">
+      <div>
+        <div className="grid gap-10">
           <div>
             <h2 className="text-3xl font-medium text-foreground sm:text-4xl">
               Seus dados financeiros tratados com cuidado
@@ -26,11 +26,11 @@ export function TrustSection() {
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 lg:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-3">
             {trustItems.map((item) => (
               <div
                 key={item.title}
-                className="rounded-2xl border border-border bg-surface-2/50 p-5"
+                className="rounded-2xl border border-border bg-background p-5"
               >
                 <div className="grid h-11 w-11 place-items-center rounded-xl bg-surface text-primary">
                   <item.icon className="h-5 w-5" aria-hidden="true" />

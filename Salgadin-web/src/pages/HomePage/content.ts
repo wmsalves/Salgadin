@@ -1,62 +1,8 @@
 import {
-  BarChart3,
-  BellRing,
   Download,
-  LayoutDashboard,
   LockKeyhole,
-  ReceiptText,
   ShieldCheck,
-  Tags,
 } from "lucide-react";
-
-export const features = [
-  {
-    title: "Entenda para onde o dinheiro vai",
-    desc: "Transforme café, lanche, delivery, mercado e transporte em uma leitura clara do que realmente pesa no mês.",
-    icon: LayoutDashboard,
-    colorTheme: "emerald",
-  },
-  {
-    title: "Corrija pequenos excessos cedo",
-    desc: "Veja os sinais antes que despesas recorrentes virem um problema no fim do mês.",
-    icon: BellRing,
-    colorTheme: "amber",
-  },
-  {
-    title: "Troque planilha por rotina simples",
-    desc: "Registre, categorize e acompanhe com um fluxo leve, pensado para uso real no dia a dia.",
-    icon: ReceiptText,
-    colorTheme: "emerald",
-  },
-];
-
-export const differentiators = [
-  {
-    title: "Registro rápido",
-    desc: "Adicione um gasto em segundos e mantenha o controle sem quebrar sua rotina.",
-    icon: ReceiptText,
-  },
-  {
-    title: "Categorias organizadas",
-    desc: "Agrupe despesas por contexto para enxergar hábitos, repetições e excessos com facilidade.",
-    icon: Tags,
-  },
-  {
-    title: "Gráficos com contexto",
-    desc: "Cada gráfico mostra o que aconteceu em cada dia e em cada categoria, com os valores à vista.",
-    icon: BarChart3,
-  },
-  {
-    title: "Resumo diário e mensal",
-    desc: "Veja o que entrou, o que saiu e o que pede atenção sem abrir uma planilha.",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Metas que avisam antes",
-    desc: "Defina um limite por categoria e receba um aviso quando o gasto chegar perto dele.",
-    icon: BellRing,
-  },
-];
 
 export const trustItems = [
   {
@@ -95,35 +41,3 @@ export const faqItems = [
   },
 ];
 
-export const tabsContent = {
-  Dashboard: {
-    title: "Visualize tudo em um só lugar",
-    description:
-      "O painel reúne lançamentos, categorias e metas em uma visão simples e mostra o que mudou no mês, sem transformar sua rotina em planilha.",
-    items: [
-      "Resumo financeiro organizado para decisões mais seguras",
-      "Gráficos interativos com leitura rápida e foco no essencial",
-      "Alertas personalizados quando um gasto foge do planejado",
-    ],
-  },
-  Despesas: {
-    title: "Registre despesas sem complicação",
-    description:
-      "Você adiciona o gasto, escolhe uma categoria e já vê o impacto no mês. Funciona bem para cafés, lanches, delivery, mercado, transporte e contas que se repetem.",
-    items: [
-      "Categorias rápidas, filtros simples e visão por período",
-      "Exportação em CSV para compartilhar quando precisar",
-      "Detalhamento por item para cortes mais inteligentes",
-    ],
-  },
-  Metas: {
-    title: "Alcance objetivos com mais clareza",
-    description:
-      "Defina metas que fazem sentido para você e acompanhe o progresso com leitura visual simples, sem perder o contexto do mês.",
-    items: [
-      "Metas gerais ou por categoria com acompanhamento visual",
-      "Alertas antes de estourar o limite planejado",
-      "Progresso claro para manter ritmo e consistência",
-    ],
-  },
-};

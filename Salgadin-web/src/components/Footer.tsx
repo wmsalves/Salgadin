@@ -1,27 +1,10 @@
-﻿import { Twitter, Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function Footer() {
   return (
-    <footer className="bg-background border-t border-border">
+    <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-6xl px-4 py-8">
         <div className="flex flex-col items-center gap-6 text-center">
-          <div className="flex items-center gap-3 rounded-full bg-surface-2 px-4 py-2">
-            <a
-              href="#"
-              aria-label="Twitter"
-              className="grid h-11 w-11 place-items-center rounded-xl bg-surface text-foreground-subtle transition hover:bg-surface-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-            >
-              <Twitter size={18} />
-            </a>
-            <a
-              href="#"
-              aria-label="Instagram"
-              className="grid h-11 w-11 place-items-center rounded-xl bg-surface text-foreground-subtle transition hover:bg-surface-2 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-            >
-              <Instagram size={18} />
-            </a>
-          </div>
 
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-foreground-muted">
             <Link

@@ -2,7 +2,7 @@
 import { Footer } from "../../components/Footer";
 import { HeroSection } from "./HeroSection";
 import { FeaturesSection } from "./FeaturesSection";
-import { HowItWorksSection } from "./HowItWorksSection";
+import { CoxinhaEffectSection } from "./CoxinhaEffectSection";
 import { FaqSection } from "./FaqSection";
 import { CtaSection } from "./CtaSection";
 import { PricingSection } from "./PricingSection";
@@ -34,14 +34,14 @@ export default function HomePage() {
           </motion.div>
 
           <div className="border-y border-border bg-surface">
-            <motion.div
-              variants={reveal}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.2 }}
-            >
-              <FeaturesSection />
-            </motion.div>
+          <motion.div
+            variants={reveal}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            <CoxinhaEffectSection />
+          </motion.div>
           </div>
 
           <motion.div
@@ -50,20 +50,10 @@ export default function HomePage() {
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
           >
-            <HowItWorksSection />
+            <FeaturesSection />
           </motion.div>
 
-          <div className="border-y border-border bg-surface-2/45">
-            <motion.div
-              variants={reveal}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.2 }}
-            >
-              <PricingSection />
-            </motion.div>
-          </div>
-
+          <div className="border-y border-border bg-surface">
           <motion.div
             variants={reveal}
             initial="hidden"
@@ -72,7 +62,18 @@ export default function HomePage() {
           >
             <TrustSection />
           </motion.div>
+          </div>
 
+          <motion.div
+            variants={reveal}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            <PricingSection />
+          </motion.div>
+
+          <div className="border-t border-border bg-surface">
           <motion.div
             variants={reveal}
             initial="hidden"
@@ -81,16 +82,17 @@ export default function HomePage() {
           >
             <FaqSection />
           </motion.div>
+          </div>
 
-          <div className="border-t border-border bg-surface">
-            <motion.div
-              variants={reveal}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true, amount: 0.2 }}
-            >
-              <CtaSection />
-            </motion.div>
+          <div className="border-t border-border">
+          <motion.div
+            variants={reveal}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            <CtaSection />
+          </motion.div>
           </div>
         </main>
         <Footer />
