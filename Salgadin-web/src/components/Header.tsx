@@ -48,7 +48,7 @@ export function Header() {
             className="h-11 w-auto object-contain"
             aria-hidden="true"
           />
-          <span className="text-2xl font-extrabold tracking-tight hidden sm:inline text-foreground">
+          <span className="text-2xl font-medium hidden sm:inline text-foreground">
             <span className="bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] bg-clip-text text-transparent">
               Salgadin
             </span>
@@ -104,7 +104,7 @@ export function Header() {
               </Link>
               <Link
                 to="/signup"
-                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-4 py-2 text-sm font-semibold text-[var(--color-on-primary)] shadow-[0_10px_24px_rgba(60,42,32,0.16)] ui-pressable focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-4 py-2 text-sm font-medium text-[var(--color-on-primary)] shadow-[0_10px_24px_rgba(60,42,32,0.16)] ui-pressable focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
               >
                 Comecar gratis
               </Link>
@@ -187,7 +187,7 @@ export function Header() {
                     <Link
                       to="/signup"
                       onClick={() => handleLinkClick()}
-                      className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-4 py-2 text-center text-sm font-semibold text-[var(--color-on-primary)] shadow-[0_10px_24px_rgba(60,42,32,0.14)] ui-pressable focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                      className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-4 py-2 text-center text-sm font-medium text-[var(--color-on-primary)] shadow-[0_10px_24px_rgba(60,42,32,0.14)] ui-pressable focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                     >
                       Comecar gratis
                     </Link>

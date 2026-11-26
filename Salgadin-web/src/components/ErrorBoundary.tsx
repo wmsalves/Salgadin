@@ -41,10 +41,10 @@ export class ErrorBoundary extends Component<
               <div className="p-3 rounded-full bg-danger/10">
                 <AlertCircle className="text-danger" size={24} />
               </div>
-              <h1 className="text-2xl font-bold text-danger">Oops!</h1>
+              <h1 className="text-2xl font-medium text-danger">Oops!</h1>
             </div>
 
-            <h2 className="text-lg font-semibold text-foreground mb-2">
+            <h2 className="text-lg font-medium text-foreground mb-2">
               Algo deu errado
             </h2>
             <p className="text-foreground-muted text-sm mb-6">
@@ -54,7 +54,7 @@ export class ErrorBoundary extends Component<
 
             {import.meta.env.DEV && (
               <details className="mb-6 p-3 bg-surface-2 rounded-lg text-xs">
-                <summary className="cursor-pointer font-semibold text-foreground-muted mb-2">
+                <summary className="cursor-pointer font-medium text-foreground-muted mb-2">
                   Detalhes do erro
                 </summary>
                 <pre className="text-danger overflow-auto max-h-32 whitespace-pre-wrap break-words">
@@ -65,7 +65,7 @@ export class ErrorBoundary extends Component<
 
             <button
               onClick={this.handleReset}
-              className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-strong text-white font-semibold py-3 rounded-lg transition-colors"
+              className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-strong text-white font-medium py-3 rounded-lg transition-colors"
             >
               <RotateCcw size={16} />
               Voltar para home

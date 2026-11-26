@@ -80,6 +80,30 @@
   --shadow-color: 28 18 14;
 }
 
+body {
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Titulos: uma familia, peso 500 no maximo, retos e balanceados. */
+:where(h1, h2, h3, h4, h5, h6) {
+  font-weight: 500;
+  font-style: normal;
+  text-wrap: balance;
+}
+
+:where(p, li, dd) {
+  text-wrap: pretty;
+}
+
+/* Valores financeiros alinham melhor com algarismos tabulares. */
+.tabular,
+:where(time, td, [data-numeric]) {
+  font-variant-numeric: tabular-nums;
+}
+
 html,
 body,
 #root {
@@ -138,8 +162,8 @@ body,
 }
 
 @media (hover: hover) and (pointer: fine) {
+  /* Cards estaticos nao "flutuam": so ganham um pouco de sombra. */
   .soft-hover:hover {
-    transform: translateY(-4px);
     box-shadow: var(--shadow-card-hover);
   }
 }
@@ -152,7 +176,7 @@ body,
 
 @media (hover: hover) and (pointer: fine) {
   .soft-hover-sm:hover {
-    transform: translateY(-2px);
+    transform: none;
   }
 }
 
@@ -207,7 +231,6 @@ body,
 
 @media (hover: hover) and (pointer: fine) {
   .ui-card:hover {
-    transform: translateY(-3px);
     box-shadow: var(--shadow-card-hover);
   }
 }
@@ -298,4 +321,13 @@ body,
     opacity: 1;
     transform: translateY(0) scale(1);
   }
+}
+
+/* Datas em pt-BR: "Novembro de 2026", nao "Novembro De 2026". */
+.sentence-case::first-letter {
+  text-transform: uppercase;
+}
+
+span.sentence-case {
+  display: inline-block;
 }

@@ -26,7 +26,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       <div>
         <label
           htmlFor={name}
-          className="block text-sm font-semibold text-foreground-muted mb-2"
+          className="block text-sm font-medium text-foreground-muted mb-2"
         >
           {label}
           {error && <span className="text-danger ml-1">*</span>}

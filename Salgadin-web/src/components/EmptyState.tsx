@@ -39,7 +39,7 @@ export function EmptyState({
     variant: "primary" | "secondary",
   ) => {
     const classes = clsx(
-      "inline-flex items-center justify-center gap-2 rounded-full text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ui-pressable motion-reduce:transition-none",
+      "inline-flex items-center justify-center gap-2 rounded-full text-ui font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ui-pressable motion-reduce:transition-none",
       isSpacious ? "px-5 py-2.5" : "px-4 py-2",
       variant === "primary"
         ? "bg-primary text-white shadow-[0_10px_24px_rgba(242,139,91,0.22)] hover:bg-primary-strong"
@@ -85,8 +85,8 @@ export function EmptyState({
       </div>
       <h3
         className={clsx(
-          "font-semibold text-foreground",
-          isSpacious ? "mt-5 text-lg sm:text-xl" : "mt-4 text-base",
+          "font-medium text-foreground",
+          isSpacious ? "mt-5 text-lg" : "mt-4 text-base",
         )}
       >
         {title}
@@ -95,8 +95,8 @@ export function EmptyState({
         className={clsx(
           "mx-auto mt-2 text-foreground-muted",
           isSpacious
-            ? "max-w-xl text-sm leading-6 sm:text-base sm:leading-7"
-            : "max-w-md text-sm leading-6",
+            ? "max-w-xl text-sm"
+            : "max-w-md text-ui",
         )}
       >
         {description}

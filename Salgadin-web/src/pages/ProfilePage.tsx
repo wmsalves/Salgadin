@@ -8,7 +8,6 @@ import {
 } from "react";
 import {
   Bell,
-  CheckCircle2,
   Database,
   Download,
   Globe2,
@@ -20,7 +19,6 @@ import {
   Shield,
   User,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import { EmptyState } from "../components/EmptyState";
 import { WhatsAppSimulationPanel } from "../components/settings/WhatsAppSimulationPanel";
 import { useAuth } from "../hooks/useAuth";
@@ -110,7 +108,7 @@ function SettingsCard({
           <Icon size={18} />
         </div>
         <div>
-          <h2 className="text-base font-semibold text-foreground sm:text-lg">
+          <h2 className="text-base font-medium text-foreground">
             {title}
           </h2>
           <p className="mt-1 text-sm text-foreground-muted">{description}</p>
@@ -416,7 +414,7 @@ export default function ProfilePage() {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-2xl font-medium text-foreground">
             Conta e configuracoes
           </h1>
           <p className="text-sm text-foreground-muted">
@@ -439,23 +437,12 @@ export default function ProfilePage() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-            Settings
-          </p>
-          <h1 className="mt-2 text-2xl font-bold text-foreground">
+          <h1 className="text-2xl font-medium text-foreground">
             Conta e configuracoes
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-foreground-muted">
             Controle seus dados, seguranca e preferencias em um unico lugar.
           </p>
-        </div>
-        <div className="flex flex-wrap gap-2 text-xs text-foreground-muted">
-          <span className="rounded-full border border-border bg-surface-2 px-3 py-1.5">
-            Moeda: BRL
-          </span>
-          <span className="rounded-full border border-border bg-surface-2 px-3 py-1.5">
-            Idioma: pt-BR
-          </span>
         </div>
       </header>
 
@@ -473,7 +460,7 @@ export default function ProfilePage() {
       <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] sm:p-6">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-full bg-primary text-xl font-semibold text-white">
+            <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-full bg-primary text-xl font-medium text-white">
               {profile?.avatarUrl ? (
                 <img
                   src={profile.avatarUrl}
@@ -485,30 +472,14 @@ export default function ProfilePage() {
               )}
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-foreground">
+              <h2 className="text-base font-medium text-foreground">
                 {displayName}
               </h2>
               <p className="text-sm text-foreground-muted">
                 {profile?.email ?? user?.email ?? "Email nao informado"}
               </p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
-                  <Shield size={12} />
-                  JWT ativo
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2.5 py-1 text-xs font-medium text-foreground-muted">
-                  <CheckCircle2 size={12} />
-                  Google Sign-In habilitado
-                </span>
-              </div>
             </div>
           </div>
-          <Link
-            to="/dashboard"
-            className="rounded-full border border-border bg-surface-2 px-4 py-2 text-center text-sm font-semibold text-foreground-muted transition hover:bg-surface-3 hover:text-foreground"
-          >
-            Voltar ao painel
-          </Link>
         </div>
       </section>
 
@@ -516,7 +487,7 @@ export default function ProfilePage() {
         <div className="space-y-5 xl:space-y-6">
           <SettingsCard
             icon={User}
-            title="Profile"
+            title="Perfil"
             description="Dados basicos usados no Salgadin e nas proximas integracoes."
           >
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -597,7 +568,7 @@ export default function ProfilePage() {
 
           <SettingsCard
             icon={Lock}
-            title="Security"
+            title="Seguranca"
             description="Altere senha e email com confirmacao da senha atual."
           >
             <div className="rounded-2xl border border-primary/20 bg-primary/8 px-4 py-3 text-sm text-foreground-muted">
@@ -686,7 +657,7 @@ export default function ProfilePage() {
               <button
                 onClick={handleSaveProfile}
                 disabled={isSavingProfile}
-                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
+                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
               >
                 {isSavingProfile ? "Salvando..." : "Salvar conta"}
               </button>
@@ -695,7 +666,7 @@ export default function ProfilePage() {
 
           <SettingsCard
             icon={Palette}
-            title="Preferences"
+            title="Preferencias"
             description="Preferencias basicas do app e alertas financeiros."
           >
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -707,7 +678,7 @@ export default function ProfilePage() {
                   <Palette size={16} />
                   Tema
                 </span>
-                <span className="font-semibold text-foreground">
+                <span className="font-medium text-foreground">
                   {theme === "light" ? "Claro" : "Escuro"}
                 </span>
               </button>
@@ -716,7 +687,7 @@ export default function ProfilePage() {
                   <Globe2 size={16} />
                   Idioma
                 </span>
-                <span className="font-semibold text-foreground">pt-BR</span>
+                <span className="font-medium text-foreground">pt-BR</span>
               </div>
               <label className="flex items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm">
                 <span className="flex items-center gap-2 text-foreground-muted">
@@ -772,7 +743,7 @@ export default function ProfilePage() {
               </div>
               <button
                 onClick={handleSavePreferences}
-                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
+                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
                 disabled={isSaving}
               >
                 {isSaving ? "Salvando..." : "Salvar preferencias"}
@@ -784,13 +755,13 @@ export default function ProfilePage() {
         <div className="space-y-5 xl:space-y-6">
           <SettingsCard
             icon={Database}
-            title="Data"
+            title="Seus dados"
             description="Seus lancamentos pertencem a voce e podem ser baixados."
           >
               {hasExportableData ? (
                 <div className="space-y-4">
                   <div className="rounded-2xl border border-border bg-surface-2 p-4">
-                    <h3 className="text-sm font-semibold text-foreground">
+                    <h3 className="text-sm font-medium text-foreground">
                       Exportar despesas
                     </h3>
                     <p className="mt-1 text-xs text-foreground-subtle">
@@ -800,7 +771,7 @@ export default function ProfilePage() {
                     <button
                       onClick={handleExportExpenses}
                       disabled={isExportingExpenses || !hasExpenses}
-                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       <Download size={16} />
                       {isExportingExpenses
@@ -811,7 +782,7 @@ export default function ProfilePage() {
                     </button>
                   </div>
                   <div className="rounded-2xl border border-border bg-surface-2 p-4">
-                    <h3 className="text-sm font-semibold text-foreground">
+                    <h3 className="text-sm font-medium text-foreground">
                       Exportar rendas
                     </h3>
                     <p className="mt-1 text-xs text-foreground-subtle">
@@ -821,7 +792,7 @@ export default function ProfilePage() {
                     <button
                       onClick={handleExportIncomes}
                       disabled={isExportingIncomes || !hasIncomes}
-                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-70"
+                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-medium text-foreground transition hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       <Download size={16} />
                       {isExportingIncomes
@@ -855,7 +826,7 @@ export default function ProfilePage() {
               <div className="rounded-2xl border border-border bg-surface-2 p-4">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <h3 className="text-sm font-semibold text-foreground">
+                    <h3 className="text-sm font-medium text-foreground">
                       Integração em desenvolvimento
                     </h3>
                     <p className="mt-1 text-xs leading-5 text-foreground-subtle">
@@ -863,7 +834,7 @@ export default function ProfilePage() {
                       ainda não está disponível via Meta ou Twilio.
                     </p>
                   </div>
-                  <span className="inline-flex w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                  <span className="inline-flex w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                     Em desenvolvimento
                   </span>
                 </div>
@@ -872,12 +843,12 @@ export default function ProfilePage() {
               <div className="rounded-2xl border border-border bg-surface-2 p-4">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-xs font-medium uppercase tracking-[0.14em] text-foreground-subtle">
+                    <p className="text-xs font-medium text-foreground-subtle">
                       Status
                     </p>
                     <div className="mt-2 flex flex-wrap items-center gap-2">
                       <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        className={`rounded-full px-3 py-1 text-xs font-medium ${
                           whatsAppStatus?.connected
                             ? "bg-success/10 text-success"
                             : "bg-surface-3 text-foreground-muted"
@@ -898,7 +869,7 @@ export default function ProfilePage() {
                     <button
                       onClick={handleGenerateWhatsAppCode}
                       disabled={isGeneratingWhatsAppCode}
-                      className="rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                      className="rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       {isGeneratingWhatsAppCode
                         ? "Gerando..."
@@ -908,7 +879,7 @@ export default function ProfilePage() {
                       <button
                         onClick={handleDisconnectWhatsApp}
                         disabled={isDisconnectingWhatsApp}
-                        className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-foreground-muted transition hover:bg-surface-3 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-70"
+                        className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-medium text-foreground-muted transition hover:bg-surface-3 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-70"
                       >
                         {isDisconnectingWhatsApp
                           ? "Desconectando..."
@@ -921,10 +892,10 @@ export default function ProfilePage() {
 
               {whatsAppLinkCode && (
                 <div className="rounded-2xl border border-primary/24 bg-primary/8 p-4">
-                  <p className="text-xs font-medium uppercase tracking-[0.14em] text-primary">
+                  <p className="text-xs font-medium text-primary">
                     Código de conexão
                   </p>
-                  <div className="mt-2 rounded-xl border border-primary/20 bg-surface px-4 py-3 font-mono text-lg font-semibold tracking-wide text-foreground">
+                  <div className="mt-2 rounded-xl border border-primary/20 bg-surface px-4 py-3 font-mono text-lg font-medium text-foreground">
                     {whatsAppLinkCode.code}
                   </div>
                   <p className="mt-3 text-xs leading-5 text-foreground-muted">
@@ -951,7 +922,7 @@ export default function ProfilePage() {
 
               <div className="rounded-2xl border border-border bg-surface-2 p-4">
                 <div className="flex flex-col gap-2">
-                  <h3 className="text-sm font-semibold text-foreground">
+                  <h3 className="text-sm font-medium text-foreground">
                     Experiência planejada
                   </h3>
                   <p className="text-xs leading-5 text-foreground-subtle">
@@ -968,7 +939,7 @@ export default function ProfilePage() {
                   ].map((command) => (
                     <span
                       key={command}
-                      className="rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[11px] text-foreground-muted"
+                      className="rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-xs text-foreground-muted"
                     >
                       {command}
                     </span>
@@ -980,7 +951,7 @@ export default function ProfilePage() {
                 <div className="rounded-2xl border border-dashed border-border bg-surface-2/70 p-4">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-subtle">
+                      <p className="text-xs font-medium text-foreground-subtle">
                         Ferramentas de desenvolvimento
                       </p>
                       <p className="mt-1 text-xs leading-5 text-foreground-muted">
@@ -989,7 +960,7 @@ export default function ProfilePage() {
                         pública do WhatsApp.
                       </p>
                     </div>
-                    <span className="inline-flex w-fit rounded-full border border-danger/20 bg-danger/10 px-2.5 py-1 text-[11px] font-semibold text-danger">
+                    <span className="inline-flex w-fit rounded-full border border-danger/20 bg-danger/10 px-2.5 py-1 text-xs font-medium text-danger">
                       Restrito
                     </span>
                   </div>
@@ -1006,7 +977,7 @@ export default function ProfilePage() {
       <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] sm:p-6">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="text-base font-medium text-foreground">
               Alertas e notificacoes
             </h2>
             <p className="text-sm text-foreground-muted">
@@ -1018,7 +989,7 @@ export default function ProfilePage() {
           <button
             onClick={handleMarkAllRead}
             disabled={isNotifying || notifications.length === 0}
-            className="rounded-full border border-border bg-surface-2 px-4 py-2 text-xs font-semibold text-foreground-muted transition hover:bg-surface-3 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-full border border-border bg-surface-2 px-4 py-2 text-xs font-medium text-foreground-muted transition hover:bg-surface-3 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isNotifying ? "Atualizando..." : "Marcar tudo como lido"}
           </button>
@@ -1026,7 +997,7 @@ export default function ProfilePage() {
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <div className="rounded-2xl border border-border bg-surface-2 p-4">
-            <h3 className="text-sm font-semibold text-foreground">
+            <h3 className="text-sm font-medium text-foreground">
               Alertas do mes
             </h3>
             {alerts.length > 0 ? (
@@ -1036,7 +1007,7 @@ export default function ProfilePage() {
                     key={alert.goalId}
                     className="rounded-xl border border-border bg-surface px-4 py-3"
                   >
-                    <div className="text-sm font-semibold text-foreground">
+                    <div className="text-sm font-medium text-foreground">
                       {alert.category || "Meta geral"}
                     </div>
                     <div className="mt-1 text-xs text-foreground-subtle">
@@ -1044,7 +1015,7 @@ export default function ProfilePage() {
                       {alert.monthlyLimit.toFixed(2)}
                     </div>
                     <div
-                      className={`mt-2 text-xs font-semibold ${
+                      className={`mt-2 text-xs font-medium ${
                         alert.thresholdReached ? "text-danger" : "text-primary"
                       }`}
                     >
@@ -1068,7 +1039,7 @@ export default function ProfilePage() {
           </div>
 
           <div className="rounded-2xl border border-border bg-surface-2 p-4">
-            <h3 className="text-sm font-semibold text-foreground">
+            <h3 className="text-sm font-medium text-foreground">
               Notificacoes automaticas
             </h3>
             {notifications.length > 0 ? (
@@ -1080,11 +1051,11 @@ export default function ProfilePage() {
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-foreground">
+                        <span className="text-sm font-medium text-foreground">
                           {notification.title}
                         </span>
                         {!notification.isRead && (
-                          <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] uppercase tracking-wide text-primary">
+                          <span className="rounded-full bg-primary/20 px-2 py-0.5 text-xs text-primary">
                             Novo
                           </span>
                         )}
@@ -1092,7 +1063,7 @@ export default function ProfilePage() {
                       <p className="mt-1 text-xs text-foreground-subtle">
                         {notification.message}
                       </p>
-                      <p className="mt-2 text-[11px] text-foreground-muted">
+                      <p className="mt-2 text-xs text-foreground-muted">
                         {new Date(notification.createdAt).toLocaleString(
                           "pt-BR",
                         )}
@@ -1101,7 +1072,7 @@ export default function ProfilePage() {
                     {!notification.isRead && (
                       <button
                         onClick={() => handleMarkRead(notification.id)}
-                        className="rounded-full border border-border bg-surface-2 px-4 py-2 text-xs font-semibold text-foreground-muted transition hover:bg-surface-3 hover:text-foreground"
+                        className="rounded-full border border-border bg-surface-2 px-4 py-2 text-xs font-medium text-foreground-muted transition hover:bg-surface-3 hover:text-foreground"
                       >
                         Marcar como lido
                       </button>

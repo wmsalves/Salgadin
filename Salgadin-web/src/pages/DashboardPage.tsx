@@ -229,7 +229,7 @@ function CategoryChartTooltip({
       <p className="text-xs font-medium text-foreground-muted">
         {category.name}
       </p>
-      <p className="mt-1 font-mono text-sm font-semibold text-foreground tabular-nums">
+      <p className="mt-1 text-sm font-medium text-foreground tabular-nums">
         {formatCurrency(category.value)}
       </p>
     </div>
@@ -256,13 +256,13 @@ function CashflowTooltip({
         <div className="mt-2 space-y-1.5">
           <div className="flex items-center justify-between gap-4 text-sm">
             <span className="text-foreground-muted">Entrada do dia</span>
-            <span className="font-mono font-semibold text-success tabular-nums">
+            <span className="font-medium text-success tabular-nums">
               {formatCurrency(point.dailyIncome)}
             </span>
           </div>
           <div className="flex items-center justify-between gap-4 text-sm">
             <span className="text-foreground-muted">Saida do dia</span>
-            <span className="font-mono font-semibold text-warning tabular-nums">
+            <span className="font-medium text-warning tabular-nums">
               {formatCurrency(point.dailyExpense)}
             </span>
           </div>
@@ -270,7 +270,7 @@ function CashflowTooltip({
             <span className="text-foreground-muted">Saldo acumulado</span>
             <span
               className={clsx(
-                "font-mono font-semibold tabular-nums",
+                "font-medium tabular-nums",
                 point.cashBalance >= 0 ? "text-foreground" : "text-warning",
               )}
             >
@@ -282,7 +282,7 @@ function CashflowTooltip({
         <div className="mt-2">
           <div className="flex items-center justify-between gap-4 text-sm">
             <span className="text-foreground-muted">Gastos do dia</span>
-            <span className="font-mono font-semibold text-warning tabular-nums">
+            <span className="font-medium text-warning tabular-nums">
               {formatCurrency(point.dailyExpense)}
             </span>
           </div>
@@ -528,40 +528,29 @@ export default function DashboardPage() {
   const summaryCards = useMemo(
     () => [
       {
-        title: "Saldo Atual",
-        helper: "Disponivel hoje",
+        title: "Saldo do mes",
+        helper: "Receitas menos despesas",
         value: balance.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
-        trend: balance >= 0 ? "Positivo" : "Atencao",
-        trendIcon:
-          balance >= 0 ? (
-            <ArrowUpRight size={14} />
-          ) : (
-            <ArrowDownRight size={14} />
-          ),
         icon: Wallet,
         tone: balance >= 0 ? "success" : "danger",
       },
       {
-        title: "Metas Ativas",
-        helper: "Economia em progresso",
+        title: "Metas ativas",
+        helper: "Limites acompanhados no mes",
         value: `${activeGoalsCount} ${activeGoalsCount === 1 ? "meta" : "metas"}`,
-        trend: activeGoalsCount > 0 ? "Ativas agora" : "Nenhuma ativa",
-        trendIcon: <Target size={14} />,
         icon: Target,
         tone: "info",
       },
       {
-        title: "Gastos do Mes",
-        helper: "Despesas totais",
+        title: "Gastos do mes",
+        helper: "Total de despesas registradas",
         value: totalExpenses.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         }),
-        trend: "Monitorando",
-        trendIcon: <TrendingDown size={14} />,
         icon: TrendingDown,
         tone: "danger",
       },
@@ -704,7 +693,7 @@ export default function DashboardPage() {
                 setIsAddIncomeModalOpen(true);
                 setIsFabOpen(false);
               }}
-              className="flex items-center gap-2 rounded-full bg-success px-5 py-3 text-sm font-semibold text-white shadow-lg"
+              className="flex items-center gap-2 rounded-full bg-success px-5 py-3 text-sm font-medium text-white shadow-lg"
             >
               Nova Receita <ArrowUpRight size={18} />
             </button>
@@ -714,7 +703,7 @@ export default function DashboardPage() {
                 setIsAddExpenseModalOpen(true);
                 setIsFabOpen(false);
               }}
-              className="flex items-center gap-2 rounded-full bg-danger-strong px-5 py-3 text-sm font-semibold text-white shadow-lg"
+              className="flex items-center gap-2 rounded-full bg-danger-strong px-5 py-3 text-sm font-medium text-white shadow-lg"
             >
               Nova Despesa <ArrowDownRight size={18} />
             </button>
@@ -736,8 +725,7 @@ export default function DashboardPage() {
       <header className="flex flex-col gap-3">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="hidden sm:block">
-            <p className="text-sm text-foreground-muted">Bem-vindo de volta</p>
-            <h1 className="text-3xl font-semibold text-foreground">
+            <h1 className="text-2xl font-medium text-foreground">
               Seu painel financeiro
             </h1>
           </div>
@@ -751,7 +739,7 @@ export default function DashboardPage() {
             </button>
             <div className="flex min-w-[170px] items-center justify-center gap-2 text-center">
               <Calendar size={16} className="text-primary" />
-              <span className="text-sm font-semibold capitalize text-foreground">
+              <span className="text-sm font-medium sentence-case text-foreground">
                 {currentMonthLabel}
               </span>
             </div>
@@ -769,7 +757,7 @@ export default function DashboardPage() {
                 setIncomeToEdit(null);
                 setIsAddIncomeModalOpen(true);
               }}
-              className="inline-flex items-center gap-2 rounded-full border border-success/40 bg-success/10 px-4 py-2 text-sm font-semibold text-success transition soft-hover-sm hover:bg-success hover:text-white"
+              className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-success/40 bg-success/10 px-4 py-2 text-ui font-medium text-success transition-colors hover:bg-success hover:text-white"
             >
               <Plus size={16} />
               Nova receita
@@ -779,7 +767,7 @@ export default function DashboardPage() {
                 setExpenseToEdit(null);
                 setIsAddExpenseModalOpen(true);
               }}
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 px-4 py-2 text-sm font-semibold text-foreground transition soft-hover-sm hover:border-surface-3 hover:bg-surface-2"
+              className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-border bg-surface/80 px-4 py-2 text-ui font-medium text-foreground transition-colors hover:border-surface-3 hover:bg-surface-2"
             >
               <Plus size={16} />
               Nova despesa
@@ -792,10 +780,7 @@ export default function DashboardPage() {
         <section className="rounded-3xl border border-primary/24 bg-gradient-to-br from-primary/12 via-surface/92 to-surface-2/82 p-5 shadow-[0_18px_42px_rgba(60,42,32,0.12)] sm:p-7">
           <div className="grid gap-6 lg:grid-cols-[1.05fr_1.3fr] lg:items-center">
             <div>
-              <span className="inline-flex items-center rounded-full border border-primary/24 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                Primeiros passos
-              </span>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-foreground">
+              <h2 className="text-xl font-medium text-foreground">
                 Seu painel ainda esta vazio
               </h2>
               <p className="mt-2 max-w-xl text-sm leading-6 text-foreground-muted">
@@ -850,13 +835,13 @@ export default function DashboardPage() {
                         <Icon size={18} />
                       </div>
                       <div>
-                        <h3 className="text-sm font-semibold text-foreground">
+                        <h3 className="text-sm font-medium text-foreground">
                           {item.title}
                         </h3>
                         <p className="mt-1 text-xs leading-5 text-foreground-muted">
                           {item.description}
                         </p>
-                        <span className="mt-3 inline-flex text-xs font-semibold text-primary">
+                        <span className="mt-3 inline-flex text-xs font-medium text-primary">
                           {item.label}
                         </span>
                       </div>
@@ -874,13 +859,13 @@ export default function DashboardPage() {
                         <Icon size={18} />
                       </div>
                       <div>
-                        <h3 className="text-sm font-semibold text-foreground">
+                        <h3 className="text-sm font-medium text-foreground">
                           {item.title}
                         </h3>
                         <p className="mt-1 text-xs leading-5 text-foreground-muted">
                           {item.description}
                         </p>
-                        <span className="mt-3 inline-flex text-xs font-semibold text-primary">
+                        <span className="mt-3 inline-flex text-xs font-medium text-primary">
                           {item.label}
                         </span>
                       </div>
@@ -896,7 +881,7 @@ export default function DashboardPage() {
       {dueRecurringSchedules.length > 0 && (
         <section className="flex flex-col gap-3 rounded-2xl border border-warning/24 bg-warning/10 px-4 py-3 text-sm shadow-[0_10px_24px_rgba(60,42,32,0.08)] sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="font-semibold text-foreground">
+            <p className="font-medium text-foreground">
               Voce possui {dueRecurringSchedules.length} recorrencia
               {dueRecurringSchedules.length === 1 ? "" : "s"} pendente
               {dueRecurringSchedules.length === 1 ? "" : "s"}.
@@ -909,7 +894,7 @@ export default function DashboardPage() {
             type="button"
             onClick={handleGenerateDueRecurring}
             disabled={isGeneratingRecurring}
-            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-warning/28 bg-surface px-4 py-2 text-xs font-semibold text-warning transition hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-warning/28 bg-surface px-4 py-2 text-xs font-medium text-warning transition hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <RefreshCw
               size={14}
@@ -940,16 +925,16 @@ export default function DashboardPage() {
             <div
               key={card.title}
               style={{ animationDelay: `${index * 100}ms` }}
-              className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+              className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] animate-fade-in opacity-0 [animation-fill-mode:forwards]"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm text-foreground-subtle">
+                  <h2 className="text-sm font-medium text-foreground">
                     {card.title}
-                  </div>
-                  <div className="text-[11px] text-foreground-muted">
+                  </h2>
+                  <p className="text-xs text-foreground-subtle">
                     {card.helper}
-                  </div>
+                  </p>
                 </div>
                 <div
                   className={clsx(
@@ -960,16 +945,8 @@ export default function DashboardPage() {
                   <Icon size={18} />
                 </div>
               </div>
-              <div className="mt-4 font-mono text-2xl font-semibold tracking-tight text-foreground tabular-nums">
+              <div className="mt-4 text-2xl font-medium text-foreground tabular-nums">
                 {card.value}
-              </div>
-              <div
-                className={clsx(
-                  "mt-2 flex items-center gap-1 text-xs font-medium",
-                  toneClass,
-                )}
-              >
-                {card.trendIcon} {card.trend}
               </div>
             </div>
           );
@@ -979,7 +956,7 @@ export default function DashboardPage() {
       <section className="rounded-3xl border border-border/70 bg-surface/92 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] sm:p-6">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground">
+            <h2 className="flex items-center gap-2 text-base font-medium text-foreground">
               <Sparkles size={18} className="text-primary" />
               Insights financeiros
             </h2>
@@ -987,9 +964,6 @@ export default function DashboardPage() {
               Leituras simples do periodo atual para apoiar suas proximas decisoes.
             </p>
           </div>
-          <span className="inline-flex w-fit rounded-full border border-border bg-surface-2 px-3 py-1 text-xs font-semibold text-foreground-subtle">
-            Sem IA externa
-          </span>
         </div>
 
         {financialInsights.length > 0 ? (
@@ -1035,7 +1009,7 @@ export default function DashboardPage() {
                   >
                     <InsightIcon size={18} />
                   </div>
-                  <h3 className="mt-4 text-sm font-semibold text-foreground">
+                  <h3 className="mt-4 text-sm font-medium text-foreground">
                     {insight.title}
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-foreground-muted">
@@ -1070,7 +1044,7 @@ export default function DashboardPage() {
           <div className="mb-6 flex shrink-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-3">
               <div>
-              <h2 className="text-lg font-semibold text-foreground">
+              <h2 className="text-base font-medium text-foreground">
                 Evolucao financeira mensal
               </h2>
               <p className="text-xs text-foreground-subtle">
@@ -1095,7 +1069,7 @@ export default function DashboardPage() {
                       aria-selected={isActive}
                       onClick={() => setCashflowViewMode(option.value)}
                       className={clsx(
-                        "rounded-xl px-3 py-2 text-xs font-semibold transition sm:px-3.5",
+                        "rounded-xl px-3 py-2 text-xs font-medium transition sm:px-3.5",
                         isActive
                           ? "bg-primary text-white shadow-sm"
                           : "text-foreground-muted hover:bg-surface-3 hover:text-foreground",
@@ -1107,7 +1081,7 @@ export default function DashboardPage() {
                 })}
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-foreground-subtle tabular-nums sm:justify-end">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-foreground-subtle tabular-nums sm:justify-end">
               <span className="rounded-full bg-success/10 px-3 py-1 font-medium text-success">
                 Entradas:{" "}
                 {totalRevenue.toLocaleString("pt-BR", {
@@ -1296,7 +1270,7 @@ export default function DashboardPage() {
             <div className="rounded-3xl border border-border/70 bg-surface/92 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover">
               <div className="mb-4 flex items-start justify-between gap-3">
                 <div>
-                  <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground">
+                  <h2 className="flex items-center gap-2 text-base font-medium text-foreground">
                     <Repeat size={19} className="text-primary" />
                     Proximas recorrencias
                   </h2>
@@ -1306,7 +1280,7 @@ export default function DashboardPage() {
                 </div>
                 <Link
                   to="/recorrencias"
-                  className="shrink-0 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-semibold text-primary transition hover:border-primary/30 hover:bg-surface-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+                  className="shrink-0 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-primary transition hover:border-primary/30 hover:bg-surface-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
                 >
                   Ver todas
                 </Link>
@@ -1329,7 +1303,7 @@ export default function DashboardPage() {
                               isExpense ? "bg-warning" : "bg-success",
                             )}
                           />
-                          <p className="truncate text-sm font-semibold text-foreground">
+                          <p className="truncate text-sm font-medium text-foreground">
                             {schedule.description}
                           </p>
                         </div>
@@ -1340,13 +1314,13 @@ export default function DashboardPage() {
                       <div className="shrink-0 text-right">
                         <p
                           className={clsx(
-                            "font-mono text-sm font-semibold tabular-nums",
+                            " text-sm font-medium tabular-nums",
                             isExpense ? "text-warning" : "text-success",
                           )}
                         >
                           {isExpense ? "-" : "+"} {formatCurrency(schedule.amount)}
                         </p>
-                        <span className="text-[11px] text-foreground-subtle">
+                        <span className="text-xs text-foreground-subtle">
                           {isExpense ? "Despesa" : "Receita"}
                         </span>
                       </div>
@@ -1360,7 +1334,7 @@ export default function DashboardPage() {
           <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover">
             <div className="mb-4 flex items-start justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold text-foreground">
+                <h2 className="text-base font-medium text-foreground">
                   Despesas por Categoria
                 </h2>
                 <p className="mt-1 text-xs text-foreground-subtle">
@@ -1371,7 +1345,7 @@ export default function DashboardPage() {
               {expensesByCategory.length > 0 && (
                 <Link
                   to="/categorias"
-                  className="shrink-0 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-semibold text-primary transition hover:border-primary/30 hover:bg-surface-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+                  className="shrink-0 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-primary transition hover:border-primary/30 hover:bg-surface-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
                 >
                   {hiddenCategoryCount > 0 ? "Ver todas" : "Ver detalhes"}
                 </Link>
@@ -1412,7 +1386,7 @@ export default function DashboardPage() {
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-3 px-1">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+                    <p className="text-xs font-medium text-foreground-muted">
                       Top categorias
                     </p>
                     {hiddenCategoryCount > 0 && (
@@ -1439,7 +1413,7 @@ export default function DashboardPage() {
                           {item.name}
                         </span>
                       </div>
-                      <span className="font-mono text-sm font-semibold text-foreground tabular-nums">
+                      <span className="text-sm font-medium text-foreground tabular-nums">
                         {item.value.toLocaleString("pt-BR", {
                           style: "currency",
                           currency: "BRL",
@@ -1479,7 +1453,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover">
-            <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-foreground">
+            <h2 className="mb-4 flex items-center gap-2 text-base font-medium text-foreground">
               <Target size={20} className="text-info" />
               Alertas de Metas
             </h2>
@@ -1503,14 +1477,14 @@ export default function DashboardPage() {
                         </span>
                         <span
                           className={clsx(
-                            "font-mono font-bold tracking-tight",
+                            "font-medium",
                             isCritical ? "text-danger" : "text-primary",
                           )}
                         >
                           {percent.toFixed(0)}%
                         </span>
                       </div>
-                      <div className="mt-1 mb-2 flex justify-between font-mono text-xs text-foreground-subtle tabular-nums">
+                      <div className="mt-1 mb-2 flex justify-between text-xs text-foreground-subtle tabular-nums">
                         <span>Gasto: R$ {alert.spent}</span>
                         <span>Limite: R$ {alert.monthlyLimit}</span>
                       </div>
@@ -1555,7 +1529,7 @@ export default function DashboardPage() {
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover flex flex-col">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="text-base font-medium text-foreground">
               Ultimas receitas
             </h2>
           </div>
@@ -1570,14 +1544,14 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={inc.id}
-                    className="group rounded-2xl border border-border bg-surface-2 p-3.5 soft-hover-sm hover:bg-surface-3/30 transition-colors"
+                    className="group rounded-2xl border border-border bg-surface-2 p-3.5 transition-colors hover:bg-surface-3/30 sm:flex sm:items-center sm:gap-3"
                   >
-                    <div className="flex items-start gap-3">
+                    <div className="flex min-w-0 items-start gap-3 sm:flex-1 sm:items-center">
                       <div className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-full bg-success/10 text-success shadow-sm">
                         <Wallet size={18} />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-foreground">
+                        <p className="truncate text-sm font-medium text-foreground">
                           {inc.description}
                         </p>
                         <p className="hidden text-xs text-foreground-subtle sm:mt-0.5 sm:block">
@@ -1601,12 +1575,12 @@ export default function DashboardPage() {
                           })}
                         </span>
                       </div>
-                      <div className="font-mono text-sm font-semibold tracking-tight text-success tabular-nums">
+                      <div className="text-sm font-medium text-success tabular-nums">
                         + {amountLabel}
                       </div>
                     </div>
                     <div className="hidden items-center gap-2 sm:flex">
-                      <div className="font-mono text-sm font-semibold tracking-tight text-success tabular-nums">
+                      <div className="text-sm font-medium text-success tabular-nums">
                         + {amountLabel}
                       </div>
                       <button
@@ -1651,7 +1625,7 @@ export default function DashboardPage() {
 
         <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover flex flex-col">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="text-base font-medium text-foreground">
               Ultimas despesas
             </h2>
           </div>
@@ -1670,14 +1644,14 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={exp.id}
-                    className="group rounded-2xl border border-border bg-surface-2 p-3.5 soft-hover-sm hover:bg-surface-3/30 transition-colors"
+                    className="group rounded-2xl border border-border bg-surface-2 p-3.5 transition-colors hover:bg-surface-3/30 sm:flex sm:items-center sm:gap-3"
                   >
-                    <div className="flex items-start gap-3">
+                    <div className="flex min-w-0 items-start gap-3 sm:flex-1 sm:items-center">
                       <div className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-full bg-surface-3 text-primary shadow-sm">
                         <Icon size={18} />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
+                        <p className="truncate text-sm font-medium text-foreground transition-colors group-hover:text-primary">
                           {exp.description}
                         </p>
                         <p className="hidden text-xs text-foreground-subtle sm:mt-0.5 sm:block">
@@ -1705,12 +1679,12 @@ export default function DashboardPage() {
                           })}
                         </span>
                       </div>
-                      <div className="font-mono text-sm font-semibold tracking-tight text-danger tabular-nums">
+                      <div className="text-sm font-medium text-danger tabular-nums">
                         - {amountLabel}
                       </div>
                     </div>
                     <div className="hidden items-center gap-2 sm:flex">
-                      <div className="font-mono text-sm font-semibold tracking-tight text-danger tabular-nums">
+                      <div className="text-sm font-medium text-danger tabular-nums">
                         - {amountLabel}
                       </div>
                       <button

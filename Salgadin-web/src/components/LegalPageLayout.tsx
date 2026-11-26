@@ -27,10 +27,10 @@ export function LegalPageLayout({
       <Header />
       <main className="mx-auto max-w-5xl px-4 pb-16 pt-10 sm:pb-20 sm:pt-14">
         <section className="rounded-[var(--radius-card)] border border-border/70 bg-surface/92 p-6 shadow-[var(--shadow-card)] sm:p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.12em] text-primary">
+          <p className="text-sm font-medium text-primary">
             {eyebrow}
           </p>
-          <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+          <h1 className="mt-3 text-3xl font-medium text-foreground sm:text-4xl">
             {title}
           </h1>
           <p className="mt-4 max-w-3xl text-base leading-7 text-foreground-muted">
@@ -47,7 +47,7 @@ export function LegalPageLayout({
               key={section.title}
               className="rounded-[var(--radius-card)] border border-border/70 bg-surface/88 p-6 shadow-[var(--shadow-card)] sm:p-8"
             >
-              <h2 className="text-xl font-semibold text-foreground sm:text-2xl">
+              <h2 className="text-xl font-medium text-foreground sm:text-2xl">
                 {section.title}
               </h2>
               <div className="mt-4 space-y-3 text-sm leading-7 text-foreground-muted sm:text-base">

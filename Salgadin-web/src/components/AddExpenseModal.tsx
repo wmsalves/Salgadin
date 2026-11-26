@@ -303,7 +303,7 @@ export function AddExpenseModal({
             className="bg-surface rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
           >
             <div className="bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-6 py-4 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-white">
+              <h2 className="text-lg font-medium text-white">
                 {isEditing ? "Editar Despesa" : "Adicionar Nova Despesa"}
               </h2>
               <button
@@ -317,7 +317,7 @@ export function AddExpenseModal({
               <div>
                 <label
                   htmlFor="description"
-                  className="block text-sm font-semibold text-foreground-muted mb-2"
+                  className="block text-sm font-medium text-foreground-muted mb-2"
                 >
                   Descrição <span className="text-danger">*</span>
                 </label>
@@ -339,7 +339,7 @@ export function AddExpenseModal({
                 <div>
                   <label
                     htmlFor="amount"
-                    className="block text-sm font-semibold text-foreground-muted mb-2"
+                    className="block text-sm font-medium text-foreground-muted mb-2"
                   >
                     Valor (R$) <span className="text-danger">*</span>
                   </label>
@@ -366,7 +366,7 @@ export function AddExpenseModal({
                     id="amount"
                     type="text"
                     inputMode="decimal"
-                    className="w-full font-mono tabular-nums rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)] placeholder:text-foreground-subtle"
+                    className="w-full tabular-nums rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)] placeholder:text-foreground-subtle"
                     placeholder="0,00"
                   />
                   {errors.amount && (
@@ -378,7 +378,7 @@ export function AddExpenseModal({
                 <div>
                   <label
                     htmlFor="date"
-                    className="block text-sm font-semibold text-foreground-muted mb-2"
+                    className="block text-sm font-medium text-foreground-muted mb-2"
                   >
                     Data <span className="text-danger">*</span>
                   </label>
@@ -399,7 +399,7 @@ export function AddExpenseModal({
               <div>
                 <label
                   htmlFor="categoryId"
-                  className="block text-sm font-semibold text-foreground-muted mb-2"
+                  className="block text-sm font-medium text-foreground-muted mb-2"
                 >
                   Categoria <span className="text-danger">*</span>
                 </label>
@@ -449,7 +449,7 @@ export function AddExpenseModal({
               <div>
                 <label
                   htmlFor="subcategoryId"
-                  className="block text-sm font-semibold text-foreground-muted mb-2"
+                  className="block text-sm font-medium text-foreground-muted mb-2"
                 >
                   Subcategoria
                 </label>
@@ -476,7 +476,7 @@ export function AddExpenseModal({
 
               {matchingSchedule && pendingPayload && (
                 <div className="rounded-2xl border border-primary/24 bg-primary/10 p-4">
-                  <p className="text-sm font-semibold text-foreground">
+                  <p className="text-sm font-medium text-foreground">
                     Esta despesa parece fazer parte de uma recorrencia.
                   </p>
                   <p className="mt-1 text-sm leading-6 text-foreground-muted">

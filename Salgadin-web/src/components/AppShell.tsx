@@ -116,7 +116,7 @@ export function AppShell() {
                 aria-hidden="true"
               />
               {!collapsed && (
-                <span className="text-2xl font-extrabold tracking-tight text-foreground">
+                <span className="text-2xl font-medium text-foreground">
                   <span className="bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] bg-clip-text text-transparent">
                     Salgadin
                   </span>
@@ -181,18 +181,6 @@ export function AppShell() {
             })}
           </nav>
 
-          {!collapsed && (
-            <div className="mt-6 px-4">
-              <div className="rounded-2xl border border-border/70 bg-gradient-to-br from-[var(--brand-from)]/10 to-[var(--brand-to)]/15 p-4 text-sm text-foreground-muted">
-                <p className="font-semibold text-foreground">
-                  Hora de cuidar do bolso
-                </p>
-                <p className="mt-1">
-                  Defina metas e acompanhe seus gastos em segundos.
-                </p>
-              </div>
-            </div>
-          )}
         </motion.aside>
 
         <main className="flex-1 min-w-0">
@@ -212,7 +200,7 @@ export function AppShell() {
                   className="h-9 w-auto object-contain"
                   aria-hidden="true"
                 />
-                <span className="text-xl font-extrabold tracking-tight text-foreground">
+                <span className="text-xl font-medium text-foreground">
                   <span className="bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] bg-clip-text text-transparent">
                     Salgadin
                   </span>
@@ -220,7 +208,7 @@ export function AppShell() {
               </NavLink>
               <div className="hidden items-center gap-2 rounded-full bg-surface-2 px-3 py-1.5 text-sm text-foreground-muted md:flex">
                 <span>Bem-vindo</span>
-                <span className="font-semibold text-foreground">
+                <span className="font-medium text-foreground">
                   {user?.name}
                 </span>
               </div>
@@ -238,7 +226,7 @@ export function AppShell() {
                   >
                     <Bell size={18} />
                     {unreadCount > 0 && (
-                      <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 rounded-full bg-danger text-white text-[10px] font-semibold grid place-items-center">
+                      <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 rounded-full bg-danger text-white text-xs font-medium grid place-items-center">
                         {unreadCount > 9 ? "9+" : unreadCount}
                       </span>
                     )}
@@ -251,7 +239,7 @@ export function AppShell() {
                       className="ui-popover-panel absolute left-1/2 z-50 mt-3 max-h-[360px] w-[min(22rem,calc(100vw-1.5rem))] -translate-x-1/2 overflow-auto rounded-2xl border border-border bg-surface shadow-[0_18px_36px_rgba(0,0,0,0.18)] md:left-auto md:right-0 md:w-80 md:translate-x-0"
                     >
                       <div className="p-4 border-b border-border/60 flex items-center justify-between">
-                        <span className="text-sm font-semibold text-foreground">
+                        <span className="text-sm font-medium text-foreground">
                           Notificacoes
                         </span>
                         <button
@@ -277,7 +265,7 @@ export function AppShell() {
                               className="rounded-xl border border-border bg-surface-2 p-3"
                             >
                               <div className="flex items-center justify-between gap-2">
-                                <span className="text-xs font-semibold text-foreground">
+                                <span className="text-xs font-medium text-foreground">
                                   {item.title}
                                 </span>
                                 {!item.isRead && (
@@ -292,16 +280,16 @@ export function AppShell() {
                                         )
                                       );
                                     }}
-                                    className="text-[11px] text-primary hover:text-primary/80"
+                                    className="text-xs text-primary hover:text-primary/80"
                                   >
                                     Marcar lido
                                   </button>
                                 )}
                               </div>
-                              <p className="mt-1 text-[11px] text-foreground-subtle">
+                              <p className="mt-1 text-xs text-foreground-subtle">
                                 {item.message}
                               </p>
-                              <p className="mt-2 text-[10px] text-foreground-muted">
+                              <p className="mt-2 text-xs text-foreground-muted">
                                 {new Date(item.createdAt).toLocaleString(
                                   "pt-BR"
                                 )}
@@ -336,7 +324,7 @@ export function AppShell() {
                     className="ui-surface-interactive flex items-center gap-2 rounded-full border border-border bg-surface-2 px-2.5 py-2 text-foreground hover:bg-surface-3 soft-press"
                     aria-label="Abrir menu da conta"
                   >
-                    <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-xs font-semibold text-white">
+                    <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-xs font-medium text-white">
                       {userInitial}
                     </span>
                     <span className="grid h-8 w-8 place-items-center rounded-full bg-primary/12 text-primary">
@@ -360,7 +348,7 @@ export function AppShell() {
                     >
                       <div className="border-b border-border/70 bg-surface-2 px-4 py-3">
                         <div className="text-xs text-foreground-muted">Conta</div>
-                        <div className="mt-1 text-sm font-semibold text-foreground">
+                        <div className="mt-1 text-sm font-medium text-foreground">
                           {firstName}
                         </div>
                         <div className="mt-0.5 text-xs text-foreground-muted">
@@ -382,7 +370,7 @@ export function AppShell() {
                             <Bell size={16} className="text-foreground-muted" />
                             Notificacoes
                           </span>
-                          <span className="rounded-full bg-danger px-2 py-0.5 text-[11px] font-semibold text-white">
+                          <span className="rounded-full bg-danger px-2 py-0.5 text-xs font-medium text-white">
                             {unreadCount > 9 ? "9+" : unreadCount}
                           </span>
                         </button>
@@ -405,7 +393,7 @@ export function AppShell() {
                                     className="rounded-xl border border-border/70 bg-surface px-3 py-2.5"
                                   >
                                     <div className="flex items-center justify-between gap-2">
-                                      <span className="text-xs font-semibold text-foreground">
+                                      <span className="text-xs font-medium text-foreground">
                                         {item.title}
                                       </span>
                                       {!item.isRead && (
@@ -420,13 +408,13 @@ export function AppShell() {
                                               ),
                                             );
                                           }}
-                                          className="text-[11px] text-primary"
+                                          className="text-xs text-primary"
                                         >
                                           Marcar lido
                                         </button>
                                       )}
                                     </div>
-                                    <p className="mt-1 text-[11px] text-foreground-subtle">
+                                    <p className="mt-1 text-xs text-foreground-subtle">
                                       {item.message}
                                     </p>
                                   </div>
@@ -483,7 +471,7 @@ export function AppShell() {
                 to={item.to}
                 className={({ isActive }) =>
                   clsx(
-                    "flex min-w-[4.25rem] flex-col items-center gap-1 rounded-xl px-2 py-1 text-[11px] font-medium transition",
+                    "flex min-w-[4.25rem] flex-col items-center gap-1 rounded-xl px-2 py-1 text-xs font-medium transition",
                     isActive
                       ? "text-primary"
                       : "text-foreground-muted hover:text-foreground"

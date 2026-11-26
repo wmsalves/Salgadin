@@ -117,7 +117,7 @@ export function HeroChartPreview({
   return (
     <div className="grid h-full grid-rows-[1fr_auto] rounded-2xl border border-border/60 bg-gradient-to-b from-surface to-surface-2/50 p-4 sm:p-5">
       <div className="grid h-full min-h-0 grid-cols-[56px_1fr] gap-4">
-        <div className="flex h-full min-h-0 flex-col justify-between text-[11px] text-foreground-subtle">
+        <div className="flex h-full min-h-0 flex-col justify-between text-xs text-foreground-subtle">
           {axisMarks.map((mark) => (
             <span key={mark}>R$ {mark}</span>
           ))}
@@ -140,14 +140,14 @@ export function HeroChartPreview({
                 className="group relative flex h-full min-h-0 min-w-0 flex-1 flex-col items-center gap-2"
               >
                 <div className="pointer-events-none absolute -top-2 left-1/2 z-10 w-44 -translate-x-1/2 -translate-y-full rounded-xl border border-border/70 bg-surface px-3 py-2 text-left opacity-0 shadow-[0_18px_36px_rgba(60,42,32,0.14)] transition duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
-                  <p className="text-[11px] font-semibold text-foreground">
+                  <p className="text-xs font-medium text-foreground">
                     {day.name} - {formatCurrency(day.total)}
                   </p>
                   <div className="mt-1.5 space-y-1">
                     {day.spending.map((item) => (
                       <div
                         key={`${day.name}-${item.label}`}
-                        className="flex items-center justify-between gap-2 text-[11px] text-foreground-muted"
+                        className="flex items-center justify-between gap-2 text-xs text-foreground-muted"
                       >
                         <span>{item.label}</span>
                         <span className="font-medium text-foreground">
@@ -158,7 +158,7 @@ export function HeroChartPreview({
                   </div>
                 </div>
 
-                <div className="text-center text-[11px] font-medium text-foreground-muted">
+                <div className="text-center text-xs font-medium text-foreground-muted">
                   {formatCurrency(day.total)}
                 </div>
 
@@ -201,7 +201,7 @@ export function HeroChartPreview({
                   </button>
                 </div>
 
-                <div className="text-[12px] font-medium text-foreground-subtle">
+                <div className="text-xs font-medium text-foreground-subtle">
                   {day.name}
                 </div>
               </div>

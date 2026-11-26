@@ -4,9 +4,9 @@ import { useAuth } from "../../hooks/useAuth";
 
 const buttonStyles = {
   primary:
-    "inline-flex min-h-12 items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-6 py-3 font-semibold text-[var(--color-on-primary)] shadow-[0_14px_30px_rgba(60,42,32,0.18)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:from-[var(--brand-from-strong)] hover:to-[var(--brand-to-strong)] hover:shadow-[0_18px_38px_rgba(60,42,32,0.22)] active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 soft-press ui-pressable",
+    "inline-flex min-h-12 items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-6 py-3 font-medium text-[var(--color-on-primary)] shadow-[0_14px_30px_rgba(60,42,32,0.18)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:from-[var(--brand-from-strong)] hover:to-[var(--brand-to-strong)] hover:shadow-[0_18px_38px_rgba(60,42,32,0.22)] active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 soft-press ui-pressable",
   secondary:
-    "inline-flex min-h-12 items-center justify-center rounded-xl border border-primary/35 bg-surface px-6 py-3 font-semibold text-primary-strong shadow-[0_10px_24px_rgba(60,42,32,0.08)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:border-primary hover:bg-surface-2 active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 soft-press ui-pressable",
+    "inline-flex min-h-12 items-center justify-center rounded-xl border border-primary/35 bg-surface px-6 py-3 font-medium text-primary-strong shadow-[0_10px_24px_rgba(60,42,32,0.08)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 hover:border-primary hover:bg-surface-2 active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 soft-press ui-pressable",
 };
 
 const trustItems = [
@@ -24,14 +24,14 @@ export function CtaSection() {
 
   return (
     <section aria-labelledby="final-cta-title" className="bg-transparent">
-      <div className="mx-auto max-w-6xl px-4 py-14 text-center">
+      <div className="mx-auto max-w-6xl px-4 py-20 text-center sm:py-28">
         <h2
           id="final-cta-title"
-          className="text-3xl font-extrabold text-foreground"
+          className="text-3xl font-medium text-foreground sm:text-4xl"
         >
           Pronto para enxergar seus pequenos gastos?
         </h2>
-        <p className="mx-auto mt-3 max-w-2xl leading-7 text-foreground-muted">
+        <p className="mx-auto mt-3 max-w-2xl text-base text-foreground-muted">
           Comece com lançamentos simples e veja cafés, lanches, delivery,
           mercado e transporte virarem uma visão clara do mês.
         </p>
@@ -40,7 +40,7 @@ export function CtaSection() {
           {trustItems.map((item) => (
             <li
               key={item}
-              className="inline-flex min-h-9 items-center gap-2 rounded-xl border border-border/80 bg-surface/80 px-3 py-1.5"
+              className="inline-flex min-h-9 items-center gap-2 px-2"
             >
               <CheckCircle2 size={16} className="text-success" aria-hidden />
               <span>{item}</span>

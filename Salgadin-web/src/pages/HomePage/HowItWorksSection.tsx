@@ -47,12 +47,11 @@ export function HowItWorksSection() {
       };
 
   return (
-    <section id="how" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-16">
-      <h2 className="text-center text-2xl font-extrabold text-foreground sm:text-3xl">
-        Como o <span className="text-accent">Salgad</span>
-        <span className="text-primary">in</span> funciona?
+    <section id="how" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-20 sm:py-28">
+      <h2 className="text-center text-3xl font-medium text-foreground sm:text-4xl">
+        Como o Salgadin funciona
       </h2>
-      <p className="mx-auto mt-2 max-w-2xl text-center text-sm leading-6 text-foreground-muted sm:text-base">
+      <p className="mx-auto mt-3 max-w-2xl text-center text-base text-foreground-muted">
         Um fluxo simples para transformar lancamentos manuais em clareza visual,
         sem integracao bancaria ou planilhas complicadas.
       </p>
@@ -61,20 +60,20 @@ export function HowItWorksSection() {
         {steps.map((step, index) => (
           <li
             key={step.title}
-            className="group ui-card rounded-[var(--radius-card)] border border-border bg-surface/90 p-5 shadow-[var(--shadow-card)] hover:border-primary/35"
+            className="rounded-[var(--radius-card)] border border-border bg-surface/90 p-5 shadow-[var(--shadow-card)]"
           >
             <div className="flex items-start gap-4">
-              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-surface-2 text-primary transition-colors group-hover:bg-surface-3">
+              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-surface-2 text-primary">
                 <step.icon size={22} aria-hidden="true" />
               </div>
               <div>
-                <p className="text-sm font-bold text-primary">
+                <p className="tabular text-xs text-foreground-subtle">
                   Passo {index + 1}
                 </p>
-                <h3 className="mt-1 text-lg font-extrabold text-foreground">
+                <h3 className="mt-1 text-base font-medium text-foreground">
                   {step.title}
                 </h3>
-                <p className="mt-2 text-sm leading-6 text-foreground-muted">
+                <p className="mt-1.5 text-ui text-foreground-muted">
                   {step.description}
                 </p>
               </div>
@@ -98,7 +97,7 @@ export function HowItWorksSection() {
               aria-controls={`panel-${t}`}
               onClick={() => setActiveTab(t)}
               className={clsx(
-                "relative z-10 min-h-11 whitespace-nowrap rounded-xl px-4 py-2 font-medium transition-all duration-200 ease-out hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                "relative z-10 min-h-11 whitespace-nowrap rounded-xl px-4 py-2 text-ui font-medium transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
                 activeTab === t
                   ? "text-primary"
                   : "text-foreground-muted hover:text-foreground"
@@ -127,17 +126,17 @@ export function HowItWorksSection() {
           className="mt-8 grid grid-cols-1 items-center gap-8 md:grid-cols-2"
         >
           <div className="space-y-4">
-            <h3 className="text-2xl font-extrabold text-foreground">
+            <h3 className="text-xl font-medium text-foreground sm:text-2xl">
               {tabsContent[activeTab].title}
             </h3>
-            <p className="leading-7 text-foreground-muted">
+            <p className="text-base text-foreground-muted">
               {tabsContent[activeTab].description}
             </p>
             <ul className="space-y-3 text-foreground-muted">
               {tabsContent[activeTab].items.map((item) => (
                 <li
                   key={item}
-                  className="flex min-h-11 items-center gap-2 rounded-xl px-2 py-1 soft-hover-sm hover:bg-surface-2/60"
+                  className="flex min-h-11 items-center gap-2 rounded-xl px-2 py-1"
                 >
                   <CheckCircle2
                     size={16}

@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { Loader2 } from "lucide-react";
 
 const buttonVariants = cva(
-  "inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] font-semibold transition-all duration-200 ease-out disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ui-pressable motion-reduce:transition-none",
+  "inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] font-medium transition-all duration-200 ease-out disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ui-pressable motion-reduce:transition-none",
   {
     variants: {
       variant: {
@@ -18,10 +18,10 @@ const buttonVariants = cva(
           "bg-danger text-[#fffaf6] hover:bg-danger-strong shadow-lg",
       },
       size: {
-        default: "px-6 py-3 text-base",
-        sm: "min-h-10 px-3 py-2 text-sm",
-        lg: "min-h-12 px-8 py-4 text-lg",
-        social: "px-4 py-2.5 text-sm",
+        default: "px-6 py-3 text-sm",
+        sm: "min-h-10 px-3 py-2 text-ui",
+        lg: "min-h-12 px-7 py-3.5 text-base",
+        social: "px-4 py-2.5 text-ui",
       },
     },
     defaultVariants: {

@@ -69,7 +69,7 @@ export function ConfirmActionModal({
             className="relative w-full max-w-md overflow-hidden rounded-3xl border border-border/70 bg-surface shadow-2xl"
           >
             <div className="flex items-center justify-between border-b border-border/60 p-6">
-              <h2 className="text-xl font-bold text-foreground">{title}</h2>
+              <h2 className="text-xl font-medium text-foreground">{title}</h2>
                 <button
                   onClick={onClose}
                   disabled={isConfirming}
@@ -98,7 +98,7 @@ export function ConfirmActionModal({
                 <button
                   onClick={onClose}
                   disabled={isConfirming}
-                  className="ui-surface-interactive rounded-full px-5 py-2.5 text-sm font-semibold text-foreground-muted hover:bg-surface-2 disabled:opacity-50"
+                  className="ui-surface-interactive rounded-full px-5 py-2.5 text-sm font-medium text-foreground-muted hover:bg-surface-2 disabled:opacity-50"
                 >
                   Cancelar
                 </button>
@@ -106,7 +106,7 @@ export function ConfirmActionModal({
                   onClick={onConfirm}
                   disabled={isConfirming}
                   className={clsx(
-                    "ui-pressable flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold shadow-xl",
+                    "ui-pressable flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium shadow-xl",
                     accentClass,
                     isConfirming && "cursor-not-allowed opacity-70",
                   )}

@@ -68,8 +68,8 @@ export const DashboardMockup = () => {
   return (
     <MockupShell>
       <div className="flex items-center justify-between">
-        <h3 className="font-bold text-foreground">Resumo do painel</h3>
-        <span className="text-[10px] text-foreground-subtle bg-surface-2 px-2 py-0.5 rounded-full">
+        <h3 className="font-medium text-foreground">Resumo do painel</h3>
+        <span className="text-xs text-foreground-subtle bg-surface-2 px-2 py-0.5 rounded-full">
           Agosto
         </span>
       </div>
@@ -79,23 +79,23 @@ export const DashboardMockup = () => {
             <ArrowUpRight size={12} className="mr-1 text-success" />
             Receita Total
           </div>
-          <p className="font-bold text-base text-primary">R$ 3.500,00</p>
+          <p className="font-medium text-base text-primary">R$ 3.500,00</p>
         </div>
         <div className="bg-surface-2 p-2 rounded-xl border border-border/60">
           <div className="flex items-center text-xs text-foreground-subtle">
             <ArrowDownLeft size={12} className="mr-1 text-danger" />
             Despesa Total
           </div>
-          <p className="font-bold text-base text-danger">- R$ 980,00</p>
+          <p className="font-medium text-base text-danger">- R$ 980,00</p>
         </div>
       </div>
 
       <div className="bg-gradient-to-b from-[var(--bg-via)] to-[var(--bg-to)]/60 p-3 rounded-2xl shadow-sm flex flex-col mt-3 border border-border/70 h-[200px]">
         <div className="flex items-center justify-between">
-          <p className="text-xs font-semibold text-foreground-muted">
+          <p className="text-xs font-medium text-foreground-muted">
             Fluxo de caixa
           </p>
-          <span className="text-[10px] text-foreground-subtle bg-surface-2 px-2 py-0.5 rounded-full">
+          <span className="text-xs text-foreground-subtle bg-surface-2 px-2 py-0.5 rounded-full">
             7 dias
           </span>
         </div>
@@ -159,8 +159,8 @@ export const DashboardMockup = () => {
             key={item.label}
             className="rounded-xl border border-border bg-surface-2 px-3 py-2 soft-hover-sm"
           >
-            <p className="text-[10px]">{item.label}</p>
-            <p className="text-sm font-semibold text-foreground">
+            <p className="text-xs">{item.label}</p>
+            <p className="text-sm font-medium text-foreground">
               {item.value}
             </p>
           </div>
@@ -168,7 +168,7 @@ export const DashboardMockup = () => {
       </div>
 
       <div className="mt-3 flex-1 rounded-2xl border border-border bg-surface-2 px-3 py-2">
-        <p className="text-[10px] text-foreground-subtle">Últimas despesas</p>
+        <p className="text-xs text-foreground-subtle">Últimas despesas</p>
         <div className="mt-2 space-y-2">
           {[
             { title: "Mercado", value: "- R$ 86,40" },
@@ -250,7 +250,7 @@ export const ExpensesMockup = () => (
   <MockupShell>
     <div className="flex items-center justify-between">
       <div>
-        <h3 className="font-bold text-foreground">Despesas do mês</h3>
+        <h3 className="font-medium text-foreground">Despesas do mês</h3>
         <p className="text-xs text-foreground-subtle">
           Controle rápido das saídas
         </p>
@@ -260,21 +260,21 @@ export const ExpensesMockup = () => (
 
     <div className="mt-3 grid grid-cols-2 gap-2">
       <div className="bg-surface-2 rounded-xl p-2 border border-border/60">
-        <p className="text-[11px] text-foreground-subtle">Total</p>
-        <p className="text-sm font-semibold text-danger">- R$ 1.980,00</p>
+        <p className="text-xs text-foreground-subtle">Total</p>
+        <p className="text-sm font-medium text-danger">- R$ 1.980,00</p>
       </div>
       <div className="bg-surface-2 rounded-xl p-2 border border-border/60">
-        <p className="text-[11px] text-foreground-subtle">Maior categoria</p>
-        <p className="text-sm font-semibold text-primary">Alimentação</p>
+        <p className="text-xs text-foreground-subtle">Maior categoria</p>
+        <p className="text-sm font-medium text-primary">Alimentação</p>
       </div>
     </div>
 
     <div className="bg-gradient-to-b from-[var(--bg-via)] to-[var(--bg-to)]/60 rounded-2xl border border-border/70 p-3 mt-3 h-[140px]">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold text-foreground-muted">
+        <p className="text-xs font-medium text-foreground-muted">
           Tendência semanal
         </p>
-        <span className="text-[10px] text-foreground-subtle bg-surface-2 px-2 py-0.5 rounded-full">
+        <span className="text-xs text-foreground-subtle bg-surface-2 px-2 py-0.5 rounded-full">
           Ultimos 5 dias
         </span>
       </div>
@@ -331,12 +331,12 @@ export const ExpensesMockup = () => (
             </div>
           </div>
           <div className="text-right">
-            <p className="font-bold text-sm text-danger">{item.amount}</p>
+            <p className="font-medium text-sm text-danger">{item.amount}</p>
           </div>
         </div>
       ))}
     </div>
-    <button className="text-center text-sm font-semibold text-primary mt-auto pt-2 hover:underline">
+    <button className="text-center text-sm font-medium text-primary mt-auto pt-2 hover:underline">
       Ver todas
     </button>
   </MockupShell>
@@ -394,8 +394,8 @@ export const GoalsMockup = () => {
   return (
     <MockupShell>
       <div className="flex items-center justify-between">
-        <h3 className="font-bold text-foreground">Minhas Metas</h3>
-        <span className="text-[10px] text-foreground-subtle bg-surface-2 px-2 py-0.5 rounded-full">
+        <h3 className="font-medium text-foreground">Minhas Metas</h3>
+        <span className="text-xs text-foreground-subtle bg-surface-2 px-2 py-0.5 rounded-full">
           3 ativas
         </span>
       </div>
@@ -447,7 +447,7 @@ export const GoalsMockup = () => {
             key={goal.title}
             className="bg-surface p-3 rounded-xl shadow-sm transition-colors hover:bg-surface-2 soft-hover-sm"
           >
-            <div className="flex items-center justify-between text-sm font-semibold">
+            <div className="flex items-center justify-between text-sm font-medium">
               <div className="flex items-center gap-2">
                 <goal.icon size={16} className={goal.iconColor} />
                 <span>{goal.title}</span>

@@ -101,7 +101,7 @@ export function EditCategoryModal({
             className="relative w-full max-w-md overflow-hidden rounded-3xl bg-surface border border-border shadow-2xl"
           >
             <div className="flex items-center justify-between border-b border-border/60 bg-surface-2/50 px-6 py-4">
-              <h2 className="text-lg font-bold text-foreground">
+              <h2 className="text-lg font-medium text-foreground">
                 Editar Categoria
               </h2>
               <button
@@ -134,7 +134,7 @@ export function EditCategoryModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="ui-surface-interactive rounded-full px-5 py-2.5 text-sm font-semibold text-foreground-muted hover:bg-surface-2"
+                  className="ui-surface-interactive rounded-full px-5 py-2.5 text-sm font-medium text-foreground-muted hover:bg-surface-2"
                 >
                   Cancelar
                 </button>

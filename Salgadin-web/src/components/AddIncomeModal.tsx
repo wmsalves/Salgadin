@@ -209,7 +209,7 @@ export function AddIncomeModal({
             className="bg-surface rounded-xl shadow-2xl w-full max-w-md overflow-hidden"
           >
             <div className="bg-gradient-to-r from-emerald-500 to-teal-400 px-6 py-4 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-white">
+              <h2 className="text-lg font-medium text-white">
                 {isEditing ? "Editar Receita" : "Nova Receita"}
               </h2>
               <button
@@ -223,7 +223,7 @@ export function AddIncomeModal({
               <div>
                 <label
                   htmlFor="descriptionIncome"
-                  className="block text-sm font-semibold text-foreground-muted mb-2"
+                  className="block text-sm font-medium text-foreground-muted mb-2"
                 >
                   Descrição da Receita <span className="text-danger">*</span>
                 </label>
@@ -245,7 +245,7 @@ export function AddIncomeModal({
                 <div>
                   <label
                     htmlFor="amountIncome"
-                    className="block text-sm font-semibold text-foreground-muted mb-2"
+                    className="block text-sm font-medium text-foreground-muted mb-2"
                   >
                     Valor (R$) <span className="text-danger">*</span>
                   </label>
@@ -272,7 +272,7 @@ export function AddIncomeModal({
                     id="amountIncome"
                     type="text"
                     inputMode="decimal"
-                    className="w-full font-mono tabular-nums rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 focus:shadow-lg placeholder:text-foreground-subtle"
+                    className="w-full tabular-nums rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 focus:shadow-lg placeholder:text-foreground-subtle"
                     placeholder="0,00"
                   />
                   {errors.amount && (
@@ -284,7 +284,7 @@ export function AddIncomeModal({
                 <div>
                   <label
                     htmlFor="dateIncome"
-                    className="block text-sm font-semibold text-foreground-muted mb-2"
+                    className="block text-sm font-medium text-foreground-muted mb-2"
                   >
                     Data <span className="text-danger">*</span>
                   </label>
@@ -319,7 +319,7 @@ export function AddIncomeModal({
 
               {matchingSchedule && pendingPayload && (
                 <div className="rounded-2xl border border-success/24 bg-success/10 p-4">
-                  <p className="text-sm font-semibold text-foreground">
+                  <p className="text-sm font-medium text-foreground">
                     Esta receita parece fazer parte de uma recorrencia.
                   </p>
                   <p className="mt-1 text-sm leading-6 text-foreground-muted">
@@ -362,7 +362,7 @@ export function AddIncomeModal({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex items-center justify-center rounded-xl bg-emerald-500 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/30 transition-all hover:bg-emerald-600 disabled:opacity-70"
+                  className="inline-flex items-center justify-center rounded-xl bg-emerald-500 px-6 py-2.5 text-sm font-medium text-white shadow-lg shadow-emerald-500/30 transition-all hover:bg-emerald-600 disabled:opacity-70"
                 >
                   {isSubmitting ? "Salvando..." : isEditing ? "Salvar Alteracoes" : "Salvar Receita"}
                 </button>
