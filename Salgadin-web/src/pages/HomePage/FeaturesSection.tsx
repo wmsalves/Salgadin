@@ -9,8 +9,8 @@ export function FeaturesSection() {
           Um app para transformar pequenos gastos em clareza
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-base text-foreground-muted">
-          O Salgadin ajuda voce a registrar, visualizar e ajustar habitos financeiros
-          sem virar refem de planilhas ou telas complicadas.
+          O Salgadin ajuda você a registrar, visualizar e ajustar hábitos financeiros
+          sem virar refém de planilhas ou telas complicadas.
         </p>
       </div>
 
@@ -54,12 +54,12 @@ export function FeaturesSection() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-2xl">
             <h3 className="text-xl font-medium text-foreground sm:text-2xl">
-              Feito para um SaaS financeiro simples, util e realista
+              Tudo o que você precisa para acompanhar o mês
             </h3>
           </div>
           <p className="max-w-xl text-sm leading-6 text-foreground-muted sm:text-right">
-            O foco nao e prometer automacao que ainda nao existe. O foco e te dar
-            visibilidade clara sobre o que voce ja pode controlar hoje.
+            Registro, categorias, gráficos, metas e resumos trabalhando juntos,
+            para você enxergar os pequenos gastos antes que eles cresçam.
           </p>
         </div>
 

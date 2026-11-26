@@ -5,7 +5,7 @@ export default function TermsPage() {
     <LegalPageLayout
       eyebrow="Termos"
       title="Termos de Uso"
-      description="Estes termos descrevem de forma simples como o Salgadin pode ser usado hoje. O objetivo e dar clareza sobre o produto, sem prometer protecoes ou obrigacoes que nao fazem parte do escopo atual do MVP."
+      description="Estes termos descrevem de forma simples como o Salgadin pode ser usado hoje. O objetivo é dar clareza sobre o produto, sem prometer proteções ou obrigações que não fazem parte do escopo atual do MVP."
       updatedAt="06/05/2026"
       sections={[
         {
@@ -13,45 +13,45 @@ export default function TermsPage() {
           content: (
             <>
               <p>
-                O Salgadin e uma aplicacao web de financas pessoais focada em pequenos
-                gastos do dia a dia, como cafe, lanche, delivery, mercado e transporte.
+                O Salgadin é uma aplicação web de finanças pessoais focada em pequenos
+                gastos do dia a dia, como café, lanche, delivery, mercado e transporte.
               </p>
               <p>
-                O produto existe para ajudar voce a registrar, visualizar e entender
-                melhor esses lancamentos. Ele nao substitui consultoria financeira,
-                contabilidade ou servicos bancarios.
-              </p>
-            </>
-          ),
-        },
-        {
-          title: "2. Cadastro e autenticacao",
-          content: (
-            <>
-              <p>
-                Para usar areas autenticadas do produto, voce precisa criar uma conta
-                com email e senha ou usar Google Sign-In quando essa opcao estiver
-                disponivel.
-              </p>
-              <p>
-                Voce e responsavel por manter seus dados de acesso em seguranca e por
-                revisar as informacoes usadas na sua conta.
+                O produto existe para ajudar você a registrar, visualizar e entender
+                melhor esses lançamentos. Ele não substitui consultoria financeira,
+                contabilidade ou serviços bancários.
               </p>
             </>
           ),
         },
         {
-          title: "3. Dados inseridos por voce",
+          title: "2. Cadastro e autenticação",
           content: (
             <>
               <p>
-                O Salgadin permite que voce registre dados financeiros pessoais, como
-                despesas, receitas, categorias, metas e observacoes relacionadas aos
-                seus lancamentos.
+                Para usar áreas autenticadas do produto, você precisa criar uma conta
+                com email e senha ou usar Google Sign-In quando essa opção estiver
+                disponível.
               </p>
               <p>
-                Esses dados sao usados para exibir dashboard, graficos, resumos e
-                funcionalidades internas do proprio produto.
+                Você é responsável por manter seus dados de acesso em segurança e por
+                revisar as informações usadas na sua conta.
+              </p>
+            </>
+          ),
+        },
+        {
+          title: "3. Dados inseridos por você",
+          content: (
+            <>
+              <p>
+                O Salgadin permite que você registre dados financeiros pessoais, como
+                despesas, receitas, categorias, metas e observações relacionadas aos
+                seus lançamentos.
+              </p>
+              <p>
+                Esses dados são usados para exibir dashboard, gráficos, resumos e
+                funcionalidades internas do próprio produto.
               </p>
             </>
           ),
@@ -61,46 +61,46 @@ export default function TermsPage() {
           content: (
             <>
               <p>
-                O Salgadin deve ser usado para organizacao financeira pessoal e para
-                acompanhamento dos seus proprios dados.
+                O Salgadin deve ser usado para organização financeira pessoal e para
+                acompanhamento dos seus próprios dados.
               </p>
               <p>
-                Nao e permitido tentar acessar contas de outras pessoas, explorar
-                falhas de seguranca, automatizar abuso da aplicacao ou usar o servico
-                para fins ilicitos.
+                Não e permitido tentar acessar contas de outras pessoas, explorar
+                falhas de segurança, automatizar abuso da aplicação ou usar o serviço
+                para fins ilícitos.
               </p>
             </>
           ),
         },
         {
-          title: "5. Disponibilidade e evolucao do MVP",
+          title: "5. Disponibilidade e evolução do MVP",
           content: (
             <>
               <p>
-                O Salgadin esta em evolucao. Recursos podem ser ajustados, ampliados
-                ou removidos para melhorar estabilidade, seguranca e clareza do
+                O Salgadin está em evolução. Recursos podem ser ajustados, ampliados
+                ou removidos para melhorar estabilidade, segurança e clareza do
                 produto.
               </p>
               <p>
-                Funcionalidades em desenvolvimento, como integracao futura com
-                WhatsApp ou plano Pro, nao devem ser interpretadas como disponiveis
-                para uso publico ate que isso seja informado claramente dentro do app.
+                Funcionalidades em desenvolvimento, como integração futura com
+                WhatsApp ou plano Pro, não devem ser interpretadas como disponíveis
+                para uso publico até que isso seja informado claramente dentro do app.
               </p>
             </>
           ),
         },
         {
-          title: "6. Limitacao de responsabilidade",
+          title: "6. Limitação de responsabilidade",
           content: (
             <>
               <p>
-                O Salgadin organiza informacoes que voce registra, mas nao garante
-                eliminacao de perdas financeiras, resultados especificos ou decisoes
+                O Salgadin organiza informações que você registra, mas não garante
+                eliminação de perdas financeiras, resultados específicos ou decisões
                 perfeitas.
               </p>
               <p>
-                Sempre confirme seus dados antes de tomar decisoes relevantes com base
-                nas informacoes exibidas.
+                Sempre confirme seus dados antes de tomar decisões relevantes com base
+                nas informações exibidas.
               </p>
             </>
           ),
@@ -110,13 +110,13 @@ export default function TermsPage() {
           content: (
             <>
               <p>
-                Se voce precisar de ajuda sobre acesso, uso da conta ou comportamento
+                Se você precisar de ajuda sobre acesso, uso da conta ou comportamento
                 do produto, utilize os canais oficiais informados pelo time do
-                Salgadin no ambiente de publicacao do projeto.
+                Salgadin no ambiente de publicação do projeto.
               </p>
               <p>
-                Como o produto ainda esta em fase MVP, o suporte pode ser limitado e
-                evoluir junto com a operacao do servico.
+                Como o produto ainda está em fase MVP, o suporte pode ser limitado e
+                evoluir junto com a operação do serviço.
               </p>
             </>
           ),

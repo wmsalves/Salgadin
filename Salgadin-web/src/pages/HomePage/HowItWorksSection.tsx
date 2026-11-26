@@ -12,17 +12,17 @@ const steps = [
   {
     title: "Crie sua conta",
     description:
-      "Entre pelo cadastro gratuito e deixe seu espaco pronto para organizar o mes.",
+      "Entre pelo cadastro gratuito e deixe seu espaço pronto para organizar o mês.",
     icon: UserPlus,
   },
   {
     title: "Registre seus pequenos gastos",
     description:
-      "Adicione manualmente cafe, lanche, delivery, mercado, transporte ou compras recorrentes.",
+      "Adicione manualmente café, lanche, delivery, mercado, transporte ou compras recorrentes.",
     icon: ReceiptText,
   },
   {
-    title: "Veja seus padroes em graficos simples",
+    title: "Veja seus padrões em gráficos simples",
     description:
       "Acompanhe onde o dinheiro se repete e decida com mais clareza o que ajustar.",
     icon: BarChart3,
@@ -52,8 +52,8 @@ export function HowItWorksSection() {
         Como o Salgadin funciona
       </h2>
       <p className="mx-auto mt-3 max-w-2xl text-center text-base text-foreground-muted">
-        Um fluxo simples para transformar lancamentos manuais em clareza visual,
-        sem integracao bancaria ou planilhas complicadas.
+        Um fluxo simples para transformar lançamentos manuais em clareza visual,
+        sem integração bancária ou planilhas complicadas.
       </p>
 
       <ol className="mt-8 grid gap-4 md:grid-cols-3">

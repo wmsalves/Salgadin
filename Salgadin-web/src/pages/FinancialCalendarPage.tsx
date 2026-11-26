@@ -42,7 +42,7 @@ const longDateFormatter = new Intl.DateTimeFormat("pt-BR", {
   timeZone: "UTC",
 });
 
-const weekdayLabels = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom"];
+const weekdayLabels = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
 
 export default function FinancialCalendarPage() {
   const [currentMonth, setCurrentMonth] = useState(() => {
@@ -73,7 +73,7 @@ export default function FinancialCalendarPage() {
 
       setSelectedDateKey(hasTodayInMonth ? todayKey : fallbackKey);
     } catch {
-      setError("Nao foi possivel carregar o calendario financeiro.");
+      setError("Não foi possível carregar o calendário financeiro.");
     } finally {
       setIsLoading(false);
     }
@@ -126,11 +126,11 @@ export default function FinancialCalendarPage() {
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h1 className="text-2xl font-medium text-foreground">
-              Calendario financeiro
+              Calendário financeiro
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-foreground-muted">
-              Veja o que entra, o que sai e quais recorrencias estao previstas
-              nos proximos dias.
+              Veja o que entra, o que sai e quais recorrências estão previstas
+              nos próximos dias.
             </p>
           </div>
 
@@ -140,7 +140,7 @@ export default function FinancialCalendarPage() {
                 type="button"
                 onClick={goToPreviousMonth}
                 className="grid h-9 w-9 place-items-center rounded-full text-foreground-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                aria-label="Mes anterior"
+                aria-label="Mês anterior"
               >
                 <ChevronLeft size={18} />
               </button>
@@ -155,7 +155,7 @@ export default function FinancialCalendarPage() {
                 type="button"
                 onClick={goToNextMonth}
                 className="grid h-9 w-9 place-items-center rounded-full text-foreground-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                aria-label="Proximo mes"
+                aria-label="Próximo mês"
               >
                 <ChevronRight size={18} />
               </button>
@@ -174,7 +174,7 @@ export default function FinancialCalendarPage() {
             isLoading={isLoading}
           />
           <SummaryCard
-            label="Saidas previstas"
+            label="Saídas previstas"
             value={calendar?.predictedExpense ?? 0}
             tone="negative"
             isLoading={isLoading}
@@ -202,17 +202,17 @@ export default function FinancialCalendarPage() {
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-base font-medium text-foreground">
-                  Visao do mes
+                  Visão do mês
                 </h2>
                 <p className="text-sm text-foreground-muted">
-                  Clique em um dia para ver entradas, saidas e recorrencias.
+                  Clique em um dia para ver entradas, saídas e recorrências.
                 </p>
               </div>
               <Link
                 to="/recorrencias"
                 className="hidden rounded-full border border-border px-3 py-2 text-sm font-medium text-foreground-muted transition hover:border-primary/30 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 sm:inline-flex"
               >
-                Ver recorrencias
+                Ver recorrências
               </Link>
             </div>
 
@@ -355,7 +355,7 @@ function CalendarDayCell({
           <CompactAmount tone="positive" label="Entradas" value={day.incomeTotal} />
         )}
         {day.expenseTotal > 0 && (
-          <CompactAmount tone="negative" label="Saidas" value={day.expenseTotal} />
+          <CompactAmount tone="negative" label="Saídas" value={day.expenseTotal} />
         )}
       </div>
 
@@ -423,7 +423,7 @@ function MobileCalendarTimeline({
 
             <div className="mt-3 grid gap-2 sm:grid-cols-3">
               <MobileAmount label="Entradas" value={day.incomeTotal} tone="positive" />
-              <MobileAmount label="Saidas" value={day.expenseTotal} tone="negative" />
+              <MobileAmount label="Saídas" value={day.expenseTotal} tone="negative" />
               <MobileAmount
                 label="Saldo"
                 value={day.balance}
@@ -492,8 +492,8 @@ function DayDetailsPanel({ day }: { day: CalendarDay | null }) {
           items={day.incomes}
         />
         <EntrySection
-          title="Saidas"
-          emptyText="Nenhuma saida neste dia."
+          title="Saídas"
+          emptyText="Nenhuma saída neste dia."
           icon={<ArrowDownLeft size={16} />}
           tone="negative"
           items={day.expenses}
@@ -578,12 +578,12 @@ function RecurringSection({ items }: { items: CalendarRecurringItem[] }) {
         <span className="grid h-8 w-8 place-items-center rounded-full bg-primary/10 text-primary">
           <Repeat size={16} />
         </span>
-        <h3 className="text-sm font-medium text-foreground">Recorrencias</h3>
+        <h3 className="text-sm font-medium text-foreground">Recorrências</h3>
       </div>
 
       {items.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border/70 bg-surface-2/40 px-3 py-3 text-sm text-foreground-subtle">
-          Nenhuma recorrencia prevista para este dia.
+          Nenhuma recorrência prevista para este dia.
         </div>
       ) : (
         <div className="space-y-2">
@@ -625,7 +625,7 @@ function RecurringSection({ items }: { items: CalendarRecurringItem[] }) {
         to="/recorrencias"
         className="mt-3 inline-flex items-center gap-2 rounded-full text-sm font-medium text-primary transition hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
       >
-        Gerenciar recorrencias
+        Gerenciar recorrências
         <ChevronRight size={15} />
       </Link>
     </section>
@@ -751,7 +751,7 @@ function buildEntryMeta(item: CalendarEntry) {
     parts.push("Recorrente");
   }
 
-  return parts.length > 0 ? parts.join(" · ") : "Lancamento manual";
+  return parts.length > 0 ? parts.join(" · ") : "Lançamento manual";
 }
 
 function hasDayMovement(day: CalendarDay) {

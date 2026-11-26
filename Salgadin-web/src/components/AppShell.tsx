@@ -35,10 +35,10 @@ const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutGrid },
   { to: "/categorias", label: "Categorias", icon: Tags },
   { to: "/metas", label: "Metas", icon: Target },
-  { to: "/recorrencias", label: "Recorrencias", icon: Repeat },
-  { to: "/calendario", label: "Calendario", icon: CalendarDays },
-  { to: "/relatorios", label: "Relatorios", icon: BarChart3 },
-  { to: "/notificacoes", label: "Notificacoes", icon: Bell },
+  { to: "/recorrencias", label: "Recorrências", icon: Repeat },
+  { to: "/calendario", label: "Calendário", icon: CalendarDays },
+  { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
+  { to: "/notificacoes", label: "Notificações", icon: Bell },
   { to: "/perfil", label: "Perfil", icon: User },
 ];
 
@@ -58,7 +58,7 @@ export function AppShell() {
   );
   const homePath = "/dashboard";
   const firstName = useMemo(
-    () => user?.name?.trim().split(" ")[0] ?? "voce",
+    () => user?.name?.trim().split(" ")[0] ?? "você",
     [user?.name],
   );
   const userInitial = useMemo(
@@ -222,7 +222,7 @@ export function AppShell() {
                       }
                     }}
                     className="ui-surface-interactive relative rounded-full border border-border p-2 text-foreground-muted hover:bg-surface-2 hover:text-foreground soft-press"
-                    title="Notificacoes"
+                    title="Notificações"
                   >
                     <Bell size={18} />
                     {unreadCount > 0 && (
@@ -240,7 +240,7 @@ export function AppShell() {
                     >
                       <div className="p-4 border-b border-border/60 flex items-center justify-between">
                         <span className="text-sm font-medium text-foreground">
-                          Notificacoes
+                          Notificações
                         </span>
                         <button
                           onClick={() => setIsBellOpen(false)}
@@ -256,7 +256,7 @@ export function AppShell() {
                           </p>
                         ) : notifications.length === 0 ? (
                           <p className="text-sm text-foreground-subtle">
-                            Nenhuma notificacao no momento.
+                            Nenhuma notificação no momento.
                           </p>
                         ) : (
                           notifications.map((item) => (
@@ -368,7 +368,7 @@ export function AppShell() {
                         >
                           <span className="flex items-center gap-3">
                             <Bell size={16} className="text-foreground-muted" />
-                            Notificacoes
+                            Notificações
                           </span>
                           <span className="rounded-full bg-danger px-2 py-0.5 text-xs font-medium text-white">
                             {unreadCount > 9 ? "9+" : unreadCount}
@@ -383,7 +383,7 @@ export function AppShell() {
                               </p>
                             ) : notifications.length === 0 ? (
                               <p className="text-sm text-foreground-subtle">
-                                Nenhuma notificacao no momento.
+                                Nenhuma notificação no momento.
                               </p>
                             ) : (
                               <div className="max-h-64 space-y-3 overflow-auto">
@@ -458,10 +458,10 @@ export function AppShell() {
             { to: "/dashboard", label: "Dashboard", icon: LayoutGrid },
             { to: "/categorias", label: "Categorias", icon: Tags },
             { to: "/metas", label: "Metas", icon: Target },
-            { to: "/recorrencias", label: "Recorrencias", icon: Repeat },
-            { to: "/calendario", label: "Calendario", icon: CalendarDays },
-            { to: "/relatorios", label: "Relatorios", icon: BarChart3 },
-            { to: "/notificacoes", label: "Notificacoes", icon: Bell },
+            { to: "/recorrencias", label: "Recorrências", icon: Repeat },
+            { to: "/calendario", label: "Calendário", icon: CalendarDays },
+            { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
+            { to: "/notificacoes", label: "Notificações", icon: Bell },
             { to: "/perfil", label: "Perfil", icon: User },
           ].map((item) => {
             const Icon = item.icon;

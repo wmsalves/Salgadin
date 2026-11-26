@@ -10,7 +10,7 @@ import { dropdownMotion, getMotionProps, MOTION } from "../lib/motion";
 const navLinks = [
   { id: "features", label: "Recursos" },
   { id: "how", label: "Como funciona" },
-  { id: "pricing", label: "Precos" },
+  { id: "pricing", label: "Preços" },
   { id: "faq", label: "FAQ" },
 ];
 
@@ -106,7 +106,7 @@ export function Header() {
                 to="/signup"
                 className="inline-flex min-h-11 items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-4 py-2 text-sm font-medium text-[var(--color-on-primary)] shadow-[0_10px_24px_rgba(60,42,32,0.16)] ui-pressable focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
               >
-                Comecar gratis
+                Começar grátis
               </Link>
             </>
           )}
@@ -189,7 +189,7 @@ export function Header() {
                       onClick={() => handleLinkClick()}
                       className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-4 py-2 text-center text-sm font-medium text-[var(--color-on-primary)] shadow-[0_10px_24px_rgba(60,42,32,0.14)] ui-pressable focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                     >
-                      Comecar gratis
+                      Começar grátis
                     </Link>
                   </>
                 )}

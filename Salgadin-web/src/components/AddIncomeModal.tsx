@@ -171,7 +171,7 @@ export function AddIncomeModal({
       handleClose();
     } catch (error) {
       console.error("Falha ao vincular receita recorrente:", error);
-      setApiError("Nao foi possivel salvar a receita. Tente novamente.");
+      setApiError("Não foi possível salvar a receita. Tente novamente.");
     } finally {
       setIsLinkingRecurring(false);
     }
@@ -320,10 +320,10 @@ export function AddIncomeModal({
               {matchingSchedule && pendingPayload && (
                 <div className="rounded-2xl border border-success/24 bg-success/10 p-4">
                   <p className="text-sm font-medium text-foreground">
-                    Esta receita parece fazer parte de uma recorrencia.
+                    Esta receita parece fazer parte de uma recorrência.
                   </p>
                   <p className="mt-1 text-sm leading-6 text-foreground-muted">
-                    Deseja vincular este lancamento a "{matchingSchedule.description}"?
+                    Deseja vincular este lançamento a "{matchingSchedule.description}"?
                   </p>
                   <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
                     <Button
@@ -364,7 +364,7 @@ export function AddIncomeModal({
                   disabled={isSubmitting}
                   className="inline-flex items-center justify-center rounded-xl bg-emerald-500 px-6 py-2.5 text-sm font-medium text-white shadow-lg shadow-emerald-500/30 transition-all hover:bg-emerald-600 disabled:opacity-70"
                 >
-                  {isSubmitting ? "Salvando..." : isEditing ? "Salvar Alteracoes" : "Salvar Receita"}
+                  {isSubmitting ? "Salvando..." : isEditing ? "Salvar Alterações" : "Salvar Receita"}
                 </button>
               </div>
             </form>

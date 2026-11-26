@@ -20,7 +20,7 @@ type ChartDay = {
 const chartData: ChartDay[] = [
   {
     name: "Seg",
-    detalhe: "cafe e transporte",
+    detalhe: "café e transporte",
     spending: [
       { label: "Alimentação", value: 8.5, tone: "regular" },
       { label: "Transporte", value: 7, tone: "regular" },
@@ -59,7 +59,7 @@ const chartData: ChartDay[] = [
     ],
   },
   {
-    name: "Sab",
+    name: "Sáb",
     detalhe: "lazer e transporte",
     spending: [
       { label: "Lazer", value: 38, tone: "attention" },

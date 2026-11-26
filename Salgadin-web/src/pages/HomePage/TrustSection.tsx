@@ -8,20 +8,19 @@ export function TrustSection() {
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)]">
           <div>
             <h2 className="text-3xl font-medium text-foreground sm:text-4xl">
-              Controle financeiro com postura de produto serio
+              Seus dados financeiros tratados com cuidado
             </h2>
             <p className="mt-4 max-w-xl text-base text-foreground-muted">
-              O Salgadin trata dados financeiros pessoais com clareza. A experiencia e
-              feita para ajudar o usuario a entender seus habitos sem inventar
-              integracoes que ainda nao estao prontas.
+              Você registra só o que quiser, e cada conta enxerga apenas os
+              próprios lançamentos. Nada de senha de banco ou acesso automático
+              às suas contas.
             </p>
             <div className="mt-6 rounded-2xl border border-border/70 bg-surface-2/55 p-4 text-ui text-foreground-muted">
               <div className="flex items-start gap-3">
                 <LockKeyhole size={18} className="mt-0.5 shrink-0 text-accent" aria-hidden="true" />
                 <p>
-                  Hoje o foco e simples: voce registra, organiza e acompanha seus
-                  proprios lancamentos. Isso torna a experiencia mais previsivel,
-                  transparente e util para quem quer comecar agora.
+                  Sua senha é guardada com hash e o login pode ser feito com
+                  e-mail ou com a sua conta Google.
                 </p>
               </div>
             </div>

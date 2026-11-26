@@ -4,15 +4,14 @@ import { Link } from "react-router-dom";
 const freePlanFeatures = [
   "Cadastro de despesas e receitas",
   "Categorias e subcategorias personalizadas",
-  "Dashboard mensal com graficos e resumo diario",
-  "Metas financeiras e alertas basicos",
+  "Dashboard mensal com gráficos e resumo diário",
+  "Metas financeiras e alertas básicos",
 ];
 
 const proPreviewFeatures = [
-  "Historico mais completo e filtros avancados",
-  "Camadas extras de analise e exportacao",
-  "Acompanhamento mais profundo por periodo",
-  "Experiencias futuras de integracao, como WhatsApp",
+  "Histórico mais completo e filtros avançados",
+  "Camadas extras de análise e exportação",
+  "Acompanhamento mais profundo por período",
 ];
 
 export function PricingSection() {
@@ -20,12 +19,11 @@ export function PricingSection() {
     <section id="pricing" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-20 sm:py-28">
       <div className="text-center">
         <h2 className="text-3xl font-medium text-foreground sm:text-4xl">
-          Comece gratis. Evolua quando fizer sentido.
+          Comece grátis
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-base text-foreground-muted">
-          A experiencia principal ja resolve o essencial para quem quer organizar
-          pequenos gastos. O Pro esta em breve e sera apresentado com clareza quando
-          estiver pronto para uso real.
+          Tudo o que você precisa para organizar os pequenos gastos já está no
+          plano gratuito.
         </p>
       </div>
 
@@ -35,14 +33,14 @@ export function PricingSection() {
             <div>
               <h3 className="text-xl font-medium text-foreground">Free</h3>
               <p className="mt-1.5 text-ui text-foreground-muted">
-                Para quem quer sair do improviso e ter uma leitura simples do mes.
+                Para quem quer sair do improviso e ter uma leitura simples do mês.
               </p>
             </div>
           </div>
 
           <div className="mt-6">
             <span className="tabular text-4xl font-medium text-foreground">R$ 0</span>
-            <span className="ml-2 text-sm text-foreground-muted">para comecar</span>
+            <span className="ml-2 text-sm text-foreground-muted">para começar</span>
           </div>
 
           <ul className="mt-6 flex-1 space-y-3 text-ui">
@@ -58,7 +56,7 @@ export function PricingSection() {
             to="/signup"
             className="mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-5 py-3 text-center text-sm font-medium text-[var(--color-on-primary)] shadow-[0_14px_30px_rgba(60,42,32,0.18)] transition-all hover:from-[var(--brand-from-strong)] hover:to-[var(--brand-to-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ui-pressable"
           >
-            Criar conta gratis
+            Criar conta grátis
           </Link>
         </div>
 
@@ -68,7 +66,7 @@ export function PricingSection() {
             <div>
               <h3 className="text-xl font-medium text-foreground">Pro</h3>
               <p className="mt-1.5 text-ui text-foreground-muted">
-                Uma camada futura para quem quiser mais profundidade sem perder a simplicidade do produto.
+                Para quem quer ir mais fundo no histórico e nos relatórios.
               </p>
             </div>
             <span className="inline-flex items-center gap-1 rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
@@ -77,10 +75,6 @@ export function PricingSection() {
             </span>
           </div>
 
-          <div className="relative mt-6 rounded-2xl border border-border/70 bg-surface-2/55 px-4 py-4 text-ui text-foreground-muted">
-            O preco final ainda nao foi publicado. Primeiro, o produto precisa entregar
-            uma experiencia realmente madura para justificar esse plano.
-          </div>
 
           <ul className="relative mt-6 flex-1 space-y-3 text-ui">
             {proPreviewFeatures.map((feature) => (
@@ -96,7 +90,7 @@ export function PricingSection() {
             disabled
             className="relative mt-8 inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-border bg-surface-2/70 px-5 py-3 text-center font-medium text-foreground-subtle opacity-80"
           >
-            Nao disponivel para assinatura
+            Não disponível para assinatura
           </button>
         </div>
       </div>

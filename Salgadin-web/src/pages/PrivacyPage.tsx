@@ -4,8 +4,8 @@ export default function PrivacyPage() {
   return (
     <LegalPageLayout
       eyebrow="Privacidade"
-      title="Politica de Privacidade"
-      description="Esta pagina explica de forma direta quais dados o Salgadin usa hoje e para que eles servem. O texto foi escrito para um SaaS MVP que lida com dados financeiros pessoais, sem declarar conformidades que nao foram formalmente assumidas."
+      title="Política de Privacidade"
+      description="Esta página explica de forma direta quais dados o Salgadin usa hoje e para que eles servem. O texto foi escrito para um SaaS MVP que lida com dados financeiros pessoais, sem declarar conformidades que não foram formalmente assumidas."
       updatedAt="06/05/2026"
       sections={[
         {
@@ -18,29 +18,29 @@ export default function PrivacyPage() {
                 identificadores tecnicos de autenticacao;
               </p>
               <p>
-                dados financeiros inseridos por voce, como despesas, receitas,
-                categorias, metas, notificacoes e preferencias;
+                dados financeiros inseridos por você, como despesas, receitas,
+                categorias, metas, notificações e preferências;
               </p>
               <p>
-                dados tecnicos basicos necessarios para manter a sessao e operar a
-                aplicacao, como token salvo no navegador e configuracoes de tema.
+                dados técnicos básicos necessários para manter a sessão e operar a
+                aplicação, como token salvo no navegador e configurações de tema.
               </p>
             </>
           ),
         },
         {
-          title: "2. Como esses dados sao usados",
+          title: "2. Como esses dados são usados",
           content: (
             <>
-              <p>Os dados tratados pelo Salgadin sao usados para:</p>
-              <p>autenticar sua conta e manter sua sessao ativa;</p>
-              <p>mostrar dashboard, relatorios, insights e historico financeiro;</p>
+              <p>Os dados tratados pelo Salgadin são usados para:</p>
+              <p>autenticar sua conta e manter sua sessão ativa;</p>
+              <p>mostrar dashboard, relatórios, insights e histórico financeiro;</p>
               <p>
-                permitir criacao, edicao e exclusao de lancamentos, categorias,
+                permitir criação, edição e exclusão de lançamentos, categorias,
                 metas e configuracoes de conta;
               </p>
               <p>
-                manter seguranca operacional minima, logs tecnicos e validacao de
+                manter segurança operacional mínima, logs técnicos e validação de
                 funcionamento da API.
               </p>
             </>
@@ -51,31 +51,31 @@ export default function PrivacyPage() {
           content: (
             <>
               <p>
-                Quando voce usa Google Sign-In, o Salgadin recebe as informacoes
-                necessarias para validar sua identidade e vincular sua conta ao login
+                Quando você usa Google Sign-In, o Salgadin recebe as informações
+                necessárias para validar sua identidade e vincular sua conta ao login
                 do Google.
               </p>
               <p>
-                O produto nao foi projetado para armazenar o token do Google alem do
-                necessario para o fluxo de autenticacao. Depois da validacao, a sessao
-                principal continua sendo feita com o token do proprio Salgadin.
+                O produto não foi projetado para armazenar o token do Google além do
+                necessário para o fluxo de autenticação. Depois da validação, a sessão
+                principal continua sendo feita com o token do próprio Salgadin.
               </p>
             </>
           ),
         },
         {
-          title: "4. localStorage, sessao e navegador",
+          title: "4. localStorage, sessão e navegador",
           content: (
             <>
               <p>
                 Hoje o frontend usa `localStorage` para guardar o token de
-                autenticacao da conta e a preferencia de tema do usuario.
+                autenticação da conta e a preferência de tema do usuário.
               </p>
               <p>
-                O Salgadin nao depende de uma camada publica de cookies propria para
-                a experiencia principal do app. Mesmo assim, servicos de terceiros
-                usados no fluxo de login podem aplicar comportamentos tecnicos do
-                proprio navegador ou do provedor.
+                O Salgadin não depende de uma camada pública de cookies própria para
+                a experiência principal do app. Mesmo assim, serviços de terceiros
+                usados no fluxo de login podem aplicar comportamentos técnicos do
+                próprio navegador ou do provedor.
               </p>
             </>
           ),
@@ -85,17 +85,17 @@ export default function PrivacyPage() {
           content: (
             <>
               <p>
-                O Salgadin trata os dados financeiros que voce registra com foco em
-                organizacao e visualizacao pessoal.
+                O Salgadin trata os dados financeiros que você registra com foco em
+                organização e visualização pessoal.
               </p>
               <p>
-                Isso inclui valores, categorias, descricoes, datas, metas e outros
-                elementos que ajudam a mostrar seus habitos de consumo.
+                Isso inclui valores, categorias, descrições, datas, metas e outros
+                elementos que ajudam a mostrar seus hábitos de consumo.
               </p>
               <p>
-                Como esses dados sao sensiveis para o usuario, o produto evita expor
-                detalhes internos em mensagens de erro e exige autenticacao para
-                endpoints ligados a informacoes da conta.
+                Como esses dados são sensiveis para o usuário, o produto evita expor
+                detalhes internos em mensagens de erro e exige autenticação para
+                endpoints ligados a informações da conta.
               </p>
             </>
           ),
@@ -105,12 +105,12 @@ export default function PrivacyPage() {
           content: (
             <>
               <p>
-                O Salgadin usa infraestrutura tecnica de terceiros para operar, como
-                hospedagem, banco de dados e autenticacao com Google quando ativada.
+                O Salgadin usa infraestrutura técnica de terceiros para operar, como
+                hospedagem, banco de dados e autenticação com Google quando ativada.
               </p>
               <p>
-                Fora disso, esta politica nao declara venda de dados, compartilhamento
-                comercial amplo ou integracoes bancarias automaticas que o produto nao
+                Fora disso, está política não declara venda de dados, compartilhamento
+                comercial amplo ou integrações bancárias automáticas que o produto não
                 oferece hoje.
               </p>
             </>
@@ -121,13 +121,13 @@ export default function PrivacyPage() {
           content: (
             <>
               <p>
-                Para duvidas sobre uso da conta, acesso ou dados inseridos no
+                Para dúvidas sobre uso da conta, acesso ou dados inseridos no
                 produto, use os canais oficiais informados pelo time do Salgadin no
-                ambiente de publicacao do projeto.
+                ambiente de publicação do projeto.
               </p>
               <p>
-                Como o produto ainda esta em fase MVP, o processo de suporte pode ser
-                simples e evoluir junto com a operacao.
+                Como o produto ainda está em fase MVP, o processo de suporte pode ser
+                simples e evoluir junto com a operação.
               </p>
             </>
           ),

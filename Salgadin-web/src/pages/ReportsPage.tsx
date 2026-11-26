@@ -203,9 +203,9 @@ export default function ReportsPage() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-medium text-foreground">Relatorios</h1>
+          <h1 className="text-2xl font-medium text-foreground">Relatórios</h1>
           <p className="text-sm text-foreground-muted">
-            Visualize tendencias e acompanhe sua evolucao financeira.
+            Visualize tendências e acompanhe sua evolução financeira.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -230,7 +230,7 @@ export default function ReportsPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2 text-sm text-foreground-muted">
             <CalendarRange size={16} />
-            Periodo
+            Período
           </div>
           <div className="flex flex-wrap gap-2">
             <button
@@ -260,7 +260,7 @@ export default function ReportsPage() {
           {mode === "monthly" ? (
             <>
               <div>
-                <label className="text-xs text-foreground-muted">Mes</label>
+                <label className="text-xs text-foreground-muted">Mês</label>
                 <input
                   type="month"
                   value={monthlyValue}
@@ -277,7 +277,7 @@ export default function ReportsPage() {
                       : "border-border text-foreground-muted"
                   }`}
                 >
-                  Comparar mes
+                  Comparar mês
                 </button>
               </div>
               {compareEnabled ? (
@@ -299,7 +299,7 @@ export default function ReportsPage() {
           ) : (
             <>
               <div>
-                <label className="text-xs text-foreground-muted">Inicio</label>
+                <label className="text-xs text-foreground-muted">Início</label>
                 <input
                   type="date"
                   value={startDate}
@@ -378,7 +378,7 @@ export default function ReportsPage() {
           </div>
           <div>
             <label className="text-xs text-foreground-muted">
-              Valor minimo
+              Valor mínimo
             </label>
             <input
               type="number"
@@ -390,7 +390,7 @@ export default function ReportsPage() {
           </div>
           <div>
             <label className="text-xs text-foreground-muted">
-              Valor maximo
+              Valor máximo
             </label>
             <input
               type="number"
@@ -442,7 +442,7 @@ export default function ReportsPage() {
                 </p>
               </div>
               <div className="rounded-2xl border border-border bg-surface-2 p-4">
-                <p className="text-xs text-foreground-subtle">Media diaria</p>
+                <p className="text-xs text-foreground-subtle">Média diária</p>
                 <p className="text-lg font-medium text-foreground tabular-nums">
                   {formatCurrency(summary.averageDaily)}
                 </p>
@@ -458,7 +458,7 @@ export default function ReportsPage() {
               </div>
               <div className="rounded-2xl border border-border bg-surface-2 p-4">
                 <p className="text-xs text-foreground-subtle">
-                  Tendencia vs periodo anterior
+                  Tendência vs período anterior
                 </p>
                 <p
                   className={`text-lg font-medium ${
@@ -474,7 +474,7 @@ export default function ReportsPage() {
           {summary && summary.insights.length > 0 && (
             <div className="xl:col-span-3 rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)]">
               <h2 className="text-base font-medium text-foreground mb-4">
-                Insights automaticos
+                Insights automáticos
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {summary.insights.map((insight, index) => (
@@ -508,7 +508,7 @@ export default function ReportsPage() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-base font-medium text-foreground">
-                  Evolucao de gastos
+                  Evolução de gastos
                 </h2>
                 <p className="text-xs text-foreground-subtle">
                   Total: {formatCurrency(report.total)}
@@ -595,7 +595,7 @@ export default function ReportsPage() {
                 <EmptyState
                   icon={LineChart}
                   title="Sem dados suficientes ainda"
-                  description="Registre algumas despesas para transformar seus lancamentos em tendencias e comparacoes."
+                  description="Registre algumas despesas para transformar seus lançamentos em tendências e comparações."
                   primaryAction={{ label: "Ir para o dashboard", href: "/dashboard" }}
                   compact
                   className="flex h-full flex-col items-center justify-center"
@@ -629,7 +629,7 @@ export default function ReportsPage() {
                 <EmptyState
                   icon={PieChart}
                   title="Categorias ainda sem movimento"
-                  description="Quando voce cadastrar gastos por categoria, este resumo mostra onde os pequenos valores estao se acumulando."
+                  description="Quando você cadastrar gastos por categoria, este resumo mostra onde os pequenos valores estão se acumulando."
                   primaryAction={{ label: "Criar categorias", href: "/categorias" }}
                   compact
                 />

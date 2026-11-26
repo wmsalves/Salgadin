@@ -79,16 +79,16 @@ const statusConfig: Record<
   }
 > = {
   healthy: {
-    label: "Saudavel",
-    description: "Seu ritmo segue dentro do planejado neste mes.",
+    label: "Saudável",
+    description: "Seu ritmo segue dentro do planejado neste mês.",
     toneClass: "text-success",
     badgeClass: "border-success/20 bg-success/10 text-success",
     progressClass: "bg-success",
     icon: CheckCircle2,
   },
   "near-limit": {
-    label: "Atencao",
-    description: "Vale acompanhar os proximos gastos para manter o controle.",
+    label: "Atenção",
+    description: "Vale acompanhar os próximos gastos para manter o controle.",
     toneClass: "text-warning",
     badgeClass: "border-warning/20 bg-warning/10 text-warning",
     progressClass: "bg-warning",
@@ -96,7 +96,7 @@ const statusConfig: Record<
   },
   "limit-reached": {
     label: "Limite atingido",
-    description: "O limite mensal foi usado. Revise os proximos lancamentos com calma.",
+    description: "O limite mensal foi usado. Revise os próximos lançamentos com calma.",
     toneClass: "text-danger",
     badgeClass: "border-danger/20 bg-danger/10 text-danger",
     progressClass: "bg-danger",
@@ -104,7 +104,7 @@ const statusConfig: Record<
   },
   "over-limit": {
     label: "Limite ultrapassado",
-    description: "O limite mensal passou do planejado. Vale ajustar os proximos gastos com calma.",
+    description: "O limite mensal passou do planejado. Vale ajustar os próximos gastos com calma.",
     toneClass: "text-danger",
     badgeClass: "border-danger/20 bg-danger/10 text-danger",
     progressClass: "bg-danger",
@@ -112,7 +112,7 @@ const statusConfig: Record<
   },
   paused: {
     label: "Meta pausada",
-    description: "Essa meta nao esta contando alertas enquanto estiver pausada.",
+    description: "Essa meta não está contando alertas enquanto estiver pausada.",
     toneClass: "text-foreground-muted",
     badgeClass: "border-border bg-surface-2 text-foreground-muted",
     progressClass: "bg-foreground-muted/40",
@@ -135,14 +135,14 @@ const getGoalStatusHeadline = (
   }
 
   if (status === "near-limit") {
-    return `Voce ja usou ${formatPercent(percent)} da meta de ${categoryLabel}.`;
+    return `Você já usou ${formatPercent(percent)} da meta de ${categoryLabel}.`;
   }
 
   if (status === "paused") {
-    return `A meta de ${categoryLabel} esta pausada neste momento.`;
+    return `A meta de ${categoryLabel} está pausada neste momento.`;
   }
 
-  return `A meta de ${categoryLabel} segue dentro do planejado neste mes.`;
+  return `A meta de ${categoryLabel} segue dentro do planejado neste mês.`;
 };
 
 const getGoalStatusDetail = (
@@ -151,22 +151,22 @@ const getGoalStatusDetail = (
   overflow: number,
 ) => {
   if (status === "over-limit") {
-    return `Voce passou ${formatCurrency(overflow)} do valor planejado neste mes.`;
+    return `Você passou ${formatCurrency(overflow)} do valor planejado neste mês.`;
   }
 
   if (status === "limit-reached") {
-    return "O limite mensal foi usado por completo. Vale acompanhar os proximos gastos com calma.";
+    return "O limite mensal foi usado por completo. Vale acompanhar os próximos gastos com calma.";
   }
 
   if (status === "near-limit") {
-    return `Restam ${formatCurrency(remaining)} para manter a meta neste mes.`;
+    return `Restam ${formatCurrency(remaining)} para manter a meta neste mês.`;
   }
 
   if (status === "paused") {
-    return "Essa meta nao gera alertas enquanto estiver pausada.";
+    return "Essa meta não gera alertas enquanto estiver pausada.";
   }
 
-  return `Ainda restam ${formatCurrency(remaining)} para essa meta neste mes.`;
+  return `Ainda restam ${formatCurrency(remaining)} para essa meta neste mês.`;
 };
 
 export default function GoalsPage() {
@@ -409,7 +409,7 @@ export default function GoalsPage() {
         <EmptyState
           icon={Target}
           title="Crie sua primeira meta"
-          description="Escolha um limite simples para os pequenos gastos do mes. O Salgadin avisa quando voce estiver chegando perto e mostra como o consumo evolui."
+          description="Escolha um limite simples para os pequenos gastos do mês. O Salgadin avisa quando você estiver chegando perto e mostra como o consumo evolui."
           size="spacious"
           primaryAction={{
             label: "Criar meta",
@@ -425,7 +425,7 @@ export default function GoalsPage() {
             {[
               "Limites gerais ou por categoria.",
               "Alertas suaves antes de estourar o valor planejado.",
-              "Leitura rapida para decidir os proximos gastos do mes.",
+              "Leitura rápida para decidir os próximos gastos do mês.",
             ].map((item) => (
               <div
                 key={item}
@@ -453,28 +453,28 @@ export default function GoalsPage() {
 
             <div className="rounded-2xl border border-border/70 bg-surface/92 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.08)]">
               <div className="text-xs text-foreground-subtle">
-                Saude financeira
+                Saúde financeira
               </div>
               <div className="mt-2 text-2xl font-medium text-foreground">
                 {summary.healthyGoals}
               </div>
               <p className="mt-1 text-sm text-foreground-muted">
                 {summary.healthyGoals === 1
-                  ? "meta segue com folga neste mes."
-                  : "metas seguem com folga neste mes."}
+                  ? "meta segue com folga neste mês."
+                  : "metas seguem com folga neste mês."}
               </p>
             </div>
 
             <div className="rounded-2xl border border-border/70 bg-surface/92 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.08)]">
               <div className="text-xs text-foreground-subtle">
-                Pedem atencao
+                Pedem atenção
               </div>
               <div className="mt-2 text-2xl font-medium text-foreground">
                 {summary.attentionGoals}
               </div>
               <p className="mt-1 text-sm text-foreground-muted">
                 {summary.attentionGoals > 0
-                  ? "Acompanhe os proximos gastos para manter o planejamento."
+                  ? "Acompanhe os próximos gastos para manter o planejamento."
                   : "Nenhuma meta exige ajuste agora."}
               </p>
             </div>
@@ -484,10 +484,10 @@ export default function GoalsPage() {
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h2 className="text-base font-medium text-foreground">
-                  Alertas do mes
+                  Alertas do mês
                 </h2>
                 <p className="text-sm text-foreground-muted">
-                  Recomendacoes simples com base no consumo registrado ate agora.
+                  Recomendações simples com base no consumo registrado até agora.
                 </p>
               </div>
             </div>
@@ -580,8 +580,8 @@ export default function GoalsPage() {
             ) : (
               <EmptyState
                 icon={Shield}
-                title="Tudo sob controle neste mes"
-                description="Suas metas ativas ainda estao em uma zona confortavel. Continue registrando os gastos para manter os alertas atualizados."
+                title="Tudo sob controle neste mês"
+                description="Suas metas ativas ainda estão em uma zona confortável. Continue registrando os gastos para manter os alertas atualizados."
                 compact
                 className="mt-5"
               />

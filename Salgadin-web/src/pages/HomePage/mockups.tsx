@@ -30,7 +30,7 @@ const cashflowData = [
   { name: "Qua", value: 260 },
   { name: "Qui", value: 420 },
   { name: "Sex", value: 310 },
-  { name: "Sab", value: 480 },
+  { name: "Sáb", value: 480 },
   { name: "Dom", value: 360 },
 ];
 
@@ -275,7 +275,7 @@ export const ExpensesMockup = () => (
           Tendência semanal
         </p>
         <span className="text-xs text-foreground-subtle bg-surface-2 px-2 py-0.5 rounded-full">
-          Ultimos 5 dias
+          Últimos 5 dias
         </span>
       </div>
       <div className="h-[90px] -mx-2 mt-2">
@@ -364,7 +364,7 @@ const mockGoals = [
   {
     icon: PiggyBank,
     iconColor: "text-success",
-    title: "Reserva de Emergencia",
+    title: "Reserva de Emergência",
     progress: "20%",
     current: "R$ 1.200",
     total: "R$ 6.000",
@@ -373,7 +373,7 @@ const mockGoals = [
   {
     icon: PiggyBank,
     iconColor: "text-primary",
-    title: "Curso de Especializacao",
+    title: "Curso de Especialização",
     progress: "55%",
     current: "R$ 2.750",
     total: "R$ 5.000",

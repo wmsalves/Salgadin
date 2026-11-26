@@ -26,6 +26,8 @@ import {
   PieChart as PieChartIcon,
   PiggyBank,
   Pizza,
+  Home,
+  Popcorn,
   Plus,
   Receipt,
   RefreshCw,
@@ -70,12 +72,12 @@ import {
 } from "../lib/recurringSchedules";
 
 const categoryIcons: Record<string, React.ComponentType<{ size?: number }>> = {
-  Alimentacao: Pizza,
-  "AlimentaÃ§Ã£o": Pizza,
+  "Alimentação": Pizza,
   Transporte: Bus,
+  Moradia: Home,
+  Lazer: Popcorn,
   Compras: ShoppingCart,
-  Educacao: Laptop,
-  "EducaÃ§Ã£o": Laptop,
+  "Educação": Laptop,
 };
 
 const CHART_COLORS = [
@@ -161,7 +163,7 @@ const formatRecurringDateStatus = (value: string) => {
   }
 
   if (diffDays === 1) {
-    return "Vence amanha";
+    return "Vence amanhã";
   }
 
   if (diffDays <= 7) {
@@ -261,7 +263,7 @@ function CashflowTooltip({
             </span>
           </div>
           <div className="flex items-center justify-between gap-4 text-sm">
-            <span className="text-foreground-muted">Saida do dia</span>
+            <span className="text-foreground-muted">Saída do dia</span>
             <span className="font-medium text-warning tabular-nums">
               {formatCurrency(point.dailyExpense)}
             </span>
@@ -354,7 +356,7 @@ export default function DashboardPage() {
     } catch (err) {
       console.error("Falha ao buscar dados do dashboard:", err);
       setError(
-        "Nao foi possivel carregar seus dados financeiros. Tente novamente mais tarde.",
+        "Não foi possível carregar seus dados financeiros. Tente novamente mais tarde.",
       );
     }
   }, [currentDate]);
@@ -374,7 +376,7 @@ export default function DashboardPage() {
       setExpenseToDelete(null);
     } catch (err) {
       console.error("Falha ao remover despesa:", err);
-      setDeleteError("Nao foi possivel excluir a despesa.");
+      setDeleteError("Não foi possível excluir a despesa.");
     } finally {
       setIsDeletingExpense(false);
     }
@@ -390,7 +392,7 @@ export default function DashboardPage() {
       setIncomeToDelete(null);
     } catch (err) {
       console.error("Falha ao remover receita:", err);
-      setDeleteError("Nao foi possivel excluir a receita.");
+      setDeleteError("Não foi possível excluir a receita.");
     } finally {
       setIsDeletingIncome(false);
     }
@@ -403,9 +405,9 @@ export default function DashboardPage() {
       await generateDueRecurringSchedules();
       await fetchData();
     } catch (err) {
-      console.error("Falha ao registrar recorrencias vencidas:", err);
+      console.error("Falha ao registrar recorrências vencidas:", err);
       setRecurringActionError(
-        "Nao foi possivel registrar as recorrencias vencidas agora.",
+        "Não foi possível registrar as recorrências vencidas agora.",
       );
     } finally {
       setIsGeneratingRecurring(false);
@@ -528,7 +530,7 @@ export default function DashboardPage() {
   const summaryCards = useMemo(
     () => [
       {
-        title: "Saldo do mes",
+        title: "Saldo do mês",
         helper: "Receitas menos despesas",
         value: balance.toLocaleString("pt-BR", {
           style: "currency",
@@ -539,13 +541,13 @@ export default function DashboardPage() {
       },
       {
         title: "Metas ativas",
-        helper: "Limites acompanhados no mes",
+        helper: "Limites acompanhados no mês",
         value: `${activeGoalsCount} ${activeGoalsCount === 1 ? "meta" : "metas"}`,
         icon: Target,
         tone: "info",
       },
       {
-        title: "Gastos do mes",
+        title: "Gastos do mês",
         helper: "Total de despesas registradas",
         value: totalExpenses.toLocaleString("pt-BR", {
           style: "currency",
@@ -573,7 +575,7 @@ export default function DashboardPage() {
         detail:
           share >= 1
             ? `${topCategory.name} representa ${share}% das despesas de ${currentMonthLabel}.`
-            : `${topCategory.name} foi a categoria com maior peso neste periodo.`,
+            : `${topCategory.name} foi a categoria com maior peso neste período.`,
         tone: share >= 45 ? "attention" : "neutral",
       });
     }
@@ -594,21 +596,21 @@ export default function DashboardPage() {
 
       if (Math.abs(delta) < 0.01) {
         insights.push({
-          title: "Seu ritmo ficou estavel",
+          title: "Seu ritmo ficou estável",
           detail:
-            "O volume gasto nesta semana ficou muito proximo da semana anterior.",
+            "O volume gasto nesta semana ficou muito próximo da semana anterior.",
           tone: "neutral",
         });
       } else if (delta > 0) {
         insights.push({
-          title: "Voce gastou mais do que na semana anterior",
-          detail: `${formatCurrency(delta)} acima da semana passada dentro do periodo atual.`,
+          title: "Você gastou mais do que na semana anterior",
+          detail: `${formatCurrency(delta)} acima da semana passada dentro do período atual.`,
           tone: "attention",
         });
       } else {
         insights.push({
-          title: "Voce reduziu o ritmo da semana",
-          detail: `${formatCurrency(Math.abs(delta))} abaixo da semana anterior dentro do periodo atual.`,
+          title: "Você reduziu o ritmo da semana",
+          detail: `${formatCurrency(Math.abs(delta))} abaixo da semana anterior dentro do período atual.`,
           tone: "positive",
         });
       }
@@ -624,8 +626,8 @@ export default function DashboardPage() {
     if (highestExpense) {
       const insightTitle =
         latestExpense && latestExpense.id === highestExpense.id
-          ? "Seu maior lancamento recente"
-          : "Seu maior lancamento do periodo";
+          ? "Seu maior lançamento recente"
+          : "Seu maior lançamento do período";
 
       insights.push({
         title: insightTitle,
@@ -781,12 +783,12 @@ export default function DashboardPage() {
           <div className="grid gap-6 lg:grid-cols-[1.05fr_1.3fr] lg:items-center">
             <div>
               <h2 className="text-xl font-medium text-foreground">
-                Seu painel ainda esta vazio
+                Seu painel ainda está vazio
               </h2>
               <p className="mt-2 max-w-xl text-sm leading-6 text-foreground-muted">
-                Comece com um lancamento real. O Salgadin fica mais util quando
-                voce registra renda, pequenos gastos e uma meta simples para o
-                mes.
+                Comece com um lançamento real. O Salgadin fica mais útil quando
+                você registra renda, pequenos gastos e uma meta simples para o
+                mês.
               </p>
             </div>
 
@@ -802,7 +804,7 @@ export default function DashboardPage() {
                 {
                   title: "Adicione um pequeno gasto",
                   description:
-                    "Cafes, lanches e transporte comecam a mostrar padroes.",
+                    "Cafés, lanches e transporte começam a mostrar padrões.",
                   icon: Receipt,
                   action: () => setIsAddExpenseModalOpen(true),
                   label: "Adicionar gasto",
@@ -817,7 +819,7 @@ export default function DashboardPage() {
                 {
                   title: "Crie uma meta",
                   description:
-                    "Controle os pequenos gastos antes que eles crescam.",
+                    "Controle os pequenos gastos antes que eles cresçam.",
                   icon: Target,
                   href: "/metas",
                   label: "Criar meta",
@@ -882,12 +884,12 @@ export default function DashboardPage() {
         <section className="flex flex-col gap-3 rounded-2xl border border-warning/24 bg-warning/10 px-4 py-3 text-sm shadow-[0_10px_24px_rgba(60,42,32,0.08)] sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="font-medium text-foreground">
-              Voce possui {dueRecurringSchedules.length} recorrencia
+              Você possui {dueRecurringSchedules.length} recorrência
               {dueRecurringSchedules.length === 1 ? "" : "s"} pendente
               {dueRecurringSchedules.length === 1 ? "" : "s"}.
             </p>
             <p className="mt-0.5 text-xs text-foreground-muted">
-              Registre para transformar as vencidas em lancamentos reais.
+              Registre para transformar as vencidas em lançamentos reais.
             </p>
           </div>
           <button
@@ -961,7 +963,7 @@ export default function DashboardPage() {
               Insights financeiros
             </h2>
             <p className="mt-1 text-sm leading-6 text-foreground-muted">
-              Leituras simples do periodo atual para apoiar suas proximas decisoes.
+              Leituras simples do período atual para apoiar suas próximas decisões.
             </p>
           </div>
         </div>
@@ -1023,8 +1025,8 @@ export default function DashboardPage() {
           <div className="mt-5">
             <EmptyState
               icon={Sparkles}
-              title="Voce ainda nao tem dados suficientes para gerar insights"
-              description="Registre algumas despesas e receitas para o dashboard identificar padroes simples do seu periodo."
+              title="Você ainda não tem dados suficientes para gerar insights"
+              description="Registre algumas despesas e receitas para o dashboard identificar padrões simples do seu período."
               primaryAction={{
                 label: "Adicionar despesa",
                 onClick: () => setIsAddExpenseModalOpen(true),
@@ -1045,18 +1047,18 @@ export default function DashboardPage() {
             <div className="space-y-3">
               <div>
               <h2 className="text-base font-medium text-foreground">
-                Evolucao financeira mensal
+                Evolução financeira mensal
               </h2>
               <p className="text-xs text-foreground-subtle">
                 {cashflowViewMode === "balance"
-                  ? "Veja como entradas e saidas alteram seu saldo ao longo do mes."
+                  ? "Veja como entradas e saídas alteram seu saldo ao longo do mês."
                   : "Veja em quais dias seus gastos se concentraram."}
               </p>
               </div>
               <div
                 className="inline-flex w-full flex-wrap items-center gap-2 rounded-2xl border border-border bg-surface-2/90 p-1 sm:w-auto"
                 role="tablist"
-                aria-label="Modo de visualizacao do grafico mensal"
+                aria-label="Modo de visualização do gráfico mensal"
               >
                 {cashflowViewOptions.map((option) => {
                   const isActive = cashflowViewMode === option.value;
@@ -1249,7 +1251,7 @@ export default function DashboardPage() {
               <EmptyState
                 icon={TrendingDown}
                 title="Sem dados suficientes ainda"
-                description="Registre alguns lancamentos para visualizar seus padroes de gasto ao longo do mes."
+                description="Registre alguns lançamentos para visualizar seus padrões de gasto ao longo do mês."
                 primaryAction={{
                   label: "Adicionar despesa",
                   onClick: () => setIsAddExpenseModalOpen(true),
@@ -1272,10 +1274,10 @@ export default function DashboardPage() {
                 <div>
                   <h2 className="flex items-center gap-2 text-base font-medium text-foreground">
                     <Repeat size={19} className="text-primary" />
-                    Proximas recorrencias
+                    Próximas recorrências
                   </h2>
                   <p className="mt-1 text-xs text-foreground-subtle">
-                    Entradas e saidas que ja fazem parte da sua rotina.
+                    Entradas e saídas que já fazem parte da sua rotina.
                   </p>
                 </div>
                 <Link
@@ -1510,8 +1512,8 @@ export default function DashboardPage() {
                   }
                   description={
                     goals.length > 0
-                      ? "Tudo sob controle neste periodo. Continue registrando seus gastos para acompanhar os alertas."
-                      : "Crie uma meta para controlar os pequenos gastos antes que eles crescam."
+                      ? "Tudo sob controle neste período. Continue registrando seus gastos para acompanhar os alertas."
+                      : "Crie uma meta para controlar os pequenos gastos antes que eles cresçam."
                   }
                   primaryAction={
                     goals.length > 0
@@ -1530,7 +1532,7 @@ export default function DashboardPage() {
         <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover flex flex-col">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-medium text-foreground">
-              Ultimas receitas
+              Últimas receitas
             </h2>
           </div>
           <div className="space-y-3 flex-1 flex flex-col">
@@ -1626,7 +1628,7 @@ export default function DashboardPage() {
         <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover flex flex-col">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-medium text-foreground">
-              Ultimas despesas
+              Últimas despesas
             </h2>
           </div>
           <div className="space-y-3 flex-1 flex flex-col">
@@ -1715,7 +1717,7 @@ export default function DashboardPage() {
               <EmptyState
                 icon={Receipt}
                 title="Adicione seu primeiro gasto"
-                description="Comece por algo pequeno, como cafe, lanche ou transporte. E isso que revela seus habitos."
+                description="Comece por algo pequeno, como café, lanche ou transporte. E isso que revela seus hábitos."
                 primaryAction={{
                   label: "Adicionar despesa",
                   onClick: () => setIsAddExpenseModalOpen(true),
@@ -1751,7 +1753,7 @@ export default function DashboardPage() {
       <ConfirmActionModal
         isOpen={expenseToDelete !== null}
         title="Excluir despesa"
-        description={`Voce esta prestes a excluir permanentemente a despesa "${expenseToDelete?.description ?? ""}". Esta acao nao podera ser desfeita.`}
+        description={`Você está prestes a excluir permanentemente a despesa "${expenseToDelete?.description ?? ""}". Esta ação não poderá ser desfeita.`}
         confirmLabel="Sim, excluir"
         onClose={() => {
           if (isDeletingExpense) return;
@@ -1765,7 +1767,7 @@ export default function DashboardPage() {
       <ConfirmActionModal
         isOpen={incomeToDelete !== null}
         title="Excluir receita"
-        description={`Voce esta prestes a excluir permanentemente a receita "${incomeToDelete?.description ?? ""}". Esta acao nao podera ser desfeita.`}
+        description={`Você está prestes a excluir permanentemente a receita "${incomeToDelete?.description ?? ""}". Esta ação não poderá ser desfeita.`}
         confirmLabel="Sim, excluir"
         onClose={() => {
           if (isDeletingIncome) return;

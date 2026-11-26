@@ -145,7 +145,7 @@ export function WhatsAppSimulationPanel() {
           className="overflow-hidden border-t border-border/70 bg-surface-2/45 p-4"
         >
           <div className="rounded-xl border border-primary/20 bg-primary/8 px-3 py-2.5 text-xs leading-5 text-foreground-muted">
-            Use esta ferramenta apenas para simular o fluxo interno. Em
+            Use está ferramenta apenas para simular o fluxo interno. Em
             staging/produção, o backend ainda valida autenticação e e-mail
             autorizado.
           </div>

@@ -49,9 +49,9 @@ export default function NotificationsPage() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-medium text-foreground">Notificacoes</h1>
+          <h1 className="text-2xl font-medium text-foreground">Notificações</h1>
           <p className="text-sm text-foreground-muted">
-            Acompanhe alertas automaticos e marque como lido.
+            Acompanhe alertas automáticos e marque como lido.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -106,7 +106,7 @@ export default function NotificationsPage() {
             <div className="h-12 w-12 rounded-full border border-border bg-surface-2 grid place-items-center">
               <Bell size={20} />
             </div>
-            Nenhuma notificacao encontrada.
+            Nenhuma notificação encontrada.
           </div>
         ) : (
           <div className="space-y-3">

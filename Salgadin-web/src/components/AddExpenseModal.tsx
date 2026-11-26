@@ -263,7 +263,7 @@ export function AddExpenseModal({
       handleClose();
     } catch (error) {
       console.error("Falha ao vincular despesa recorrente:", error);
-      setApiError("Nao foi possivel salvar a despesa. Tente novamente.");
+      setApiError("Não foi possível salvar a despesa. Tente novamente.");
     } finally {
       setIsLinkingRecurring(false);
     }
@@ -435,7 +435,7 @@ export function AddExpenseModal({
                 })()}
                 {!isEditing && !isCategoryTouchedByUser && selectedCategory && (
                   <p className="mt-2 text-xs text-foreground-subtle">
-                    Categoria sugerida automaticamente. VocÃª pode alterar antes
+                    Categoria sugerida automaticamente. Você pode alterar antes
                     de salvar.
                   </p>
                 )}
@@ -477,10 +477,10 @@ export function AddExpenseModal({
               {matchingSchedule && pendingPayload && (
                 <div className="rounded-2xl border border-primary/24 bg-primary/10 p-4">
                   <p className="text-sm font-medium text-foreground">
-                    Esta despesa parece fazer parte de uma recorrencia.
+                    Esta despesa parece fazer parte de uma recorrência.
                   </p>
                   <p className="mt-1 text-sm leading-6 text-foreground-muted">
-                    Deseja vincular este lancamento a "{matchingSchedule.description}"?
+                    Deseja vincular este lançamento a "{matchingSchedule.description}"?
                   </p>
                   <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
                     <Button
@@ -517,7 +517,7 @@ export function AddExpenseModal({
                   Cancelar
                 </Button>
                 <Button type="submit" isLoading={isSubmitting}>
-                  {isSubmitting ? "Salvando..." : isEditing ? "Salvar Alteracoes" : "Salvar Despesa"}
+                  {isSubmitting ? "Salvando..." : isEditing ? "Salvar Alterações" : "Salvar Despesa"}
                 </Button>
               </div>
             </form>

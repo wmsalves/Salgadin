@@ -49,11 +49,11 @@ const CHART_COLORS = [
 ];
 
 const iconMap: Record<string, React.ComponentType<{ size?: number }>> = {
-  alimentacao: Utensils,
+  alimentação: Utensils,
   transporte: Bus,
   compras: ShoppingCart,
-  saude: HeartPulse,
-  educacao: GraduationCap,
+  saúde: HeartPulse,
+  educação: GraduationCap,
   moradia: Home,
   lazer: Sparkles,
   outros: MoreHorizontal,
@@ -109,7 +109,7 @@ function CategoryDistributionTooltip({
   return (
     <div className="min-w-[180px] rounded-2xl border border-border/80 bg-[rgba(24,20,18,0.96)] px-3 py-2.5 shadow-[0_18px_38px_rgba(0,0,0,0.34)] backdrop-blur-sm">
       <p className="text-sm font-medium text-foreground">{item.name}</p>
-      <p className="mt-2 text-xs text-foreground-subtle">Gastos no mes</p>
+      <p className="mt-2 text-xs text-foreground-subtle">Gastos no mês</p>
       <p className="text-sm font-medium text-foreground">
         {formatCurrency(item.spent)}
       </p>
@@ -171,7 +171,7 @@ export default function CategoriesPage() {
       setCategories(data);
     } catch (err) {
       console.error("Falha ao buscar categorias:", err);
-      setError("Nao foi possivel carregar suas categorias.");
+      setError("Não foi possível carregar suas categorias.");
     }
   }, []);
 
@@ -268,7 +268,7 @@ export default function CategoriesPage() {
         ...prev,
         [categoryId]: getErrorMessage(
           err,
-          "Nao foi possivel criar a subcategoria.",
+          "Não foi possível criar a subcategoria.",
         ),
       }));
     }
@@ -293,7 +293,7 @@ export default function CategoriesPage() {
     } catch (err) {
       console.error("Falha ao excluir subcategoria:", err);
       setDeleteSubcategoryError(
-        getErrorMessage(err, "Nao foi possivel excluir a subcategoria."),
+        getErrorMessage(err, "Não foi possível excluir a subcategoria."),
       );
     } finally {
       setIsDeletingSubcategory(false);
@@ -415,7 +415,7 @@ export default function CategoriesPage() {
         <EmptyState
           icon={Sparkles}
           title="Organize seus primeiros pequenos gastos"
-          description="Crie categorias como alimentacao, transporte ou mercado para entender para onde o dinheiro vai."
+          description="Crie categorias como alimentação, transporte ou mercado para entender para onde o dinheiro vai."
           primaryAction={{
             label: "Criar categoria",
             onClick: () => categoryInputRef.current?.focus(),
@@ -435,7 +435,7 @@ export default function CategoriesPage() {
                     Gastos por categoria
                   </h2>
                   <p className="mt-1 text-sm text-foreground-muted">
-                    Veja o peso de cada categoria no total do mes e encontre
+                    Veja o peso de cada categoria no total do mês e encontre
                     onde os pequenos gastos mais se concentram.
                   </p>
                 </div>
@@ -702,7 +702,7 @@ export default function CategoriesPage() {
                             </div>
                           ) : (
                             <div className="rounded-xl border border-dashed border-border bg-surface/60 px-3 py-2 text-xs leading-5 text-foreground-subtle">
-                              Use subcategorias para separar detalhes como cafe,
+                              Use subcategorias para separar detalhes como café,
                               aplicativo, mercado ou lanche.
                             </div>
                           )}
@@ -736,7 +736,7 @@ export default function CategoriesPage() {
       <ConfirmActionModal
         isOpen={subcategoryToDelete !== null}
         title="Excluir subcategoria"
-        description={`Voce esta prestes a excluir permanentemente a subcategoria "${subcategoryToDelete?.name ?? ""}". Esta acao nao podera ser desfeita.`}
+        description={`Você está prestes a excluir permanentemente a subcategoria "${subcategoryToDelete?.name ?? ""}". Esta ação não poderá ser desfeita.`}
         confirmLabel="Sim, excluir"
         onClose={() => {
           if (isDeletingSubcategory) return;

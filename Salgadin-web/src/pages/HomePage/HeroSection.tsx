@@ -11,7 +11,7 @@ const HeroChartPreview = lazy(() =>
 );
 
 const trustCues = [
-  "Sem cartao de credito para comecar",
+  "Sem cartão de crédito para começar",
   "Comece em poucos minutos",
   "Controle simples, sem planilhas",
 ];
@@ -29,7 +29,7 @@ export function HeroSection() {
   const primaryHref = isAuthenticated ? "/dashboard" : "/signup";
   const primaryLabel = isAuthenticated
     ? "Acessar minha conta"
-    : "Comecar gratuitamente";
+    : "Começar gratuitamente";
   const chartColors =
     theme === "dark"
       ? { regular: "#ff9d6c", attention: "#f6bf73" }
@@ -45,31 +45,31 @@ export function HeroSection() {
         className="mx-auto max-w-sm text-center text-4xl font-medium text-foreground sm:max-w-4xl sm:text-5xl md:text-6xl"
       >
         Controle seus pequenos gastos{" "}
-        <span className="text-primary">antes que eles crescam.</span>
+        <span className="text-primary">antes que eles cresçam.</span>
       </h1>
       <p className="mx-auto mt-6 max-w-xs text-center text-base text-foreground-muted sm:max-w-2xl sm:text-lg">
         Visualize, categorize e acompanhe os gastos que se repetem no dia a dia.
-        O Salgadin foi feito para transformar lancamentos simples em clareza
-        real sobre seus habitos financeiros.
+        O Salgadin foi feito para transformar lançamentos simples em clareza
+        real sobre seus hábitos financeiros.
       </p>
 
       <div className="mx-auto mt-7 grid max-w-5xl gap-3 text-left md:grid-cols-3">
         <div className="rounded-2xl border border-border/70 bg-surface/80 px-4 py-4">
-          <h2 className="text-sm font-medium text-foreground">Registro rapido</h2>
+          <h2 className="text-sm font-medium text-foreground">Registro rápido</h2>
           <p className="mt-1.5 text-ui text-foreground-muted">
-            Lance cafe, lanche, delivery, mercado ou transporte sem depender de planilhas.
+            Lance café, lanche, delivery, mercado ou transporte sem depender de planilhas.
           </p>
         </div>
         <div className="rounded-2xl border border-border/70 bg-surface/80 px-4 py-4">
           <h2 className="text-sm font-medium text-foreground">Leitura clara</h2>
           <p className="mt-1.5 text-ui text-foreground-muted">
-            Veja o que pesa no mes com categorias, graficos e resumos feitos para decisoes praticas.
+            Veja o que pesa no mês com categorias, gráficos e resumos feitos para decisões práticas.
           </p>
         </div>
         <div className="rounded-2xl border border-border/70 bg-surface/80 px-4 py-4">
-          <h2 className="text-sm font-medium text-foreground">Evolucao do produto</h2>
+          <h2 className="text-sm font-medium text-foreground">Metas que avisam</h2>
           <p className="mt-1.5 text-ui text-foreground-muted">
-            WhatsApp e recursos Pro estao em preparacao, sem promessas artificiais na experiencia atual.
+            Defina um limite por categoria e receba um aviso antes de estourar o mês.
           </p>
         </div>
       </div>
@@ -117,11 +117,11 @@ export function HeroSection() {
                 className="mt-1.5 max-w-xl text-ui text-foreground-muted"
               >
                 Cada barra mostra despesas registradas manualmente no dia, como
-                cafe, lanche, delivery, mercado e transporte.
+                café, lanche, delivery, mercado e transporte.
               </p>
             </div>
             <ul
-              aria-label="Legenda do grafico"
+              aria-label="Legenda do gráfico"
               className="grid min-w-0 gap-2 text-ui text-foreground-muted sm:grid-cols-2 md:min-w-[310px]"
             >
               <li className="flex items-center gap-2 rounded-xl border border-border/70 bg-surface-2/70 px-3 py-2">
@@ -136,15 +136,15 @@ export function HeroSection() {
                   className="h-3 w-3 rounded-full bg-[var(--chart-high-expense)]"
                   aria-hidden
                 />
-                Dia que pede atencao
+                Dia que pede atenção
               </li>
             </ul>
           </div>
 
           <p id="weekly-chart-summary" className="sr-only">
-            O grafico mostra gastos de segunda a domingo com composicao por
-            categoria. Na terca-feira, por exemplo, foram R$ 20,00 com
-            alimentacao e R$ 50,00 com transporte. Sexta-feira foi o maior
+            O gráfico mostra gastos de segunda a domingo com composição por
+            categoria. Na terça-feira, por exemplo, foram R$ 20,00 com
+            alimentação e R$ 50,00 com transporte. Sexta-feira foi o maior
             gasto, principalmente com delivery e mercado.
           </p>
 

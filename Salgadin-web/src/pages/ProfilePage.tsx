@@ -163,7 +163,7 @@ export default function ProfilePage() {
   });
 
   const now = useMemo(() => new Date(), []);
-  const displayName = profile?.name ?? user?.name ?? "Usuario";
+  const displayName = profile?.name ?? user?.name ?? "Usuário";
   const hasExpenses = recentExpenses.length > 0;
   const hasIncomes = recentIncomes.length > 0;
   const hasExportableData = hasExpenses || hasIncomes;
@@ -213,9 +213,9 @@ export default function ProfilePage() {
         setRecentIncomes(incomesData);
         setWhatsAppStatus(whatsAppStatusData);
     } catch (error) {
-      console.error("Falha ao carregar configuracoes:", error);
+      console.error("Falha ao carregar configurações:", error);
       setSettingsError(
-        "Nao foi possivel carregar suas configuracoes agora. Tente novamente em instantes.",
+        "Não foi possível carregar suas configurações agora. Tente novamente em instantes.",
       );
     } finally {
       setIsLoading(false);
@@ -233,10 +233,10 @@ export default function ProfilePage() {
 
     try {
       await updateNotificationPreferences(preferences);
-      setSettingsMessage("Preferencias salvas com sucesso.");
+      setSettingsMessage("Preferências salvas com sucesso.");
     } catch (error) {
-      console.error("Falha ao salvar preferencias:", error);
-      setSettingsError("Nao foi possivel salvar as preferencias.");
+      console.error("Falha ao salvar preferências:", error);
+      setSettingsError("Não foi possível salvar as preferências.");
     } finally {
       setIsSaving(false);
     }
@@ -255,7 +255,7 @@ export default function ProfilePage() {
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      nextErrors.email = "Informe um email valido.";
+      nextErrors.email = "Informe um email válido.";
     }
 
     if (trimmedPhone && !phonePattern.test(trimmedPhone)) {
@@ -267,7 +267,7 @@ export default function ProfilePage() {
       !strongPasswordPattern.test(profileForm.newPassword)
     ) {
       nextErrors.newPassword =
-        "Use 8+ caracteres, maiuscula, minuscula, numero e caractere especial.";
+        "Use 8+ caracteres, maiúscula, minúscula, número e caractere especial.";
     }
 
     if ((emailChanged || passwordChanged) && !profileForm.currentPassword) {
@@ -276,7 +276,7 @@ export default function ProfilePage() {
     }
 
     if (profileForm.newPassword !== profileForm.confirmNewPassword) {
-      nextErrors.confirmNewPassword = "A confirmacao da senha nao coincide.";
+      nextErrors.confirmNewPassword = "A confirmação da senha não coincide.";
     }
 
     setFieldErrors(nextErrors);
@@ -316,7 +316,7 @@ export default function ProfilePage() {
     } catch (error) {
       console.error("Falha ao atualizar perfil:", error);
       setProfileError(
-        "Nao foi possivel atualizar o perfil. Verifique os dados informados.",
+        "Não foi possível atualizar o perfil. Verifique os dados informados.",
       );
     } finally {
       setIsSavingProfile(false);
@@ -331,10 +331,10 @@ export default function ProfilePage() {
     try {
       const file = await exportExpenses("csv");
       downloadBlob(file, "salgadin-despesas.csv");
-      setSettingsMessage("Exportacao de despesas iniciada.");
+      setSettingsMessage("Exportação de despesas iniciada.");
     } catch (error) {
       console.error("Falha ao exportar despesas:", error);
-      setSettingsError("Nao foi possivel exportar suas despesas agora.");
+      setSettingsError("Não foi possível exportar suas despesas agora.");
     } finally {
       setIsExportingExpenses(false);
     }
@@ -348,10 +348,10 @@ export default function ProfilePage() {
     try {
       const file = await exportIncomes();
       downloadBlob(file, "salgadin-rendas.csv");
-      setSettingsMessage("Exportacao de rendas iniciada.");
+      setSettingsMessage("Exportação de rendas iniciada.");
     } catch (error) {
       console.error("Falha ao exportar rendas:", error);
-      setSettingsError("Nao foi possivel exportar suas rendas agora.");
+      setSettingsError("Não foi possível exportar suas rendas agora.");
     } finally {
       setIsExportingIncomes(false);
     }
@@ -367,11 +367,11 @@ export default function ProfilePage() {
       const status = await getWhatsAppStatus();
       setWhatsAppLinkCode(code);
       setWhatsAppStatus(status);
-      setWhatsAppMessage("Codigo de conexao gerado.");
+      setWhatsAppMessage("Código de conexão gerado.");
     } catch (error) {
-      console.error("Falha ao gerar codigo do WhatsApp:", error);
+      console.error("Falha ao gerar código do WhatsApp:", error);
       setWhatsAppError(
-        "Nao foi possivel gerar o codigo. Verifique se seu telefone esta salvo no perfil.",
+        "Não foi possível gerar o código. Verifique se seu telefone está salvo no perfil.",
       );
     } finally {
       setIsGeneratingWhatsAppCode(false);
@@ -390,7 +390,7 @@ export default function ProfilePage() {
       setWhatsAppMessage("WhatsApp desconectado.");
     } catch (error) {
       console.error("Falha ao desconectar WhatsApp:", error);
-      setWhatsAppError("Nao foi possivel desconectar o WhatsApp agora.");
+      setWhatsAppError("Não foi possível desconectar o WhatsApp agora.");
     } finally {
       setIsDisconnectingWhatsApp(false);
     }
@@ -415,10 +415,10 @@ export default function ProfilePage() {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div>
           <h1 className="text-2xl font-medium text-foreground">
-            Conta e configuracoes
+            Conta e configurações
           </h1>
           <p className="text-sm text-foreground-muted">
-            Carregando seus dados com seguranca...
+            Carregando seus dados com segurança...
           </p>
         </div>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -438,10 +438,10 @@ export default function ProfilePage() {
       <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <h1 className="text-2xl font-medium text-foreground">
-            Conta e configuracoes
+            Conta e configurações
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-foreground-muted">
-            Controle seus dados, seguranca e preferencias em um unico lugar.
+            Controle seus dados, segurança e preferências em um único lugar.
           </p>
         </div>
       </header>
@@ -476,7 +476,7 @@ export default function ProfilePage() {
                 {displayName}
               </h2>
               <p className="text-sm text-foreground-muted">
-                {profile?.email ?? user?.email ?? "Email nao informado"}
+                {profile?.email ?? user?.email ?? "Email não informado"}
               </p>
             </div>
           </div>
@@ -488,7 +488,7 @@ export default function ProfilePage() {
           <SettingsCard
             icon={User}
             title="Perfil"
-            description="Dados basicos usados no Salgadin e nas proximas integracoes."
+            description="Dados básicos usados no Salgadin e nas próximas integrações."
           >
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
@@ -555,7 +555,7 @@ export default function ProfilePage() {
                   className="mt-2 w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
                 <p className="mt-2 text-xs text-foreground-subtle">
-                  Usaremos esse numero futuramente para recursos como WhatsApp.
+                  Usaremos esse número futuramente para recursos como WhatsApp.
                 </p>
                 {fieldErrors.phoneNumber && (
                   <p className="mt-2 text-xs font-medium text-danger">
@@ -568,12 +568,12 @@ export default function ProfilePage() {
 
           <SettingsCard
             icon={Lock}
-            title="Seguranca"
-            description="Altere senha e email com confirmacao da senha atual."
+            title="Segurança"
+            description="Altere senha e email com confirmação da senha atual."
           >
             <div className="rounded-2xl border border-primary/20 bg-primary/8 px-4 py-3 text-sm text-foreground-muted">
-              Se voce entrou com Google e ainda nao definiu senha local,
-              continue usando o Google Sign-In ate configurar uma senha pelo
+              Se você entrou com Google e ainda não definiu senha local,
+              continue usando o Google Sign-In até configurar uma senha pelo
               fluxo tradicional.
             </div>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -666,8 +666,8 @@ export default function ProfilePage() {
 
           <SettingsCard
             icon={Palette}
-            title="Preferencias"
-            description="Preferencias basicas do app e alertas financeiros."
+            title="Preferências"
+            description="Preferências básicas do app e alertas financeiros."
           >
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <button
@@ -724,7 +724,7 @@ export default function ProfilePage() {
               <div className="rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm sm:col-span-2">
                 <label className="flex items-center gap-2 text-foreground-muted">
                   <Shield size={16} />
-                  Limiar minimo (0-1)
+                  Limiar mínimo (0-1)
                 </label>
                 <input
                   type="number"
@@ -746,7 +746,7 @@ export default function ProfilePage() {
                 className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
                 disabled={isSaving}
               >
-                {isSaving ? "Salvando..." : "Salvar preferencias"}
+                {isSaving ? "Salvando..." : "Salvar preferências"}
               </button>
             </div>
           </SettingsCard>
@@ -756,7 +756,7 @@ export default function ProfilePage() {
           <SettingsCard
             icon={Database}
             title="Seus dados"
-            description="Seus lancamentos pertencem a voce e podem ser baixados."
+            description="Seus lançamentos pertencem a você e podem ser baixados."
           >
               {hasExportableData ? (
                 <div className="space-y-4">
@@ -765,8 +765,8 @@ export default function ProfilePage() {
                       Exportar despesas
                     </h3>
                     <p className="mt-1 text-xs text-foreground-subtle">
-                      CSV com Data, Descricao, Valor, Categoria e Subcategoria.
-                      Periodo: todos os registros disponiveis.
+                      CSV com Data, Descrição, Valor, Categoria e Subcategoria.
+                      Período: todos os registros disponíveis.
                     </p>
                     <button
                       onClick={handleExportExpenses}
@@ -786,8 +786,8 @@ export default function ProfilePage() {
                       Exportar rendas
                     </h3>
                     <p className="mt-1 text-xs text-foreground-subtle">
-                      CSV com Data, Descricao, Tipo e Valor. Periodo: todas as
-                      rendas disponiveis.
+                      CSV com Data, Descrição, Tipo e Valor. Período: todas as
+                      rendas disponíveis.
                     </p>
                     <button
                       onClick={handleExportIncomes}
@@ -807,7 +807,7 @@ export default function ProfilePage() {
                 <EmptyState
                   icon={Database}
                   title="Sem dados para exportar"
-                  description="Registre sua primeira renda ou despesa para baixar um CSV com seus lancamentos financeiros."
+                  description="Registre sua primeira renda ou despesa para baixar um CSV com seus lançamentos financeiros."
                   primaryAction={{
                     label: "Ir para o dashboard",
                     href: "/dashboard",
@@ -820,7 +820,7 @@ export default function ProfilePage() {
           <SettingsCard
             icon={MessageCircle}
             title="WhatsApp"
-            description="Prepare o registro rapido de pequenos gastos por mensagem."
+            description="Prepare o registro rápido de pequenos gastos por mensagem."
           >
             <div className="space-y-4">
               <div className="rounded-2xl border border-border bg-surface-2 p-4">
@@ -978,11 +978,11 @@ export default function ProfilePage() {
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-base font-medium text-foreground">
-              Alertas e notificacoes
+              Alertas e notificações
             </h2>
             <p className="text-sm text-foreground-muted">
               {unreadNotifications > 0
-                ? `${unreadNotifications} notificacao(oes) nao lida(s).`
+                ? `${unreadNotifications} notificacao(oes) não lida(s).`
                 : "Tudo lido por aqui."}
             </p>
           </div>
@@ -998,7 +998,7 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <div className="rounded-2xl border border-border bg-surface-2 p-4">
             <h3 className="text-sm font-medium text-foreground">
-              Alertas do mes
+              Alertas do mês
             </h3>
             {alerts.length > 0 ? (
               <div className="mt-3 space-y-3">
@@ -1029,7 +1029,7 @@ export default function ProfilePage() {
             ) : (
               <EmptyState
                 icon={Shield}
-                title="Nenhum alerta neste mes"
+                title="Nenhum alerta neste mês"
                 description="Crie metas para receber avisos quando os pequenos gastos se aproximarem do limite."
                 primaryAction={{ label: "Criar meta", href: "/metas" }}
                 compact
@@ -1040,7 +1040,7 @@ export default function ProfilePage() {
 
           <div className="rounded-2xl border border-border bg-surface-2 p-4">
             <h3 className="text-sm font-medium text-foreground">
-              Notificacoes automaticas
+              Notificações automáticas
             </h3>
             {notifications.length > 0 ? (
               <div className="mt-3 space-y-3">
@@ -1083,8 +1083,8 @@ export default function ProfilePage() {
             ) : (
               <EmptyState
                 icon={Bell}
-                title="Sem notificacoes ainda"
-                description="Quando uma meta ou alerta precisar da sua atencao, ele aparece aqui."
+                title="Sem notificações ainda"
+                description="Quando uma meta ou alerta precisar da sua atenção, ele aparece aqui."
                 compact
                 className="mt-3"
               />
