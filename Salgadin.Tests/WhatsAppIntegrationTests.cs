@@ -41,6 +41,20 @@ public class WhatsAppIntegrationTests
         Assert.Equal("Alimentacao", result.InferredCategoryName);
     }
 
+    [Theory]
+    [InlineData("coxinha 8")]
+    [InlineData("pastel 12")]
+    [InlineData("Açaí 18,50")]
+    public void Parser_InfersFoodForSnacks(string message)
+    {
+        var parser = new WhatsAppExpenseMessageParser();
+
+        var result = parser.Parse(message);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal("Alimentacao", result.InferredCategoryName);
+    }
+
     [Fact]
     public void Parser_ReturnsFriendlyError_WhenAmountIsMissing()
     {
