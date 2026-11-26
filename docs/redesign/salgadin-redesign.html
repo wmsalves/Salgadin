@@ -1,0 +1,437 @@
+<title>Redesign do Salgadin</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: uma coluna de leitura (~68ch) com quadros largos para comparações e o mock proposto. */
+:root {
+  --bg: #fafaf8;
+  --surface: #ffffff;
+  --surface-2: #f3f2ef;
+  --line: #e6e3de;
+  --fg: #171412;
+  --muted: #625a53;
+  --subtle: #8a8179;
+  --accent: #c9541f;
+  --accent-soft: #fbece4;
+  --good: #23785c;
+  --bad: #c0414e;
+  --warn: #a8700f;
+  --font-text: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-data: "Geist Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121110; --surface: #1a1917; --surface-2: #232120; --line: #2f2c29;
+    --fg: #f3f0ec; --muted: #b5ada5; --subtle: #8c847c;
+    --accent: #f08a55; --accent-soft: #2e1f17;
+    --good: #6cc9a4; --bad: #ee8a94; --warn: #e7b85c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121110; --surface: #1a1917; --surface-2: #232120; --line: #2f2c29;
+  --fg: #f3f0ec; --muted: #b5ada5; --subtle: #8c847c;
+  --accent: #f08a55; --accent-soft: #2e1f17;
+  --good: #6cc9a4; --bad: #ee8a94; --warn: #e7b85c;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font: 400 15px/1.6 var(--font-text);
+  -webkit-font-smoothing: antialiased;
+}
+.wrap {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding-block: 56px 96px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.prose { max-width: 68ch; }
+h1, h2, h3 { font-weight: 500; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 5vw, 2.75rem); line-height: 1.08; letter-spacing: -0.035em; }
+h2 { font-size: 1.5rem; line-height: 1.2; letter-spacing: -0.02em; }
+h3 { font-size: 1rem; line-height: 1.4; letter-spacing: -0.005em; }
+p, li { text-wrap: pretty; }
+p { margin: 0; }
+.lede { font-size: 1.0625rem; color: var(--muted); margin-top: 16px; }
+.meta { font-size: 13px; color: var(--subtle); margin-top: 20px; }
+.num { font-variant-numeric: tabular-nums; }
+code, .mono { font-family: var(--font-data); font-size: 0.86em; }
+code { background: var(--surface-2); padding: 1px 5px; border-radius: 5px; }
+
+section { margin-top: 88px; display: grid; gap: 20px; }
+.section-head { display: grid; gap: 8px; }
+.section-head p { color: var(--muted); max-width: 68ch; }
+
+.verdict {
+  margin-top: 40px;
+  border-left: 3px solid var(--accent);
+  padding: 4px 0 4px 20px;
+  display: grid; gap: 10px;
+  max-width: 72ch;
+}
+.verdict p { font-size: 1.0625rem; }
+
+.grid-2 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.grid-3 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px;
+  display: grid; gap: 8px; align-content: start;
+  min-width: 0;
+}
+.card p { font-size: 14px; color: var(--muted); }
+.card .evidence { font-size: 13px; color: var(--subtle); border-top: 1px solid var(--line); padding-top: 10px; margin-top: 4px; }
+
+.list { display: grid; gap: 0; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); overflow: hidden; }
+.row { display: grid; grid-template-columns: 9rem 1fr; gap: 16px; padding: 16px 20px; border-top: 1px solid var(--line); }
+.row:first-child { border-top: 0; }
+.row .k { font-size: 13px; color: var(--subtle); padding-top: 2px; }
+.row .v { min-width: 0; font-size: 14px; }
+.row .v strong { font-weight: 500; }
+@media (max-width: 560px) { .row { grid-template-columns: 1fr; gap: 4px; } }
+
+.sev { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.sev::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.sev.high { color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, transparent); }
+.sev.mid { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); }
+.sev.low { color: var(--muted); background: var(--surface-2); }
+.issue-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+
+/* Comparacao lado a lado */
+.compare { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+.compare .label { font-size: 12px; color: var(--subtle); margin-bottom: 8px; }
+
+/* Mock do painel proposto */
+.mock {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 24px;
+  display: grid; gap: 20px;
+  min-width: 0;
+}
+.mock-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.mock-top .month { font-size: 13px; color: var(--muted); }
+.big-label { font-size: 13px; color: var(--muted); }
+.big { font-size: clamp(2.25rem, 6vw, 3rem); line-height: 1; letter-spacing: -0.04em; font-weight: 500; font-variant-numeric: tabular-nums; margin-top: 6px; }
+.big small { font-size: 0.4em; letter-spacing: 0; color: var(--muted); font-weight: 400; margin-left: 4px; }
+.sub { font-size: 14px; color: var(--muted); margin-top: 8px; }
+.sub b { color: var(--fg); font-weight: 500; }
+.bar { height: 8px; background: var(--surface-2); border-radius: 99px; overflow: hidden; display: flex; }
+.bar span { display: block; height: 100%; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; vertical-align: 0; }
+.kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--line); padding-top: 16px; }
+.kpis > div { padding-right: 12px; min-width: 0; }
+.kpis > div + div { border-left: 1px solid var(--line); padding-left: 16px; }
+.kpis .k { font-size: 12px; color: var(--subtle); }
+.kpis .v { font-size: 1.125rem; font-weight: 500; font-variant-numeric: tabular-nums; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 480px) { .kpis { grid-template-columns: 1fr; gap: 12px; } .kpis > div + div { border-left: 0; padding-left: 0; } }
+.quick { display: flex; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--bg); }
+.quick .ph { color: var(--subtle); font-size: 14px; flex: 1; min-width: 0; }
+.quick .ph b { color: var(--fg); font-weight: 500; }
+.btn { font: 500 13px/1 var(--font-text); background: var(--accent); color: #fff; border-radius: 9px; padding: 9px 12px; white-space: nowrap; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 13px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; color: var(--muted); background: var(--surface); }
+.chip b { color: var(--fg); font-weight: 500; font-variant-numeric: tabular-nums; }
+.feed { display: grid; }
+.feed .it { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.feed .it span:nth-child(2) { font-variant-numeric: tabular-nums; text-align: right; }
+.feed .it small { grid-column: 1; color: var(--subtle); font-size: 12px; }
+
+/* Mock "hoje" (estado atual, simplificado) */
+.now {
+  background: #fff3ea; border: 1px solid #f0d5c2; border-radius: 22px; padding: 16px;
+  display: grid; gap: 10px; color: #3b2a20;
+}
+.now .tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.now .tile { background: linear-gradient(135deg, #fffdf9, #fff0e6); border: 1px solid #f0d5c2; border-radius: 18px; padding: 10px; box-shadow: 0 10px 22px rgb(60 42 32 / 0.10); min-width: 0; }
+.now .tile .t { font-size: 11px; color: #7f6251; }
+.now .tile .v { font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.now .tile .b { font-size: 10px; color: #b8582f; }
+.now .blk { background: #fffdf9; border: 1px solid #f0d5c2; border-radius: 18px; padding: 10px; font-size: 11px; color: #7f6251; box-shadow: 0 10px 22px rgb(60 42 32 / 0.10); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .now { background: #2a1e1a; border-color: #5a3f37; color: #f7ece5; }
+  :root:not([data-theme="light"]) .now .tile, :root:not([data-theme="light"]) .now .blk { background: #332420; border-color: #5a3f37; color: #d3bfb2; box-shadow: none; }
+}
+:root[data-theme="dark"] .now { background: #2a1e1a; border-color: #5a3f37; color: #f7ece5; }
+:root[data-theme="dark"] .now .tile, :root[data-theme="dark"] .now .blk { background: #332420; border-color: #5a3f37; color: #d3bfb2; box-shadow: none; }
+
+.note { font-size: 13px; color: var(--subtle); }
+
+/* Plano */
+.phases { display: grid; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); overflow: hidden; }
+.phase { display: grid; grid-template-columns: 3.25rem 1fr 6.5rem; gap: 16px; padding: 18px 20px; border-top: 1px solid var(--line); align-items: start; }
+.phase:first-child { border-top: 0; }
+.phase .n { font-family: var(--font-data); font-size: 13px; color: var(--accent); padding-top: 2px; }
+.phase p { font-size: 14px; color: var(--muted); margin-top: 4px; }
+.phase .eff { font-size: 13px; color: var(--subtle); text-align: right; padding-top: 2px; }
+@media (max-width: 560px) { .phase { grid-template-columns: 2.5rem 1fr; } .phase .eff { grid-column: 2; text-align: left; padding-top: 0; } }
+
+.decide { display: grid; gap: 12px; counter-reset: q; }
+.decide .card h3::before { counter-increment: q; content: counter(q) ". "; color: var(--subtle); }
+
+footer { margin-top: 88px; font-size: 13px; color: var(--subtle); border-top: 1px solid var(--line); padding-top: 20px; }
+ul.tight { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; color: var(--muted); }
+ul.tight b { color: var(--fg); font-weight: 500; }
+</style>
+
+<div class="wrap">
+  <header class="prose">
+    <h1>Redesign do Salgadin</h1>
+    <p class="lede">Análise da interface atual comparada com a Visor Finance, e uma proposta de direção para o produto inteiro: o que muda no painel, na navegação, no registro de gastos, no sistema visual e na landing.</p>
+    <p class="meta">26 nov. 2026 · baseado na Visor (visorfinance.app, landing pública) e no Salgadin rodando localmente com a conta de teste</p>
+  </header>
+
+  <div class="verdict">
+    <p><strong>Veredito:</strong> o código não precisa ser reescrito, mas a interface precisa ser redesenhada. A Visor parece melhor menos pelo acabamento e mais porque responde uma pergunta só, com um número só, em todas as telas. O Salgadin hoje mostra tudo com o mesmo peso e não responde nenhuma pergunta.</p>
+    <p class="note">A proposta mantém a stack, os serviços e a API. Muda a hierarquia de informação, a paleta, a navegação e o fluxo de registro.</p>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2>O que faz a Visor parecer boa</h2>
+      <p>Observações da landing pública. O app logado da Visor não foi acessado; as telas citadas aparecem como mockups na própria landing.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Uma pergunta central</h3>
+        <p>"Saiba quanto pode gastar hoje." O hero, a seção de saúde financeira e o mock do app voltam a essa mesma pergunta. No painel do celular o número principal é o gasto do mês contra um teto, com uma linha de projeção e um selo "R$ 600 abaixo".</p>
+        <p class="evidence">Para o usuário, o valor do produto cabe em uma frase.</p>
+      </div>
+      <div class="card">
+        <h3>Contraste por cor neutra</h3>
+        <p>Fundo branco, texto quase preto e um único azul saturado, usado só nos botões de ação e nos números importantes. As superfícies são azul muito claro, sem sombra pesada.</p>
+        <p class="evidence">Como o acento aparece pouco, o olho vai direto para ele.</p>
+      </div>
+      <div class="card">
+        <h3>Títulos grandes e justos</h3>
+        <p>Satoshi em 52px, entrelinha 1,1 e tracking de −2px nos títulos. Inter no texto e DM Sans 14px/500 nos botões, 1–2px menores que o texto ao redor.</p>
+        <p class="evidence">A Visor usa títulos em peso 700. As suas regras pedem 500, e funciona: o contraste vem do tamanho e do espaço, não do peso.</p>
+      </div>
+      <div class="card">
+        <h3>Produto real em cada seção</h3>
+        <p>Cada seção traz um mock de tela com dados plausíveis, ou objetos ilustrados que viram metas (casa, avião, carro em polaroids). A seção de recursos é um bento com mini-interfaces (parcelas, ritmo de gastos).</p>
+        <p class="evidence">É a versão bem feita da sua regra 13: mostrar coisas reais em vez de ícones genéricos.</p>
+      </div>
+      <div class="card">
+        <h3>Uma ideia por seção</h3>
+        <p>Cada bloco tem um título curto, uma frase de apoio e um único botão, sempre o mesmo ("Testar grátis"). Nada de três cartões de texto antes da primeira imagem.</p>
+      </div>
+      <div class="card">
+        <h3>Confiança concreta</h3>
+        <p>Em vez de dizer "levamos segurança a sério", a Visor lista fatos: AES-256, LGPD, Open Finance regulado, acesso só leitura. Depois vêm logos de bancos, "+15.000 poupadores" e avaliações da App Store.</p>
+      </div>
+    </div>
+    <p class="note">O que não vale copiar: barra de cupom no topo, widget de chat, a cor azul e a dependência de Open Finance. O Salgadin é manual e pessoal, e isso pode virar vantagem.</p>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Diagnóstico do Salgadin</h2>
+      <p>O que vi navegando pelas telas com dados de exemplo, em ordem de impacto.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="issue-head"><h3>O painel não responde uma pergunta</h3><span class="sev high">Alto</span></div>
+        <p>O painel mostra saldo, metas, gastos, insights, gráfico, categorias, metas de novo e duas listas, todos em cards do mesmo tamanho e do mesmo estilo. O usuário precisa montar a conclusão sozinho.</p>
+        <p class="evidence">Não existe nenhum número que olhe para frente, como "quanto ainda posso gastar".</p>
+      </div>
+      <div class="card">
+        <div class="issue-head"><h3>Português sem acentos</h3><span class="sev high">Alto</span></div>
+        <p>"Relatorios", "Notificacoes", "voce", "nao", "mes", "lancamentos"… São mais de 150 ocorrências nas telas. Num app financeiro isso passa a impressão de produto inacabado, e é a correção mais barata da lista.</p>
+        <p class="evidence">Contagem em <code>src/pages</code> e <code>src/components</code>: mes 36, nao 27, voce 23, lancamentos 27.</p>
+      </div>
+      <div class="card">
+        <div class="issue-head"><h3>Tudo é pêssego</h3><span class="sev high">Alto</span></div>
+        <p>Fundo, superfícies, bordas, sombras e gradientes usam o mesmo matiz. O laranja da marca compete com o fundo em vez de se destacar. O modo escuro é marrom.</p>
+        <p class="evidence">Quase todo bloco tem <code>rounded-3xl</code>, sombra e gradiente: quando tudo é card, nada é card.</p>
+      </div>
+      <div class="card">
+        <div class="issue-head"><h3>Registrar um gasto é lento</h3><span class="sev high">Alto</span></div>
+        <p>A tese do produto são os pequenos gastos, mas registrar um café exige abrir um modal com formulário completo. Não há atalho para os gastos que se repetem.</p>
+        <p class="evidence">O backend já tem um parser de mensagens (<code>WhatsAppExpenseMessageParser</code>) que poderia alimentar um campo rápido.</p>
+      </div>
+      <div class="card">
+        <div class="issue-head"><h3>Navegação fragmentada</h3><span class="sev mid">Médio</span></div>
+        <p>São 8 itens na lateral. No celular, a barra inferior corta o item "Calendário". Calendário, Recorrências e Relatórios dividem a mesma pergunta ("como vai meu mês?") em três telas.</p>
+        <p class="evidence">Não existe uma tela de lançamentos: só os 5 últimos aparecem no painel, sem busca nem filtro.</p>
+      </div>
+      <div class="card">
+        <div class="issue-head"><h3>Landing defensiva</h3><span class="sev mid">Médio</span></div>
+        <p>"Sem promessas artificiais", "O foco não é prometer automação que ainda não existe", "WhatsApp e recursos Pro estão em preparação". O texto explica o que o produto não faz.</p>
+        <p class="evidence">E não há uma tela real do produto: só um gráfico de exemplo e mockups genéricos.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>A pergunta do Salgadin</h2>
+      <p>A Visor pergunta quanto você pode gastar. O Salgadin pode fazer a mesma pergunta pelo lado que só ele tem: <strong>quanto os pequenos gastos já levaram, e quanto ainda sobra por dia</strong>. Os dois números saem de dados que o app já tem (receitas, despesas, recorrências e metas).</p>
+    </div>
+
+    <div class="compare">
+      <div>
+        <p class="label">Hoje (simplificado)</p>
+        <div class="now" aria-label="Esboço do painel atual">
+          <div class="tiles">
+            <div class="tile"><div class="t">Saldo do mês</div><div class="v">R$ 3.531,10</div></div>
+            <div class="tile"><div class="t">Metas ativas</div><div class="v">2 metas</div></div>
+            <div class="tile"><div class="t">Gastos do mês</div><div class="v">R$ 1.918,90</div></div>
+          </div>
+          <div class="blk">Insights financeiros · 3 cards</div>
+          <div class="blk">Evolução financeira mensal · gráfico</div>
+          <div class="blk">Gastos por categoria · gráfico</div>
+          <div class="blk">Metas do mês · 2 barras</div>
+          <div class="blk">Últimas receitas · 2 itens</div>
+          <div class="blk">Últimas despesas · 5 itens</div>
+        </div>
+      </div>
+
+      <div>
+        <p class="label">Proposto</p>
+        <div class="mock" aria-label="Esboço do painel proposto">
+          <div class="mock-top">
+            <h3>Início</h3>
+            <span class="month">Novembro de 2026 · faltam 4 dias</span>
+          </div>
+          <div>
+            <p class="big-label">Você ainda pode gastar</p>
+            <p class="big">R$ 128<small>por dia</small></p>
+            <p class="sub">Sobram <b class="num">R$ 512,40</b> até o dia 30, depois das contas fixas previstas.</p>
+          </div>
+          <div>
+            <div class="bar" aria-hidden="true">
+              <span style="width:28%;background:var(--accent)"></span>
+              <span style="width:52%;background:color-mix(in srgb, var(--fg) 30%, transparent)"></span>
+            </div>
+            <div class="legend">
+              <span><i style="background:var(--accent)"></i>Pequenos gastos R$ 468,80</span>
+              <span><i style="background:color-mix(in srgb, var(--fg) 30%, transparent)"></i>Contas fixas R$ 1.450,10</span>
+              <span><i style="background:var(--surface-2);outline:1px solid var(--line)"></i>Livre</span>
+            </div>
+          </div>
+          <div class="kpis">
+            <div><p class="k">Pequenos gastos</p><p class="v">23 lançamentos</p></div>
+            <div><p class="k">Café e lanche</p><p class="v">R$ 34,40</p></div>
+            <div><p class="k">Meta Alimentação</p><p class="v" style="color:var(--good)">54% usado</p></div>
+          </div>
+          <div class="quick">
+            <span class="ph">Ex.: <b>café 7,50</b> ou <b>uber 23,40 ontem</b></span>
+            <span class="btn">Registrar</span>
+          </div>
+          <div class="chips" aria-label="Gastos frequentes">
+            <span class="chip">Café <b>R$ 7,50</b></span>
+            <span class="chip">Coxinha <b>R$ 8,00</b></span>
+            <span class="chip">Ônibus <b>R$ 4,40</b></span>
+            <span class="chip">Uber <b>R$ 23,40</b></span>
+          </div>
+          <div class="feed">
+            <div class="it"><span>Café na padaria</span><span>−R$ 7,50</span><small>Alimentação · hoje</small></div>
+            <div class="it"><span>Coxinha e suco</span><span>−R$ 14,90</span><small>Alimentação · ontem</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="note">Os valores do esboço usam a conta de teste. A fórmula proposta: livre = receitas do mês − despesas lançadas − recorrências previstas até o fim do mês; por dia = livre ÷ dias restantes.</p>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Direção proposta</h2>
+    </div>
+    <div class="list">
+      <div class="row"><div class="k">Sistema visual</div><div class="v">
+        <ul class="tight">
+          <li><b>Superfícies neutras:</b> fundo off-white quente, cards brancos e texto quase preto. O laranja da coxinha fica só para a ação principal e para o número principal da tela.</li>
+          <li><b>Verde e vermelho só com significado:</b> usados apenas para entrada e saída, separados do acento da marca.</li>
+          <li><b>Bordas no lugar de sombras:</b> borda de 1px nos cards. Sombra só em modal e popover. Raio de 12–14px, não 24px em tudo.</li>
+          <li><b>Modo escuro neutro:</b> quase preto, em vez de marrom.</li>
+        </ul>
+      </div></div>
+      <div class="row"><div class="k">Tipografia</div><div class="v">
+        <ul class="tight">
+          <li><b>Geist mantida</b>, com a escala que já está no projeto.</li>
+          <li><b>Número principal:</b> 40–48px em peso 500, tracking −0,04em e algarismos tabulares.</li>
+          <li><b>Rótulos:</b> 12–13px em cinza, nunca em maiúsculas espaçadas.</li>
+        </ul>
+      </div></div>
+      <div class="row"><div class="k">Navegação</div><div class="v">
+        <ul class="tight">
+          <li><b>Itens principais:</b> Início · Lançamentos · Metas · Relatórios · Conta.</li>
+          <li><b>Calendário</b> vira uma aba de Relatórios.</li>
+          <li><b>Categorias e Recorrências</b> passam a ser subpáginas: de Lançamentos, ou de Conta → Organização.</li>
+          <li><b>Notificações</b> ficam só no sino.</li>
+          <li><b>No celular:</b> 4 abas mais o botão de registrar no centro.</li>
+        </ul>
+      </div></div>
+      <div class="row"><div class="k">Registro rápido</div><div class="v">
+        <ul class="tight">
+          <li><b>Campo único no Início:</b> aceita "café 7,50" ou "uber 23,40 ontem", reaproveitando o parser do WhatsApp.</li>
+          <li><b>Chips dos gastos frequentes:</b> registram com um toque.</li>
+          <li><b>O modal completo continua</b> para edição e para casos detalhados.</li>
+        </ul>
+      </div></div>
+      <div class="row"><div class="k">Lançamentos</div><div class="v">
+        <ul class="tight">
+          <li><b>Tela nova:</b> lista de receitas e despesas agrupada por dia, com busca, filtro por categoria e período, edição inline e exportação CSV (que já existe no backend).</li>
+        </ul>
+      </div></div>
+      <div class="row"><div class="k">Landing</div><div class="v">
+        <ul class="tight">
+          <li><b>Hero:</b> faz a pergunta do produto e mostra a tela real do Início.</li>
+          <li><b>Seção "efeito coxinha":</b> uma calculadora que mostra R$ 8 por dia virando R$ 2.920 por ano. É a ideia do nome do produto.</li>
+          <li><b>Segurança:</b> afirmações concretas (dados por usuário, senha com hash, exportação e exclusão a qualquer momento).</li>
+          <li><b>Copy:</b> sai a defensiva, sem falar do que ainda não existe.</li>
+        </ul>
+      </div></div>
+      <div class="row"><div class="k">Coxito</div><div class="v">
+        <ul class="tight">
+          <li><b>Aparece só em</b> estados vazios, no onboarding e em uma ilustração da landing. Nunca no painel com dados.</li>
+        </ul>
+      </div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Plano em fases</h2>
+      <p>Cada fase pode ir para produção sozinha. A ordem coloca primeiro o que dá mais resultado com menos risco.</p>
+    </div>
+    <div class="phases">
+      <div class="phase"><span class="n">F0</span><div><h3>Acentos e revisão de texto</h3><p>Corrigir o português em todas as telas e remover a copy defensiva. Sem mudança visual.</p></div><span class="eff">~1 dia</span></div>
+      <div class="phase"><span class="n">F1</span><div><h3>Tokens e superfícies</h3><p>Nova paleta neutra, acento restrito, bordas no lugar de sombras e modo escuro neutro. Quase tudo em <code>index.css</code> e <code>tailwind.config.js</code>, mais a remoção de gradientes e sombras nas páginas.</p></div><span class="eff">1–2 dias</span></div>
+      <div class="phase"><span class="n">F2</span><div><h3>Navegação e tela de Lançamentos</h3><p>Reorganizar o menu em 5 itens, criar <code>/lancamentos</code> e mover Calendário para dentro de Relatórios. As rotas antigas redirecionam.</p></div><span class="eff">2–3 dias</span></div>
+      <div class="phase"><span class="n">F3</span><div><h3>Novo Início</h3><p>Número "pode gastar por dia", barra de composição do mês, 3 indicadores e feed curto. Começa calculado no frontend; depois pode virar um endpoint de resumo, com teste.</p></div><span class="eff">~2 dias</span></div>
+      <div class="phase"><span class="n">F4</span><div><h3>Registro rápido</h3><p>Endpoint que expõe o parser para o app web, campo único e chips de gastos frequentes.</p></div><span class="eff">~2 dias</span></div>
+      <div class="phase"><span class="n">F5</span><div><h3>Landing nova</h3><p>Hero com o produto real, calculadora do efeito coxinha, recursos em bento com mini-UIs reais, segurança concreta e FAQ. Atualizar a imagem Open Graph no fim.</p></div><span class="eff">2–3 dias</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Decisões que são suas</h2>
+    </div>
+    <div class="decide grid-2">
+      <div class="card"><h3>O número principal</h3><p>"Pode gastar por dia" (olha para frente, como na Visor) ou "pequenos gastos do mês" (olha para trás, mais fiel ao nome). A proposta usa o primeiro em destaque e o segundo logo abaixo.</p></div>
+      <div class="card"><h3>Cor da marca</h3><p>Manter o laranja da coxinha como único acento, sobre fundo neutro, ou manter a paleta quente atual só com menos tinta.</p></div>
+      <div class="card"><h3>Navegação</h3><p>Topa reduzir para 5 itens, com Categorias e Recorrências virando subpáginas?</p></div>
+      <div class="card"><h3>Por onde começar</h3><p>F0 + F1 juntas mudam a percepção rapidamente. F3 é a que mais muda o produto.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    Fontes: visorfinance.app (landing pública, acessada em 26 nov. 2026) e o Salgadin local na branch <span class="mono">feat/web-ui-polish</span>, navegado com a conta de teste de <span class="mono">npm run seed:dev</span>.
+  </footer>
+</div>
