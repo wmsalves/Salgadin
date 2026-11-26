@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "seed:dev": "node ./scripts/seed-dev-user.mjs",
     "generate:og": "node ./scripts/generate-og-image.mjs ./public/og-image.svg ./public/og-image.png"
   },
   "dependencies": {
