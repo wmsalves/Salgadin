@@ -49,15 +49,15 @@ export default function NotificationsPage() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Notificacoes</h1>
+          <h1 className="text-2xl font-medium text-foreground">Notificações</h1>
           <p className="text-sm text-foreground-muted">
-            Acompanhe alertas automaticos e marque como lido.
+            Acompanhe alertas automáticos e marque como lido.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => fetchItems(filter)}
-            className="flex items-center gap-2 rounded-xl border border-border bg-surface/70 px-4 py-2 text-sm font-semibold text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
+            className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
           >
             <RefreshCw size={16} />
             Atualizar
@@ -65,7 +65,7 @@ export default function NotificationsPage() {
           <button
             onClick={handleMarkAll}
             disabled={isUpdating || items.length === 0}
-            className="flex items-center gap-2 rounded-xl border border-border bg-surface/70 px-4 py-2 text-sm font-semibold text-foreground hover:border-surface-3 hover:bg-surface-2 transition disabled:opacity-60"
+            className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground hover:border-surface-3 hover:bg-surface-2 transition disabled:opacity-60"
           >
             <CheckCircle2 size={16} />
             {isUpdating ? "Atualizando..." : "Marcar tudo como lido"}
@@ -73,13 +73,13 @@ export default function NotificationsPage() {
         </div>
       </header>
 
-      <section className="rounded-2xl border border-border bg-surface/70 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
+      <section className="rounded-2xl border border-border bg-surface p-5">
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setFilter("all")}
-            className={`rounded-full px-4 py-2 text-xs font-semibold ${
+            className={`rounded-full px-4 py-2 text-xs font-medium ${
               filter === "all"
-                ? "bg-primary text-white"
+                ? "bg-primary text-[var(--color-on-primary)]"
                 : "border border-border text-foreground-muted"
             }`}
           >
@@ -87,9 +87,9 @@ export default function NotificationsPage() {
           </button>
           <button
             onClick={() => setFilter("unread")}
-            className={`rounded-full px-4 py-2 text-xs font-semibold ${
+            className={`rounded-full px-4 py-2 text-xs font-medium ${
               filter === "unread"
-                ? "bg-primary text-white"
+                ? "bg-primary text-[var(--color-on-primary)]"
                 : "border border-border text-foreground-muted"
             }`}
           >
@@ -98,7 +98,7 @@ export default function NotificationsPage() {
         </div>
       </section>
 
-      <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)]">
+      <section className="rounded-2xl border border-border bg-surface p-6">
         {isLoading ? (
           <div className="text-sm text-foreground-subtle">Carregando...</div>
         ) : items.length === 0 ? (
@@ -106,7 +106,7 @@ export default function NotificationsPage() {
             <div className="h-12 w-12 rounded-full border border-border bg-surface-2 grid place-items-center">
               <Bell size={20} />
             </div>
-            Nenhuma notificacao encontrada.
+            Nenhuma notificação encontrada.
           </div>
         ) : (
           <div className="space-y-3">
@@ -117,11 +117,11 @@ export default function NotificationsPage() {
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-foreground">
+                    <span className="text-sm font-medium text-foreground">
                       {item.title}
                     </span>
                     {!item.isRead && (
-                      <span className="text-[10px] uppercase tracking-wide rounded-full bg-primary/20 text-primary px-2 py-0.5">
+                      <span className="text-xs rounded-full bg-primary/20 text-primary px-2 py-0.5">
                         Novo
                       </span>
                     )}
@@ -129,14 +129,14 @@ export default function NotificationsPage() {
                   <p className="text-xs text-foreground-subtle mt-1">
                     {item.message}
                   </p>
-                  <p className="text-[11px] text-foreground-muted mt-2">
+                  <p className="text-xs text-foreground-muted mt-2">
                     {new Date(item.createdAt).toLocaleString("pt-BR")}
                   </p>
                 </div>
                 {!item.isRead && (
                   <button
                     onClick={() => handleMarkOne(item.id)}
-                    className="rounded-full border border-border bg-surface px-4 py-2 text-xs font-semibold text-foreground-muted hover:text-foreground hover:bg-surface-3 transition"
+                    className="rounded-full border border-border bg-surface px-4 py-2 text-xs font-medium text-foreground-muted hover:text-foreground hover:bg-surface-3 transition"
                   >
                     Marcar como lido
                   </button>

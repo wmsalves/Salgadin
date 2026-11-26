@@ -20,29 +20,18 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
-  HandCoins,
-  Laptop,
-  Pencil,
   PieChart as PieChartIcon,
-  PiggyBank,
-  Pizza,
   Plus,
   Receipt,
   RefreshCw,
   Repeat,
-  ShoppingCart,
-  Sparkles,
   Target,
-  Trash2,
   TrendingDown,
-  TrendingUp,
-  Bus,
   Wallet,
 } from "lucide-react";
 import clsx from "clsx";
 import {
   deleteExpense,
-  getDailySummary,
   getExpenses,
 } from "../services/expenseService";
 import { deleteIncome, getIncomes } from "../services/incomeService";
@@ -52,7 +41,6 @@ import {
   listRecurringSchedules,
 } from "../services/recurringScheduleService";
 import type {
-  DailySummary,
   Expense,
   Goal,
   GoalAlert,
@@ -63,20 +51,15 @@ import { AddExpenseModal } from "../components/AddExpenseModal";
 import { AddIncomeModal } from "../components/AddIncomeModal";
 import { ConfirmActionModal } from "../components/ConfirmActionModal";
 import { EmptyState } from "../components/EmptyState";
-import { formatApiDate, formatDisplayDate } from "../lib/dates";
+import { MonthOverview } from "../components/dashboard/MonthOverview";
+import { QuickEntry } from "../components/dashboard/QuickEntry";
+import { RecentActivity } from "../components/dashboard/RecentActivity";
+import { buildMonthSummary } from "../lib/monthSummary";
+import { formatApiDate } from "../lib/dates";
 import {
   getDueRecurringSchedules,
   getUpcomingRecurringSchedules,
 } from "../lib/recurringSchedules";
-
-const categoryIcons: Record<string, React.ComponentType<{ size?: number }>> = {
-  Alimentacao: Pizza,
-  "AlimentaÃ§Ã£o": Pizza,
-  Transporte: Bus,
-  Compras: ShoppingCart,
-  Educacao: Laptop,
-  "EducaÃ§Ã£o": Laptop,
-};
 
 const CHART_COLORS = [
   "var(--color-primary)",
@@ -161,7 +144,7 @@ const formatRecurringDateStatus = (value: string) => {
   }
 
   if (diffDays === 1) {
-    return "Vence amanha";
+    return "Vence amanhã";
   }
 
   if (diffDays <= 7) {
@@ -169,12 +152,6 @@ const formatRecurringDateStatus = (value: string) => {
   }
 
   return `Dia ${occurrenceDate.getUTCDate().toString().padStart(2, "0")}`;
-};
-
-type DashboardInsight = {
-  title: string;
-  detail: string;
-  tone: "positive" | "neutral" | "attention";
 };
 
 type CategoryExpenseSlice = {
@@ -225,11 +202,11 @@ function CategoryChartTooltip({
   }
 
   return (
-    <div className="min-w-[148px] rounded-2xl border border-border/80 bg-[rgba(24,18,15,0.96)] px-3.5 py-3 shadow-[0_16px_36px_rgba(12,9,7,0.28)] backdrop-blur-sm">
+    <div className="min-w-[148px] rounded-2xl border border-border bg-[rgba(24,18,15,0.96)] px-3.5 py-3 backdrop-blur-sm">
       <p className="text-xs font-medium text-foreground-muted">
         {category.name}
       </p>
-      <p className="mt-1 font-mono text-sm font-semibold text-foreground tabular-nums">
+      <p className="mt-1 text-sm font-medium text-foreground tabular-nums">
         {formatCurrency(category.value)}
       </p>
     </div>
@@ -248,7 +225,7 @@ function CashflowTooltip({
   }
 
   return (
-    <div className="min-w-[188px] rounded-2xl border border-border/80 bg-[rgba(24,18,15,0.96)] px-3.5 py-3 shadow-[0_16px_36px_rgba(12,9,7,0.28)] backdrop-blur-sm">
+    <div className="min-w-[188px] rounded-2xl border border-border bg-[rgba(24,18,15,0.96)] px-3.5 py-3 backdrop-blur-sm">
       <p className="text-xs font-medium text-foreground-muted">
         {point.tooltipLabel}
       </p>
@@ -256,21 +233,21 @@ function CashflowTooltip({
         <div className="mt-2 space-y-1.5">
           <div className="flex items-center justify-between gap-4 text-sm">
             <span className="text-foreground-muted">Entrada do dia</span>
-            <span className="font-mono font-semibold text-success tabular-nums">
+            <span className="font-medium text-success tabular-nums">
               {formatCurrency(point.dailyIncome)}
             </span>
           </div>
           <div className="flex items-center justify-between gap-4 text-sm">
-            <span className="text-foreground-muted">Saida do dia</span>
-            <span className="font-mono font-semibold text-warning tabular-nums">
+            <span className="text-foreground-muted">Saída do dia</span>
+            <span className="font-medium text-warning tabular-nums">
               {formatCurrency(point.dailyExpense)}
             </span>
           </div>
-          <div className="flex items-center justify-between gap-4 border-t border-border/70 pt-1.5 text-sm">
+          <div className="flex items-center justify-between gap-4 border-t border-border pt-1.5 text-sm">
             <span className="text-foreground-muted">Saldo acumulado</span>
             <span
               className={clsx(
-                "font-mono font-semibold tabular-nums",
+                "font-medium tabular-nums",
                 point.cashBalance >= 0 ? "text-foreground" : "text-warning",
               )}
             >
@@ -282,7 +259,7 @@ function CashflowTooltip({
         <div className="mt-2">
           <div className="flex items-center justify-between gap-4 text-sm">
             <span className="text-foreground-muted">Gastos do dia</span>
-            <span className="font-mono font-semibold text-warning tabular-nums">
+            <span className="font-medium text-warning tabular-nums">
               {formatCurrency(point.dailyExpense)}
             </span>
           </div>
@@ -295,7 +272,6 @@ function CashflowTooltip({
 export default function DashboardPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [incomes, setIncomes] = useState<Income[]>([]);
-  const [summary, setSummary] = useState<DailySummary[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [alerts, setAlerts] = useState<GoalAlert[]>([]);
   const [recurringSchedules, setRecurringSchedules] = useState<
@@ -331,14 +307,12 @@ export default function DashboardPage() {
 
       const [
         expensesData,
-        summaryData,
         incomesData,
         goalsData,
         alertsData,
         recurringData,
       ] = await Promise.all([
           getExpenses(startDate, endDate),
-          getDailySummary(startDate, endDate),
           getIncomes(startDate, endDate),
           getGoals(),
           getGoalAlerts(year, month + 1),
@@ -346,7 +320,6 @@ export default function DashboardPage() {
         ]);
 
       setExpenses(expensesData);
-      setSummary(summaryData);
       setIncomes(incomesData);
       setGoals(goalsData);
       setAlerts(alertsData);
@@ -354,7 +327,7 @@ export default function DashboardPage() {
     } catch (err) {
       console.error("Falha ao buscar dados do dashboard:", err);
       setError(
-        "Nao foi possivel carregar seus dados financeiros. Tente novamente mais tarde.",
+        "Não foi possível carregar seus dados financeiros. Tente novamente mais tarde.",
       );
     }
   }, [currentDate]);
@@ -374,7 +347,7 @@ export default function DashboardPage() {
       setExpenseToDelete(null);
     } catch (err) {
       console.error("Falha ao remover despesa:", err);
-      setDeleteError("Nao foi possivel excluir a despesa.");
+      setDeleteError("Não foi possível excluir a despesa.");
     } finally {
       setIsDeletingExpense(false);
     }
@@ -390,7 +363,7 @@ export default function DashboardPage() {
       setIncomeToDelete(null);
     } catch (err) {
       console.error("Falha ao remover receita:", err);
-      setDeleteError("Nao foi possivel excluir a receita.");
+      setDeleteError("Não foi possível excluir a receita.");
     } finally {
       setIsDeletingIncome(false);
     }
@@ -403,9 +376,9 @@ export default function DashboardPage() {
       await generateDueRecurringSchedules();
       await fetchData();
     } catch (err) {
-      console.error("Falha ao registrar recorrencias vencidas:", err);
+      console.error("Falha ao registrar recorrências vencidas:", err);
       setRecurringActionError(
-        "Nao foi possivel registrar as recorrencias vencidas agora.",
+        "Não foi possível registrar as recorrências vencidas agora.",
       );
     } finally {
       setIsGeneratingRecurring(false);
@@ -431,10 +404,6 @@ export default function DashboardPage() {
   const hasFinancialData = expenses.length > 0 || incomes.length > 0;
   const shouldShowGuidedStart =
     !hasFinancialData && goals.length === 0 && alerts.length === 0;
-  const activeGoalsCount = useMemo(
-    () => goals.filter((goal) => goal.isActive).length,
-    [goals],
-  );
   const dueRecurringSchedules = useMemo(
     () => getDueRecurringSchedules(recurringSchedules),
     [recurringSchedules],
@@ -442,6 +411,22 @@ export default function DashboardPage() {
   const upcomingRecurringSchedules = useMemo(
     () => getUpcomingRecurringSchedules(recurringSchedules, 3),
     [recurringSchedules],
+  );
+
+  const monthSummary = useMemo(
+    () =>
+      buildMonthSummary({
+        month: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
+        expenses,
+        incomes,
+        recurringSchedules,
+      }),
+    [currentDate, expenses, incomes, recurringSchedules],
+  );
+
+  const currentMonthName = useMemo(
+    () => currentDate.toLocaleDateString("pt-BR", { month: "long" }),
+    [currentDate],
   );
 
   const currentMonthLabel = useMemo(
@@ -525,129 +510,6 @@ export default function DashboardPage() {
     0,
   );
 
-  const summaryCards = useMemo(
-    () => [
-      {
-        title: "Saldo Atual",
-        helper: "Disponivel hoje",
-        value: balance.toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        }),
-        trend: balance >= 0 ? "Positivo" : "Atencao",
-        trendIcon:
-          balance >= 0 ? (
-            <ArrowUpRight size={14} />
-          ) : (
-            <ArrowDownRight size={14} />
-          ),
-        icon: Wallet,
-        tone: balance >= 0 ? "success" : "danger",
-      },
-      {
-        title: "Metas Ativas",
-        helper: "Economia em progresso",
-        value: `${activeGoalsCount} ${activeGoalsCount === 1 ? "meta" : "metas"}`,
-        trend: activeGoalsCount > 0 ? "Ativas agora" : "Nenhuma ativa",
-        trendIcon: <Target size={14} />,
-        icon: Target,
-        tone: "info",
-      },
-      {
-        title: "Gastos do Mes",
-        helper: "Despesas totais",
-        value: totalExpenses.toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        }),
-        trend: "Monitorando",
-        trendIcon: <TrendingDown size={14} />,
-        icon: TrendingDown,
-        tone: "danger",
-      },
-    ],
-    [activeGoalsCount, balance, totalExpenses],
-  );
-
-  const financialInsights = useMemo<DashboardInsight[]>(() => {
-    if (expenses.length === 0 || totalExpenses <= 0) {
-      return [];
-    }
-
-    const insights: DashboardInsight[] = [];
-
-    const topCategory = expensesByCategory[0];
-    if (topCategory) {
-      const share = Math.round((topCategory.value / totalExpenses) * 100);
-      insights.push({
-        title: `${topCategory.name} lidera seus gastos`,
-        detail:
-          share >= 1
-            ? `${topCategory.name} representa ${share}% das despesas de ${currentMonthLabel}.`
-            : `${topCategory.name} foi a categoria com maior peso neste periodo.`,
-        tone: share >= 45 ? "attention" : "neutral",
-      });
-    }
-
-    const sortedSummary = summary
-      .slice()
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    const currentWeek = sortedSummary.slice(-7);
-    const previousWeek = sortedSummary.slice(-14, -7);
-    const currentWeekTotal = currentWeek.reduce((acc, day) => acc + day.total, 0);
-    const previousWeekTotal = previousWeek.reduce(
-      (acc, day) => acc + day.total,
-      0,
-    );
-
-    if (currentWeek.length >= 2 && previousWeek.length > 0) {
-      const delta = currentWeekTotal - previousWeekTotal;
-
-      if (Math.abs(delta) < 0.01) {
-        insights.push({
-          title: "Seu ritmo ficou estavel",
-          detail:
-            "O volume gasto nesta semana ficou muito proximo da semana anterior.",
-          tone: "neutral",
-        });
-      } else if (delta > 0) {
-        insights.push({
-          title: "Voce gastou mais do que na semana anterior",
-          detail: `${formatCurrency(delta)} acima da semana passada dentro do periodo atual.`,
-          tone: "attention",
-        });
-      } else {
-        insights.push({
-          title: "Voce reduziu o ritmo da semana",
-          detail: `${formatCurrency(Math.abs(delta))} abaixo da semana anterior dentro do periodo atual.`,
-          tone: "positive",
-        });
-      }
-    }
-
-    const latestExpense = expenses
-      .slice()
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-    const highestExpense = expenses
-      .slice()
-      .sort((a, b) => Math.abs(b.amount) - Math.abs(a.amount))[0];
-
-    if (highestExpense) {
-      const insightTitle =
-        latestExpense && latestExpense.id === highestExpense.id
-          ? "Seu maior lancamento recente"
-          : "Seu maior lancamento do periodo";
-
-      insights.push({
-        title: insightTitle,
-        detail: `${formatCurrency(Math.abs(highestExpense.amount))} em ${highestExpense.category || "Outros"}${highestExpense.description ? `, registrado como "${highestExpense.description}".` : "."}`,
-        tone: "neutral",
-      });
-    }
-
-    return insights.slice(0, 3);
-  }, [currentMonthLabel, expenses, expensesByCategory, summary, totalExpenses]);
-
   if (isLoading) {
     return (
       <div className="space-y-6 animate-pulse">
@@ -663,7 +525,7 @@ export default function DashboardPage() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-[140px] rounded-3xl border border-border/40 bg-surface/50 p-5 flex flex-col justify-between"
+              className="h-[140px] rounded-2xl border border-border bg-surface p-5 flex flex-col justify-between"
             >
               <div className="flex justify-between">
                 <div>
@@ -704,7 +566,7 @@ export default function DashboardPage() {
                 setIsAddIncomeModalOpen(true);
                 setIsFabOpen(false);
               }}
-              className="flex items-center gap-2 rounded-full bg-success px-5 py-3 text-sm font-semibold text-white shadow-lg"
+              className="flex items-center gap-2 rounded-full bg-success px-5 py-3 text-sm font-medium text-[var(--color-on-primary)]"
             >
               Nova Receita <ArrowUpRight size={18} />
             </button>
@@ -714,7 +576,7 @@ export default function DashboardPage() {
                 setIsAddExpenseModalOpen(true);
                 setIsFabOpen(false);
               }}
-              className="flex items-center gap-2 rounded-full bg-danger-strong px-5 py-3 text-sm font-semibold text-white shadow-lg"
+              className="flex items-center gap-2 rounded-full bg-danger-strong px-5 py-3 text-sm font-medium text-[var(--color-on-primary)]"
             >
               Nova Despesa <ArrowDownRight size={18} />
             </button>
@@ -723,10 +585,10 @@ export default function DashboardPage() {
         <button
           onClick={() => setIsFabOpen(!isFabOpen)}
           className={clsx(
-            "flex h-14 w-14 items-center justify-center rounded-full shadow-[0_8px_30px_rgb(var(--shadow-color)/0.3)] transition-transform",
+            "flex h-14 w-14 items-center justify-center rounded-full transition-transform",
             isFabOpen
               ? "rotate-45 bg-surface-3 text-foreground"
-              : "bg-primary text-white",
+              : "bg-primary text-[var(--color-on-primary)]",
           )}
         >
           <Plus size={26} />
@@ -734,15 +596,14 @@ export default function DashboardPage() {
       </div>
 
       <header className="flex flex-col gap-3">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="hidden sm:block">
-            <p className="text-sm text-foreground-muted">Bem-vindo de volta</p>
-            <h1 className="text-3xl font-semibold text-foreground">
+            <h1 className="text-2xl font-medium text-foreground">
               Seu painel financeiro
             </h1>
           </div>
 
-          <div className="flex w-full items-center justify-center gap-2 rounded-full border border-border bg-surface-2 px-4 py-2 shadow-sm sm:w-auto">
+          <div className="flex w-full items-center justify-center gap-2 rounded-full border border-border bg-surface px-4 py-2 sm:w-auto sm:self-start lg:self-auto">
             <button
               onClick={handlePrevMonth}
               className="rounded-full p-1 text-foreground-muted transition hover:bg-surface-3 hover:text-foreground"
@@ -751,7 +612,7 @@ export default function DashboardPage() {
             </button>
             <div className="flex min-w-[170px] items-center justify-center gap-2 text-center">
               <Calendar size={16} className="text-primary" />
-              <span className="text-sm font-semibold capitalize text-foreground">
+              <span className="text-sm font-medium sentence-case text-foreground">
                 {currentMonthLabel}
               </span>
             </div>
@@ -763,13 +624,13 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          <div className="hidden items-center gap-3 sm:flex">
+          <div className="hidden flex-wrap items-center gap-3 sm:flex">
             <button
               onClick={() => {
                 setIncomeToEdit(null);
                 setIsAddIncomeModalOpen(true);
               }}
-              className="inline-flex items-center gap-2 rounded-full border border-success/40 bg-success/10 px-4 py-2 text-sm font-semibold text-success transition soft-hover-sm hover:bg-success hover:text-white"
+              className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-success/40 bg-success/10 px-4 py-2 text-ui font-medium text-success transition-colors hover:bg-success hover:text-[var(--color-on-primary)]"
             >
               <Plus size={16} />
               Nova receita
@@ -779,7 +640,7 @@ export default function DashboardPage() {
                 setExpenseToEdit(null);
                 setIsAddExpenseModalOpen(true);
               }}
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/80 px-4 py-2 text-sm font-semibold text-foreground transition soft-hover-sm hover:border-surface-3 hover:bg-surface-2"
+              className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-border bg-surface px-4 py-2 text-ui font-medium text-foreground transition-colors hover:border-surface-3 hover:bg-surface-2"
             >
               <Plus size={16} />
               Nova despesa
@@ -789,19 +650,16 @@ export default function DashboardPage() {
       </header>
 
       {shouldShowGuidedStart && (
-        <section className="rounded-3xl border border-primary/24 bg-gradient-to-br from-primary/12 via-surface/92 to-surface-2/82 p-5 shadow-[0_18px_42px_rgba(60,42,32,0.12)] sm:p-7">
+        <section className="rounded-2xl border border-border bg-surface p-5 sm:p-7">
           <div className="grid gap-6 lg:grid-cols-[1.05fr_1.3fr] lg:items-center">
             <div>
-              <span className="inline-flex items-center rounded-full border border-primary/24 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                Primeiros passos
-              </span>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-foreground">
-                Seu painel ainda esta vazio
+              <h2 className="text-xl font-medium text-foreground">
+                Seu painel ainda está vazio
               </h2>
               <p className="mt-2 max-w-xl text-sm leading-6 text-foreground-muted">
-                Comece com um lancamento real. O Salgadin fica mais util quando
-                voce registra renda, pequenos gastos e uma meta simples para o
-                mes.
+                Comece com um lançamento real. O Salgadin fica mais útil quando
+                você registra renda, pequenos gastos e uma meta simples para o
+                mês.
               </p>
             </div>
 
@@ -817,7 +675,7 @@ export default function DashboardPage() {
                 {
                   title: "Adicione um pequeno gasto",
                   description:
-                    "Cafes, lanches e transporte comecam a mostrar padroes.",
+                    "Cafés, lanches e transporte começam a mostrar padrões.",
                   icon: Receipt,
                   action: () => setIsAddExpenseModalOpen(true),
                   label: "Adicionar gasto",
@@ -826,13 +684,13 @@ export default function DashboardPage() {
                   title: "Organize categorias",
                   description: "Deixe os gastos claros por tipo de consumo.",
                   icon: PieChartIcon,
-                  href: "/categorias",
+                  href: "/lancamentos/categorias",
                   label: "Criar categorias",
                 },
                 {
                   title: "Crie uma meta",
                   description:
-                    "Controle os pequenos gastos antes que eles crescam.",
+                    "Controle os pequenos gastos antes que eles cresçam.",
                   icon: Target,
                   href: "/metas",
                   label: "Criar meta",
@@ -843,20 +701,20 @@ export default function DashboardPage() {
                   <Link
                     key={item.title}
                     to={item.href}
-                    className="rounded-2xl border border-border/70 bg-surface/78 p-4 transition hover:border-primary/30 hover:bg-surface-2"
+                    className="rounded-2xl border border-border bg-surface p-4 transition hover:border-primary/30 hover:bg-surface-2"
                   >
                     <div className="flex items-start gap-3">
                       <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
                         <Icon size={18} />
                       </div>
                       <div>
-                        <h3 className="text-sm font-semibold text-foreground">
+                        <h3 className="text-sm font-medium text-foreground">
                           {item.title}
                         </h3>
                         <p className="mt-1 text-xs leading-5 text-foreground-muted">
                           {item.description}
                         </p>
-                        <span className="mt-3 inline-flex text-xs font-semibold text-primary">
+                        <span className="mt-3 inline-flex text-xs font-medium text-primary">
                           {item.label}
                         </span>
                       </div>
@@ -867,20 +725,20 @@ export default function DashboardPage() {
                     key={item.title}
                     type="button"
                     onClick={item.action}
-                    className="rounded-2xl border border-border/70 bg-surface/78 p-4 text-left transition hover:border-primary/30 hover:bg-surface-2"
+                    className="rounded-2xl border border-border bg-surface p-4 text-left transition hover:border-primary/30 hover:bg-surface-2"
                   >
                     <div className="flex items-start gap-3">
                       <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
                         <Icon size={18} />
                       </div>
                       <div>
-                        <h3 className="text-sm font-semibold text-foreground">
+                        <h3 className="text-sm font-medium text-foreground">
                           {item.title}
                         </h3>
                         <p className="mt-1 text-xs leading-5 text-foreground-muted">
                           {item.description}
                         </p>
-                        <span className="mt-3 inline-flex text-xs font-semibold text-primary">
+                        <span className="mt-3 inline-flex text-xs font-medium text-primary">
                           {item.label}
                         </span>
                       </div>
@@ -894,22 +752,22 @@ export default function DashboardPage() {
       )}
 
       {dueRecurringSchedules.length > 0 && (
-        <section className="flex flex-col gap-3 rounded-2xl border border-warning/24 bg-warning/10 px-4 py-3 text-sm shadow-[0_10px_24px_rgba(60,42,32,0.08)] sm:flex-row sm:items-center sm:justify-between">
+        <section className="flex flex-col gap-3 rounded-2xl border border-warning/24 bg-warning/10 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="font-semibold text-foreground">
-              Voce possui {dueRecurringSchedules.length} recorrencia
+            <p className="font-medium text-foreground">
+              Você possui {dueRecurringSchedules.length} recorrência
               {dueRecurringSchedules.length === 1 ? "" : "s"} pendente
               {dueRecurringSchedules.length === 1 ? "" : "s"}.
             </p>
             <p className="mt-0.5 text-xs text-foreground-muted">
-              Registre para transformar as vencidas em lancamentos reais.
+              Registre para transformar as vencidas em lançamentos reais.
             </p>
           </div>
           <button
             type="button"
             onClick={handleGenerateDueRecurring}
             disabled={isGeneratingRecurring}
-            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-warning/28 bg-surface px-4 py-2 text-xs font-semibold text-warning transition hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-warning/28 bg-surface px-4 py-2 text-xs font-medium text-warning transition hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <RefreshCw
               size={14}
@@ -926,163 +784,37 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        {summaryCards.map((card, index) => {
-          const Icon = card.icon;
-          const toneClass =
-            card.tone === "success"
-              ? "text-success"
-              : card.tone === "danger"
-                ? "text-danger"
-                : "text-primary";
+      <QuickEntry onChange={fetchData} />
 
-          return (
-            <div
-              key={card.title}
-              style={{ animationDelay: `${index * 100}ms` }}
-              className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-sm text-foreground-subtle">
-                    {card.title}
-                  </div>
-                  <div className="text-[11px] text-foreground-muted">
-                    {card.helper}
-                  </div>
-                </div>
-                <div
-                  className={clsx(
-                    "grid h-10 w-10 place-items-center rounded-full bg-surface-2 shadow-sm",
-                    toneClass,
-                  )}
-                >
-                  <Icon size={18} />
-                </div>
-              </div>
-              <div className="mt-4 font-mono text-2xl font-semibold tracking-tight text-foreground tabular-nums">
-                {card.value}
-              </div>
-              <div
-                className={clsx(
-                  "mt-2 flex items-center gap-1 text-xs font-medium",
-                  toneClass,
-                )}
-              >
-                {card.trendIcon} {card.trend}
-              </div>
-            </div>
-          );
-        })}
-      </section>
-
-      <section className="rounded-3xl border border-border/70 bg-surface/92 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] sm:p-6">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground">
-              <Sparkles size={18} className="text-primary" />
-              Insights financeiros
-            </h2>
-            <p className="mt-1 text-sm leading-6 text-foreground-muted">
-              Leituras simples do periodo atual para apoiar suas proximas decisoes.
-            </p>
-          </div>
-          <span className="inline-flex w-fit rounded-full border border-border bg-surface-2 px-3 py-1 text-xs font-semibold text-foreground-subtle">
-            Sem IA externa
-          </span>
-        </div>
-
-        {financialInsights.length > 0 ? (
-          <div className="mt-5 grid gap-3 md:grid-cols-3">
-            {financialInsights.map((insight) => {
-              const toneClasses =
-                insight.tone === "positive"
-                  ? {
-                      border: "border-success/20",
-                      bg: "bg-success/10",
-                      text: "text-success",
-                      icon: TrendingUp,
-                    }
-                  : insight.tone === "attention"
-                    ? {
-                        border: "border-warning/25",
-                        bg: "bg-warning/10",
-                        text: "text-warning",
-                        icon: TrendingDown,
-                      }
-                    : {
-                        border: "border-primary/18",
-                        bg: "bg-primary/10",
-                        text: "text-primary",
-                        icon: Sparkles,
-                      };
-              const InsightIcon = toneClasses.icon;
-
-              return (
-                <article
-                  key={`${insight.title}-${insight.detail}`}
-                  className={clsx(
-                    "rounded-2xl border bg-surface/82 p-4",
-                    toneClasses.border,
-                  )}
-                >
-                  <div
-                    className={clsx(
-                      "grid h-10 w-10 place-items-center rounded-xl",
-                      toneClasses.bg,
-                      toneClasses.text,
-                    )}
-                  >
-                    <InsightIcon size={18} />
-                  </div>
-                  <h3 className="mt-4 text-sm font-semibold text-foreground">
-                    {insight.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-foreground-muted">
-                    {insight.detail}
-                  </p>
-                </article>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="mt-5">
-            <EmptyState
-              icon={Sparkles}
-              title="Voce ainda nao tem dados suficientes para gerar insights"
-              description="Registre algumas despesas e receitas para o dashboard identificar padroes simples do seu periodo."
-              primaryAction={{
-                label: "Adicionar despesa",
-                onClick: () => setIsAddExpenseModalOpen(true),
-              }}
-              secondaryAction={{
-                label: "Adicionar renda",
-                onClick: () => setIsAddIncomeModalOpen(true),
-              }}
-              compact
-            />
-          </div>
-        )}
-      </section>
+      <MonthOverview
+        summary={monthSummary}
+        monthName={currentMonthName}
+        goals={goals}
+        alerts={alerts}
+        onAddIncome={() => {
+          setIncomeToEdit(null);
+          setIsAddIncomeModalOpen(true);
+        }}
+      />
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="flex min-h-[540px] flex-col rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover sm:min-h-[620px] xl:col-span-2">
+        <div className="flex min-h-[540px] flex-col rounded-2xl border border-border bg-surface p-6 soft-hover sm:min-h-[620px] xl:col-span-2">
           <div className="mb-6 flex shrink-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="space-y-3">
               <div>
-              <h2 className="text-lg font-semibold text-foreground">
-                Evolucao financeira mensal
+              <h2 className="text-base font-medium text-foreground">
+                Evolução financeira mensal
               </h2>
               <p className="text-xs text-foreground-subtle">
                 {cashflowViewMode === "balance"
-                  ? "Veja como entradas e saidas alteram seu saldo ao longo do mes."
+                  ? "Veja como entradas e saídas alteram seu saldo ao longo do mês."
                   : "Veja em quais dias seus gastos se concentraram."}
               </p>
               </div>
               <div
                 className="inline-flex w-full flex-wrap items-center gap-2 rounded-2xl border border-border bg-surface-2/90 p-1 sm:w-auto"
                 role="tablist"
-                aria-label="Modo de visualizacao do grafico mensal"
+                aria-label="Modo de visualização do gráfico mensal"
               >
                 {cashflowViewOptions.map((option) => {
                   const isActive = cashflowViewMode === option.value;
@@ -1095,9 +827,9 @@ export default function DashboardPage() {
                       aria-selected={isActive}
                       onClick={() => setCashflowViewMode(option.value)}
                       className={clsx(
-                        "rounded-xl px-3 py-2 text-xs font-semibold transition sm:px-3.5",
+                        "rounded-xl px-3 py-2 text-xs font-medium transition sm:px-3.5",
                         isActive
-                          ? "bg-primary text-white shadow-sm"
+                          ? "bg-primary text-[var(--color-on-primary)]"
                           : "text-foreground-muted hover:bg-surface-3 hover:text-foreground",
                       )}
                     >
@@ -1107,7 +839,7 @@ export default function DashboardPage() {
                 })}
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-foreground-subtle tabular-nums sm:justify-end">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-foreground-subtle tabular-nums sm:justify-end">
               <span className="rounded-full bg-success/10 px-3 py-1 font-medium text-success">
                 Entradas:{" "}
                 {totalRevenue.toLocaleString("pt-BR", {
@@ -1275,7 +1007,7 @@ export default function DashboardPage() {
               <EmptyState
                 icon={TrendingDown}
                 title="Sem dados suficientes ainda"
-                description="Registre alguns lancamentos para visualizar seus padroes de gasto ao longo do mes."
+                description="Registre alguns lançamentos para visualizar seus padrões de gasto ao longo do mês."
                 primaryAction={{
                   label: "Adicionar despesa",
                   onClick: () => setIsAddExpenseModalOpen(true),
@@ -1293,20 +1025,20 @@ export default function DashboardPage() {
 
         <div className="space-y-6">
           {upcomingRecurringSchedules.length > 0 && (
-            <div className="rounded-3xl border border-border/70 bg-surface/92 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover">
+            <div className="rounded-2xl border border-border bg-surface p-5 soft-hover">
               <div className="mb-4 flex items-start justify-between gap-3">
                 <div>
-                  <h2 className="flex items-center gap-2 text-lg font-semibold text-foreground">
+                  <h2 className="flex items-center gap-2 text-base font-medium text-foreground">
                     <Repeat size={19} className="text-primary" />
-                    Proximas recorrencias
+                    Próximas recorrências
                   </h2>
                   <p className="mt-1 text-xs text-foreground-subtle">
-                    Entradas e saidas que ja fazem parte da sua rotina.
+                    Entradas e saídas que já fazem parte da sua rotina.
                   </p>
                 </div>
                 <Link
-                  to="/recorrencias"
-                  className="shrink-0 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-semibold text-primary transition hover:border-primary/30 hover:bg-surface-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+                  to="/lancamentos/recorrentes"
+                  className="shrink-0 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-primary transition hover:border-primary/30 hover:bg-surface-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
                 >
                   Ver todas
                 </Link>
@@ -1329,7 +1061,7 @@ export default function DashboardPage() {
                               isExpense ? "bg-warning" : "bg-success",
                             )}
                           />
-                          <p className="truncate text-sm font-semibold text-foreground">
+                          <p className="truncate text-sm font-medium text-foreground">
                             {schedule.description}
                           </p>
                         </div>
@@ -1340,13 +1072,13 @@ export default function DashboardPage() {
                       <div className="shrink-0 text-right">
                         <p
                           className={clsx(
-                            "font-mono text-sm font-semibold tabular-nums",
+                            " text-sm font-medium tabular-nums",
                             isExpense ? "text-warning" : "text-success",
                           )}
                         >
                           {isExpense ? "-" : "+"} {formatCurrency(schedule.amount)}
                         </p>
-                        <span className="text-[11px] text-foreground-subtle">
+                        <span className="text-xs text-foreground-subtle">
                           {isExpense ? "Despesa" : "Receita"}
                         </span>
                       </div>
@@ -1357,10 +1089,10 @@ export default function DashboardPage() {
             </div>
           )}
 
-          <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover">
+          <div className="rounded-2xl border border-border bg-surface p-6 soft-hover">
             <div className="mb-4 flex items-start justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold text-foreground">
+                <h2 className="text-base font-medium text-foreground">
                   Despesas por Categoria
                 </h2>
                 <p className="mt-1 text-xs text-foreground-subtle">
@@ -1370,8 +1102,8 @@ export default function DashboardPage() {
               </div>
               {expensesByCategory.length > 0 && (
                 <Link
-                  to="/categorias"
-                  className="shrink-0 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-semibold text-primary transition hover:border-primary/30 hover:bg-surface-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+                  to="/lancamentos/categorias"
+                  className="shrink-0 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-primary transition hover:border-primary/30 hover:bg-surface-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
                 >
                   {hiddenCategoryCount > 0 ? "Ver todas" : "Ver detalhes"}
                 </Link>
@@ -1412,7 +1144,7 @@ export default function DashboardPage() {
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-3 px-1">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+                    <p className="text-xs font-medium text-foreground-muted">
                       Top categorias
                     </p>
                     {hiddenCategoryCount > 0 && (
@@ -1439,7 +1171,7 @@ export default function DashboardPage() {
                           {item.name}
                         </span>
                       </div>
-                      <span className="font-mono text-sm font-semibold text-foreground tabular-nums">
+                      <span className="text-sm font-medium text-foreground tabular-nums">
                         {item.value.toLocaleString("pt-BR", {
                           style: "currency",
                           currency: "BRL",
@@ -1450,7 +1182,7 @@ export default function DashboardPage() {
 
                   {hiddenCategoryCount > 0 && (
                     <Link
-                      to="/categorias"
+                      to="/lancamentos/categorias"
                       className="inline-flex items-center gap-2 px-1 pt-2 text-sm font-medium text-primary transition hover:text-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
                     >
                       Analisar categorias
@@ -1470,7 +1202,7 @@ export default function DashboardPage() {
                 }}
                 secondaryAction={{
                   label: "Criar categorias",
-                  href: "/categorias",
+                  href: "/lancamentos/categorias",
                 }}
                 className="min-h-[220px]"
                 compact
@@ -1478,8 +1210,8 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover">
-            <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-foreground">
+          <div className="rounded-2xl border border-border bg-surface p-6 soft-hover">
+            <h2 className="mb-4 flex items-center gap-2 text-base font-medium text-foreground">
               <Target size={20} className="text-info" />
               Alertas de Metas
             </h2>
@@ -1503,16 +1235,16 @@ export default function DashboardPage() {
                         </span>
                         <span
                           className={clsx(
-                            "font-mono font-bold tracking-tight",
+                            "font-medium",
                             isCritical ? "text-danger" : "text-primary",
                           )}
                         >
                           {percent.toFixed(0)}%
                         </span>
                       </div>
-                      <div className="mt-1 mb-2 flex justify-between font-mono text-xs text-foreground-subtle tabular-nums">
-                        <span>Gasto: R$ {alert.spent}</span>
-                        <span>Limite: R$ {alert.monthlyLimit}</span>
+                      <div className="mt-1 mb-2 flex justify-between text-xs text-foreground-subtle tabular-nums">
+                        <span>Gasto: {formatCurrency(alert.spent)}</span>
+                        <span>Limite: {formatCurrency(alert.monthlyLimit)}</span>
                       </div>
                       <div className="h-2 rounded-full bg-surface-3">
                         <div
@@ -1536,8 +1268,8 @@ export default function DashboardPage() {
                   }
                   description={
                     goals.length > 0
-                      ? "Tudo sob controle neste periodo. Continue registrando seus gastos para acompanhar os alertas."
-                      : "Crie uma meta para controlar os pequenos gastos antes que eles crescam."
+                      ? "Tudo sob controle neste período. Continue registrando seus gastos para acompanhar os alertas."
+                      : "Crie uma meta para controlar os pequenos gastos antes que eles cresçam."
                   }
                   primaryAction={
                     goals.length > 0
@@ -1552,207 +1284,30 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover flex flex-col">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-foreground">
-              Ultimas receitas
-            </h2>
-          </div>
-          <div className="space-y-3 flex-1 flex flex-col">
-            {incomes.length > 0 ? (
-              incomes.slice(0, 5).map((inc) => {
-                const amountLabel = inc.amount.toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                });
-
-                return (
-                  <div
-                    key={inc.id}
-                    className="group rounded-2xl border border-border bg-surface-2 p-3.5 soft-hover-sm hover:bg-surface-3/30 transition-colors"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-full bg-success/10 text-success shadow-sm">
-                        <Wallet size={18} />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-foreground">
-                          {inc.description}
-                        </p>
-                        <p className="hidden text-xs text-foreground-subtle sm:mt-0.5 sm:block">
-                          {inc.isFixed ? "Renda Fixa" : "Renda Extra"} •{" "}
-                          {formatDisplayDate(inc.date, {
-                            day: "2-digit",
-                            month: "short",
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="mt-3 flex items-center justify-between gap-3 border-t border-border/70 pt-3 sm:hidden">
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-foreground-subtle">
-                        <span className="rounded-full bg-surface px-2 py-0.5">
-                          {inc.isFixed ? "Renda fixa" : "Renda extra"}
-                        </span>
-                        <span>
-                          {formatDisplayDate(inc.date, {
-                            day: "2-digit",
-                            month: "short",
-                          })}
-                        </span>
-                      </div>
-                      <div className="font-mono text-sm font-semibold tracking-tight text-success tabular-nums">
-                        + {amountLabel}
-                      </div>
-                    </div>
-                    <div className="hidden items-center gap-2 sm:flex">
-                      <div className="font-mono text-sm font-semibold tracking-tight text-success tabular-nums">
-                        + {amountLabel}
-                      </div>
-                      <button
-                        onClick={() => {
-                          setIncomeToEdit(inc);
-                          setIsAddIncomeModalOpen(true);
-                        }}
-                        className="rounded-lg p-1.5 text-foreground-muted transition-colors hover:bg-primary/10 hover:text-primary"
-                        title="Editar receita"
-                      >
-                        <Pencil size={15} />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setDeleteError(null);
-                          setIncomeToDelete(inc);
-                        }}
-                        className="rounded-lg p-1.5 text-foreground-muted transition-colors hover:bg-danger/10 hover:text-danger"
-                        title="Excluir receita"
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <EmptyState
-                icon={HandCoins}
-                title="Registre sua primeira renda"
-                description="Com a renda cadastrada, o saldo mensal e a leitura dos gastos ficam mais claros."
-                primaryAction={{
-                  label: "Adicionar renda",
-                  onClick: () => setIsAddIncomeModalOpen(true),
-                }}
-                className="flex-1"
-                compact
-              />
-            )}
-          </div>
-        </div>
-
-        <div className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover flex flex-col">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-foreground">
-              Ultimas despesas
-            </h2>
-          </div>
-          <div className="space-y-3 flex-1 flex flex-col">
-            {expenses.length > 0 ? (
-              expenses.slice(0, 5).map((exp) => {
-                const Icon = categoryIcons[exp.category] || PiggyBank;
-                const amountLabel = Math.abs(exp.amount).toLocaleString(
-                  "pt-BR",
-                  {
-                    style: "currency",
-                    currency: "BRL",
-                  },
-                );
-
-                return (
-                  <div
-                    key={exp.id}
-                    className="group rounded-2xl border border-border bg-surface-2 p-3.5 soft-hover-sm hover:bg-surface-3/30 transition-colors"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="grid h-11 w-11 flex-shrink-0 place-items-center rounded-full bg-surface-3 text-primary shadow-sm">
-                        <Icon size={18} />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-foreground transition-colors group-hover:text-primary">
-                          {exp.description}
-                        </p>
-                        <p className="hidden text-xs text-foreground-subtle sm:mt-0.5 sm:block">
-                          {exp.category}
-                          {exp.subcategory
-                            ? ` / ${exp.subcategory}`
-                            : ""} •{" "}
-                          {formatDisplayDate(exp.date, {
-                            day: "2-digit",
-                            month: "short",
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="mt-3 flex items-center justify-between gap-3 border-t border-border/70 pt-3 sm:hidden">
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-foreground-subtle">
-                        <span className="rounded-full bg-surface px-2 py-0.5">
-                          {exp.category}
-                          {exp.subcategory ? ` / ${exp.subcategory}` : ""}
-                        </span>
-                        <span>
-                          {formatDisplayDate(exp.date, {
-                            day: "2-digit",
-                            month: "short",
-                          })}
-                        </span>
-                      </div>
-                      <div className="font-mono text-sm font-semibold tracking-tight text-danger tabular-nums">
-                        - {amountLabel}
-                      </div>
-                    </div>
-                    <div className="hidden items-center gap-2 sm:flex">
-                      <div className="font-mono text-sm font-semibold tracking-tight text-danger tabular-nums">
-                        - {amountLabel}
-                      </div>
-                      <button
-                        onClick={() => {
-                          setExpenseToEdit(exp);
-                          setIsAddExpenseModalOpen(true);
-                        }}
-                        className="rounded-lg p-1.5 text-foreground-muted transition-colors hover:bg-primary/10 hover:text-primary"
-                        title="Editar despesa"
-                      >
-                        <Pencil size={15} />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setDeleteError(null);
-                          setExpenseToDelete(exp);
-                        }}
-                        className="rounded-lg p-1.5 text-foreground-muted transition-colors hover:bg-danger/10 hover:text-danger"
-                        title="Excluir despesa"
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <EmptyState
-                icon={Receipt}
-                title="Adicione seu primeiro gasto"
-                description="Comece por algo pequeno, como cafe, lanche ou transporte. E isso que revela seus habitos."
-                primaryAction={{
-                  label: "Adicionar despesa",
-                  onClick: () => setIsAddExpenseModalOpen(true),
-                }}
-                className="flex-1"
-                compact
-              />
-            )}
-          </div>
-        </div>
-      </section>
+      <RecentActivity
+        expenses={expenses}
+        incomes={incomes}
+        onEditExpense={(expense) => {
+          setExpenseToEdit(expense);
+          setIsAddExpenseModalOpen(true);
+        }}
+        onEditIncome={(income) => {
+          setIncomeToEdit(income);
+          setIsAddIncomeModalOpen(true);
+        }}
+        onDeleteExpense={(expense) => {
+          setDeleteError(null);
+          setExpenseToDelete(expense);
+        }}
+        onDeleteIncome={(income) => {
+          setDeleteError(null);
+          setIncomeToDelete(income);
+        }}
+        onAddExpense={() => {
+          setExpenseToEdit(null);
+          setIsAddExpenseModalOpen(true);
+        }}
+      />
 
       <AddExpenseModal
         isOpen={isAddExpenseModalOpen}
@@ -1777,7 +1332,7 @@ export default function DashboardPage() {
       <ConfirmActionModal
         isOpen={expenseToDelete !== null}
         title="Excluir despesa"
-        description={`Voce esta prestes a excluir permanentemente a despesa "${expenseToDelete?.description ?? ""}". Esta acao nao podera ser desfeita.`}
+        description={`Você está prestes a excluir permanentemente a despesa "${expenseToDelete?.description ?? ""}". Esta ação não poderá ser desfeita.`}
         confirmLabel="Sim, excluir"
         onClose={() => {
           if (isDeletingExpense) return;
@@ -1791,7 +1346,7 @@ export default function DashboardPage() {
       <ConfirmActionModal
         isOpen={incomeToDelete !== null}
         title="Excluir receita"
-        description={`Voce esta prestes a excluir permanentemente a receita "${incomeToDelete?.description ?? ""}". Esta acao nao podera ser desfeita.`}
+        description={`Você está prestes a excluir permanentemente a receita "${incomeToDelete?.description ?? ""}". Esta ação não poderá ser desfeita.`}
         confirmLabel="Sim, excluir"
         onClose={() => {
           if (isDeletingIncome) return;

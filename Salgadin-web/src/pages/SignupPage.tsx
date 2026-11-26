@@ -51,14 +51,14 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] flex flex-col overflow-y-scroll">
+    <div className="min-h-screen bg-background flex flex-col overflow-y-scroll">
       <Header />
       <main className="flex-1">
         <div className="mx-auto max-w-7xl min-h-[calc(100svh-80px)] grid gap-6 md:gap-8 md:grid-cols-2 items-center px-4 py-6 md:py-4">
           {/* Branding Column - Hidden on smaller resolutions */}
           <section className="hidden lg:flex flex-col items-start text-left animate-in slide-in-from-left-8 fade-in duration-700">
             <div className="space-y-4">
-              <h1 className="text-4xl lg:text-5xl font-extrabold leading-tight">
+              <h1 className="text-4xl lg:text-5xl font-medium leading-tight">
                 <span className="bg-gradient-to-r from-[var(--brand-from-strong)] to-[var(--brand-to-strong)] bg-clip-text text-transparent">
                   Transforme suas
                 </span>
@@ -74,9 +74,9 @@ export default function SignupPage() {
 
           {/* Form Column */}
           <section className="flex justify-center md:justify-end">
-            <div className="w-full max-w-md rounded-3xl border border-border/70 bg-surface/90 backdrop-blur-xl shadow-[0_20px_60px_rgba(60,42,32,0.12)] p-6 sm:p-8 animate-in slide-in-from-right-8 fade-in duration-700 delay-150 [animation-fill-mode:backwards]">
+            <div className="w-full max-w-md rounded-2xl border border-border bg-surface backdrop-blur-xl p-6 sm:p-8 animate-in slide-in-from-right-8 fade-in duration-700 delay-150 [animation-fill-mode:backwards]">
               <header className="text-center md:text-left mb-6">
-                <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+                <h2 className="text-2xl sm:text-3xl font-medium text-foreground">
                   Crie sua Conta
                 </h2>
                 <p className="mt-1 text-sm text-foreground-muted">
@@ -147,7 +147,7 @@ export default function SignupPage() {
                 
                 {successMessage && (
                   <div className="p-3 rounded-xl bg-success/10 border border-success/30 animate-in fade-in slide-in-from-bottom-2">
-                    <p className="text-sm text-success font-semibold text-center">
+                    <p className="text-sm text-success font-medium text-center">
                       {successMessage}
                     </p>
                   </div>

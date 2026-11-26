@@ -13,15 +13,12 @@ export function FaqSection() {
   return (
     <section
       id="faq"
-      className="mx-auto mb-0 max-w-4xl scroll-mt-24 bg-transparent px-4 py-16 sm:py-20"
+      className="mx-auto mb-0 max-w-4xl scroll-mt-24 bg-transparent px-4 py-20 sm:py-28"
     >
-      <p className="text-center text-sm font-semibold uppercase tracking-[0.12em] text-primary">
-        FAQ
-      </p>
-      <h2 className="mt-3 text-center text-2xl font-extrabold text-foreground sm:text-3xl">
+      <h2 className="text-center text-3xl font-medium text-foreground sm:text-4xl">
         Perguntas frequentes
       </h2>
-      <p className="mt-2 text-center text-sm leading-6 text-foreground-muted sm:text-base">
+      <p className="mt-3 text-center text-base text-foreground-muted">
         Respostas diretas sobre o que o Salgadin faz hoje.
       </p>
       <div className="mt-8 space-y-4">
@@ -33,7 +30,7 @@ export function FaqSection() {
             <div
               key={item.q}
               className={clsx(
-                "overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface shadow-[var(--shadow-card)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                "overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
                 isOpen && "border-primary/35"
               )}
             >
@@ -64,7 +61,7 @@ export function FaqSection() {
                 )}
               >
                 <div className="overflow-hidden">
-                  <p className="px-5 pb-5 text-sm leading-6 text-foreground-muted">
+                  <p className="px-5 pb-5 text-ui text-foreground-muted">
                     {item.a}
                   </p>
                 </div>

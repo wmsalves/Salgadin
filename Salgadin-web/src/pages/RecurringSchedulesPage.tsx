@@ -106,7 +106,7 @@ const formatDisplayDate = (value: string | null | undefined) => {
 
 const formatSummaryDate = (value: string | null | undefined) => {
   if (!value) {
-    return "Sem registro";
+    return "—";
   }
 
   return new Date(value).toLocaleDateString("pt-BR", {
@@ -119,7 +119,7 @@ const parseAmount = (value: string) =>
   Number(value.replace(/\./g, "").replace(",", "."));
 
 const formatBillingDay = (dayOfMonth: number) =>
-  dayOfMonth === 31 ? "Dia 31 ou ultimo dia do mes" : `Todo dia ${dayOfMonth}`;
+  dayOfMonth === 31 ? "Dia 31 ou último dia do mês" : `Todo dia ${dayOfMonth}`;
 
 export default function RecurringSchedulesPage() {
   const [schedules, setSchedules] = useState<RecurringSchedule[]>([]);
@@ -284,16 +284,16 @@ export default function RecurringSchedulesPage() {
 
       if (editingSchedule) {
         await updateRecurringSchedule(editingSchedule.id, payload);
-        setSuccessMessage("Recorrencia atualizada.");
+        setSuccessMessage("Recorrência atualizada.");
       } else {
         await createRecurringSchedule(payload);
-        setSuccessMessage("Recorrencia criada. Ela sera registrada como lancamento quando estiver vencida.");
+        setSuccessMessage("Recorrência criada. Ela será registrada como lançamento quando estiver vencida.");
       }
 
       await fetchData();
       closeForm();
     } catch {
-      setApiError("Nao foi possivel salvar a recorrencia. Revise os dados e tente novamente.");
+      setApiError("Não foi possível salvar a recorrência. Revise os dados e tente novamente.");
     } finally {
       setIsSaving(false);
     }
@@ -308,7 +308,7 @@ export default function RecurringSchedulesPage() {
       setSuccessMessage(buildGenerateMessage(result));
       await fetchData();
     } catch {
-      setApiError("Nao foi possivel registrar os lancamentos vencidos agora.");
+      setApiError("Não foi possível registrar os lançamentos vencidos agora.");
     } finally {
       setIsGenerating(false);
     }
@@ -320,14 +320,14 @@ export default function RecurringSchedulesPage() {
     try {
       if (schedule.status === "Active") {
         await pauseRecurringSchedule(schedule.id);
-        setSuccessMessage("Recorrencia pausada.");
+        setSuccessMessage("Recorrência pausada.");
       } else {
         await resumeRecurringSchedule(schedule.id);
-        setSuccessMessage("Recorrencia reativada.");
+        setSuccessMessage("Recorrência reativada.");
       }
       await fetchData();
     } catch {
-      setApiError("Nao foi possivel alterar o status da recorrencia.");
+      setApiError("Não foi possível alterar o status da recorrência.");
     }
   };
 
@@ -336,10 +336,10 @@ export default function RecurringSchedulesPage() {
     setSuccessMessage(null);
     try {
       await archiveRecurringSchedule(schedule.id);
-      setSuccessMessage("Recorrencia arquivada.");
+      setSuccessMessage("Recorrência arquivada.");
       await fetchData();
     } catch {
-      setApiError("Nao foi possivel arquivar a recorrencia.");
+      setApiError("Não foi possível arquivar a recorrência.");
     }
   };
 
@@ -347,8 +347,8 @@ export default function RecurringSchedulesPage() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">
-            Recorrencias
+          <h1 className="text-2xl font-medium text-foreground">
+            Recorrências
           </h1>
           <p className="text-sm text-foreground-muted">
             Organize receitas e despesas mensais antes de elas entrarem no seu fluxo.
@@ -368,13 +368,13 @@ export default function RecurringSchedulesPage() {
                 {isGenerating ? "Registrando..." : "Registrar vencidas"}
               </Button>
               <p className="text-xs leading-snug text-foreground-subtle sm:max-w-none sm:whitespace-nowrap">
-                Gera os lancamentos das recorrencias que ja venceram.
+                Gera os lançamentos das recorrências que já venceram.
               </p>
             </div>
           )}
           <Button type="button" onClick={openCreateForm} className="w-full sm:w-auto">
             <Plus size={16} />
-            Nova recorrencia
+            Nova recorrência
           </Button>
         </div>
       </header>
@@ -385,12 +385,12 @@ export default function RecurringSchedulesPage() {
           { label: "Pausadas", value: summary.paused, icon: PauseCircle },
           { label: "Vencidas", value: summary.due, icon: RefreshCw },
           {
-            label: "Proxima",
+            label: "Próxima",
             value: formatSummaryDate(summary.nextOccurrenceDate),
             icon: Repeat,
           },
           {
-            label: "Ultima gerada",
+            label: "Última gerada",
             value: formatSummaryDate(summary.lastGenerationDate),
             icon: Wallet,
           },
@@ -399,15 +399,22 @@ export default function RecurringSchedulesPage() {
           return (
             <div
               key={item.label}
-              className="rounded-2xl border border-border/70 bg-surface/92 p-4 shadow-[0_14px_30px_rgba(60,42,32,0.08)]"
+              className="rounded-2xl border border-border bg-surface p-4"
             >
               <div className="flex items-center justify-between gap-3">
-                <span className="text-xs uppercase tracking-[0.18em] text-foreground-subtle">
+                <span className="text-xs text-foreground-subtle">
                   {item.label}
                 </span>
                 <Icon size={16} className="text-primary" />
               </div>
-              <div className="mt-2 text-2xl font-semibold text-foreground">
+              <div
+                className={clsx(
+                  "mt-2 truncate font-medium tabular-nums",
+                  typeof item.value === "number"
+                    ? "text-2xl text-foreground"
+                    : "text-lg text-foreground",
+                )}
+              >
                 {item.value}
               </div>
             </div>
@@ -416,20 +423,20 @@ export default function RecurringSchedulesPage() {
       </section>
 
       {isFormOpen && (
-        <section className="rounded-3xl border border-border/70 bg-surface/92 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)]">
+        <section className="rounded-2xl border border-border bg-surface p-5">
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-lg font-semibold text-foreground">
-                {editingSchedule ? "Editar recorrencia" : "Nova recorrencia mensal"}
+              <h2 className="text-base font-medium text-foreground">
+                {editingSchedule ? "Editar recorrência" : "Nova recorrência mensal"}
               </h2>
               <p className="text-sm text-foreground-muted">
-                Defina o agendamento. O lancamento real sera criado quando voce registrar as vencidas.
+                Defina o agendamento. O lançamento real será criado quando você registrar as vencidas.
               </p>
             </div>
             <button
               type="button"
               onClick={closeForm}
-              className="rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-foreground-muted transition hover:bg-surface-2 hover:text-foreground"
+              className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground-muted transition hover:bg-surface-2 hover:text-foreground"
             >
               Fechar
             </button>
@@ -438,7 +445,7 @@ export default function RecurringSchedulesPage() {
           <form onSubmit={handleSubmit} className="grid gap-4 lg:grid-cols-6">
             <div>
               <label className="text-xs text-foreground-muted">
-                Tipo de recorrencia
+                Tipo de recorrência
               </label>
               <select
                 value={form.type}
@@ -458,7 +465,7 @@ export default function RecurringSchedulesPage() {
             </div>
 
             <div className="lg:col-span-2">
-              <label className="text-xs text-foreground-muted">Descricao</label>
+              <label className="text-xs text-foreground-muted">Descrição</label>
               <input
                 value={form.description}
                 onChange={(event) =>
@@ -488,7 +495,7 @@ export default function RecurringSchedulesPage() {
             </div>
 
             <div>
-              <label className="text-xs text-foreground-muted">Dia do mes</label>
+              <label className="text-xs text-foreground-muted">Dia do mês</label>
               <input
                 value={form.dayOfMonth}
                 onChange={(event) =>
@@ -501,17 +508,17 @@ export default function RecurringSchedulesPage() {
                 required
               />
               <p className="mt-1 text-xs text-foreground-subtle">
-                Se o mes tiver menos dias, usamos o ultimo dia.
+                Se o mês tiver menos dias, usamos o último dia.
               </p>
             </div>
 
             <div>
-              <label className="text-xs text-foreground-muted">Frequencia</label>
+              <label className="text-xs text-foreground-muted">Frequência</label>
               <div className="mt-1 rounded-xl border border-border bg-surface-2 px-3 py-2 text-sm font-medium text-foreground">
                 Mensal
               </div>
               <p className="mt-1 text-xs text-foreground-subtle">
-                Outras frequencias entram depois.
+                Outras frequências entram depois.
               </p>
             </div>
 
@@ -614,7 +621,7 @@ export default function RecurringSchedulesPage() {
 
             <div className="flex items-end lg:col-span-2">
               <Button type="submit" isLoading={isSaving} className="w-full">
-                {editingSchedule ? "Salvar recorrencia" : "Criar recorrencia"}
+                {editingSchedule ? "Salvar recorrência" : "Criar recorrência"}
               </Button>
             </div>
           </form>
@@ -635,7 +642,7 @@ export default function RecurringSchedulesPage() {
         </div>
       )}
 
-      <section className="rounded-2xl border border-border bg-surface/70 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.10)]">
+      <section className="rounded-2xl border border-border bg-surface p-4">
         <div className="flex flex-wrap items-center gap-2">
           {filterOptions.map((option) => (
             <button
@@ -643,9 +650,9 @@ export default function RecurringSchedulesPage() {
               type="button"
               onClick={() => setFilter(option.value)}
               className={clsx(
-                "min-h-10 rounded-full px-4 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                "min-h-10 rounded-full px-4 py-2 text-xs font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
                 filter === option.value
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-[var(--color-on-primary)]"
                   : "border border-border text-foreground-muted hover:bg-surface-2 hover:text-foreground",
               )}
             >
@@ -656,16 +663,16 @@ export default function RecurringSchedulesPage() {
       </section>
 
       {isLoading ? (
-        <div className="rounded-3xl border border-border/70 bg-surface/92 p-8 text-sm text-foreground-subtle">
-          Carregando recorrencias...
+        <div className="rounded-2xl border border-border bg-surface p-8 text-sm text-foreground-subtle">
+          Carregando recorrências...
         </div>
       ) : schedules.length === 0 ? (
         <EmptyState
           icon={Repeat}
-          title="Organize o que se repete todo mes"
-          description="Cadastre assinaturas, internet, academia, salario, aluguel e outras entradas ou saidas previsiveis. Depois, registre as vencidas como lancamentos reais."
+          title="Organize o que se repete todo mês"
+          description="Cadastre assinaturas, internet, academia, salario, aluguel e outras entradas ou saídas previsíveis. Depois, registre as vencidas como lançamentos reais."
           primaryAction={{
-            label: "Criar primeira recorrencia",
+            label: "Criar primeira recorrência",
             onClick: openCreateForm,
           }}
           size="spacious"
@@ -673,8 +680,8 @@ export default function RecurringSchedulesPage() {
       ) : filteredSchedules.length === 0 ? (
         <EmptyState
           icon={Repeat}
-          title="Nenhuma recorrencia neste filtro"
-          description="Troque o filtro ou crie uma nova recorrencia mensal."
+          title="Nenhuma recorrência neste filtro"
+          description="Troque o filtro ou crie uma nova recorrência mensal."
           compact
         />
       ) : (
@@ -686,7 +693,7 @@ export default function RecurringSchedulesPage() {
             return (
               <article
                 key={schedule.id}
-                className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover"
+                className="rounded-2xl border border-border bg-surface p-5 soft-hover"
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div className="flex min-w-0 items-start gap-3">
@@ -702,12 +709,12 @@ export default function RecurringSchedulesPage() {
                     </div>
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="truncate text-base font-semibold text-foreground">
+                        <h2 className="truncate text-base font-medium text-foreground">
                           {schedule.description}
                         </h2>
                         <span
                           className={clsx(
-                            "inline-flex rounded-full border px-2.5 py-1 text-[11px] font-semibold",
+                            "inline-flex rounded-full border px-2.5 py-1 text-xs font-medium",
                             statusClasses[schedule.status],
                           )}
                         >
@@ -722,33 +729,33 @@ export default function RecurringSchedulesPage() {
                     </div>
                   </div>
 
-                  <div className="font-mono text-lg font-semibold tabular-nums text-foreground">
+                  <div className=" text-lg font-medium tabular-nums text-foreground">
                     {isExpense ? "-" : "+"} {formatCurrency(schedule.amount)}
                   </div>
                 </div>
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-2xl border border-border bg-surface/80 px-4 py-3">
-                    <div className="text-[11px] uppercase tracking-[0.16em] text-foreground-subtle">
+                  <div className="rounded-2xl border border-border bg-surface px-4 py-3">
+                    <div className="text-xs text-foreground-subtle">
                       Dia
                     </div>
-                    <div className="mt-1 text-sm font-semibold text-foreground">
+                    <div className="mt-1 text-sm font-medium text-foreground">
                       {formatBillingDay(schedule.dayOfMonth)}
                     </div>
                   </div>
-                  <div className="rounded-2xl border border-border bg-surface/80 px-4 py-3">
-                    <div className="text-[11px] uppercase tracking-[0.16em] text-foreground-subtle">
-                      Proxima
+                  <div className="rounded-2xl border border-border bg-surface px-4 py-3">
+                    <div className="text-xs text-foreground-subtle">
+                      Próxima
                     </div>
-                    <div className="mt-1 text-sm font-semibold text-foreground">
+                    <div className="mt-1 text-sm font-medium text-foreground">
                       {formatDisplayDate(schedule.nextOccurrenceDate)}
                     </div>
                   </div>
-                  <div className="rounded-2xl border border-border bg-surface/80 px-4 py-3">
-                    <div className="text-[11px] uppercase tracking-[0.16em] text-foreground-subtle">
+                  <div className="rounded-2xl border border-border bg-surface px-4 py-3">
+                    <div className="text-xs text-foreground-subtle">
                       Fim
                     </div>
-                    <div className="mt-1 text-sm font-semibold text-foreground">
+                    <div className="mt-1 text-sm font-medium text-foreground">
                       {schedule.endDate
                         ? formatDisplayDate(schedule.endDate)
                         : "Sem data final"}
@@ -760,7 +767,7 @@ export default function RecurringSchedulesPage() {
                   <button
                     type="button"
                     onClick={() => openEditForm(schedule)}
-                    className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-2 text-xs font-semibold text-foreground-muted transition hover:bg-surface-2 hover:text-foreground"
+                    className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-2 text-xs font-medium text-foreground-muted transition hover:bg-surface-2 hover:text-foreground"
                   >
                     <Pencil size={14} />
                     Editar
@@ -769,7 +776,7 @@ export default function RecurringSchedulesPage() {
                     <button
                       type="button"
                       onClick={() => handlePauseResume(schedule)}
-                      className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-2 text-xs font-semibold text-foreground-muted transition hover:bg-surface-2 hover:text-foreground"
+                      className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-2 text-xs font-medium text-foreground-muted transition hover:bg-surface-2 hover:text-foreground"
                     >
                       {schedule.status === "Active" ? (
                         <PauseCircle size={14} />
@@ -782,7 +789,7 @@ export default function RecurringSchedulesPage() {
                   <button
                     type="button"
                     onClick={() => handleArchive(schedule)}
-                    className="inline-flex items-center gap-2 rounded-full border border-danger/20 bg-danger/10 px-3 py-2 text-xs font-semibold text-danger transition hover:bg-danger/15"
+                    className="inline-flex items-center gap-2 rounded-full border border-danger/20 bg-danger/10 px-3 py-2 text-xs font-medium text-danger transition hover:bg-danger/15"
                   >
                     <Archive size={14} />
                     Arquivar
@@ -801,8 +808,8 @@ function buildGenerateMessage(result: GenerateRecurringSchedulesResult) {
   const total = result.generatedExpenses + result.generatedIncomes;
 
   if (total === 0) {
-    return "Nenhum lancamento recorrente vencido para registrar agora.";
+    return "Nenhum lançamento recorrente vencido para registrar agora.";
   }
 
-  return `${total} lancamento${total === 1 ? "" : "s"} recorrente${total === 1 ? "" : "s"} registrado${total === 1 ? "" : "s"}: ${result.generatedExpenses} despesa${result.generatedExpenses === 1 ? "" : "s"} e ${result.generatedIncomes} receita${result.generatedIncomes === 1 ? "" : "s"}.`;
+  return `${total} lançamento${total === 1 ? "" : "s"} recorrente${total === 1 ? "" : "s"} registrado${total === 1 ? "" : "s"}: ${result.generatedExpenses} despesa${result.generatedExpenses === 1 ? "" : "s"} e ${result.generatedIncomes} receita${result.generatedIncomes === 1 ? "" : "s"}.`;
 }

@@ -4,24 +4,24 @@ import clsx from "clsx";
 import { Loader2 } from "lucide-react";
 
 const buttonVariants = cva(
-  "inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] font-semibold transition-all duration-200 ease-out disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ui-pressable motion-reduce:transition-none",
+  "inline-flex min-h-11 items-center justify-center rounded-[var(--radius-control)] font-medium transition-all duration-200 ease-out disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ui-pressable motion-reduce:transition-none",
   {
     variants: {
       variant: {
         primary:
-          "bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-[var(--color-on-primary)] shadow-lg hover:shadow-xl hover:from-[var(--brand-from-strong)] hover:to-[var(--brand-to-strong)]",
+          "bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] text-[var(--color-on-primary)] hover:from-[var(--brand-from-strong)] hover:to-[var(--brand-to-strong)]",
         secondary:
           "border border-border bg-surface text-foreground-muted hover:text-foreground hover:bg-surface-2 hover:border-surface-3",
         ghost:
           "text-foreground-muted hover:text-foreground hover:bg-surface-2",
         danger:
-          "bg-danger text-[#fffaf6] hover:bg-danger-strong shadow-lg",
+          "bg-danger text-[#fffaf6] hover:bg-danger-strong",
       },
       size: {
-        default: "px-6 py-3 text-base",
-        sm: "min-h-10 px-3 py-2 text-sm",
-        lg: "min-h-12 px-8 py-4 text-lg",
-        social: "px-4 py-2.5 text-sm",
+        default: "px-6 py-3 text-sm",
+        sm: "min-h-10 px-3 py-2 text-ui",
+        lg: "min-h-12 px-7 py-3.5 text-base",
+        social: "px-4 py-2.5 text-ui",
       },
     },
     defaultVariants: {

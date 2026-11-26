@@ -54,6 +54,7 @@ try
 
     // Registra os servios da aplicao.
     builder.Services.AddScoped<IExpenseService, ExpenseService>();
+    builder.Services.AddScoped<IQuickExpenseService, QuickExpenseService>();
     builder.Services.AddScoped<IIncomeService, IncomeService>();
     builder.Services.AddScoped<ICategoryService, CategoryService>();
     builder.Services.AddScoped<ISubcategoryService, SubcategoryService>();

@@ -4,7 +4,22 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Nunito", "ui-sans-serif", "system-ui", "sans-serif"],
+        sans: ["Geist", "ui-sans-serif", "system-ui", "sans-serif"],
+      },
+      // Escala tipografica curta. Quanto maior o texto, menor o tracking
+      // e mais justa a entrelinha.
+      fontSize: {
+        xs: ["0.75rem", { lineHeight: "1rem", letterSpacing: "0.005em" }],
+        ui: ["0.8125rem", { lineHeight: "1.25rem", letterSpacing: "0" }],
+        sm: ["0.875rem", { lineHeight: "1.375rem", letterSpacing: "0" }],
+        base: ["1rem", { lineHeight: "1.5rem", letterSpacing: "-0.005em" }],
+        lg: ["1.125rem", { lineHeight: "1.625rem", letterSpacing: "-0.01em" }],
+        xl: ["1.25rem", { lineHeight: "1.75rem", letterSpacing: "-0.015em" }],
+        "2xl": ["1.5rem", { lineHeight: "2rem", letterSpacing: "-0.02em" }],
+        "3xl": ["1.875rem", { lineHeight: "2.25rem", letterSpacing: "-0.025em" }],
+        "4xl": ["2.25rem", { lineHeight: "2.5rem", letterSpacing: "-0.03em" }],
+        "5xl": ["3rem", { lineHeight: "1.08", letterSpacing: "-0.035em" }],
+        "6xl": ["3.75rem", { lineHeight: "1.04", letterSpacing: "-0.04em" }],
       },
       colors: {
         background: "var(--color-bg)",

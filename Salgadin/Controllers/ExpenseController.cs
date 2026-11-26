@@ -12,11 +12,16 @@ namespace Salgadin.Controllers
     {
         private readonly IExpenseService _service;
         private readonly IExportService _exportService;
+        private readonly IQuickExpenseService _quickExpenseService;
 
-        public ExpenseController(IExpenseService service, IExportService exportService)
+        public ExpenseController(
+            IExpenseService service,
+            IExportService exportService,
+            IQuickExpenseService quickExpenseService)
         {
             _service = service;
             _exportService = exportService;
+            _quickExpenseService = quickExpenseService;
         }
 
         [HttpGet("{id:int}")]
@@ -46,6 +51,22 @@ namespace Salgadin.Controllers
         {
             var created = await _service.AddExpenseAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        }
+
+        /// <summary>Registra uma despesa a partir de texto livre, ex.: "cafe 7,50 ontem".</summary>
+        [HttpPost("quick")]
+        public async Task<IActionResult> CreateQuick([FromBody] QuickExpenseRequestDto dto)
+        {
+            var created = await _quickExpenseService.CreateFromTextAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+        }
+
+        /// <summary>Gastos avulsos que o usuario mais repete (ultimos 90 dias).</summary>
+        [HttpGet("frequent")]
+        public async Task<IActionResult> GetFrequent([FromQuery] int limit = 6)
+        {
+            var frequent = await _quickExpenseService.GetFrequentAsync(limit);
+            return Ok(frequent);
         }
 
         [HttpPut("{id:int}")]

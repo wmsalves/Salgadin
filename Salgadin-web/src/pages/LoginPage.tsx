@@ -12,6 +12,16 @@ import { loginSchema, type LoginFormValues } from "../lib/schemas";
 import { loginUser } from "../services/authService";
 import { useAuth } from "../hooks/useAuth";
 
+// Conta de teste local: so existe em `npm run dev` e quando `npm run seed:dev`
+// gravou as credenciais em .env.local. Em build de producao o bloco e removido.
+const devLogin = import.meta.env.DEV
+  ? {
+      username: import.meta.env.VITE_DEV_LOGIN_EMAIL?.trim() ?? "",
+      password: import.meta.env.VITE_DEV_LOGIN_PASSWORD ?? "",
+    }
+  : null;
+const hasDevLogin = Boolean(devLogin?.username && devLogin.password);
+
 export default function LoginPage() {
   const [apiError, setApiError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -38,12 +48,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] flex flex-col overflow-y-scroll">
+    <div className="min-h-screen bg-background flex flex-col overflow-y-scroll">
       <Header />
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md rounded-3xl border border-border/70 bg-surface/90 backdrop-blur-xl shadow-[0_20px_60px_rgba(60,42,32,0.12)] p-6 sm:p-8 animate-in slide-in-from-bottom-8 fade-in duration-700">
+        <div className="w-full max-w-md rounded-2xl border border-border bg-surface backdrop-blur-xl p-6 sm:p-8 animate-in slide-in-from-bottom-8 fade-in duration-700">
           <header className="text-center mb-6">
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+            <h1 className="text-2xl sm:text-3xl font-medium text-foreground">
               Bem vindo de volta!
             </h1>
             <p className="mt-1 text-sm text-foreground-muted">
@@ -67,7 +77,7 @@ export default function LoginPage() {
 
             <div>
               <div className="flex items-baseline justify-between mb-2">
-                <label className="text-sm font-semibold text-foreground-muted">
+                <label className="text-sm font-medium text-foreground-muted">
                   Senha
                 </label>
                 <Link
@@ -102,6 +112,18 @@ export default function LoginPage() {
                   {apiError}
                 </p>
               </div>
+            )}
+
+            {hasDevLogin && devLogin && (
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full"
+                disabled={isSubmitting}
+                onClick={() => void onSubmit(devLogin)}
+              >
+                Entrar com conta de teste (dev)
+              </Button>
             )}
 
             {hasGoogleAuth && (

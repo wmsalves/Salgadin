@@ -8,7 +8,6 @@ import {
 } from "react";
 import {
   Bell,
-  CheckCircle2,
   Database,
   Download,
   Globe2,
@@ -20,7 +19,6 @@ import {
   Shield,
   User,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 import { EmptyState } from "../components/EmptyState";
 import { WhatsAppSimulationPanel } from "../components/settings/WhatsAppSimulationPanel";
 import { useAuth } from "../hooks/useAuth";
@@ -104,13 +102,13 @@ function SettingsCard({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] sm:p-6">
+    <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
       <div className="mb-5 flex items-start gap-3">
         <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-primary/12 text-primary">
           <Icon size={18} />
         </div>
         <div>
-          <h2 className="text-base font-semibold text-foreground sm:text-lg">
+          <h2 className="text-base font-medium text-foreground">
             {title}
           </h2>
           <p className="mt-1 text-sm text-foreground-muted">{description}</p>
@@ -165,7 +163,7 @@ export default function ProfilePage() {
   });
 
   const now = useMemo(() => new Date(), []);
-  const displayName = profile?.name ?? user?.name ?? "Usuario";
+  const displayName = profile?.name ?? user?.name ?? "Usuário";
   const hasExpenses = recentExpenses.length > 0;
   const hasIncomes = recentIncomes.length > 0;
   const hasExportableData = hasExpenses || hasIncomes;
@@ -215,9 +213,9 @@ export default function ProfilePage() {
         setRecentIncomes(incomesData);
         setWhatsAppStatus(whatsAppStatusData);
     } catch (error) {
-      console.error("Falha ao carregar configuracoes:", error);
+      console.error("Falha ao carregar configurações:", error);
       setSettingsError(
-        "Nao foi possivel carregar suas configuracoes agora. Tente novamente em instantes.",
+        "Não foi possível carregar suas configurações agora. Tente novamente em instantes.",
       );
     } finally {
       setIsLoading(false);
@@ -235,10 +233,10 @@ export default function ProfilePage() {
 
     try {
       await updateNotificationPreferences(preferences);
-      setSettingsMessage("Preferencias salvas com sucesso.");
+      setSettingsMessage("Preferências salvas com sucesso.");
     } catch (error) {
-      console.error("Falha ao salvar preferencias:", error);
-      setSettingsError("Nao foi possivel salvar as preferencias.");
+      console.error("Falha ao salvar preferências:", error);
+      setSettingsError("Não foi possível salvar as preferências.");
     } finally {
       setIsSaving(false);
     }
@@ -257,7 +255,7 @@ export default function ProfilePage() {
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      nextErrors.email = "Informe um email valido.";
+      nextErrors.email = "Informe um email válido.";
     }
 
     if (trimmedPhone && !phonePattern.test(trimmedPhone)) {
@@ -269,7 +267,7 @@ export default function ProfilePage() {
       !strongPasswordPattern.test(profileForm.newPassword)
     ) {
       nextErrors.newPassword =
-        "Use 8+ caracteres, maiuscula, minuscula, numero e caractere especial.";
+        "Use 8+ caracteres, maiúscula, minúscula, número e caractere especial.";
     }
 
     if ((emailChanged || passwordChanged) && !profileForm.currentPassword) {
@@ -278,7 +276,7 @@ export default function ProfilePage() {
     }
 
     if (profileForm.newPassword !== profileForm.confirmNewPassword) {
-      nextErrors.confirmNewPassword = "A confirmacao da senha nao coincide.";
+      nextErrors.confirmNewPassword = "A confirmação da senha não coincide.";
     }
 
     setFieldErrors(nextErrors);
@@ -318,7 +316,7 @@ export default function ProfilePage() {
     } catch (error) {
       console.error("Falha ao atualizar perfil:", error);
       setProfileError(
-        "Nao foi possivel atualizar o perfil. Verifique os dados informados.",
+        "Não foi possível atualizar o perfil. Verifique os dados informados.",
       );
     } finally {
       setIsSavingProfile(false);
@@ -333,10 +331,10 @@ export default function ProfilePage() {
     try {
       const file = await exportExpenses("csv");
       downloadBlob(file, "salgadin-despesas.csv");
-      setSettingsMessage("Exportacao de despesas iniciada.");
+      setSettingsMessage("Exportação de despesas iniciada.");
     } catch (error) {
       console.error("Falha ao exportar despesas:", error);
-      setSettingsError("Nao foi possivel exportar suas despesas agora.");
+      setSettingsError("Não foi possível exportar suas despesas agora.");
     } finally {
       setIsExportingExpenses(false);
     }
@@ -350,10 +348,10 @@ export default function ProfilePage() {
     try {
       const file = await exportIncomes();
       downloadBlob(file, "salgadin-rendas.csv");
-      setSettingsMessage("Exportacao de rendas iniciada.");
+      setSettingsMessage("Exportação de rendas iniciada.");
     } catch (error) {
       console.error("Falha ao exportar rendas:", error);
-      setSettingsError("Nao foi possivel exportar suas rendas agora.");
+      setSettingsError("Não foi possível exportar suas rendas agora.");
     } finally {
       setIsExportingIncomes(false);
     }
@@ -369,11 +367,11 @@ export default function ProfilePage() {
       const status = await getWhatsAppStatus();
       setWhatsAppLinkCode(code);
       setWhatsAppStatus(status);
-      setWhatsAppMessage("Codigo de conexao gerado.");
+      setWhatsAppMessage("Código de conexão gerado.");
     } catch (error) {
-      console.error("Falha ao gerar codigo do WhatsApp:", error);
+      console.error("Falha ao gerar código do WhatsApp:", error);
       setWhatsAppError(
-        "Nao foi possivel gerar o codigo. Verifique se seu telefone esta salvo no perfil.",
+        "Não foi possível gerar o código. Verifique se seu telefone está salvo no perfil.",
       );
     } finally {
       setIsGeneratingWhatsAppCode(false);
@@ -392,7 +390,7 @@ export default function ProfilePage() {
       setWhatsAppMessage("WhatsApp desconectado.");
     } catch (error) {
       console.error("Falha ao desconectar WhatsApp:", error);
-      setWhatsAppError("Nao foi possivel desconectar o WhatsApp agora.");
+      setWhatsAppError("Não foi possível desconectar o WhatsApp agora.");
     } finally {
       setIsDisconnectingWhatsApp(false);
     }
@@ -416,18 +414,18 @@ export default function ProfilePage() {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
-            Conta e configuracoes
+          <h1 className="text-2xl font-medium text-foreground">
+            Conta e configurações
           </h1>
           <p className="text-sm text-foreground-muted">
-            Carregando seus dados com seguranca...
+            Carregando seus dados com segurança...
           </p>
         </div>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
           {[0, 1, 2].map((item) => (
             <div
               key={item}
-              className="h-48 animate-pulse rounded-3xl border border-border/70 bg-surface-2"
+              className="h-48 animate-pulse rounded-2xl border border-border bg-surface-2"
             />
           ))}
         </div>
@@ -439,23 +437,12 @@ export default function ProfilePage() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-            Settings
-          </p>
-          <h1 className="mt-2 text-2xl font-bold text-foreground">
-            Conta e configuracoes
+          <h1 className="text-2xl font-medium text-foreground">
+            Conta e configurações
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-foreground-muted">
-            Controle seus dados, seguranca e preferencias em um unico lugar.
+            Controle seus dados, segurança e preferências em um único lugar.
           </p>
-        </div>
-        <div className="flex flex-wrap gap-2 text-xs text-foreground-muted">
-          <span className="rounded-full border border-border bg-surface-2 px-3 py-1.5">
-            Moeda: BRL
-          </span>
-          <span className="rounded-full border border-border bg-surface-2 px-3 py-1.5">
-            Idioma: pt-BR
-          </span>
         </div>
       </header>
 
@@ -470,10 +457,10 @@ export default function ProfilePage() {
         </div>
       )}
 
-      <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] sm:p-6">
+      <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-full bg-primary text-xl font-semibold text-white">
+            <div className="grid h-16 w-16 shrink-0 place-items-center overflow-hidden rounded-full bg-primary text-xl font-medium text-[var(--color-on-primary)]">
               {profile?.avatarUrl ? (
                 <img
                   src={profile.avatarUrl}
@@ -485,30 +472,14 @@ export default function ProfilePage() {
               )}
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-foreground">
+              <h2 className="text-base font-medium text-foreground">
                 {displayName}
               </h2>
               <p className="text-sm text-foreground-muted">
-                {profile?.email ?? user?.email ?? "Email nao informado"}
+                {profile?.email ?? user?.email ?? "Email não informado"}
               </p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
-                  <Shield size={12} />
-                  JWT ativo
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2.5 py-1 text-xs font-medium text-foreground-muted">
-                  <CheckCircle2 size={12} />
-                  Google Sign-In habilitado
-                </span>
-              </div>
             </div>
           </div>
-          <Link
-            to="/dashboard"
-            className="rounded-full border border-border bg-surface-2 px-4 py-2 text-center text-sm font-semibold text-foreground-muted transition hover:bg-surface-3 hover:text-foreground"
-          >
-            Voltar ao painel
-          </Link>
         </div>
       </section>
 
@@ -516,8 +487,8 @@ export default function ProfilePage() {
         <div className="space-y-5 xl:space-y-6">
           <SettingsCard
             icon={User}
-            title="Profile"
-            description="Dados basicos usados no Salgadin e nas proximas integracoes."
+            title="Perfil"
+            description="Dados básicos usados no Salgadin e nas próximas integrações."
           >
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
@@ -584,7 +555,7 @@ export default function ProfilePage() {
                   className="mt-2 w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
                 <p className="mt-2 text-xs text-foreground-subtle">
-                  Usaremos esse numero futuramente para recursos como WhatsApp.
+                  Usaremos esse número futuramente para recursos como WhatsApp.
                 </p>
                 {fieldErrors.phoneNumber && (
                   <p className="mt-2 text-xs font-medium text-danger">
@@ -597,12 +568,12 @@ export default function ProfilePage() {
 
           <SettingsCard
             icon={Lock}
-            title="Security"
-            description="Altere senha e email com confirmacao da senha atual."
+            title="Segurança"
+            description="Altere senha e email com confirmação da senha atual."
           >
             <div className="rounded-2xl border border-primary/20 bg-primary/8 px-4 py-3 text-sm text-foreground-muted">
-              Se voce entrou com Google e ainda nao definiu senha local,
-              continue usando o Google Sign-In ate configurar uma senha pelo
+              Se você entrou com Google e ainda não definiu senha local,
+              continue usando o Google Sign-In até configurar uma senha pelo
               fluxo tradicional.
             </div>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -686,7 +657,7 @@ export default function ProfilePage() {
               <button
                 onClick={handleSaveProfile}
                 disabled={isSavingProfile}
-                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
+                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-[var(--color-on-primary)] transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
               >
                 {isSavingProfile ? "Salvando..." : "Salvar conta"}
               </button>
@@ -695,8 +666,8 @@ export default function ProfilePage() {
 
           <SettingsCard
             icon={Palette}
-            title="Preferences"
-            description="Preferencias basicas do app e alertas financeiros."
+            title="Preferências"
+            description="Preferências básicas do app e alertas financeiros."
           >
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <button
@@ -707,7 +678,7 @@ export default function ProfilePage() {
                   <Palette size={16} />
                   Tema
                 </span>
-                <span className="font-semibold text-foreground">
+                <span className="font-medium text-foreground">
                   {theme === "light" ? "Claro" : "Escuro"}
                 </span>
               </button>
@@ -716,7 +687,7 @@ export default function ProfilePage() {
                   <Globe2 size={16} />
                   Idioma
                 </span>
-                <span className="font-semibold text-foreground">pt-BR</span>
+                <span className="font-medium text-foreground">pt-BR</span>
               </div>
               <label className="flex items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm">
                 <span className="flex items-center gap-2 text-foreground-muted">
@@ -753,7 +724,7 @@ export default function ProfilePage() {
               <div className="rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm sm:col-span-2">
                 <label className="flex items-center gap-2 text-foreground-muted">
                   <Shield size={16} />
-                  Limiar minimo (0-1)
+                  Limiar mínimo (0-1)
                 </label>
                 <input
                   type="number"
@@ -772,10 +743,10 @@ export default function ProfilePage() {
               </div>
               <button
                 onClick={handleSavePreferences}
-                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
+                className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-[var(--color-on-primary)] transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2"
                 disabled={isSaving}
               >
-                {isSaving ? "Salvando..." : "Salvar preferencias"}
+                {isSaving ? "Salvando..." : "Salvar preferências"}
               </button>
             </div>
           </SettingsCard>
@@ -784,23 +755,23 @@ export default function ProfilePage() {
         <div className="space-y-5 xl:space-y-6">
           <SettingsCard
             icon={Database}
-            title="Data"
-            description="Seus lancamentos pertencem a voce e podem ser baixados."
+            title="Seus dados"
+            description="Seus lançamentos pertencem a você e podem ser baixados."
           >
               {hasExportableData ? (
                 <div className="space-y-4">
                   <div className="rounded-2xl border border-border bg-surface-2 p-4">
-                    <h3 className="text-sm font-semibold text-foreground">
+                    <h3 className="text-sm font-medium text-foreground">
                       Exportar despesas
                     </h3>
                     <p className="mt-1 text-xs text-foreground-subtle">
-                      CSV com Data, Descricao, Valor, Categoria e Subcategoria.
-                      Periodo: todos os registros disponiveis.
+                      CSV com Data, Descrição, Valor, Categoria e Subcategoria.
+                      Período: todos os registros disponíveis.
                     </p>
                     <button
                       onClick={handleExportExpenses}
                       disabled={isExportingExpenses || !hasExpenses}
-                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-[var(--color-on-primary)] transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       <Download size={16} />
                       {isExportingExpenses
@@ -811,17 +782,17 @@ export default function ProfilePage() {
                     </button>
                   </div>
                   <div className="rounded-2xl border border-border bg-surface-2 p-4">
-                    <h3 className="text-sm font-semibold text-foreground">
+                    <h3 className="text-sm font-medium text-foreground">
                       Exportar rendas
                     </h3>
                     <p className="mt-1 text-xs text-foreground-subtle">
-                      CSV com Data, Descricao, Tipo e Valor. Periodo: todas as
-                      rendas disponiveis.
+                      CSV com Data, Descrição, Tipo e Valor. Período: todas as
+                      rendas disponíveis.
                     </p>
                     <button
                       onClick={handleExportIncomes}
                       disabled={isExportingIncomes || !hasIncomes}
-                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-foreground transition hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-70"
+                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-medium text-foreground transition hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       <Download size={16} />
                       {isExportingIncomes
@@ -836,7 +807,7 @@ export default function ProfilePage() {
                 <EmptyState
                   icon={Database}
                   title="Sem dados para exportar"
-                  description="Registre sua primeira renda ou despesa para baixar um CSV com seus lancamentos financeiros."
+                  description="Registre sua primeira renda ou despesa para baixar um CSV com seus lançamentos financeiros."
                   primaryAction={{
                     label: "Ir para o dashboard",
                     href: "/dashboard",
@@ -849,13 +820,13 @@ export default function ProfilePage() {
           <SettingsCard
             icon={MessageCircle}
             title="WhatsApp"
-            description="Prepare o registro rapido de pequenos gastos por mensagem."
+            description="Prepare o registro rápido de pequenos gastos por mensagem."
           >
             <div className="space-y-4">
               <div className="rounded-2xl border border-border bg-surface-2 p-4">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <h3 className="text-sm font-semibold text-foreground">
+                    <h3 className="text-sm font-medium text-foreground">
                       Integração em desenvolvimento
                     </h3>
                     <p className="mt-1 text-xs leading-5 text-foreground-subtle">
@@ -863,7 +834,7 @@ export default function ProfilePage() {
                       ainda não está disponível via Meta ou Twilio.
                     </p>
                   </div>
-                  <span className="inline-flex w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                  <span className="inline-flex w-fit rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                     Em desenvolvimento
                   </span>
                 </div>
@@ -872,12 +843,12 @@ export default function ProfilePage() {
               <div className="rounded-2xl border border-border bg-surface-2 p-4">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-xs font-medium uppercase tracking-[0.14em] text-foreground-subtle">
+                    <p className="text-xs font-medium text-foreground-subtle">
                       Status
                     </p>
                     <div className="mt-2 flex flex-wrap items-center gap-2">
                       <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        className={`rounded-full px-3 py-1 text-xs font-medium ${
                           whatsAppStatus?.connected
                             ? "bg-success/10 text-success"
                             : "bg-surface-3 text-foreground-muted"
@@ -898,7 +869,7 @@ export default function ProfilePage() {
                     <button
                       onClick={handleGenerateWhatsAppCode}
                       disabled={isGeneratingWhatsAppCode}
-                      className="rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+                      className="rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-[var(--color-on-primary)] transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
                     >
                       {isGeneratingWhatsAppCode
                         ? "Gerando..."
@@ -908,7 +879,7 @@ export default function ProfilePage() {
                       <button
                         onClick={handleDisconnectWhatsApp}
                         disabled={isDisconnectingWhatsApp}
-                        className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-foreground-muted transition hover:bg-surface-3 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-70"
+                        className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-medium text-foreground-muted transition hover:bg-surface-3 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-70"
                       >
                         {isDisconnectingWhatsApp
                           ? "Desconectando..."
@@ -921,10 +892,10 @@ export default function ProfilePage() {
 
               {whatsAppLinkCode && (
                 <div className="rounded-2xl border border-primary/24 bg-primary/8 p-4">
-                  <p className="text-xs font-medium uppercase tracking-[0.14em] text-primary">
+                  <p className="text-xs font-medium text-primary">
                     Código de conexão
                   </p>
-                  <div className="mt-2 rounded-xl border border-primary/20 bg-surface px-4 py-3 font-mono text-lg font-semibold tracking-wide text-foreground">
+                  <div className="mt-2 rounded-xl border border-primary/20 bg-surface px-4 py-3 font-mono text-lg font-medium text-foreground">
                     {whatsAppLinkCode.code}
                   </div>
                   <p className="mt-3 text-xs leading-5 text-foreground-muted">
@@ -951,7 +922,7 @@ export default function ProfilePage() {
 
               <div className="rounded-2xl border border-border bg-surface-2 p-4">
                 <div className="flex flex-col gap-2">
-                  <h3 className="text-sm font-semibold text-foreground">
+                  <h3 className="text-sm font-medium text-foreground">
                     Experiência planejada
                   </h3>
                   <p className="text-xs leading-5 text-foreground-subtle">
@@ -968,7 +939,7 @@ export default function ProfilePage() {
                   ].map((command) => (
                     <span
                       key={command}
-                      className="rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[11px] text-foreground-muted"
+                      className="rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-xs text-foreground-muted"
                     >
                       {command}
                     </span>
@@ -980,7 +951,7 @@ export default function ProfilePage() {
                 <div className="rounded-2xl border border-dashed border-border bg-surface-2/70 p-4">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-foreground-subtle">
+                      <p className="text-xs font-medium text-foreground-subtle">
                         Ferramentas de desenvolvimento
                       </p>
                       <p className="mt-1 text-xs leading-5 text-foreground-muted">
@@ -989,7 +960,7 @@ export default function ProfilePage() {
                         pública do WhatsApp.
                       </p>
                     </div>
-                    <span className="inline-flex w-fit rounded-full border border-danger/20 bg-danger/10 px-2.5 py-1 text-[11px] font-semibold text-danger">
+                    <span className="inline-flex w-fit rounded-full border border-danger/20 bg-danger/10 px-2.5 py-1 text-xs font-medium text-danger">
                       Restrito
                     </span>
                   </div>
@@ -1003,22 +974,22 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <section className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.10)] sm:p-6">
+      <section className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-foreground">
-              Alertas e notificacoes
+            <h2 className="text-base font-medium text-foreground">
+              Alertas e notificações
             </h2>
             <p className="text-sm text-foreground-muted">
               {unreadNotifications > 0
-                ? `${unreadNotifications} notificacao(oes) nao lida(s).`
+                ? `${unreadNotifications} notificacao(oes) não lida(s).`
                 : "Tudo lido por aqui."}
             </p>
           </div>
           <button
             onClick={handleMarkAllRead}
             disabled={isNotifying || notifications.length === 0}
-            className="rounded-full border border-border bg-surface-2 px-4 py-2 text-xs font-semibold text-foreground-muted transition hover:bg-surface-3 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-full border border-border bg-surface-2 px-4 py-2 text-xs font-medium text-foreground-muted transition hover:bg-surface-3 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isNotifying ? "Atualizando..." : "Marcar tudo como lido"}
           </button>
@@ -1026,8 +997,8 @@ export default function ProfilePage() {
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <div className="rounded-2xl border border-border bg-surface-2 p-4">
-            <h3 className="text-sm font-semibold text-foreground">
-              Alertas do mes
+            <h3 className="text-sm font-medium text-foreground">
+              Alertas do mês
             </h3>
             {alerts.length > 0 ? (
               <div className="mt-3 space-y-3">
@@ -1036,7 +1007,7 @@ export default function ProfilePage() {
                     key={alert.goalId}
                     className="rounded-xl border border-border bg-surface px-4 py-3"
                   >
-                    <div className="text-sm font-semibold text-foreground">
+                    <div className="text-sm font-medium text-foreground">
                       {alert.category || "Meta geral"}
                     </div>
                     <div className="mt-1 text-xs text-foreground-subtle">
@@ -1044,7 +1015,7 @@ export default function ProfilePage() {
                       {alert.monthlyLimit.toFixed(2)}
                     </div>
                     <div
-                      className={`mt-2 text-xs font-semibold ${
+                      className={`mt-2 text-xs font-medium ${
                         alert.thresholdReached ? "text-danger" : "text-primary"
                       }`}
                     >
@@ -1058,7 +1029,7 @@ export default function ProfilePage() {
             ) : (
               <EmptyState
                 icon={Shield}
-                title="Nenhum alerta neste mes"
+                title="Nenhum alerta neste mês"
                 description="Crie metas para receber avisos quando os pequenos gastos se aproximarem do limite."
                 primaryAction={{ label: "Criar meta", href: "/metas" }}
                 compact
@@ -1068,8 +1039,8 @@ export default function ProfilePage() {
           </div>
 
           <div className="rounded-2xl border border-border bg-surface-2 p-4">
-            <h3 className="text-sm font-semibold text-foreground">
-              Notificacoes automaticas
+            <h3 className="text-sm font-medium text-foreground">
+              Notificações automáticas
             </h3>
             {notifications.length > 0 ? (
               <div className="mt-3 space-y-3">
@@ -1080,11 +1051,11 @@ export default function ProfilePage() {
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-foreground">
+                        <span className="text-sm font-medium text-foreground">
                           {notification.title}
                         </span>
                         {!notification.isRead && (
-                          <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] uppercase tracking-wide text-primary">
+                          <span className="rounded-full bg-primary/20 px-2 py-0.5 text-xs text-primary">
                             Novo
                           </span>
                         )}
@@ -1092,7 +1063,7 @@ export default function ProfilePage() {
                       <p className="mt-1 text-xs text-foreground-subtle">
                         {notification.message}
                       </p>
-                      <p className="mt-2 text-[11px] text-foreground-muted">
+                      <p className="mt-2 text-xs text-foreground-muted">
                         {new Date(notification.createdAt).toLocaleString(
                           "pt-BR",
                         )}
@@ -1101,7 +1072,7 @@ export default function ProfilePage() {
                     {!notification.isRead && (
                       <button
                         onClick={() => handleMarkRead(notification.id)}
-                        className="rounded-full border border-border bg-surface-2 px-4 py-2 text-xs font-semibold text-foreground-muted transition hover:bg-surface-3 hover:text-foreground"
+                        className="rounded-full border border-border bg-surface-2 px-4 py-2 text-xs font-medium text-foreground-muted transition hover:bg-surface-3 hover:text-foreground"
                       >
                         Marcar como lido
                       </button>
@@ -1112,8 +1083,8 @@ export default function ProfilePage() {
             ) : (
               <EmptyState
                 icon={Bell}
-                title="Sem notificacoes ainda"
-                description="Quando uma meta ou alerta precisar da sua atencao, ele aparece aqui."
+                title="Sem notificações ainda"
+                description="Quando uma meta ou alerta precisar da sua atenção, ele aparece aqui."
                 compact
                 className="mt-3"
               />

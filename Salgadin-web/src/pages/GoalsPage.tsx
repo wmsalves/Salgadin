@@ -1,14 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import {
-  ArrowUpRight,
   CheckCircle2,
   Flag,
-  Info,
   Shield,
   Sparkles,
   Target,
-  Trophy,
   TriangleAlert,
 } from "lucide-react";
 import { getGoals, createGoal, getGoalAlerts } from "../services/goalService";
@@ -82,16 +79,16 @@ const statusConfig: Record<
   }
 > = {
   healthy: {
-    label: "Saudavel",
-    description: "Seu ritmo segue dentro do planejado neste mes.",
+    label: "Saudável",
+    description: "Seu ritmo segue dentro do planejado neste mês.",
     toneClass: "text-success",
     badgeClass: "border-success/20 bg-success/10 text-success",
     progressClass: "bg-success",
     icon: CheckCircle2,
   },
   "near-limit": {
-    label: "Atencao",
-    description: "Vale acompanhar os proximos gastos para manter o controle.",
+    label: "Atenção",
+    description: "Vale acompanhar os próximos gastos para manter o controle.",
     toneClass: "text-warning",
     badgeClass: "border-warning/20 bg-warning/10 text-warning",
     progressClass: "bg-warning",
@@ -99,7 +96,7 @@ const statusConfig: Record<
   },
   "limit-reached": {
     label: "Limite atingido",
-    description: "O limite mensal foi usado. Revise os proximos lancamentos com calma.",
+    description: "O limite mensal foi usado. Revise os próximos lançamentos com calma.",
     toneClass: "text-danger",
     badgeClass: "border-danger/20 bg-danger/10 text-danger",
     progressClass: "bg-danger",
@@ -107,7 +104,7 @@ const statusConfig: Record<
   },
   "over-limit": {
     label: "Limite ultrapassado",
-    description: "O limite mensal passou do planejado. Vale ajustar os proximos gastos com calma.",
+    description: "O limite mensal passou do planejado. Vale ajustar os próximos gastos com calma.",
     toneClass: "text-danger",
     badgeClass: "border-danger/20 bg-danger/10 text-danger",
     progressClass: "bg-danger",
@@ -115,7 +112,7 @@ const statusConfig: Record<
   },
   paused: {
     label: "Meta pausada",
-    description: "Essa meta nao esta contando alertas enquanto estiver pausada.",
+    description: "Essa meta não está contando alertas enquanto estiver pausada.",
     toneClass: "text-foreground-muted",
     badgeClass: "border-border bg-surface-2 text-foreground-muted",
     progressClass: "bg-foreground-muted/40",
@@ -138,14 +135,14 @@ const getGoalStatusHeadline = (
   }
 
   if (status === "near-limit") {
-    return `Voce ja usou ${formatPercent(percent)} da meta de ${categoryLabel}.`;
+    return `Você já usou ${formatPercent(percent)} da meta de ${categoryLabel}.`;
   }
 
   if (status === "paused") {
-    return `A meta de ${categoryLabel} esta pausada neste momento.`;
+    return `A meta de ${categoryLabel} está pausada neste momento.`;
   }
 
-  return `A meta de ${categoryLabel} segue dentro do planejado neste mes.`;
+  return `A meta de ${categoryLabel} segue dentro do planejado neste mês.`;
 };
 
 const getGoalStatusDetail = (
@@ -154,38 +151,22 @@ const getGoalStatusDetail = (
   overflow: number,
 ) => {
   if (status === "over-limit") {
-    return `Voce passou ${formatCurrency(overflow)} do valor planejado neste mes.`;
+    return `Você passou ${formatCurrency(overflow)} do valor planejado neste mês.`;
   }
 
   if (status === "limit-reached") {
-    return "O limite mensal foi usado por completo. Vale acompanhar os proximos gastos com calma.";
+    return "O limite mensal foi usado por completo. Vale acompanhar os próximos gastos com calma.";
   }
 
   if (status === "near-limit") {
-    return `Restam ${formatCurrency(remaining)} para manter a meta neste mes.`;
+    return `Restam ${formatCurrency(remaining)} para manter a meta neste mês.`;
   }
 
   if (status === "paused") {
-    return "Essa meta nao gera alertas enquanto estiver pausada.";
+    return "Essa meta não gera alertas enquanto estiver pausada.";
   }
 
-  return `Ainda restam ${formatCurrency(remaining)} para essa meta neste mes.`;
-};
-
-const getGoalPriorityLabel = (status: GoalStatus) => {
-  if (status === "over-limit" || status === "limit-reached") {
-    return "Ajustar";
-  }
-
-  if (status === "near-limit") {
-    return "Acompanhar";
-  }
-
-  if (status === "paused") {
-    return "Pausada";
-  }
-
-  return "Estavel";
+  return `Ainda restam ${formatCurrency(remaining)} para essa meta neste mês.`;
 };
 
 export default function GoalsPage() {
@@ -314,7 +295,7 @@ export default function GoalsPage() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Metas</h1>
+          <h1 className="text-2xl font-medium text-foreground">Metas</h1>
           <p className="text-sm text-foreground-muted">
             Acompanhe limites mensais com leitura simples e alertas claros para{" "}
             {currentMonthLabel}.
@@ -322,7 +303,7 @@ export default function GoalsPage() {
         </div>
         <button
           onClick={() => setIsFormOpen((prev) => !prev)}
-          className="flex items-center gap-2 rounded-xl border border-border bg-surface/70 px-4 py-2 text-sm font-semibold text-foreground transition hover:border-surface-3 hover:bg-surface-2"
+          className="flex items-center gap-2 whitespace-nowrap rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground transition hover:border-surface-3 hover:bg-surface-2"
         >
           <Sparkles size={16} />
           Nova meta
@@ -330,7 +311,7 @@ export default function GoalsPage() {
       </header>
 
       {isFormOpen && (
-        <section className="rounded-2xl border border-border bg-surface/92 p-6 shadow-[0_14px_30px_rgba(0,0,0,0.10)]">
+        <section className="rounded-2xl border border-border bg-surface p-6">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
             <div>
               <label className="text-xs text-foreground-muted">Categoria</label>
@@ -389,7 +370,7 @@ export default function GoalsPage() {
             <div className="flex items-end">
               <button
                 onClick={handleSubmit}
-                className="w-full rounded-xl bg-primary/90 px-4 py-2 text-sm font-semibold text-white hover:bg-primary"
+                className="w-full rounded-xl bg-primary/90 px-4 py-2 text-sm font-medium text-[var(--color-on-primary)] hover:bg-primary"
               >
                 Salvar meta
               </button>
@@ -399,7 +380,7 @@ export default function GoalsPage() {
       )}
 
       {isLoading ? (
-        <div className="flex flex-col items-center justify-center gap-4 rounded-3xl border border-border/70 bg-surface/92 p-12 text-center text-foreground-subtle animate-in fade-in duration-500">
+        <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-border bg-surface p-12 text-center text-foreground-subtle animate-in fade-in duration-500">
           <div className="h-10 w-10 animate-spin text-primary">
             <svg
               className="h-full w-full"
@@ -428,7 +409,7 @@ export default function GoalsPage() {
         <EmptyState
           icon={Target}
           title="Crie sua primeira meta"
-          description="Escolha um limite simples para os pequenos gastos do mes. O Salgadin avisa quando voce estiver chegando perto e mostra como o consumo evolui."
+          description="Escolha um limite simples para os pequenos gastos do mês. O Salgadin avisa quando você estiver chegando perto e mostra como o consumo evolui."
           size="spacious"
           primaryAction={{
             label: "Criar meta",
@@ -436,7 +417,7 @@ export default function GoalsPage() {
           }}
           secondaryAction={
             categories.length === 0
-              ? { label: "Criar categorias", href: "/categorias" }
+              ? { label: "Criar categorias", href: "/lancamentos/categorias" }
               : undefined
           }
         >
@@ -444,11 +425,11 @@ export default function GoalsPage() {
             {[
               "Limites gerais ou por categoria.",
               "Alertas suaves antes de estourar o valor planejado.",
-              "Leitura rapida para decidir os proximos gastos do mes.",
+              "Leitura rápida para decidir os próximos gastos do mês.",
             ].map((item) => (
               <div
                 key={item}
-                className="rounded-2xl border border-border/80 bg-surface/80 px-4 py-3 text-sm text-foreground-muted"
+                className="rounded-2xl border border-border bg-surface px-4 py-3 text-sm text-foreground-muted"
               >
                 {item}
               </div>
@@ -458,11 +439,11 @@ export default function GoalsPage() {
       ) : (
         <>
           <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div className="rounded-2xl border border-border/70 bg-surface/92 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.08)]">
-              <div className="text-xs uppercase tracking-[0.2em] text-foreground-subtle">
+            <div className="rounded-2xl border border-border bg-surface p-5">
+              <div className="text-xs text-foreground-subtle">
                 Metas ativas
               </div>
-              <div className="mt-2 text-2xl font-semibold text-foreground">
+              <div className="mt-2 text-2xl font-medium text-foreground">
                 {summary.activeGoals}
               </div>
               <p className="mt-1 text-sm text-foreground-muted">
@@ -470,48 +451,45 @@ export default function GoalsPage() {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-border/70 bg-surface/92 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.08)]">
-              <div className="text-xs uppercase tracking-[0.2em] text-foreground-subtle">
-                Saude financeira
+            <div className="rounded-2xl border border-border bg-surface p-5">
+              <div className="text-xs text-foreground-subtle">
+                Saúde financeira
               </div>
-              <div className="mt-2 text-2xl font-semibold text-foreground">
+              <div className="mt-2 text-2xl font-medium text-foreground">
                 {summary.healthyGoals}
               </div>
               <p className="mt-1 text-sm text-foreground-muted">
                 {summary.healthyGoals === 1
-                  ? "meta segue com folga neste mes."
-                  : "metas seguem com folga neste mes."}
+                  ? "meta segue com folga neste mês."
+                  : "metas seguem com folga neste mês."}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-border/70 bg-surface/92 p-5 shadow-[0_14px_30px_rgba(60,42,32,0.08)]">
-              <div className="text-xs uppercase tracking-[0.2em] text-foreground-subtle">
-                Pedem atencao
+            <div className="rounded-2xl border border-border bg-surface p-5">
+              <div className="text-xs text-foreground-subtle">
+                Pedem atenção
               </div>
-              <div className="mt-2 text-2xl font-semibold text-foreground">
+              <div className="mt-2 text-2xl font-medium text-foreground">
                 {summary.attentionGoals}
               </div>
               <p className="mt-1 text-sm text-foreground-muted">
                 {summary.attentionGoals > 0
-                  ? "Acompanhe os proximos gastos para manter o planejamento."
+                  ? "Acompanhe os próximos gastos para manter o planejamento."
                   : "Nenhuma meta exige ajuste agora."}
               </p>
             </div>
           </section>
 
-          <section className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)]">
+          <section className="rounded-2xl border border-border bg-surface p-6">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  Alertas do mes
+                <h2 className="text-base font-medium text-foreground">
+                  Alertas do mês
                 </h2>
                 <p className="text-sm text-foreground-muted">
-                  Recomendacoes simples com base no consumo registrado ate agora.
+                  Recomendações simples com base no consumo registrado até agora.
                 </p>
               </div>
-              <span className="rounded-full border border-border bg-surface-2 px-3 py-1 text-xs font-medium text-foreground-subtle">
-                {currentMonthLabel}
-              </span>
             </div>
 
             {summary.topAlerts.length > 0 ? (
@@ -538,7 +516,7 @@ export default function GoalsPage() {
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <div className="text-sm font-semibold text-foreground">
+                          <div className="text-sm font-medium text-foreground">
                             {categoryLabel}
                           </div>
                           <p className="mt-1 text-xs text-foreground-muted">
@@ -552,7 +530,7 @@ export default function GoalsPage() {
                         </div>
                         <span
                           className={clsx(
-                            "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold",
+                            "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium",
                             config.badgeClass,
                           )}
                         >
@@ -566,7 +544,7 @@ export default function GoalsPage() {
                           <div className="text-xs text-foreground-subtle">
                             Gasto atual
                           </div>
-                          <div className="text-lg font-semibold text-foreground">
+                          <div className="text-lg font-medium text-foreground">
                             {formatCurrency(spent)}
                           </div>
                         </div>
@@ -592,7 +570,7 @@ export default function GoalsPage() {
                         <span>Alerta em {thresholdPercent}%</span>
                       </div>
 
-                      <div className="mt-4 rounded-2xl border border-border/70 bg-surface px-3.5 py-3 text-sm text-foreground-muted">
+                      <div className="mt-4 rounded-2xl border border-border bg-surface px-3.5 py-3 text-sm text-foreground-muted">
                         {getGoalStatusDetail(status, remaining, overflow)}
                       </div>
                     </div>
@@ -602,8 +580,8 @@ export default function GoalsPage() {
             ) : (
               <EmptyState
                 icon={Shield}
-                title="Tudo sob controle neste mes"
-                description="Suas metas ativas ainda estao em uma zona confortavel. Continue registrando os gastos para manter os alertas atualizados."
+                title="Tudo sob controle neste mês"
+                description="Suas metas ativas ainda estão em uma zona confortável. Continue registrando os gastos para manter os alertas atualizados."
                 compact
                 className="mt-5"
               />
@@ -624,41 +602,36 @@ export default function GoalsPage() {
             }, index) => {
               const config = statusConfig[status];
               const Icon = config.icon;
-              const reward = getGoalPriorityLabel(status);
               const progressWidth = clamp(percentRaw, 0, 100);
 
               return (
                 <div
                   key={goal.id}
                   style={{ animationDelay: `${index * 80}ms` }}
-                  className="animate-fade-in rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 opacity-0 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover [animation-fill-mode:forwards]"
+                  className="animate-fade-in rounded-2xl border border-border bg-surface p-6 opacity-0 [animation-fill-mode:forwards]"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div className="grid h-12 w-12 place-items-center rounded-xl bg-primary/15 text-primary">
-                      <Target size={18} />
-                    </div>
-                    <div className="text-right">
-                      <div className="text-xs uppercase tracking-[0.18em] text-foreground-subtle">
-                        Prioridade
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
+                        <Target size={18} />
                       </div>
-                      <div className="mt-1 text-sm font-semibold text-foreground">
-                        {reward}
+                      <div className="min-w-0">
+                        <h2 className="truncate text-base font-medium text-foreground">
+                          {categoryLabel}
+                          {!goal.isActive && (
+                            <span className="ml-2 text-xs font-normal text-foreground-subtle">
+                              pausada
+                            </span>
+                          )}
+                        </h2>
+                        <p className="text-ui text-foreground-muted tabular-nums">
+                          {formatCurrency(spent)} de {formatCurrency(goal.monthlyLimit)}
+                        </p>
                       </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <h2 className="text-lg font-semibold text-foreground">
-                        {categoryLabel}
-                      </h2>
-                      <p className="mt-1 text-sm text-foreground-muted">
-                        {formatCurrency(spent)} usados de {formatCurrency(goal.monthlyLimit)}
-                      </p>
                     </div>
                     <span
                       className={clsx(
-                        "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold",
+                        "inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium",
                         config.badgeClass,
                       )}
                     >
@@ -667,64 +640,26 @@ export default function GoalsPage() {
                     </span>
                   </div>
 
-                  <div className="mt-5 h-2.5 rounded-full bg-surface-3">
+                  <div className="mt-5 h-2 rounded-full bg-surface-3">
                     <div
-                      className={clsx("h-2.5 rounded-full", config.progressClass)}
+                      className={clsx("h-2 rounded-full", config.progressClass)}
                       style={{ width: `${progressWidth}%` }}
                     />
                   </div>
 
-                  <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-foreground-subtle">
-                    <span>{formatPercent(percent)} do limite usado</span>
-                    <span>Aviso em {thresholdPercent}%</span>
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-foreground-subtle tabular-nums">
+                    <span>
+                      {formatPercent(percent)} usado · aviso em {thresholdPercent}%
+                    </span>
+                    <span className={overflow > 0 ? "font-medium text-danger" : undefined}>
+                      {overflow > 0
+                        ? `${formatCurrency(overflow)} acima`
+                        : `${formatCurrency(remaining)} restantes`}
+                    </span>
                   </div>
 
-                  <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                    <div className="rounded-2xl border border-border bg-surface/80 px-4 py-3">
-                      <div className="text-[11px] uppercase tracking-[0.16em] text-foreground-subtle">
-                        Usado
-                      </div>
-                      <div className="mt-1 text-sm font-semibold text-foreground">
-                        {formatCurrency(spent)}
-                      </div>
-                    </div>
-                    <div className="rounded-2xl border border-border bg-surface/80 px-4 py-3">
-                      <div className="text-[11px] uppercase tracking-[0.16em] text-foreground-subtle">
-                        Limite
-                      </div>
-                      <div className="mt-1 text-sm font-semibold text-foreground">
-                        {formatCurrency(goal.monthlyLimit)}
-                      </div>
-                    </div>
-                    <div className="rounded-2xl border border-border bg-surface/80 px-4 py-3">
-                      <div className="text-[11px] uppercase tracking-[0.16em] text-foreground-subtle">
-                        {overflow > 0 ? "Ultrapassou" : "Restante"}
-                      </div>
-                      <div className="mt-1 text-sm font-semibold text-foreground">
-                        {formatCurrency(overflow > 0 ? overflow : remaining)}
-                      </div>
-                    </div>
-                    <div className="rounded-2xl border border-border bg-surface/80 px-4 py-3">
-                      <div className="text-[11px] uppercase tracking-[0.16em] text-foreground-subtle">
-                        Consumo
-                      </div>
-                      <div className="mt-1 text-sm font-semibold text-foreground">
-                        {formatPercent(percent)}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-5 rounded-2xl border border-border bg-surface-2 px-4 py-3">
-                    <div className="flex items-center justify-between gap-3 text-sm">
-                      <div className="flex items-center gap-2 text-foreground">
-                        <Trophy size={16} className={config.toneClass} />
-                        <span className="font-medium">
-                          {goal.isActive ? "Status ativo" : "Status pausado"}
-                        </span>
-                      </div>
-                      <ArrowUpRight size={16} className={config.toneClass} />
-                    </div>
-                    <p className="mt-2 text-sm text-foreground-muted">
+                  <div className="mt-5 border-t border-border pt-4">
+                    <p className="text-ui text-foreground">
                       {getGoalStatusHeadline(
                         status,
                         categoryLabel,
@@ -732,13 +667,9 @@ export default function GoalsPage() {
                         overflow,
                       )}
                     </p>
-                    <p className="mt-2 text-sm text-foreground-subtle">
+                    <p className="mt-1 text-ui text-foreground-muted">
                       {getGoalStatusDetail(status, remaining, overflow)}
                     </p>
-                    <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-border/80 bg-surface px-3 py-1.5 text-xs text-foreground-muted">
-                      <Info size={12} />
-                      Aviso configurado para {thresholdPercent}% da meta.
-                    </div>
                   </div>
                 </div>
               );

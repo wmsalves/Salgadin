@@ -208,6 +208,9 @@ pnpm-debug.log*
 
 # Local AI agent
 AGENTS.md
+.claude/
+CLAUDE.md
+CLAUDE.local.md
 
 # System
 .DS_Store

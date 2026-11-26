@@ -49,11 +49,11 @@ const CHART_COLORS = [
 ];
 
 const iconMap: Record<string, React.ComponentType<{ size?: number }>> = {
-  alimentacao: Utensils,
+  alimentação: Utensils,
   transporte: Bus,
   compras: ShoppingCart,
-  saude: HeartPulse,
-  educacao: GraduationCap,
+  saúde: HeartPulse,
+  educação: GraduationCap,
   moradia: Home,
   lazer: Sparkles,
   outros: MoreHorizontal,
@@ -107,10 +107,10 @@ function CategoryDistributionTooltip({
   const item = payload[0].payload;
 
   return (
-    <div className="min-w-[180px] rounded-2xl border border-border/80 bg-[rgba(24,20,18,0.96)] px-3 py-2.5 shadow-[0_18px_38px_rgba(0,0,0,0.34)] backdrop-blur-sm">
-      <p className="text-sm font-semibold text-foreground">{item.name}</p>
-      <p className="mt-2 text-xs text-foreground-subtle">Gastos no mes</p>
-      <p className="text-sm font-semibold text-foreground">
+    <div className="min-w-[180px] rounded-2xl border border-border bg-[rgba(24,20,18,0.96)] px-3 py-2.5 backdrop-blur-sm">
+      <p className="text-sm font-medium text-foreground">{item.name}</p>
+      <p className="mt-2 text-xs text-foreground-subtle">Gastos no mês</p>
+      <p className="text-sm font-medium text-foreground">
         {formatCurrency(item.spent)}
       </p>
       <p className="mt-1 text-xs text-foreground-muted">
@@ -171,7 +171,7 @@ export default function CategoriesPage() {
       setCategories(data);
     } catch (err) {
       console.error("Falha ao buscar categorias:", err);
-      setError("Nao foi possivel carregar suas categorias.");
+      setError("Não foi possível carregar suas categorias.");
     }
   }, []);
 
@@ -268,7 +268,7 @@ export default function CategoriesPage() {
         ...prev,
         [categoryId]: getErrorMessage(
           err,
-          "Nao foi possivel criar a subcategoria.",
+          "Não foi possível criar a subcategoria.",
         ),
       }));
     }
@@ -293,7 +293,7 @@ export default function CategoriesPage() {
     } catch (err) {
       console.error("Falha ao excluir subcategoria:", err);
       setDeleteSubcategoryError(
-        getErrorMessage(err, "Nao foi possivel excluir a subcategoria."),
+        getErrorMessage(err, "Não foi possível excluir a subcategoria."),
       );
     } finally {
       setIsDeletingSubcategory(false);
@@ -366,7 +366,7 @@ export default function CategoriesPage() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header className="flex flex-col gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Categorias</h1>
+          <h1 className="text-2xl font-medium text-foreground">Categorias</h1>
           <p className="text-sm text-foreground-muted">
             Monitore seus gastos por categoria e ajuste seus limites.
           </p>
@@ -390,7 +390,7 @@ export default function CategoriesPage() {
             placeholder="Nova categoria"
             aria-invalid={createError ? "true" : "false"}
             className={clsx(
-              "flex-1 rounded-xl border bg-surface/70 px-4 py-2 text-sm text-foreground outline-none focus:border-primary/50",
+              "flex-1 rounded-xl border bg-surface px-4 py-2 text-sm text-foreground outline-none focus:border-primary/50",
               createError ? "border-danger/60" : "border-border",
             )}
           />
@@ -398,7 +398,7 @@ export default function CategoriesPage() {
             type="button"
             onClick={handleCreateCategory}
             disabled={isCreating}
-            className="flex items-center gap-2 rounded-xl border border-border bg-surface/70 px-4 py-2 text-sm font-semibold text-foreground hover:border-surface-3 hover:bg-surface-2 transition disabled:opacity-60"
+            className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground hover:border-surface-3 hover:bg-surface-2 transition disabled:opacity-60"
           >
             <Plus size={16} />
             {isCreating ? "Salvando..." : "Criar categoria"}
@@ -415,7 +415,7 @@ export default function CategoriesPage() {
         <EmptyState
           icon={Sparkles}
           title="Organize seus primeiros pequenos gastos"
-          description="Crie categorias como alimentacao, transporte ou mercado para entender para onde o dinheiro vai."
+          description="Crie categorias como alimentação, transporte ou mercado para entender para onde o dinheiro vai."
           primaryAction={{
             label: "Criar categoria",
             onClick: () => categoryInputRef.current?.focus(),
@@ -428,34 +428,34 @@ export default function CategoriesPage() {
       ) : (
         <div className="space-y-6">
           {categoryDistribution.length > 0 && (
-            <section className="rounded-3xl border border-border/70 bg-surface/92 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)]">
+            <section className="rounded-2xl border border-border bg-surface p-6">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold text-foreground">
+                  <h2 className="text-base font-medium text-foreground">
                     Gastos por categoria
                   </h2>
                   <p className="mt-1 text-sm text-foreground-muted">
-                    Veja o peso de cada categoria no total do mes e encontre
+                    Veja o peso de cada categoria no total do mês e encontre
                     onde os pequenos gastos mais se concentram.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <div className="rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs text-foreground-subtle">
                     Total gasto:{" "}
-                    <span className="font-semibold text-foreground">
+                    <span className="font-medium text-foreground">
                       {formatCurrency(totalSpent)}
                     </span>
                   </div>
                   <div className="rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs text-foreground-subtle">
                     Categorias ativas:{" "}
-                    <span className="font-semibold text-foreground">
+                    <span className="font-medium text-foreground">
                       {categoryDistribution.length}
                     </span>
                   </div>
                   {topSpendingCategory && (
                     <div className="rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs text-foreground-subtle">
                       Maior categoria:{" "}
-                      <span className="font-semibold text-foreground">
+                      <span className="font-medium text-foreground">
                         {topSpendingCategory.name}
                       </span>
                     </div>
@@ -464,7 +464,7 @@ export default function CategoriesPage() {
               </div>
 
               <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(280px,0.9fr)_minmax(0,1.1fr)] xl:items-start">
-                <div className="salgadin-chart h-[280px] rounded-3xl border border-border/60 bg-surface/55 p-3">
+                <div className="salgadin-chart h-[280px] rounded-2xl border border-border bg-surface p-3">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart accessibilityLayer={false} tabIndex={-1}>
                       <Pie
@@ -495,7 +495,7 @@ export default function CategoriesPage() {
 
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-3">
-                    <h3 className="text-sm font-semibold uppercase tracking-[0.16em] text-foreground-muted">
+                    <h3 className="text-sm font-medium text-foreground-muted">
                       Ranking completo
                     </h3>
                     <span className="text-xs text-foreground-subtle">
@@ -510,7 +510,7 @@ export default function CategoriesPage() {
                         className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-surface-2 px-4 py-3"
                       >
                         <div className="flex min-w-0 items-center gap-3">
-                          <span className="w-5 text-xs font-semibold text-foreground-muted">
+                          <span className="w-5 text-xs font-medium text-foreground-muted">
                             {index + 1}
                           </span>
                           <span
@@ -530,7 +530,7 @@ export default function CategoriesPage() {
                             </p>
                           </div>
                         </div>
-                        <span className="font-mono text-sm font-semibold text-foreground tabular-nums">
+                        <span className=" text-sm font-medium text-foreground tabular-nums">
                           {formatCurrency(cat.spent)}
                         </span>
                       </div>
@@ -543,7 +543,7 @@ export default function CategoriesPage() {
 
           <section className="space-y-4">
             <div>
-              <h2 className="text-lg font-semibold text-foreground">
+              <h2 className="text-base font-medium text-foreground">
                 Suas categorias
               </h2>
               <p className="mt-1 text-sm text-foreground-muted">
@@ -560,7 +560,7 @@ export default function CategoriesPage() {
                   <div
                     key={cat.id}
                     style={{ animationDelay: `${index * 100}ms` }}
-                    className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+                    className="rounded-2xl border border-border bg-surface p-6 soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
@@ -568,7 +568,7 @@ export default function CategoriesPage() {
                           <Icon size={18} />
                         </div>
                         <div>
-                          <h3 className="text-base font-semibold text-foreground">
+                          <h3 className="text-base font-medium text-foreground">
                             {cat.name}
                           </h3>
                           <p className="text-xs text-foreground-subtle">
@@ -600,7 +600,7 @@ export default function CategoriesPage() {
                       <span className="text-foreground-subtle">Gasto atual</span>
                       <span
                         className={clsx(
-                          "font-semibold",
+                          "font-medium",
                           isHigh ? "text-danger" : "text-primary",
                         )}
                       >
@@ -631,10 +631,10 @@ export default function CategoriesPage() {
                       </div>
                     )}
 
-                    <div className="mt-4 border-t border-border/60 pt-4">
+                    <div className="mt-4 border-t border-border pt-4">
                       <button
                         onClick={() => toggleSubcategories(cat.id)}
-                        className="flex w-full items-center justify-between text-xs font-semibold text-foreground-muted transition hover:text-foreground"
+                        className="flex w-full items-center justify-between text-xs font-medium text-foreground-muted transition hover:text-foreground"
                       >
                         <span>Subcategorias</span>
                         {expandedCategoryId === cat.id ? (
@@ -660,7 +660,7 @@ export default function CategoriesPage() {
                             />
                             <button
                               onClick={() => handleAddSubcategory(cat.id)}
-                              className="rounded-lg border border-border bg-surface-2 px-3 text-xs font-semibold text-foreground transition hover:bg-surface-3"
+                              className="rounded-lg border border-border bg-surface-2 px-3 text-xs font-medium text-foreground transition hover:bg-surface-3"
                             >
                               Adicionar
                             </button>
@@ -701,8 +701,8 @@ export default function CategoriesPage() {
                               ))}
                             </div>
                           ) : (
-                            <div className="rounded-xl border border-dashed border-border bg-surface/60 px-3 py-2 text-xs leading-5 text-foreground-subtle">
-                              Use subcategorias para separar detalhes como cafe,
+                            <div className="rounded-xl border border-dashed border-border bg-surface px-3 py-2 text-xs leading-5 text-foreground-subtle">
+                              Use subcategorias para separar detalhes como café,
                               aplicativo, mercado ou lanche.
                             </div>
                           )}
@@ -736,7 +736,7 @@ export default function CategoriesPage() {
       <ConfirmActionModal
         isOpen={subcategoryToDelete !== null}
         title="Excluir subcategoria"
-        description={`Voce esta prestes a excluir permanentemente a subcategoria "${subcategoryToDelete?.name ?? ""}". Esta acao nao podera ser desfeita.`}
+        description={`Você está prestes a excluir permanentemente a subcategoria "${subcategoryToDelete?.name ?? ""}". Esta ação não poderá ser desfeita.`}
         confirmLabel="Sim, excluir"
         onClose={() => {
           if (isDeletingSubcategory) return;

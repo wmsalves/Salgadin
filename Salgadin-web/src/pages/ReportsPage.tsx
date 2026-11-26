@@ -26,6 +26,28 @@ import { getCategories, type Category } from "../services/categoryService";
 import { getSubcategories } from "../services/subcategoryService";
 import { EmptyState } from "../components/EmptyState";
 
+const formatCurrency = (value: number) =>
+  value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+const formatPercent = (ratio: number) =>
+  `${(ratio * 100).toLocaleString("pt-BR", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  })}%`;
+
+// "2026-11-21" -> "21 de nov." sem passar por fuso horario.
+const formatDayLabel = (value: string | null | undefined) => {
+  if (!value) return "—";
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(value);
+  if (!match) return value;
+  const [, year, month, day] = match;
+  return new Date(Date.UTC(+year, +month - 1, +day)).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    timeZone: "UTC",
+  });
+};
+
 type ReportMode = "monthly" | "weekly";
 
 type ReportFilters = {
@@ -181,22 +203,22 @@ export default function ReportsPage() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Relatorios</h1>
+          <h1 className="text-2xl font-medium text-foreground">Relatórios</h1>
           <p className="text-sm text-foreground-muted">
-            Visualize tendencias e acompanhe sua evolucao financeira.
+            Visualize tendências e acompanhe sua evolução financeira.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => handleExport("csv")}
-            className="flex items-center gap-2 rounded-xl border border-border bg-surface/70 px-4 py-2 text-sm font-semibold text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
+            className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
           >
             <Download size={16} />
             CSV
           </button>
           <button
             onClick={() => handleExport("pdf")}
-            className="flex items-center gap-2 rounded-xl border border-border bg-surface/70 px-4 py-2 text-sm font-semibold text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
+            className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground hover:border-surface-3 hover:bg-surface-2 transition"
           >
             <Download size={16} />
             PDF
@@ -204,18 +226,18 @@ export default function ReportsPage() {
         </div>
       </header>
 
-      <section className="rounded-2xl border border-border bg-surface/70 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.12)]">
+      <section className="rounded-2xl border border-border bg-surface p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2 text-sm text-foreground-muted">
             <CalendarRange size={16} />
-            Periodo
+            Período
           </div>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setMode("monthly")}
-              className={`rounded-full px-4 py-2 text-xs font-semibold ${
+              className={`rounded-full px-4 py-2 text-xs font-medium ${
                 mode === "monthly"
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-[var(--color-on-primary)]"
                   : "border border-border text-foreground-muted"
               }`}
             >
@@ -223,9 +245,9 @@ export default function ReportsPage() {
             </button>
             <button
               onClick={() => setMode("weekly")}
-              className={`rounded-full px-4 py-2 text-xs font-semibold ${
+              className={`rounded-full px-4 py-2 text-xs font-medium ${
                 mode === "weekly"
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-[var(--color-on-primary)]"
                   : "border border-border text-foreground-muted"
               }`}
             >
@@ -238,7 +260,7 @@ export default function ReportsPage() {
           {mode === "monthly" ? (
             <>
               <div>
-                <label className="text-xs text-foreground-muted">Mes</label>
+                <label className="text-xs text-foreground-muted">Mês</label>
                 <input
                   type="month"
                   value={monthlyValue}
@@ -249,13 +271,13 @@ export default function ReportsPage() {
               <div className="flex items-end gap-2">
                 <button
                   onClick={() => setCompareEnabled((prev) => !prev)}
-                  className={`w-full rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                  className={`w-full rounded-xl border px-4 py-2 text-sm font-medium transition ${
                     compareEnabled
                       ? "border-primary text-primary"
                       : "border-border text-foreground-muted"
                   }`}
                 >
-                  Comparar mes
+                  Comparar mês
                 </button>
               </div>
               {compareEnabled ? (
@@ -277,7 +299,7 @@ export default function ReportsPage() {
           ) : (
             <>
               <div>
-                <label className="text-xs text-foreground-muted">Inicio</label>
+                <label className="text-xs text-foreground-muted">Início</label>
                 <input
                   type="date"
                   value={startDate}
@@ -308,7 +330,7 @@ export default function ReportsPage() {
                 }
                 fetchReport(draftFilterParams);
               }}
-              className="w-full rounded-xl border border-border bg-surface-2 px-4 py-2 text-sm font-semibold text-foreground hover:bg-surface-3 transition-colors active:scale-[0.98]"
+              className="w-full rounded-xl border border-border bg-surface-2 px-4 py-2 text-sm font-medium text-foreground hover:bg-surface-3 transition-colors active:scale-[0.98]"
             >
               Atualizar
             </button>
@@ -356,7 +378,7 @@ export default function ReportsPage() {
           </div>
           <div>
             <label className="text-xs text-foreground-muted">
-              Valor minimo
+              Valor mínimo
             </label>
             <input
               type="number"
@@ -368,7 +390,7 @@ export default function ReportsPage() {
           </div>
           <div>
             <label className="text-xs text-foreground-muted">
-              Valor maximo
+              Valor máximo
             </label>
             <input
               type="number"
@@ -382,7 +404,7 @@ export default function ReportsPage() {
       </section>
 
       {!report ? (
-        <div className="rounded-3xl border border-border/70 bg-surface/92 p-12 text-center text-foreground-subtle flex flex-col items-center justify-center gap-4 animate-in fade-in duration-500">
+        <div className="rounded-2xl border border-border bg-surface p-12 text-center text-foreground-subtle flex flex-col items-center justify-center gap-4 animate-in fade-in duration-500">
           <div className="h-10 w-10 text-primary animate-spin">
             <svg
               className="h-full w-full"
@@ -415,43 +437,44 @@ export default function ReportsPage() {
             <div className="xl:col-span-3 grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="rounded-2xl border border-border bg-surface-2 p-4">
                 <p className="text-xs text-foreground-subtle">Total</p>
-                <p className="text-lg font-semibold text-foreground">
-                  R$ {summary.total.toFixed(2)}
+                <p className="text-lg font-medium text-foreground tabular-nums">
+                  {formatCurrency(summary.total)}
                 </p>
               </div>
               <div className="rounded-2xl border border-border bg-surface-2 p-4">
-                <p className="text-xs text-foreground-subtle">Media diaria</p>
-                <p className="text-lg font-semibold text-foreground">
-                  R$ {summary.averageDaily.toFixed(2)}
+                <p className="text-xs text-foreground-subtle">Média diária</p>
+                <p className="text-lg font-medium text-foreground tabular-nums">
+                  {formatCurrency(summary.averageDaily)}
                 </p>
               </div>
               <div className="rounded-2xl border border-border bg-surface-2 p-4">
                 <p className="text-xs text-foreground-subtle">Maior dia</p>
-                <p className="text-sm font-semibold text-foreground">
-                  {summary.biggestDay ?? "N/A"}
+                <p className="text-sm font-medium text-foreground">
+                  {formatDayLabel(summary.biggestDay)}
                 </p>
                 <p className="text-xs text-foreground-muted">
-                  R$ {summary.biggestDayTotal.toFixed(2)}
+                  {formatCurrency(summary.biggestDayTotal)}
                 </p>
               </div>
               <div className="rounded-2xl border border-border bg-surface-2 p-4">
                 <p className="text-xs text-foreground-subtle">
-                  Tendencia vs periodo anterior
+                  Tendência vs período anterior
                 </p>
                 <p
-                  className={`text-lg font-semibold ${
+                  className={`text-lg font-medium ${
                     summary.trendPercent >= 0 ? "text-danger" : "text-primary"
                   }`}
                 >
-                  {(summary.trendPercent * 100).toFixed(1)}%
+                  {summary.trendPercent > 0 ? "+" : ""}
+                  {formatPercent(summary.trendPercent)}
                 </p>
               </div>
             </div>
           )}
           {summary && summary.insights.length > 0 && (
-            <div className="xl:col-span-3 rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)]">
-              <h2 className="text-lg font-semibold text-foreground mb-4">
-                Insights automaticos
+            <div className="xl:col-span-3 rounded-2xl border border-border bg-surface p-6">
+              <h2 className="text-base font-medium text-foreground mb-4">
+                Insights automáticos
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {summary.insights.map((insight, index) => (
@@ -459,11 +482,11 @@ export default function ReportsPage() {
                     key={`${insight.title}-${index}`}
                     className="rounded-2xl border border-border bg-surface-2 p-4"
                   >
-                    <p className="text-xs uppercase tracking-wide text-foreground-subtle">
+                    <p className="text-xs text-foreground-subtle">
                       {insight.title}
                     </p>
                     <p
-                      className={`mt-2 text-sm font-semibold ${
+                      className={`mt-2 text-sm font-medium ${
                         insight.tone === "positive"
                           ? "text-primary"
                           : insight.tone === "negative"
@@ -479,16 +502,16 @@ export default function ReportsPage() {
             </div>
           )}
           <div
-            className="xl:col-span-2 rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+            className="xl:col-span-2 rounded-2xl border border-border bg-surface p-6 soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
             style={{ animationDelay: "0ms" }}
           >
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  Evolucao de gastos
+                <h2 className="text-base font-medium text-foreground">
+                  Evolução de gastos
                 </h2>
                 <p className="text-xs text-foreground-subtle">
-                  Total: R$ {report.total.toFixed(2)}
+                  Total: {formatCurrency(report.total)}
                 </p>
                 {comparison && (
                   <p className="text-xs text-foreground-subtle mt-1">
@@ -500,8 +523,8 @@ export default function ReportsPage() {
                           : "text-primary"
                       }
                     >
-                      R$ {comparison.deltaTotal.toFixed(2)} (
-                      {(comparison.deltaPercent * 100).toFixed(1)}%)
+                      {formatCurrency(comparison.deltaTotal)} (
+                      {formatPercent(comparison.deltaPercent)})
                     </span>
                   </p>
                 )}
@@ -544,7 +567,7 @@ export default function ReportsPage() {
                       tick={{ fill: "var(--chart-muted)" }}
                     />
                     <YAxis
-                      tickFormatter={(value) => `R$ ${value}`}
+                      tickFormatter={(value: number) => `R$ ${value.toLocaleString("pt-BR")}`}
                       tickLine={false}
                       axisLine={false}
                       tick={{ fill: "var(--chart-muted)" }}
@@ -572,7 +595,7 @@ export default function ReportsPage() {
                 <EmptyState
                   icon={LineChart}
                   title="Sem dados suficientes ainda"
-                  description="Registre algumas despesas para transformar seus lancamentos em tendencias e comparacoes."
+                  description="Registre algumas despesas para transformar seus lançamentos em tendências e comparações."
                   primaryAction={{ label: "Ir para o dashboard", href: "/dashboard" }}
                   compact
                   className="flex h-full flex-col items-center justify-center"
@@ -582,10 +605,10 @@ export default function ReportsPage() {
           </div>
 
           <div
-            className="rounded-3xl border border-border/70 bg-gradient-to-br from-surface/95 via-surface/90 to-surface-2/75 p-6 shadow-[0_14px_30px_rgba(60,42,32,0.10)] soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+            className="rounded-2xl border border-border bg-surface p-6 soft-hover animate-fade-in opacity-0 [animation-fill-mode:forwards]"
             style={{ animationDelay: "150ms" }}
           >
-            <h2 className="text-lg font-semibold text-foreground mb-4">
+            <h2 className="text-base font-medium text-foreground mb-4">
               Por categoria
             </h2>
             <div className="space-y-3">
@@ -594,11 +617,11 @@ export default function ReportsPage() {
                   <div
                     key={item.category}
                     style={{ animationDelay: `${600 + index * 100}ms` }}
-                    className="flex items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm soft-hover-sm hover:bg-surface-3 animate-fade-in opacity-0 [animation-fill-mode:forwards]"
+                    className="flex items-center justify-between rounded-xl border border-border bg-surface-2 px-4 py-3 text-sm tabular-nums animate-fade-in opacity-0 [animation-fill-mode:forwards]"
                   >
                     <span className="text-foreground">{item.category}</span>
                     <span className="text-foreground-muted">
-                      R$ {item.total.toFixed(2)}
+                      {formatCurrency(item.total)}
                     </span>
                   </div>
                 ))
@@ -606,8 +629,8 @@ export default function ReportsPage() {
                 <EmptyState
                   icon={PieChart}
                   title="Categorias ainda sem movimento"
-                  description="Quando voce cadastrar gastos por categoria, este resumo mostra onde os pequenos valores estao se acumulando."
-                  primaryAction={{ label: "Criar categorias", href: "/categorias" }}
+                  description="Quando você cadastrar gastos por categoria, este resumo mostra onde os pequenos valores estão se acumulando."
+                  primaryAction={{ label: "Criar categorias", href: "/lancamentos/categorias" }}
                   compact
                 />
               )}

@@ -26,7 +26,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       <div>
         <label
           htmlFor={name}
-          className="block text-sm font-semibold text-foreground-muted mb-2"
+          className="block text-sm font-medium text-foreground-muted mb-2"
         >
           {label}
           {error && <span className="text-danger ml-1">*</span>}
@@ -48,7 +48,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             className={clsx(
               "w-full rounded-xl border border-border px-4 py-3 bg-surface text-foreground outline-none transition-all duration-200 ui-input motion-reduce:transition-none",
-              "focus:ring-2 focus:ring-primary/40 focus:border-primary focus:shadow-lg focus:shadow-[rgba(var(--shadow-color),0.12)]",
+              "focus:ring-2 focus:ring-primary/40 focus:border-primary",
               "placeholder:text-foreground-subtle",
               icon && "pl-10",
               type === "password" && "pr-10",

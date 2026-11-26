@@ -93,7 +93,7 @@ export function WhatsAppSimulationPanel() {
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_10px_24px_rgba(60,42,32,0.06)]">
+    <div className="overflow-hidden rounded-2xl border border-border bg-surface">
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
@@ -107,13 +107,13 @@ export function WhatsAppSimulationPanel() {
           </span>
           <span className="min-w-0">
             <span className="flex flex-wrap items-center gap-2">
-              <span className="text-sm font-semibold text-foreground">
+              <span className="text-sm font-medium text-foreground">
                 Simulador WhatsApp
               </span>
-              <span className="rounded-full bg-danger/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-danger">
+              <span className="rounded-full bg-danger/10 px-2 py-0.5 text-xs font-medium text-danger">
                 Dev only
               </span>
-              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                 Simulação local
               </span>
             </span>
@@ -123,7 +123,7 @@ export function WhatsAppSimulationPanel() {
             </span>
           </span>
         </span>
-        <span className="inline-flex items-center gap-2 text-xs font-semibold text-foreground-muted">
+        <span className="inline-flex items-center gap-2 text-xs font-medium text-foreground-muted">
           {isOpen ? "Ocultar" : "Abrir"}
           <ChevronDown
             size={16}
@@ -142,10 +142,10 @@ export function WhatsAppSimulationPanel() {
           })}
           transition={shouldReduceMotion ? { duration: 0 } : MOTION.smooth}
           id="whatsapp-simulator-panel"
-          className="overflow-hidden border-t border-border/70 bg-surface-2/45 p-4"
+          className="overflow-hidden border-t border-border bg-surface-2/45 p-4"
         >
           <div className="rounded-xl border border-primary/20 bg-primary/8 px-3 py-2.5 text-xs leading-5 text-foreground-muted">
-            Use esta ferramenta apenas para simular o fluxo interno. Em
+            Use está ferramenta apenas para simular o fluxo interno. Em
             staging/produção, o backend ainda valida autenticação e e-mail
             autorizado.
           </div>
@@ -174,7 +174,7 @@ export function WhatsAppSimulationPanel() {
                   type="button"
                   onClick={() => updateField("messageId", createMessageId())}
                   aria-label="Gerar novo Message ID"
-                  className="ui-surface-interactive inline-flex items-center justify-center rounded-xl border border-border bg-surface px-3 py-2 text-xs font-semibold text-foreground-muted hover:bg-surface-3 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="ui-surface-interactive inline-flex items-center justify-center rounded-xl border border-border bg-surface px-3 py-2 text-xs font-medium text-foreground-muted hover:bg-surface-3 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   <RefreshCw size={14} />
                 </button>
@@ -202,7 +202,7 @@ export function WhatsAppSimulationPanel() {
                   key={message}
                   type="button"
                   onClick={() => updateField("text", message)}
-                  className="ui-surface-interactive rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[11px] text-foreground-muted hover:border-primary/30 hover:bg-primary/8 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="ui-surface-interactive rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-xs text-foreground-muted hover:border-primary/30 hover:bg-primary/8 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   {message}
                 </button>
@@ -214,7 +214,7 @@ export function WhatsAppSimulationPanel() {
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="ui-pressable mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-70"
+            className="ui-pressable mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-[var(--color-on-primary)] hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/25 disabled:cursor-not-allowed disabled:opacity-70"
           >
             <Send size={16} />
             {isSubmitting ? "Simulando..." : "Simular mensagem"}
@@ -222,7 +222,7 @@ export function WhatsAppSimulationPanel() {
 
           {reply && (
             <div className="ui-status-message mt-4 rounded-2xl border border-success/25 bg-surface px-4 py-3 text-sm text-foreground">
-              <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-success">
+              <div className="mb-2 flex items-center gap-2 text-xs font-medium text-success">
                 <CheckCircle2 size={14} />
                 Resposta simulada
               </div>
@@ -234,7 +234,7 @@ export function WhatsAppSimulationPanel() {
 
           {errorMessage && (
             <div className="ui-status-message mt-4 rounded-2xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
-              <div className="mb-1 flex items-center gap-2 font-semibold">
+              <div className="mb-1 flex items-center gap-2 font-medium">
                 <AlertTriangle size={15} />
                 Não foi possível simular
               </div>

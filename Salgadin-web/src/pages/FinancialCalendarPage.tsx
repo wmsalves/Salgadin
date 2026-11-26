@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import {
   ArrowDownLeft,
   ArrowUpRight,
-  CalendarDays,
   ChevronLeft,
   ChevronRight,
   Clock3,
@@ -43,7 +42,7 @@ const longDateFormatter = new Intl.DateTimeFormat("pt-BR", {
   timeZone: "UTC",
 });
 
-const weekdayLabels = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom"];
+const weekdayLabels = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
 
 export default function FinancialCalendarPage() {
   const [currentMonth, setCurrentMonth] = useState(() => {
@@ -74,7 +73,7 @@ export default function FinancialCalendarPage() {
 
       setSelectedDateKey(hasTodayInMonth ? todayKey : fallbackKey);
     } catch {
-      setError("Nao foi possivel carregar o calendario financeiro.");
+      setError("Não foi possível carregar o calendário financeiro.");
     } finally {
       setIsLoading(false);
     }
@@ -123,19 +122,15 @@ export default function FinancialCalendarPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
-      <section className="rounded-3xl border border-border/70 bg-surface/90 p-5 shadow-[0_18px_42px_rgba(60,42,32,0.08)] md:p-6">
+      <section className="rounded-2xl border border-border bg-surface p-5 md:p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-surface-2 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-foreground-muted">
-              <CalendarDays size={14} />
-              Calendario
-            </div>
-            <h1 className="mt-3 text-2xl font-bold tracking-tight text-foreground md:text-3xl">
-              Calendario financeiro
+            <h1 className="text-2xl font-medium text-foreground">
+              Calendário financeiro
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-foreground-muted">
-              Veja o que entra, o que sai e quais recorrencias estao previstas
-              nos proximos dias.
+              Veja o que entra, o que sai e quais recorrências estão previstas
+              nos próximos dias.
             </p>
           </div>
 
@@ -145,14 +140,14 @@ export default function FinancialCalendarPage() {
                 type="button"
                 onClick={goToPreviousMonth}
                 className="grid h-9 w-9 place-items-center rounded-full text-foreground-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                aria-label="Mes anterior"
+                aria-label="Mês anterior"
               >
                 <ChevronLeft size={18} />
               </button>
               <button
                 type="button"
                 onClick={goToToday}
-                className="rounded-full px-4 py-2 text-sm font-semibold text-foreground-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                className="rounded-full px-4 py-2 text-sm font-medium text-foreground-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
               >
                 Hoje
               </button>
@@ -160,12 +155,12 @@ export default function FinancialCalendarPage() {
                 type="button"
                 onClick={goToNextMonth}
                 className="grid h-9 w-9 place-items-center rounded-full text-foreground-muted transition hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                aria-label="Proximo mes"
+                aria-label="Próximo mês"
               >
                 <ChevronRight size={18} />
               </button>
             </div>
-            <div className="rounded-2xl border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-semibold capitalize text-primary">
+            <div className="rounded-2xl border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium sentence-case whitespace-nowrap text-primary">
               {monthFormatter.format(currentMonth)}
             </div>
           </div>
@@ -179,7 +174,7 @@ export default function FinancialCalendarPage() {
             isLoading={isLoading}
           />
           <SummaryCard
-            label="Saidas previstas"
+            label="Saídas previstas"
             value={calendar?.predictedExpense ?? 0}
             tone="negative"
             isLoading={isLoading}
@@ -203,21 +198,21 @@ export default function FinancialCalendarPage() {
         <CalendarSkeleton />
       ) : calendar ? (
         <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
-          <div className="rounded-3xl border border-border/70 bg-surface/90 p-4 shadow-[0_18px_42px_rgba(60,42,32,0.08)] md:p-5">
+          <div className="rounded-2xl border border-border bg-surface p-4 md:p-5">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  Visao do mes
+                <h2 className="text-base font-medium text-foreground">
+                  Visão do mês
                 </h2>
                 <p className="text-sm text-foreground-muted">
-                  Clique em um dia para ver entradas, saidas e recorrencias.
+                  Clique em um dia para ver entradas, saídas e recorrências.
                 </p>
               </div>
               <Link
-                to="/recorrencias"
-                className="hidden rounded-full border border-border px-3 py-2 text-sm font-semibold text-foreground-muted transition hover:border-primary/30 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 sm:inline-flex"
+                to="/lancamentos/recorrentes"
+                className="hidden rounded-full border border-border px-3 py-2 text-sm font-medium text-foreground-muted transition hover:border-primary/30 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 sm:inline-flex"
               >
-                Ver recorrencias
+                Ver recorrências
               </Link>
             </div>
 
@@ -253,8 +248,8 @@ function SummaryCard({
   isLoading: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-border/70 bg-surface-2/80 px-4 py-3">
-      <p className="text-xs font-medium uppercase tracking-[0.12em] text-foreground-muted">
+    <div className="rounded-2xl border border-border bg-surface-2/80 px-4 py-3">
+      <p className="text-xs font-medium text-foreground-muted">
         {label}
       </p>
       {isLoading ? (
@@ -262,7 +257,7 @@ function SummaryCard({
       ) : (
         <p
           className={clsx(
-            "mt-2 text-xl font-bold",
+            "mt-2 text-xl font-medium",
             tone === "positive" ? "text-success" : "text-danger",
           )}
         >
@@ -290,7 +285,7 @@ function DesktopCalendarGrid({
         {weekdayLabels.map((label) => (
           <div
             key={label}
-            className="px-2 pb-2 text-xs font-semibold uppercase tracking-[0.12em] text-foreground-subtle"
+            className="px-2 pb-2 text-xs font-medium text-foreground-subtle"
           >
             {label}
           </div>
@@ -299,7 +294,7 @@ function DesktopCalendarGrid({
         {Array.from({ length: leadingBlankDays }).map((_, index) => (
           <div
             key={`blank-${index}`}
-            className="min-h-32 rounded-2xl border border-dashed border-border/40 bg-surface-2/20"
+            className="min-h-32 rounded-2xl border border-dashed border-border bg-surface-2/20"
           />
         ))}
 
@@ -325,7 +320,6 @@ function CalendarDayCell({
   isSelected: boolean;
   onSelect: () => void;
 }) {
-  const hasMovement = hasDayMovement(day);
   const predictedCount = day.recurrences.filter(
     (item) => item.status === "Predicted",
   ).length;
@@ -338,41 +332,35 @@ function CalendarDayCell({
       type="button"
       onClick={onSelect}
       className={clsx(
-        "min-h-32 rounded-2xl border p-3 text-left transition hover:-translate-y-0.5 hover:border-primary/30 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+        "min-h-28 min-w-0 rounded-2xl border p-2.5 text-left transition-colors hover:border-primary/30 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
         isSelected
-          ? "border-primary/45 bg-primary/10 shadow-[0_12px_28px_rgba(198,125,63,0.14)]"
-          : "border-border/70 bg-surface-2/55",
+          ? "border-primary/45 bg-primary/10"
+          : "border-border bg-surface-2/55",
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <span className="grid h-8 w-8 place-items-center rounded-full bg-surface text-sm font-bold text-foreground">
+        <span className="grid h-8 w-8 place-items-center rounded-full bg-surface text-sm font-medium text-foreground">
           {parseApiDate(day.date).getUTCDate()}
         </span>
         {day.recurrences.length > 0 && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-[11px] font-semibold text-primary">
+          <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
             <Repeat size={12} />
             {day.recurrences.length}
           </span>
         )}
       </div>
 
-      <div className="mt-4 space-y-1.5">
+      <div className="mt-3 space-y-1">
         {day.incomeTotal > 0 && (
           <CompactAmount tone="positive" label="Entradas" value={day.incomeTotal} />
         )}
         {day.expenseTotal > 0 && (
-          <CompactAmount tone="negative" label="Saidas" value={day.expenseTotal} />
-        )}
-        {!hasMovement && (
-          <div className="mt-6 flex items-center gap-2 text-xs text-foreground-subtle">
-            <span className="h-1.5 w-1.5 rounded-full bg-border" />
-            Sem movimento
-          </div>
+          <CompactAmount tone="negative" label="Saídas" value={day.expenseTotal} />
         )}
       </div>
 
       {(predictedCount > 0 || registeredCount > 0) && (
-        <div className="mt-3 flex flex-wrap gap-1.5 text-[10px] font-semibold">
+        <div className="mt-3 flex flex-wrap gap-1.5 text-xs font-medium">
           {predictedCount > 0 && (
             <span className="rounded-full bg-warning/10 px-2 py-0.5 text-warning">
               {predictedCount} prevista{predictedCount > 1 ? "s" : ""}
@@ -413,20 +401,20 @@ function MobileCalendarTimeline({
               "w-full rounded-2xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
               isSelected
                 ? "border-primary/45 bg-primary/10"
-                : "border-border/70 bg-surface-2/55",
+                : "border-border bg-surface-2/55",
             )}
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-sm font-semibold capitalize text-foreground">
+                <p className="text-sm font-medium sentence-case text-foreground">
                   {shortDateFormatter.format(parseApiDate(day.date))}
                 </p>
-                <p className="mt-0.5 text-xs capitalize text-foreground-muted">
+                <p className="mt-0.5 text-xs sentence-case text-foreground-muted">
                   {longDateFormatter.format(parseApiDate(day.date))}
                 </p>
               </div>
               {day.recurrences.length > 0 && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
+                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
                   <Repeat size={13} />
                   {day.recurrences.length}
                 </span>
@@ -435,7 +423,7 @@ function MobileCalendarTimeline({
 
             <div className="mt-3 grid gap-2 sm:grid-cols-3">
               <MobileAmount label="Entradas" value={day.incomeTotal} tone="positive" />
-              <MobileAmount label="Saidas" value={day.expenseTotal} tone="negative" />
+              <MobileAmount label="Saídas" value={day.expenseTotal} tone="negative" />
               <MobileAmount
                 label="Saldo"
                 value={day.balance}
@@ -458,20 +446,20 @@ function MobileCalendarTimeline({
 function DayDetailsPanel({ day }: { day: CalendarDay | null }) {
   if (!day) {
     return (
-      <aside className="rounded-3xl border border-border/70 bg-surface/90 p-5 text-sm text-foreground-muted shadow-[0_18px_42px_rgba(60,42,32,0.08)]">
+      <aside className="rounded-2xl border border-border bg-surface p-5 text-sm text-foreground-muted">
         Selecione um dia para ver os detalhes.
       </aside>
     );
   }
 
   return (
-    <aside className="h-fit rounded-3xl border border-border/70 bg-surface/90 p-5 shadow-[0_18px_42px_rgba(60,42,32,0.08)] xl:sticky xl:top-24">
+    <aside className="h-fit rounded-2xl border border-border bg-surface p-5 xl:sticky xl:top-24">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-foreground-muted">
+          <p className="text-xs font-medium text-foreground-muted">
             Detalhes do dia
           </p>
-          <h2 className="mt-1 text-xl font-bold capitalize text-foreground">
+          <h2 className="mt-1 text-xl font-medium sentence-case text-foreground">
             {longDateFormatter.format(parseApiDate(day.date))}
           </h2>
         </div>
@@ -481,12 +469,12 @@ function DayDetailsPanel({ day }: { day: CalendarDay | null }) {
             day.balance >= 0 ? "bg-success/10" : "bg-danger/10",
           )}
         >
-          <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-foreground-muted">
+          <p className="text-xs font-medium text-foreground-muted">
             Saldo do dia
           </p>
           <p
             className={clsx(
-              "text-sm font-bold",
+              "text-sm font-medium",
               day.balance >= 0 ? "text-success" : "text-danger",
             )}
           >
@@ -504,8 +492,8 @@ function DayDetailsPanel({ day }: { day: CalendarDay | null }) {
           items={day.incomes}
         />
         <EntrySection
-          title="Saidas"
-          emptyText="Nenhuma saida neste dia."
+          title="Saídas"
+          emptyText="Nenhuma saída neste dia."
           icon={<ArrowDownLeft size={16} />}
           tone="negative"
           items={day.expenses}
@@ -542,11 +530,11 @@ function EntrySection({
         >
           {icon}
         </span>
-        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+        <h3 className="text-sm font-medium text-foreground">{title}</h3>
       </div>
 
       {items.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-border/70 bg-surface-2/40 px-3 py-3 text-sm text-foreground-subtle">
+        <p className="rounded-2xl border border-dashed border-border bg-surface-2/40 px-3 py-3 text-sm text-foreground-subtle">
           {emptyText}
         </p>
       ) : (
@@ -554,11 +542,11 @@ function EntrySection({
           {items.map((item) => (
             <div
               key={`${item.type}-${item.id}`}
-              className="rounded-2xl border border-border/70 bg-surface-2/55 px-3 py-3"
+              className="rounded-2xl border border-border bg-surface-2/55 px-3 py-3"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold text-foreground">
+                  <p className="text-sm font-medium text-foreground">
                     {item.description}
                   </p>
                   <p className="mt-0.5 text-xs text-foreground-muted">
@@ -567,7 +555,7 @@ function EntrySection({
                 </div>
                 <p
                   className={clsx(
-                    "text-sm font-bold",
+                    "text-sm font-medium",
                     tone === "positive" ? "text-success" : "text-danger",
                   )}
                 >
@@ -590,24 +578,24 @@ function RecurringSection({ items }: { items: CalendarRecurringItem[] }) {
         <span className="grid h-8 w-8 place-items-center rounded-full bg-primary/10 text-primary">
           <Repeat size={16} />
         </span>
-        <h3 className="text-sm font-semibold text-foreground">Recorrencias</h3>
+        <h3 className="text-sm font-medium text-foreground">Recorrências</h3>
       </div>
 
       {items.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border/70 bg-surface-2/40 px-3 py-3 text-sm text-foreground-subtle">
-          Nenhuma recorrencia prevista para este dia.
+        <div className="rounded-2xl border border-dashed border-border bg-surface-2/40 px-3 py-3 text-sm text-foreground-subtle">
+          Nenhuma recorrência prevista para este dia.
         </div>
       ) : (
         <div className="space-y-2">
           {items.map((item) => (
             <div
               key={`${item.type}-${item.id}`}
-              className="rounded-2xl border border-border/70 bg-surface-2/55 px-3 py-3"
+              className="rounded-2xl border border-border bg-surface-2/55 px-3 py-3"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-sm font-semibold text-foreground">
+                    <p className="text-sm font-medium text-foreground">
                       {item.description}
                     </p>
                     <StatusBadge status={item.status} />
@@ -620,7 +608,7 @@ function RecurringSection({ items }: { items: CalendarRecurringItem[] }) {
                 </div>
                 <p
                   className={clsx(
-                    "text-sm font-bold",
+                    "text-sm font-medium",
                     item.type === "Income" ? "text-success" : "text-danger",
                   )}
                 >
@@ -634,10 +622,10 @@ function RecurringSection({ items }: { items: CalendarRecurringItem[] }) {
       )}
 
       <Link
-        to="/recorrencias"
-        className="mt-3 inline-flex items-center gap-2 rounded-full text-sm font-semibold text-primary transition hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+        to="/lancamentos/recorrentes"
+        className="mt-3 inline-flex items-center gap-2 rounded-full text-sm font-medium text-primary transition hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
       >
-        Gerenciar recorrencias
+        Gerenciar recorrências
         <ChevronRight size={15} />
       </Link>
     </section>
@@ -654,17 +642,32 @@ function CompactAmount({
   tone: "positive" | "negative";
 }) {
   return (
-    <div
+    <p
+      title={`${label}: ${formatCurrency(value)}`}
       className={clsx(
-        "flex items-center justify-between gap-2 rounded-xl px-2 py-1.5 text-xs",
-        tone === "positive"
-          ? "bg-success/10 text-success"
-          : "bg-danger/10 text-danger",
+        "flex min-w-0 items-center gap-1.5 text-xs font-medium tabular-nums",
+        tone === "positive" ? "text-success" : "text-danger",
       )}
     >
-      <span className="font-medium">{label}</span>
-      <span className="font-bold">{formatCurrency(value)}</span>
-    </div>
+      <span
+        aria-hidden
+        className={clsx(
+          "h-1.5 w-1.5 shrink-0 rounded-full",
+          tone === "positive" ? "bg-success" : "bg-danger",
+        )}
+      />
+      <span className="sr-only">{label}: </span>
+      <span className="truncate">
+        {value >= 1000
+          ? value.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+              notation: "compact",
+              maximumFractionDigits: 1,
+            })
+          : formatCurrency(value)}
+      </span>
+    </p>
   );
 }
 
@@ -678,13 +681,11 @@ function MobileAmount({
   tone: "positive" | "negative";
 }) {
   return (
-    <div className="rounded-xl border border-border/70 bg-surface px-3 py-2">
-      <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-foreground-subtle">
-        {label}
-      </p>
+    <div className="rounded-xl border border-border bg-surface px-3 py-2">
+      <p className="text-xs text-foreground-subtle">{label}</p>
       <p
         className={clsx(
-          "mt-1 text-sm font-bold",
+          "mt-0.5 text-sm font-medium tabular-nums",
           tone === "positive" ? "text-success" : "text-danger",
         )}
       >
@@ -698,7 +699,7 @@ function StatusBadge({ status }: { status: CalendarRecurringItem["status"] }) {
   return (
     <span
       className={clsx(
-        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold",
+        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
         status === "Registered"
           ? "bg-success/10 text-success"
           : "bg-warning/10 text-warning",
@@ -713,7 +714,7 @@ function StatusBadge({ status }: { status: CalendarRecurringItem["status"] }) {
 function CalendarSkeleton() {
   return (
     <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
-      <div className="rounded-3xl border border-border/70 bg-surface/90 p-5">
+      <div className="rounded-2xl border border-border bg-surface p-5">
         <div className="grid grid-cols-7 gap-2">
           {Array.from({ length: 35 }).map((_, index) => (
             <div
@@ -723,7 +724,7 @@ function CalendarSkeleton() {
           ))}
         </div>
       </div>
-      <div className="rounded-3xl border border-border/70 bg-surface/90 p-5">
+      <div className="rounded-2xl border border-border bg-surface p-5">
         <div className="h-6 w-40 animate-pulse rounded-full bg-surface-2/80" />
         <div className="mt-5 space-y-3">
           <div className="h-20 animate-pulse rounded-2xl bg-surface-2/80" />
@@ -750,7 +751,7 @@ function buildEntryMeta(item: CalendarEntry) {
     parts.push("Recorrente");
   }
 
-  return parts.length > 0 ? parts.join(" · ") : "Lancamento manual";
+  return parts.length > 0 ? parts.join(" · ") : "Lançamento manual";
 }
 
 function hasDayMovement(day: CalendarDay) {

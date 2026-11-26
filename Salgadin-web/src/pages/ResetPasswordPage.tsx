@@ -64,11 +64,11 @@ export default function ResetPasswordPage() {
 
   if (!token) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] flex flex-col overflow-y-scroll">
+      <div className="min-h-screen bg-background flex flex-col overflow-y-scroll">
         <Header />
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
-          <div className="w-full max-w-md rounded-3xl border border-border/70 bg-surface/90 backdrop-blur-xl shadow-[0_20px_60px_rgba(60,42,32,0.12)] p-6 sm:p-8">
-            <h1 className="text-2xl font-bold text-foreground">
+          <div className="w-full max-w-md rounded-2xl border border-border bg-surface backdrop-blur-xl p-6 sm:p-8">
+            <h1 className="text-2xl font-medium text-foreground">
               Link inválido
             </h1>
             <p className="mt-2 text-sm text-foreground-muted">
@@ -76,7 +76,7 @@ export default function ResetPasswordPage() {
             </p>
             <Link
               to="/forgot-password"
-              className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-4 py-2 text-sm font-semibold text-[var(--color-on-primary)] shadow-[0_10px_24px_rgba(60,42,32,0.14)] ui-pressable"
+              className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl bg-gradient-to-r from-[var(--brand-from)] to-[var(--brand-to)] px-4 py-2 text-sm font-medium text-[var(--color-on-primary)] ui-pressable"
             >
               Solicitar novo link
             </Link>
@@ -87,12 +87,12 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[var(--bg-from)] via-[var(--bg-via)] to-[var(--bg-to)] flex flex-col overflow-y-scroll">
+    <div className="min-h-screen bg-background flex flex-col overflow-y-scroll">
       <Header />
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md rounded-3xl border border-border/70 bg-surface/90 backdrop-blur-xl shadow-[0_20px_60px_rgba(60,42,32,0.12)] p-6 sm:p-8 animate-in slide-in-from-bottom-8 fade-in duration-700">
+        <div className="w-full max-w-md rounded-2xl border border-border bg-surface backdrop-blur-xl p-6 sm:p-8 animate-in slide-in-from-bottom-8 fade-in duration-700">
           <header className="text-center mb-6">
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+            <h1 className="text-2xl sm:text-3xl font-medium text-foreground">
               Redefinir senha
             </h1>
             <p className="mt-1 text-sm text-foreground-muted">
