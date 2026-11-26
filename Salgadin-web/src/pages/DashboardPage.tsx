@@ -52,6 +52,7 @@ import { AddIncomeModal } from "../components/AddIncomeModal";
 import { ConfirmActionModal } from "../components/ConfirmActionModal";
 import { EmptyState } from "../components/EmptyState";
 import { MonthOverview } from "../components/dashboard/MonthOverview";
+import { QuickEntry } from "../components/dashboard/QuickEntry";
 import { RecentActivity } from "../components/dashboard/RecentActivity";
 import { buildMonthSummary } from "../lib/monthSummary";
 import { formatApiDate } from "../lib/dates";
@@ -782,6 +783,8 @@ export default function DashboardPage() {
           {recurringActionError}
         </div>
       )}
+
+      <QuickEntry onChange={fetchData} />
 
       <MonthOverview
         summary={monthSummary}

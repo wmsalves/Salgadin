@@ -58,3 +58,23 @@ export const updateExpense = async (
 ): Promise<void> => {
   await api.put(`/expense/${id}`, expenseData);
 };
+
+export interface FrequentExpense {
+  description: string;
+  amount: number;
+  categoryId: number;
+  category: string;
+  count: number;
+}
+
+/** Registra uma despesa a partir de texto livre, ex.: "café 7,50 ontem". */
+export const addQuickExpense = async (text: string, today: string): Promise<Expense> => {
+  const response = await api.post<Expense>("/expense/quick", { text, today });
+  return response.data;
+};
+
+/** Gastos avulsos que o usuário mais repete nos últimos 90 dias. */
+export const getFrequentExpenses = async (limit = 6): Promise<FrequentExpense[]> => {
+  const response = await api.get<FrequentExpense[]>("/expense/frequent", { params: { limit } });
+  return response.data;
+};
