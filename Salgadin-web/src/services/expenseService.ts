@@ -12,9 +12,29 @@ export interface CreateExpenseData {
 
 export type UpdateExpenseData = CreateExpenseData;
 
+interface PagedResponse<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+}
+
+// A API pagina em no maximo 100 itens; buscamos todas as paginas do periodo
+// para que totais e listas nao parem silenciosamente nos primeiros 20.
+const PAGE_SIZE = 100;
+const MAX_PAGES = 50;
+
 export const getExpenses = async (startDate?: string, endDate?: string): Promise<Expense[]> => {
-  const response = await api.get("/expense", { params: { startDate, endDate } });
-  return response.data.items;
+  const all: Expense[] = [];
+  for (let page = 1; page <= MAX_PAGES; page += 1) {
+    const response = await api.get<PagedResponse<Expense>>("/expense", {
+      params: { startDate, endDate, page, pageSize: PAGE_SIZE },
+    });
+    const { items, totalCount } = response.data;
+    all.push(...items);
+    if (items.length < PAGE_SIZE || all.length >= totalCount) break;
+  }
+  return all;
 };
 
 export const getDailySummary = async (startDate?: string, endDate?: string): Promise<DailySummary[]> => {

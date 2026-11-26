@@ -630,7 +630,7 @@ export default function ReportsPage() {
                   icon={PieChart}
                   title="Categorias ainda sem movimento"
                   description="Quando você cadastrar gastos por categoria, este resumo mostra onde os pequenos valores estão se acumulando."
-                  primaryAction={{ label: "Criar categorias", href: "/categorias" }}
+                  primaryAction={{ label: "Criar categorias", href: "/lancamentos/categorias" }}
                   compact
                 />
               )}

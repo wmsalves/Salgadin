@@ -209,7 +209,7 @@ export default function FinancialCalendarPage() {
                 </p>
               </div>
               <Link
-                to="/recorrencias"
+                to="/lancamentos/recorrentes"
                 className="hidden rounded-full border border-border px-3 py-2 text-sm font-medium text-foreground-muted transition hover:border-primary/30 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 sm:inline-flex"
               >
                 Ver recorrências
@@ -622,7 +622,7 @@ function RecurringSection({ items }: { items: CalendarRecurringItem[] }) {
       )}
 
       <Link
-        to="/recorrencias"
+        to="/lancamentos/recorrentes"
         className="mt-3 inline-flex items-center gap-2 rounded-full text-sm font-medium text-primary transition hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
       >
         Gerenciar recorrências

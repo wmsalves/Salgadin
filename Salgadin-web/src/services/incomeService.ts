@@ -11,9 +11,27 @@ export interface CreateIncomeData {
 
 export type UpdateIncomeData = CreateIncomeData;
 
+interface PagedResponse<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+}
+
+const PAGE_SIZE = 100;
+const MAX_PAGES = 50;
+
 export const getIncomes = async (startDate?: string, endDate?: string): Promise<Income[]> => {
-  const response = await api.get("/income", { params: { startDate, endDate } });
-  return response.data.items;
+  const all: Income[] = [];
+  for (let page = 1; page <= MAX_PAGES; page += 1) {
+    const response = await api.get<PagedResponse<Income>>("/income", {
+      params: { startDate, endDate, page, pageSize: PAGE_SIZE },
+    });
+    const { items, totalCount } = response.data;
+    all.push(...items);
+    if (items.length < PAGE_SIZE || all.length >= totalCount) break;
+  }
+  return all;
 };
 
 export const addIncome = async (

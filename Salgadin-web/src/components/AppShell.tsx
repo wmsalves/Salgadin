@@ -2,7 +2,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import {
   LayoutGrid,
-  Tags,
+  ReceiptText,
   User,
   BarChart3,
   LogOut,
@@ -16,8 +16,6 @@ import {
   LogOutIcon,
   Menu,
   Settings2,
-  Repeat,
-  CalendarDays,
 } from "lucide-react";
 import clsx from "clsx";
 import logo from "../assets/logo.svg";
@@ -31,15 +29,14 @@ import {
 import type { NotificationItem } from "../lib/types";
 import { dropdownMotion, MOTION } from "../lib/motion";
 
+// Cinco destinos principais. Categorias e Recorrentes ficam dentro de
+// Lançamentos; Calendário fica dentro de Relatórios; Notificações no sino.
 const navItems = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutGrid },
-  { to: "/categorias", label: "Categorias", icon: Tags },
+  { to: "/dashboard", label: "Início", icon: LayoutGrid },
+  { to: "/lancamentos", label: "Lançamentos", icon: ReceiptText },
   { to: "/metas", label: "Metas", icon: Target },
-  { to: "/recorrencias", label: "Recorrências", icon: Repeat },
-  { to: "/calendario", label: "Calendário", icon: CalendarDays },
   { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
-  { to: "/notificacoes", label: "Notificações", icon: Bell },
-  { to: "/perfil", label: "Perfil", icon: User },
+  { to: "/perfil", label: "Conta", icon: User },
 ];
 
 export function AppShell() {
@@ -453,17 +450,8 @@ export function AppShell() {
       </div>
 
       <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-surface md:hidden">
-        <div className="mx-auto flex max-w-6xl items-center gap-2 overflow-x-auto px-4 py-2">
-          {[
-            { to: "/dashboard", label: "Dashboard", icon: LayoutGrid },
-            { to: "/categorias", label: "Categorias", icon: Tags },
-            { to: "/metas", label: "Metas", icon: Target },
-            { to: "/recorrencias", label: "Recorrências", icon: Repeat },
-            { to: "/calendario", label: "Calendário", icon: CalendarDays },
-            { to: "/relatorios", label: "Relatórios", icon: BarChart3 },
-            { to: "/notificacoes", label: "Notificações", icon: Bell },
-            { to: "/perfil", label: "Perfil", icon: User },
-          ].map((item) => {
+        <div className="mx-auto grid max-w-md grid-cols-5 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5">
+          {navItems.map((item) => {
             const Icon = item.icon;
             return (
               <NavLink
@@ -471,17 +459,17 @@ export function AppShell() {
                 to={item.to}
                 className={({ isActive }) =>
                   clsx(
-                    "flex min-w-[4.25rem] flex-col items-center gap-1 rounded-xl px-2 py-1 text-xs font-medium transition",
+                    "flex min-w-0 flex-col items-center gap-0.5 rounded-xl py-1 text-xs font-medium tracking-[-0.01em] transition-colors",
                     isActive
                       ? "text-primary"
                       : "text-foreground-muted hover:text-foreground"
                   )
                 }
               >
-                <span className="h-9 w-9 rounded-full bg-surface-2 grid place-items-center">
-                  <Icon size={18} />
+                <span className="grid h-8 w-8 place-items-center">
+                  <Icon size={20} />
                 </span>
-                {item.label}
+                <span className="whitespace-nowrap text-center">{item.label}</span>
               </NavLink>
             );
           })}

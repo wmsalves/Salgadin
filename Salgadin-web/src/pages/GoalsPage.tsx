@@ -417,7 +417,7 @@ export default function GoalsPage() {
           }}
           secondaryAction={
             categories.length === 0
-              ? { label: "Criar categorias", href: "/categorias" }
+              ? { label: "Criar categorias", href: "/lancamentos/categorias" }
               : undefined
           }
         >

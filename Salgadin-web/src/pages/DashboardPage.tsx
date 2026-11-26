@@ -813,7 +813,7 @@ export default function DashboardPage() {
                   title: "Organize categorias",
                   description: "Deixe os gastos claros por tipo de consumo.",
                   icon: PieChartIcon,
-                  href: "/categorias",
+                  href: "/lancamentos/categorias",
                   label: "Criar categorias",
                 },
                 {
@@ -1281,7 +1281,7 @@ export default function DashboardPage() {
                   </p>
                 </div>
                 <Link
-                  to="/recorrencias"
+                  to="/lancamentos/recorrentes"
                   className="shrink-0 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-primary transition hover:border-primary/30 hover:bg-surface-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
                 >
                   Ver todas
@@ -1346,7 +1346,7 @@ export default function DashboardPage() {
               </div>
               {expensesByCategory.length > 0 && (
                 <Link
-                  to="/categorias"
+                  to="/lancamentos/categorias"
                   className="shrink-0 rounded-full border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-primary transition hover:border-primary/30 hover:bg-surface-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
                 >
                   {hiddenCategoryCount > 0 ? "Ver todas" : "Ver detalhes"}
@@ -1426,7 +1426,7 @@ export default function DashboardPage() {
 
                   {hiddenCategoryCount > 0 && (
                     <Link
-                      to="/categorias"
+                      to="/lancamentos/categorias"
                       className="inline-flex items-center gap-2 px-1 pt-2 text-sm font-medium text-primary transition hover:text-primary-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
                     >
                       Analisar categorias
@@ -1446,7 +1446,7 @@ export default function DashboardPage() {
                 }}
                 secondaryAction={{
                   label: "Criar categorias",
-                  href: "/categorias",
+                  href: "/lancamentos/categorias",
                 }}
                 className="min-h-[220px]"
                 compact
